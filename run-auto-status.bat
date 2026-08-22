@@ -1,6 +1,15 @@
 @echo off
 title Auto-Status Setup
 
+REM Always move to the folder where this bat file is located FIRST,
+REM before doing anything else (important when run as Administrator).
+cd /d "%~dp0"
+
+echo ============================================
+echo   Working folder: %cd%
+echo ============================================
+echo.
+
 echo ============================================
 echo   Step 1: Applying auto-status.js to all index.html files...
 echo ============================================
@@ -23,7 +32,6 @@ if %errorlevel% neq 0 (
     exit /b
 )
 
-cd /d "%~dp0"
 git add -A
 git commit -m "Apply auto-status GO/pending display script to all pages"
 git push
