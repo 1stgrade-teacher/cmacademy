@@ -16,6 +16,8 @@
   --mauve-bg: #EDDCE0;
 
   --radius: 16px;
+  --shadow-sm: 0 1px 2px rgba(38,37,31,0.04), 0 1px 1px rgba(38,37,31,0.03);
+  --shadow-md: 0 8px 20px -6px rgba(38,37,31,0.14), 0 2px 6px -2px rgba(38,37,31,0.08);
 }
 
 * { box-sizing: border-box; }
@@ -23,9 +25,26 @@
 body {
   margin: 0;
   font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
-  background: var(--paper);
+  background:
+    radial-gradient(rgba(38,37,31,0.035) 1px, transparent 1px),
+    var(--paper);
+  background-size: 3px 3px, auto;
   color: var(--ink);
   line-height: 1.5;
+}
+
+a:focus-visible,
+button:focus-visible,
+.area-card:focus-visible,
+.book-card:focus-visible,
+.unit-row:focus-visible {
+  outline: 2px solid var(--clay);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
 }
 
 .serif { font-family: 'Noto Serif KR', serif; }
@@ -82,13 +101,29 @@ a { color: inherit; text-decoration: none; }
   align-items: center;
   gap: 6px;
 }
-.hero .eyebrow .spark { color: var(--clay); }
+.hero .eyebrow .spark,
+.topbar .brand .spark {
+  position: relative;
+  z-index: 1;
+  color: var(--clay);
+}
+.hero .eyebrow .spark::before,
+.topbar .brand .spark::before {
+  content: "";
+  position: absolute;
+  inset: -1px -3px 0 -3px;
+  background: var(--clay-bg);
+  transform: rotate(-3deg);
+  border-radius: 2px;
+  z-index: -1;
+}
 .hero h1 {
   font-family: 'Noto Serif KR', serif;
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 600;
   margin: 0 0 10px;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
 }
 .hero p {
   font-size: 14px;
@@ -111,9 +146,11 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   flex-direction: column;
   gap: 12px;
-  transition: transform 0.15s ease, border-color 0.15s ease;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.18s cubic-bezier(.2,.7,.3,1), box-shadow 0.18s ease, border-color 0.18s ease;
 }
-.area-card:active { transform: scale(0.98); }
+.area-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.area-card:active { transform: scale(0.98) translateY(0); }
 .area-card .icon {
   width: 40px;
   height: 40px;
@@ -158,7 +195,10 @@ a { color: inherit; text-decoration: none; }
   border-radius: var(--radius);
   padding: 18px 14px 16px;
   overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.18s cubic-bezier(.2,.7,.3,1), box-shadow 0.18s ease;
 }
+.book-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 .book-card .badge {
   position: absolute;
   top: 0;
