@@ -1,8 +1,6 @@
 @echo off
 title Auto-Status Setup
 
-REM Always move to the folder where this bat file is located FIRST,
-REM before doing anything else (important when run as Administrator).
 cd /d "%~dp0"
 
 echo ============================================
@@ -11,7 +9,7 @@ echo ============================================
 echo.
 
 echo ============================================
-echo   Step 1: Applying auto-status.js to all index.html files...
+echo   Applying auto-status.js to all index.html files...
 echo ============================================
 echo.
 
@@ -19,27 +17,12 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0add-auto-status.ps1"
 
 echo.
 echo ============================================
-echo   Step 2: Uploading changes to GitHub...
-echo ============================================
-echo.
-
-where git >nul 2>nul
-if %errorlevel% neq 0 (
-    echo [Notice] Git command was not found on this computer.
-    echo Please open GitHub Desktop instead, then click Commit and Push origin.
-    echo.
-    pause
-    exit /b
-)
-
-git add -A
-git commit -m "Apply auto-status GO/pending display script to all pages"
-git push
-
-echo.
-echo ============================================
-echo   Done! Vercel will automatically redeploy in a minute or two.
-echo   Refresh the site after that to check the result.
+echo   Done!
+echo   Now open GitHub Desktop:
+echo     1. Check the Changes tab
+echo     2. Write a commit message
+echo     3. Click Commit to main
+echo     4. Click Push origin
 echo ============================================
 echo.
 pause
