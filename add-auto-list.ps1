@@ -1,4 +1,4 @@
-# ------------------------------------------------------------
+﻿# ------------------------------------------------------------
 # add-auto-list.ps1
 #
 # This script finds every index.html that sits directly inside a folder
