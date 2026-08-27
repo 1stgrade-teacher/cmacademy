@@ -14,6 +14,8 @@
   --sage-bg: #E4E6D6;
   --mauve: #9C5F72;
   --mauve-bg: #EDDCE0;
+  --teal: #3E7C86;
+  --teal-bg: #D9E7E7;
 
   --radius: 16px;
   --shadow-sm: 0 1px 2px rgba(38,37,31,0.04), 0 1px 1px rgba(38,37,31,0.03);
@@ -173,9 +175,11 @@ a { color: inherit; text-decoration: none; }
 .area-card.grammar .icon { background: var(--clay-bg); color: var(--clay); }
 .area-card.reading .icon { background: var(--sage-bg); color: var(--sage); }
 .area-card.syntax .icon { background: var(--mauve-bg); color: var(--mauve); }
+.area-card.game .icon { background: var(--teal-bg); color: var(--teal); }
 .area-card.grammar { border-color: color-mix(in srgb, var(--clay) 30%, var(--border)); }
 .area-card.reading { border-color: color-mix(in srgb, var(--sage) 30%, var(--border)); }
 .area-card.syntax { border-color: color-mix(in srgb, var(--mauve) 30%, var(--border)); }
+.area-card.game { border-color: color-mix(in srgb, var(--teal) 30%, var(--border)); }
 
 @media (min-width: 560px) {
   .area-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
