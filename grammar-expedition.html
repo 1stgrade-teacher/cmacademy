@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>문법 원정대 | 일등급샘</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --forest:#1B4332;
+    --forest-dark:#12302354;
+    --parchment:#F1E8D8;
+    --parchment-dark:#e6d9bf;
+    --amber:#D9A441;
+    --amber-dark:#b9862c;
+    --berry:#A23E48;
+    --sage:#588157;
+    --ink:#2B2118;
+    --ink-soft:#5b4f40;
+    --shadow: rgba(43,33,24,0.18);
+    --radius: 18px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Noto Sans KR', sans-serif;
+    background:
+      radial-gradient(circle at 15% 10%, #2a5741 0%, transparent 45%),
+      radial-gradient(circle at 85% 90%, #24493680 0%, transparent 40%),
+      var(--forest);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+  .display{font-family:'Baloo 2', sans-serif;}
+  #app{
+    width:100%;
+    max-width:720px;
+  }
+  .card{
+    background:var(--parchment);
+    border-radius:var(--radius);
+    box-shadow:0 20px 50px var(--shadow), 0 2px 0 var(--parchment-dark) inset;
+    padding:36px 32px;
+    position:relative;
+    overflow:hidden;
+  }
+  .card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 27px, #00000006 28px);
+    pointer-events:none;
+  }
+  .screen{display:none;}
+  .screen.active{display:block;}
+
+  /* ---------- START SCREEN ---------- */
+  .eyebrow{
+    font-weight:700;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    font-size:12px;
+    color:var(--amber-dark);
+    margin-bottom:6px;
+  }
+  h1.title{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size:clamp(32px,6vw,44px);
+    margin:0 0 8px;
+    color:var(--forest);
+    line-height:1.1;
+  }
+  .subtitle{
+    font-size:15px;
+    color:var(--ink-soft);
+    margin-bottom:28px;
+    line-height:1.6;
+  }
+  .route-preview{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:28px;
+  }
+  .route-chip{
+    font-size:12.5px;
+    font-weight:500;
+    background:#fff9ee;
+    border:1px solid var(--parchment-dark);
+    color:var(--ink-soft);
+    padding:6px 12px;
+    border-radius:999px;
+  }
+  label.field-label{
+    display:block;
+    font-size:13px;
+    font-weight:700;
+    color:var(--forest);
+    margin-bottom:8px;
+  }
+  input#playerName{
+    width:100%;
+    padding:14px 16px;
+    border-radius:12px;
+    border:2px solid var(--parchment-dark);
+    font-size:16px;
+    font-family:inherit;
+    background:#fffdf8;
+    margin-bottom:22px;
+    outline:none;
+    transition:border-color .15s;
+  }
+  input#playerName:focus{border-color:var(--amber);}
+  .btn{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size:17px;
+    border:none;
+    border-radius:14px;
+    padding:15px 22px;
+    cursor:pointer;
+    width:100%;
+    color:#fff9ee;
+    background:var(--forest);
+    box-shadow:0 6px 0 #0d281f;
+    transition:transform .08s, box-shadow .08s;
+  }
+  .btn:active{transform:translateY(4px); box-shadow:0 2px 0 #0d281f;}
+  .btn.amber{background:var(--amber); box-shadow:0 6px 0 var(--amber-dark); color:var(--ink);}
+  .btn.secondary{background:transparent; color:var(--forest); box-shadow:none; border:2px solid var(--parchment-dark); margin-top:10px;}
+  .btn.secondary:active{transform:none;}
+
+  /* ---------- GAME SCREEN ---------- */
+  .hud{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:22px;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .hud-name{font-weight:700; color:var(--forest); font-size:14px;}
+  .hud-stats{display:flex; gap:14px; align-items:center;}
+  .hearts{font-size:18px; letter-spacing:2px;}
+  .score-badge{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    background:var(--forest);
+    color:#fff9ee;
+    padding:6px 14px;
+    border-radius:999px;
+    font-size:14px;
+  }
+
+  .trail{
+    display:flex;
+    gap:6px;
+    overflow-x:auto;
+    padding:6px 2px 18px;
+    margin-bottom:6px;
+  }
+  .node{
+    flex:0 0 auto;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    font-weight:700;
+    font-family:'Baloo 2', sans-serif;
+    background:#e5dbc4;
+    color:var(--ink-soft);
+    border:2px solid var(--parchment-dark);
+    position:relative;
+  }
+  .node:not(:last-child)::after{
+    content:"";
+    position:absolute;
+    left:100%;
+    top:50%;
+    width:6px;
+    height:2px;
+    background:var(--parchment-dark);
+    transform:translateY(-50%);
+  }
+  .node.done{background:var(--sage); color:#fff; border-color:var(--sage);}
+  .node.current{background:var(--amber); color:var(--ink); border-color:var(--amber-dark); box-shadow:0 0 0 4px #d9a44133;}
+
+  .topic-tag{
+    display:inline-block;
+    font-size:12px;
+    font-weight:700;
+    color:var(--forest);
+    background:#e2ead9;
+    border-radius:999px;
+    padding:4px 12px;
+    margin-bottom:14px;
+  }
+  .prompt{
+    font-size:20px;
+    font-weight:500;
+    line-height:1.5;
+    color:var(--ink);
+    margin-bottom:22px;
+  }
+  .prompt b{color:var(--forest);}
+
+  .options{display:flex; flex-direction:column; gap:10px;}
+  .option{
+    text-align:left;
+    padding:14px 16px;
+    border-radius:12px;
+    border:2px solid var(--parchment-dark);
+    background:#fffdf8;
+    font-size:15.5px;
+    font-family:inherit;
+    color:var(--ink);
+    cursor:pointer;
+    transition:transform .08s, border-color .12s, background .12s;
+  }
+  .option:hover{border-color:var(--amber);}
+  .option:active{transform:scale(0.99);}
+  .option.correct{background:#e5f0e2; border-color:var(--sage); color:#33502f;}
+  .option.wrong{background:#f5e4e4; border-color:var(--berry); color:#6e2129;}
+  .option:disabled{cursor:default;}
+
+  .fill-row{display:flex; gap:10px;}
+  input#fillInput{
+    flex:1;
+    padding:14px 16px;
+    border-radius:12px;
+    border:2px solid var(--parchment-dark);
+    font-size:16px;
+    font-family:inherit;
+    background:#fffdf8;
+    outline:none;
+  }
+  input#fillInput:focus{border-color:var(--amber);}
+  input#fillInput.correct{border-color:var(--sage); background:#e5f0e2;}
+  input#fillInput.wrong{border-color:var(--berry); background:#f5e4e4;}
+  .btn.check{width:auto; padding:14px 20px; box-shadow:0 6px 0 var(--amber-dark); background:var(--amber); color:var(--ink);}
+
+  .feedback{
+    margin-top:16px;
+    padding:14px 16px;
+    border-radius:12px;
+    font-size:14px;
+    line-height:1.6;
+    display:none;
+  }
+  .feedback.show{display:block;}
+  .feedback.ok{background:#e5f0e2; color:#33502f;}
+  .feedback.no{background:#f5e4e4; color:#6e2129;}
+  .feedback .next-hint{display:block; margin-top:8px; font-weight:700; color:var(--ink-soft);}
+
+  .footer-btn{margin-top:18px; display:none;}
+  .footer-btn.show{display:block;}
+
+  /* ---------- RESULT SCREEN ---------- */
+  .result-emoji{font-size:52px; margin-bottom:10px;}
+  .result-grade{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size:30px;
+    color:var(--forest);
+    margin-bottom:4px;
+  }
+  .result-sub{color:var(--ink-soft); margin-bottom:24px; font-size:14.5px;}
+  .stat-row{
+    display:flex;
+    gap:12px;
+    margin-bottom:26px;
+  }
+  .stat-box{
+    flex:1;
+    background:#fffdf8;
+    border:1px solid var(--parchment-dark);
+    border-radius:12px;
+    padding:16px 10px;
+    text-align:center;
+  }
+  .stat-box .num{font-family:'Baloo 2',sans-serif; font-weight:800; font-size:24px; color:var(--forest);}
+  .stat-box .label{font-size:12px; color:var(--ink-soft); margin-top:2px;}
+  .review-list{margin-bottom:22px;}
+  .review-item{
+    font-size:13px;
+    padding:8px 0;
+    border-bottom:1px solid var(--parchment-dark);
+    color:var(--ink-soft);
+  }
+  .review-item b{color:var(--ink);}
+  .review-item.wrong-mark::before{content:"✕ "; color:var(--berry); font-weight:700;}
+  .review-item.right-mark::before{content:"✓ "; color:var(--sage); font-weight:700;}
+
+  @media (max-width:520px){
+    .card{padding:26px 20px;}
+    .fill-row{flex-direction:column;}
+    .btn.check{width:100%;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="card">
+
+    <!-- START -->
+    <div class="screen active" id="screen-start">
+      <a href="./index.html" style="display:inline-block;font-size:12.5px;color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--parchment-dark);margin-bottom:18px;">← 게임 목록으로</a>
+      <div class="eyebrow">일등급샘의 문법 게임</div>
+      <h1 class="title display">문법 원정대</h1>
+      <p class="subtitle">중학 문법 12개 거점을 지도 따라 정복하는 탐험. 목숨은 3개, 문제 형식은 매번 달라져요. 끝까지 살아남으면 원정 등급이 나옵니다.</p>
+      <div class="route-preview" id="routePreview"></div>
+      <label class="field-label" for="playerName">원정대 이름 (선택)</label>
+      <input type="text" id="playerName" placeholder="예: 3반 이서준">
+      <button class="btn amber display" onclick="startGame()">탐험 시작하기</button>
+    </div>
+
+    <!-- GAME -->
+    <div class="screen" id="screen-game">
+      <div class="hud">
+        <div class="hud-name" id="hudName">원정대</div>
+        <div class="hud-stats">
+          <div class="hearts" id="hudHearts">❤️❤️❤️</div>
+          <div class="score-badge display" id="hudScore">0점</div>
+        </div>
+      </div>
+      <div class="trail" id="trail"></div>
+      <div class="topic-tag" id="topicTag">문법</div>
+      <div class="prompt" id="prompt"></div>
+      <div id="answerArea"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="btn amber display footer-btn" id="nextBtn" onclick="nextQuestion()">다음 거점으로 →</button>
+    </div>
+
+    <!-- RESULT -->
+    <div class="screen" id="screen-result">
+      <div class="result-emoji" id="resultEmoji">🏁</div>
+      <div class="result-grade display" id="resultGrade">원정 완료</div>
+      <div class="result-sub" id="resultSub"></div>
+      <div class="stat-row">
+        <div class="stat-box"><div class="num" id="statCorrect">0</div><div class="label">정답 수</div></div>
+        <div class="stat-box"><div class="num" id="statScore">0</div><div class="label">최종 점수</div></div>
+        <div class="stat-box"><div class="num" id="statHearts">0</div><div class="label">남은 목숨</div></div>
+      </div>
+      <div class="review-list" id="reviewList"></div>
+      <button class="btn display" onclick="restartGame()">다시 도전하기</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ---------------------------------------------------------
+   문법 원정대 — 중학 문법 게임 (단일 파일, 외부 서버 의존 없음)
+   --------------------------------------------------------- */
+
+const QUESTIONS = [
+  { topic:"be동사", type:"mc",
+    prompt:"다음 빈칸에 알맞은 것은? <b>She ___ a middle school student.</b>",
+    options:["am","is","are","be"], answer:1,
+    explain:"주어가 3인칭 단수(She)일 때 be동사는 is를 씁니다." },
+  { topic:"일반동사 3인칭단수", type:"fill",
+    prompt:"괄호 안 동사를 알맞은 형태로 바꿔 빈칸에 쓰세요. <b>My brother ___ (watch) TV every night.</b>",
+    answer:"watches",
+    explain:"주어가 3인칭 단수이고 현재시제이므로 동사에 -es를 붙여 watches가 됩니다." },
+  { topic:"현재진행형", type:"mc",
+    prompt:"다음 중 어법상 올바른 문장은?",
+    options:["He is play soccer now.","He is playing soccer now.","He playing soccer now.","He plays soccer now ing."],
+    answer:1,
+    explain:"현재진행형은 'be동사 + 동사원형-ing' 형태입니다." },
+  { topic:"과거시제(불규칙)", type:"fill",
+    prompt:"go의 과거형을 빈칸에 쓰세요. <b>Yesterday, I ___ to the library.</b>",
+    answer:"went",
+    explain:"go의 과거형은 불규칙 변화로 went입니다." },
+  { topic:"미래시제", type:"mc",
+    prompt:"다음 빈칸에 알맞은 것은? <b>Look at those clouds! It ___ rain soon.</b>",
+    options:["will","is going to","would","is"],
+    answer:1,
+    explain:"눈앞의 근거(구름)로 예측할 때는 be going to를 주로 씁니다." },
+  { topic:"조동사", type:"mc",
+    prompt:"다음 중 '~해야 한다(의무)'의 의미로 쓰인 것은?",
+    options:["You can go now.","You must finish your homework.","You may sit here.","You will be fine."],
+    answer:1,
+    explain:"must는 강한 의무를 나타내는 조동사입니다." },
+  { topic:"비교급", type:"fill",
+    prompt:"tall의 비교급을 빈칸에 쓰세요. <b>Jiho is ___ than Minsu.</b>",
+    answer:"taller",
+    explain:"1음절 형용사는 뒤에 -er을 붙여 비교급을 만듭니다: tall → taller." },
+  { topic:"최상급", type:"mc",
+    prompt:"다음 빈칸에 알맞은 것은? <b>This is the ___ book in the library.</b>",
+    options:["interesting","more interesting","most interesting","interestinger"],
+    answer:2,
+    explain:"3음절 이상(또는 -ing로 끝나는 긴 단어)의 최상급은 most를 붙입니다." },
+  { topic:"to부정사", type:"mc",
+    prompt:"다음 빈칸에 알맞은 것은? <b>I want ___ a doctor in the future.</b>",
+    options:["be","to be","being","been"],
+    answer:1,
+    explain:"want는 to부정사를 목적어로 취하는 동사입니다: want to + 동사원형." },
+  { topic:"동명사", type:"mc",
+    prompt:"다음 빈칸에 알맞은 것은? <b>She enjoys ___ novels.</b>",
+    options:["read","to read","reads","reading"],
+    answer:3,
+    explain:"enjoy는 동명사(-ing)를 목적어로 취하는 동사입니다." },
+  { topic:"관계대명사", type:"mc",
+    prompt:"다음 빈칸에 알맞은 관계대명사는? <b>I have a friend ___ speaks three languages.</b>",
+    options:["who","which","whose","what"],
+    answer:0,
+    explain:"선행사가 사람(a friend)이고 뒤 문장에서 주어 역할을 하므로 who를 씁니다." },
+  { topic:"수동태", type:"fill",
+    prompt:"능동태를 수동태로 바꾸세요. <b>Someone cleaned this room.</b> → <b>This room ___ (clean) by someone.</b>",
+    answer:"was cleaned",
+    explain:"수동태는 'be동사 + 과거분사' 형태이며, 과거시제이므로 was cleaned가 됩니다." }
+];
+
+let state = {
+  playerName:"",
+  index:0,
+  score:0,
+  hearts:3,
+  correctCount:0,
+  answered:false,
+  log:[] // {topic, correct}
+};
+
+function $(id){ return document.getElementById(id); }
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  $(id).classList.add("active");
+}
+
+// build the start-screen route preview chips
+(function initPreview(){
+  const wrap = $("routePreview");
+  QUESTIONS.forEach((q,i)=>{
+    const chip = document.createElement("span");
+    chip.className = "route-chip";
+    chip.textContent = (i+1)+". "+q.topic;
+    wrap.appendChild(chip);
+  });
+})();
+
+function startGame(){
+  state = { playerName: $("playerName").value.trim() || "이름없는 원정대",
+    index:0, score:0, hearts:3, correctCount:0, answered:false, log:[] };
+  $("hudName").textContent = state.playerName + " 원정대";
+  showScreen("screen-game");
+  renderTrail();
+  renderQuestion();
+}
+
+function renderTrail(){
+  const trail = $("trail");
+  trail.innerHTML = "";
+  QUESTIONS.forEach((q,i)=>{
+    const node = document.createElement("div");
+    node.className = "node display";
+    if(i < state.index) node.classList.add("done");
+    else if(i === state.index) node.classList.add("current");
+    node.textContent = (i+1);
+    trail.appendChild(node);
+  });
+}
+
+function updateHud(){
+  $("hudHearts").textContent = "❤️".repeat(state.hearts) + "🖤".repeat(3-state.hearts);
+  $("hudScore").textContent = state.score + "점";
+}
+
+function renderQuestion(){
+  state.answered = false;
+  updateHud();
+  renderTrail();
+  const q = QUESTIONS[state.index];
+  $("topicTag").textContent = "거점 " + (state.index+1) + " · " + q.topic;
+  $("prompt").innerHTML = q.prompt;
+  $("feedback").className = "feedback";
+  $("feedback").innerHTML = "";
+  $("nextBtn").classList.remove("show");
+
+  const area = $("answerArea");
+  area.innerHTML = "";
+
+  if(q.type === "mc"){
+    const wrap = document.createElement("div");
+    wrap.className = "options";
+    q.options.forEach((opt,i)=>{
+      const btn = document.createElement("button");
+      btn.className = "option";
+      btn.textContent = opt;
+      btn.onclick = ()=>checkMC(i);
+      wrap.appendChild(btn);
+    });
+    area.appendChild(wrap);
+  } else {
+    const wrap = document.createElement("div");
+    wrap.className = "fill-row";
+    const input = document.createElement("input");
+    input.type = "text";
+    input.id = "fillInput";
+    input.placeholder = "정답을 입력하세요";
+    input.autocomplete = "off";
+    input.onkeydown = (e)=>{ if(e.key==="Enter") checkFill(); };
+    const btn = document.createElement("button");
+    btn.className = "btn check display";
+    btn.textContent = "확인";
+    btn.onclick = checkFill;
+    wrap.appendChild(input);
+    wrap.appendChild(btn);
+    area.appendChild(wrap);
+    setTimeout(()=>input.focus(), 50);
+  }
+}
+
+function checkMC(selectedIndex){
+  if(state.answered) return;
+  state.answered = true;
+  const q = QUESTIONS[state.index];
+  const opts = document.querySelectorAll(".option");
+  opts.forEach((b,i)=>{
+    b.disabled = true;
+    if(i === q.answer) b.classList.add("correct");
+    else if(i === selectedIndex) b.classList.add("wrong");
+  });
+  handleResult(selectedIndex === q.answer, q);
+}
+
+function normalize(s){
+  return s.trim().toLowerCase().replace(/\s+/g," ");
+}
+
+function checkFill(){
+  if(state.answered) return;
+  state.answered = true;
+  const q = QUESTIONS[state.index];
+  const input = $("fillInput");
+  input.disabled = true;
+  const isCorrect = normalize(input.value) === normalize(q.answer);
+  input.classList.add(isCorrect ? "correct" : "wrong");
+  handleResult(isCorrect, q);
+}
+
+function handleResult(isCorrect, q){
+  const fb = $("feedback");
+  fb.classList.add("show");
+  if(isCorrect){
+    state.score += 10;
+    state.correctCount += 1;
+    fb.classList.add("ok");
+    fb.innerHTML = "정답입니다! " + q.explain;
+  } else {
+    state.hearts -= 1;
+    fb.classList.add("no");
+    const correctText = q.type === "mc" ? q.options[q.answer] : q.answer;
+    fb.innerHTML = "아쉬워요. 정답은 <b>" + correctText + "</b> 입니다.<span class='next-hint'>" + q.explain + "</span>";
+  }
+  state.log.push({ topic:q.topic, correct:isCorrect });
+  updateHud();
+  renderTrail();
+
+  if(state.hearts <= 0){
+    setTimeout(()=>endGame(false), 900);
+    return;
+  }
+  $("nextBtn").classList.add("show");
+  $("nextBtn").textContent = (state.index === QUESTIONS.length-1) ? "결과 확인하기 →" : "다음 거점으로 →";
+}
+
+function nextQuestion(){
+  state.index += 1;
+  if(state.index >= QUESTIONS.length){
+    endGame(true);
+    return;
+  }
+  renderQuestion();
+}
+
+function endGame(cleared){
+  showScreen("screen-result");
+  const total = QUESTIONS.length;
+  const rate = state.correctCount / total;
+
+  let emoji, grade, sub;
+  if(!cleared){
+    emoji = "💥"; grade = "원정 중단"; sub = "목숨을 모두 잃었어요. 지도를 다시 펼치고 도전해보세요.";
+  } else if(rate === 1){
+    emoji = "👑"; grade = "완벽한 정복 · 1등급"; sub = "12개 거점을 전부 통과했어요. 문법 원정대 최고 등급입니다.";
+  } else if(rate >= 0.75){
+    emoji = "🏆"; grade = "우수한 원정 · 2등급"; sub = "대부분의 거점을 무사히 통과했어요. 틀린 부분만 다시 점검해봐요.";
+  } else if(rate >= 0.5){
+    emoji = "🧭"; grade = "절반의 정복 · 3등급"; sub = "기초는 잡혔어요. 놓친 문법 포인트를 복습하고 재도전해보세요.";
+  } else {
+    emoji = "🗺️"; grade = "다시 떠날 시간"; sub = "이번엔 정찰이었다고 생각해요. 개념을 다시 보고 도전하면 훨씬 쉬워질 거예요.";
+  }
+
+  $("resultEmoji").textContent = emoji;
+  $("resultGrade").textContent = grade;
+  $("resultSub").textContent = sub;
+  $("statCorrect").textContent = state.correctCount + " / " + total;
+  $("statScore").textContent = state.score;
+  $("statHearts").textContent = state.hearts;
+
+  const list = $("reviewList");
+  list.innerHTML = "";
+  state.log.forEach(item=>{
+    const row = document.createElement("div");
+    row.className = "review-item " + (item.correct ? "right-mark" : "wrong-mark");
+    row.innerHTML = "<b>" + item.topic + "</b>";
+    list.appendChild(row);
+  });
+}
+
+function restartGame(){
+  showScreen("screen-start");
+}
+</script>
+</body>
+</html>
