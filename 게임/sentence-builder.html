@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>문장 조립왕 | 일등급샘</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --forest:#1B4332;
+    --parchment:#F1E8D8;
+    --parchment-dark:#e6d9bf;
+    --amber:#D9A441;
+    --amber-dark:#b9862c;
+    --berry:#A23E48;
+    --sage:#588157;
+    --gold:#C9A227;
+    --ink:#2B2118;
+    --ink-soft:#5b4f40;
+    --shadow: rgba(43,33,24,0.18);
+    --radius: 18px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Noto Sans KR', sans-serif;
+    background:
+      radial-gradient(circle at 15% 10%, #2a5741 0%, transparent 45%),
+      radial-gradient(circle at 85% 90%, #24493680 0%, transparent 40%),
+      var(--forest);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+  .display{font-family:'Baloo 2', sans-serif;}
+  #app{width:100%; max-width:760px;}
+  .card{
+    background:var(--parchment);
+    border-radius:var(--radius);
+    box-shadow:0 20px 50px var(--shadow), 0 2px 0 var(--parchment-dark) inset;
+    padding:34px 30px;
+  }
+  .screen{display:none;}
+  .screen.active{display:block;}
+  .back-link{
+    display:inline-block; font-size:12.5px; color:var(--ink-soft);
+    text-decoration:none; border-bottom:1px solid var(--parchment-dark);
+    margin-bottom:18px;
+  }
+  .eyebrow{font-weight:700; letter-spacing:.14em; text-transform:uppercase; font-size:12px; color:var(--amber-dark); margin-bottom:6px;}
+  h1.title{font-family:'Baloo 2', sans-serif; font-weight:800; font-size:clamp(28px,6vw,40px); margin:0 0 8px; color:var(--forest); line-height:1.1;}
+  .subtitle{font-size:14.5px; color:var(--ink-soft); margin-bottom:26px; line-height:1.6;}
+
+  .field-row{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;}
+  .field{display:flex; flex-direction:column;}
+  label.field-label{font-size:13px; font-weight:700; color:var(--forest); margin-bottom:6px;}
+  input[type=text], select{
+    padding:12px 14px; border-radius:12px; border:2px solid var(--parchment-dark);
+    font-size:15px; font-family:inherit; background:#fffdf8; outline:none;
+  }
+  input[type=text]:focus, select:focus{border-color:var(--amber);}
+
+  .level-grid{display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin:18px 0 24px;}
+  .level-btn{
+    padding:12px 4px; border-radius:12px; border:2px solid var(--parchment-dark);
+    background:#fffdf8; font-family:'Baloo 2',sans-serif; font-weight:700; font-size:15px;
+    color:var(--ink-soft); cursor:pointer; text-align:center;
+  }
+  .level-btn.selected{background:var(--amber); border-color:var(--amber-dark); color:var(--ink);}
+  .level-btn.locked{opacity:.45; cursor:not-allowed;}
+  .level-btn .sub{display:block; font-size:9.5px; font-family:'Noto Sans KR'; font-weight:500; margin-top:2px;}
+
+  .btn{
+    font-family:'Baloo 2', sans-serif; font-weight:700; font-size:16.5px; border:none;
+    border-radius:14px; padding:14px 20px; cursor:pointer; width:100%; color:#fff9ee;
+    background:var(--forest); box-shadow:0 6px 0 #0d281f; transition:transform .08s, box-shadow .08s;
+  }
+  .btn:active{transform:translateY(4px); box-shadow:0 2px 0 #0d281f;}
+  .btn.amber{background:var(--amber); box-shadow:0 6px 0 var(--amber-dark); color:var(--ink);}
+  .btn.ghost{background:transparent; color:var(--forest); box-shadow:none; border:2px solid var(--parchment-dark); margin-top:10px;}
+  .btn.ghost:active{transform:none;}
+  .btn.small{width:auto; padding:10px 16px; font-size:14px;}
+  .btn:disabled{opacity:.5; cursor:not-allowed;}
+  .btn-row{display:flex; gap:10px; margin-top:8px;}
+  .btn-row .btn{flex:1;}
+
+  /* ---- GAME SCREEN ---- */
+  .hud{display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:8px;}
+  .hud-left{font-size:13px; color:var(--ink-soft); font-weight:600;}
+  .hud-right{display:flex; gap:10px; align-items:center;}
+  .score-badge{font-family:'Baloo 2',sans-serif; font-weight:700; background:var(--forest); color:#fff9ee; padding:6px 14px; border-radius:999px; font-size:14px;}
+  .progress-bar{height:6px; border-radius:999px; background:var(--parchment-dark); overflow:hidden; margin-bottom:22px;}
+  .progress-fill{height:100%; background:var(--amber); transition:width .3s ease;}
+
+  .hint-box{background:#fff9ee; border:1px dashed var(--parchment-dark); border-radius:12px; padding:14px 16px; margin-bottom:20px; font-size:15px; color:var(--ink-soft);}
+  .hint-box b{color:var(--forest);}
+
+  .answer-area{
+    min-height:64px; display:flex; flex-wrap:wrap; gap:8px; align-items:flex-start;
+    padding:12px; border:2px dashed var(--amber); border-radius:14px; background:#fffdf8; margin-bottom:18px;
+  }
+  .answer-area.correct{border-color:var(--sage); background:#e5f0e2;}
+  .answer-area.wrong{border-color:var(--berry); background:#f5e4e4;}
+  .answer-area.empty::before{content:"어구를 눌러서 순서대로 배열하세요"; color:#b8ac93; font-size:13.5px; padding:8px;}
+
+  .word-pool{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px;}
+  .tile{
+    font-family:'Baloo 2',sans-serif; font-weight:600; font-size:15px;
+    padding:10px 16px; border-radius:10px; background:var(--forest); color:#fff9ee;
+    cursor:pointer; border:none; transition:transform .08s;
+  }
+  .tile:active{transform:scale(.94);}
+  .tile.placed{background:var(--amber); color:var(--ink);}
+
+  .feedback{margin-top:14px; padding:12px 14px; border-radius:12px; font-size:14px; display:none;}
+  .feedback.show{display:block;}
+  .feedback.ok{background:#e5f0e2; color:#33502f;}
+  .feedback.no{background:#f5e4e4; color:#6e2129;}
+  .feedback.reveal{background:#f1e8ce; color:#7a5e1c;}
+
+  /* ---- RANKING ---- */
+  .rank-filters{display:flex; gap:10px; margin-bottom:16px;}
+  .rank-filters select{flex:1;}
+  table.rank-table{width:100%; border-collapse:collapse; font-size:14px;}
+  table.rank-table th, table.rank-table td{padding:10px 8px; text-align:left; border-bottom:1px solid var(--parchment-dark);}
+  table.rank-table th{color:var(--ink-soft); font-size:12px; font-weight:700; text-transform:uppercase;}
+  table.rank-table td.rank-num{font-family:'Baloo 2',sans-serif; font-weight:800; color:var(--forest); width:36px;}
+  table.rank-table tr:nth-child(1) td.rank-num{color:var(--gold);}
+  .rank-empty{text-align:center; color:var(--ink-soft); font-size:13.5px; padding:30px 0;}
+  .setup-notice{background:#f1e8ce; border-radius:12px; padding:14px 16px; font-size:13px; color:#7a5e1c; margin-bottom:16px; line-height:1.6;}
+
+  .result-emoji{font-size:48px; margin-bottom:8px; text-align:center;}
+  .result-score{font-family:'Baloo 2',sans-serif; font-weight:800; font-size:32px; color:var(--forest); text-align:center; margin-bottom:6px;}
+  .result-sub{text-align:center; color:var(--ink-soft); font-size:14px; margin-bottom:24px;}
+
+  @media (max-width:520px){
+    .card{padding:26px 20px;}
+    .field-row{grid-template-columns:1fr;}
+    .level-grid{grid-template-columns:repeat(3,1fr);}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="card">
+
+    <!-- START -->
+    <div class="screen active" id="screen-start">
+      <a class="back-link" href="./index.html">← 게임 목록으로</a>
+      <div class="eyebrow">일등급샘의 문법 게임</div>
+      <h1 class="title display">문장 조립왕</h1>
+      <p class="subtitle">뒤섞인 어구를 순서대로 눌러서 문장을 완성하세요. 학년과 단계를 골라서 도전하고, 랭킹에 이름을 올려보세요!</p>
+
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">이름 (선생님 확인용)</label>
+          <input type="text" id="realName" placeholder="예: 김민준">
+        </div>
+        <div class="field">
+          <label class="field-label">별명 (랭킹에 표시)</label>
+          <input type="text" id="nickname" placeholder="예: 번개민준">
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">학년</label>
+        <select id="gradeSelect">
+          <option value="초3">초등 3학년</option>
+          <option value="초4">초등 4학년</option>
+          <option value="초5">초등 5학년</option>
+          <option value="초6">초등 6학년</option>
+          <option value="중1">중학 1학년</option>
+          <option value="중2">중학 2학년</option>
+          <option value="중3">중학 3학년</option>
+        </select>
+      </div>
+
+      <label class="field-label" style="margin-top:16px; display:block;">단계 선택</label>
+      <div class="level-grid" id="levelGrid"></div>
+
+      <button class="btn amber display" id="startBtn" onclick="startGame()">시작하기</button>
+      <button class="btn ghost display" onclick="openRanking()">🏆 랭킹 보기</button>
+    </div>
+
+    <!-- GAME -->
+    <div class="screen" id="screen-game">
+      <div class="hud">
+        <div class="hud-left" id="hudInfo"></div>
+        <div class="hud-right">
+          <span class="score-badge display" id="hudScore">0점</span>
+        </div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+      <div class="hint-box"><b>뜻 :</b> <span id="hintText"></span></div>
+
+      <div class="answer-area empty" id="answerArea"></div>
+      <div class="word-pool" id="wordPool"></div>
+
+      <div class="feedback" id="feedback"></div>
+      <div class="btn-row" id="gameBtnRow" style="display:none;">
+        <button class="btn ghost display" id="resetBtn" onclick="resetTiles()">다시 배열</button>
+        <button class="btn amber display" id="nextBtn" onclick="nextSentence()" style="display:none;">다음 문장 →</button>
+      </div>
+    </div>
+
+    <!-- LEVEL COMPLETE -->
+    <div class="screen" id="screen-complete">
+      <div class="result-emoji">🎉</div>
+      <div class="result-score display" id="finalScore">0점</div>
+      <p class="result-sub" id="finalSub"></p>
+      <button class="btn amber display" onclick="submitAndShowRanking()">랭킹에 등록하고 확인하기</button>
+      <button class="btn ghost display" onclick="backToStart()">처음으로</button>
+    </div>
+
+    <!-- RANKING -->
+    <div class="screen" id="screen-ranking">
+      <a class="back-link" href="#" onclick="backToStart(); return false;">← 처음으로</a>
+      <h1 class="title display" style="font-size:26px;">🏆 랭킹</h1>
+      <div id="setupNotice"></div>
+      <div class="rank-filters">
+        <select id="filterGrade" onchange="loadRanking()">
+          <option value="all">전체 학년</option>
+          <option value="초3">초3</option><option value="초4">초4</option>
+          <option value="초5">초5</option><option value="초6">초6</option>
+          <option value="중1">중1</option><option value="중2">중2</option><option value="중3">중3</option>
+        </select>
+        <select id="filterLevel" onchange="loadRanking()">
+          <option value="all">전체 단계</option>
+          <option value="1">1단계</option><option value="2">2단계</option><option value="3">3단계</option>
+          <option value="4">4단계</option><option value="5">5단계</option><option value="6">6단계</option>
+        </select>
+      </div>
+      <div id="rankContent"><p class="rank-empty">불러오는 중...</p></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   문장 조립왕 — 어순 배열 게임
+   ========================================================= */
+
+// ⚠️ 구글 앱스 스크립트 배포 후, 아래 큰따옴표 안에 URL을 붙여넣으세요.
+// 예: "https://script.google.com/macros/s/AKfycb.../exec"
+const CONFIG = {
+  API_URL: ""
+};
+
+const SENTENCES = {
+  1: [
+    {en:"I see a dog.", ko:"나는 강아지를 봐요."},
+    {en:"You eat breakfast late.", ko:"너희들은 아침을 늦게 먹는다."},
+    {en:"She is my granddaughter.", ko:"그녀는 나의 손녀예요."},
+    {en:"You are loud.", ko:"너는 시끄러워."},
+    {en:"We are on the floor.", ko:"우리는 바닥 위에 있어요."},
+    {en:"We are in the living room.", ko:"우리는 거실에 있어요."},
+    {en:"She plays games on the weekend.", ko:"그녀는 주말에 게임을 해요."},
+    {en:"They drive to the beach.", ko:"그들은 바닷가로 운전해요."},
+    {en:"He reads books in the library.", ko:"그는 도서관 안에서 책들을 읽어요."},
+    {en:"She goes to the zoo by train.", ko:"그녀는 기차로 동물원에 가요."},
+    {en:"They go to the island by ship.", ko:"그들은 (큰) 배로 섬에 가요."},
+    {en:"It is in the sky.", ko:"그것은 하늘에 있어요."},
+    {en:"They are colorful balloons.", ko:"그것들은 화려한 풍선들이에요."},
+    {en:"That is a cake.", ko:"저것은 한 개의 케이크예요."},
+    {en:"That is a soft doughnut.", ko:"저것은 부드러운 도넛 한 개예요."},
+    {en:"These gloves are cool.", ko:"이 장갑들은 멋져요."},
+    {en:"That racket is heavy.", ko:"저 라켓은 무거워요."},
+    {en:"These helmets are colorful.", ko:"이 헬멧들은 화려해요."}
+  ],
+  2: [], 3: [], 4: [], 5: [], 6: []
+};
+
+let state = {
+  realName:"", nickname:"", grade:"초3", level:1,
+  order:[], index:0, score:0, attempts:0,
+  pool:[], answer:[]
+};
+
+function $(id){ return document.getElementById(id); }
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  $(id).classList.add("active");
+}
+
+// 단계 선택 버튼 렌더링
+(function initLevelGrid(){
+  const grid = $("levelGrid");
+  for(let i=1;i<=6;i++){
+    const has = SENTENCES[i] && SENTENCES[i].length > 0;
+    const btn = document.createElement("div");
+    btn.className = "level-btn display" + (has ? "" : " locked") + (i===1 ? " selected" : "");
+    btn.dataset.level = i;
+    btn.innerHTML = i + "단계" + (has ? "" : "<span class='sub'>준비중</span>");
+    if(has){
+      btn.onclick = ()=>{
+        document.querySelectorAll(".level-btn").forEach(b=>b.classList.remove("selected"));
+        btn.classList.add("selected");
+        state.level = i;
+      };
+    }
+    grid.appendChild(btn);
+  }
+})();
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  // 원래 순서와 같으면 한 번 더 섞기 (2단어 이상일 때)
+  if(a.length>1 && a.every((w,i)=>w===arr[i])){
+    return shuffle(arr);
+  }
+  return a;
+}
+
+function startGame(){
+  const realName = $("realName").value.trim();
+  const nickname = $("nickname").value.trim();
+  if(!nickname){
+    alert("별명을 입력해주세요! (랭킹에 표시돼요)");
+    return;
+  }
+  state.realName = realName || nickname;
+  state.nickname = nickname;
+  state.grade = $("gradeSelect").value;
+
+  const list = SENTENCES[state.level];
+  if(!list || list.length===0){
+    alert("이 단계는 아직 문제가 준비되지 않았어요.");
+    return;
+  }
+  state.order = list.slice();
+  state.index = 0;
+  state.score = 0;
+  showScreen("screen-game");
+  loadSentence();
+}
+
+function loadSentence(){
+  state.attempts = 0;
+  const item = state.order[state.index];
+  const tokens = item.en.split(" ");
+  state.answer = [];
+  state.pool = shuffle(tokens);
+
+  $("hudInfo").textContent = state.nickname + " · " + state.grade + " · " + state.level + "단계 · " + (state.index+1) + "/" + state.order.length;
+  $("hudScore").textContent = state.score + "점";
+  $("progressFill").style.width = Math.round((state.index/state.order.length)*100) + "%";
+  $("hintText").textContent = item.ko;
+  $("feedback").className = "feedback";
+  $("feedback").innerHTML = "";
+  $("gameBtnRow").style.display = "none";
+  $("nextBtn").style.display = "none";
+  renderTiles();
+}
+
+function renderTiles(){
+  const area = $("answerArea");
+  const pool = $("wordPool");
+  area.className = "answer-area" + (state.answer.length===0 ? " empty" : "");
+  area.innerHTML = "";
+  state.answer.forEach((w,i)=>{
+    const t = document.createElement("button");
+    t.className = "tile placed display";
+    t.textContent = w;
+    t.onclick = ()=> removeWord(i);
+    area.appendChild(t);
+  });
+  pool.innerHTML = "";
+  state.pool.forEach((w,i)=>{
+    const t = document.createElement("button");
+    t.className = "tile display";
+    t.textContent = w;
+    t.onclick = ()=> placeWord(i);
+    pool.appendChild(t);
+  });
+}
+
+function placeWord(i){
+  state.answer.push(state.pool[i]);
+  state.pool.splice(i,1);
+  renderTiles();
+  if(state.pool.length===0) checkAnswer();
+}
+
+function removeWord(i){
+  state.pool.push(state.answer[i]);
+  state.answer.splice(i,1);
+  $("feedback").className = "feedback";
+  renderTiles();
+}
+
+function resetTiles(){
+  const item = state.order[state.index];
+  state.pool = shuffle(item.en.split(" "));
+  state.answer = [];
+  $("feedback").className = "feedback";
+  $("gameBtnRow").style.display = "none";
+  renderTiles();
+}
+
+function checkAnswer(){
+  const item = state.order[state.index];
+  const correctTokens = item.en.split(" ");
+  const isCorrect = state.answer.join(" ") === correctTokens.join(" ");
+  const area = $("answerArea");
+  const fb = $("feedback");
+  fb.classList.add("show");
+  $("gameBtnRow").style.display = "flex";
+
+  if(isCorrect){
+    const pts = Math.max(10 - state.attempts*2, 4);
+    state.score += pts;
+    area.className = "answer-area correct";
+    fb.className = "feedback show ok";
+    fb.textContent = "정답이에요! +" + pts + "점";
+    $("resetBtn").style.display = "none";
+    $("nextBtn").style.display = "block";
+    $("nextBtn").textContent = (state.index === state.order.length-1) ? "결과 보기 →" : "다음 문장 →";
+    $("hudScore").textContent = state.score + "점";
+  } else {
+    state.attempts += 1;
+    area.className = "answer-area wrong";
+    if(state.attempts >= 3){
+      fb.className = "feedback show reveal";
+      fb.innerHTML = "정답: <b>" + correctTokens.join(" ") + "</b>";
+      $("resetBtn").style.display = "none";
+      $("nextBtn").style.display = "block";
+      $("nextBtn").textContent = (state.index === state.order.length-1) ? "결과 보기 →" : "다음 문장 →";
+    } else {
+      fb.className = "feedback show no";
+      fb.textContent = "다시 도전해봐요! (" + state.attempts + "/3)";
+      $("resetBtn").style.display = "block";
+      $("nextBtn").style.display = "none";
+    }
+  }
+}
+
+function nextSentence(){
+  state.index += 1;
+  if(state.index >= state.order.length){
+    finishLevel();
+    return;
+  }
+  loadSentence();
+}
+
+function finishLevel(){
+  showScreen("screen-complete");
+  $("finalScore").textContent = state.score + "점";
+  $("finalSub").textContent = state.nickname + " (" + state.grade + " · " + state.level + "단계) 결과예요.";
+}
+
+function backToStart(){
+  showScreen("screen-start");
+}
+
+/* ---------------- 랭킹 (구글 시트 연동) ---------------- */
+
+async function submitScore(){
+  if(!CONFIG.API_URL) return;
+  try{
+    await fetch(CONFIG.API_URL, {
+      method:"POST",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body: JSON.stringify({
+        name: state.realName,
+        nickname: state.nickname,
+        grade: state.grade,
+        level: state.level,
+        score: state.score
+      })
+    });
+  }catch(e){ console.error("랭킹 등록 실패", e); }
+}
+
+async function submitAndShowRanking(){
+  await submitScore();
+  openRanking();
+}
+
+function openRanking(){
+  showScreen("screen-ranking");
+  const notice = $("setupNotice");
+  if(!CONFIG.API_URL){
+    notice.innerHTML = '<div class="setup-notice">아직 랭킹 서버가 연결되지 않았어요. 선생님이 구글 시트 연동을 설정하면 여기에 전체 학생 랭킹이 표시됩니다.</div>';
+    $("rankContent").innerHTML = '<p class="rank-empty">랭킹 서버 연결 후 이용 가능해요.</p>';
+    return;
+  }
+  notice.innerHTML = "";
+  loadRanking();
+}
+
+async function loadRanking(){
+  if(!CONFIG.API_URL) return;
+  const content = $("rankContent");
+  content.innerHTML = '<p class="rank-empty">불러오는 중...</p>';
+  try{
+    const res = await fetch(CONFIG.API_URL + "?t=" + Date.now());
+    let rows = await res.json();
+
+    const fg = $("filterGrade").value;
+    const fl = $("filterLevel").value;
+    if(fg !== "all") rows = rows.filter(r => r.grade === fg);
+    if(fl !== "all") rows = rows.filter(r => String(r.level) === fl);
+    rows.sort((a,b)=> b.score - a.score);
+    rows = rows.slice(0,50);
+
+    if(rows.length===0){
+      content.innerHTML = '<p class="rank-empty">아직 등록된 기록이 없어요. 첫 기록의 주인공이 되어보세요!</p>';
+      return;
+    }
+    let html = '<table class="rank-table"><thead><tr><th>순위</th><th>별명</th><th>학년</th><th>단계</th><th>점수</th></tr></thead><tbody>';
+    rows.forEach((r,i)=>{
+      html += '<tr><td class="rank-num display">' + (i+1) + '</td><td>' + escapeHtml(r.nickname) + '</td><td>' + escapeHtml(r.grade) + '</td><td>' + escapeHtml(String(r.level)) + '단계</td><td class="display">' + escapeHtml(String(r.score)) + '점</td></tr>';
+    });
+    html += '</tbody></table>';
+    content.innerHTML = html;
+  }catch(e){
+    content.innerHTML = '<p class="rank-empty">랭킹을 불러오지 못했어요. 잠시 후 다시 시도해주세요.</p>';
+  }
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+</script>
+</body>
+</html>
