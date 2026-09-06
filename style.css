@@ -333,3 +333,195 @@ footer {
 }
 .part-head.reading { border-bottom-color: var(--sage); }
 .test-row .tag { color: var(--mauve); }
+
+/* ===== 유닛 강의 페이지 (Point 카드) ===== */
+.unit-hero {
+  padding: 26px 4px 6px;
+}
+.unit-hero .eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--clay);
+  letter-spacing: 0.03em;
+  margin: 0 0 8px;
+}
+.unit-hero h1 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 26px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+.unit-hero p {
+  font-size: 14px;
+  color: var(--muted);
+  margin: 0;
+}
+
+.point-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 18px 0 4px;
+  padding: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.point-nav a {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 12px;
+  transition: all 0.15s ease;
+}
+.point-nav a:hover {
+  color: var(--clay);
+  border-color: var(--clay);
+  background: var(--clay-bg);
+}
+.point-nav a.current {
+  color: #fff;
+  background: var(--clay);
+  border-color: var(--clay);
+}
+
+.point-block {
+  margin-top: 30px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px 20px 24px;
+  box-shadow: var(--shadow-sm);
+  scroll-margin-top: 70px;
+}
+.point-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.point-head .point-num {
+  flex-shrink: 0;
+  font-family: 'Noto Serif KR', serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--clay);
+  background: var(--clay-bg);
+  border-radius: 999px;
+  padding: 4px 13px;
+  white-space: nowrap;
+}
+.point-head .point-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.concept-box {
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+.concept-box ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+.concept-box li {
+  margin-bottom: 6px;
+}
+.concept-box strong {
+  color: var(--clay);
+  font-weight: 700;
+}
+
+.example-list {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+.example-list .ex-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--sage);
+  background: var(--sage-bg);
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+}
+.example-item {
+  font-size: 14px;
+  line-height: 1.7;
+  padding: 7px 0;
+  border-bottom: 1px dashed var(--border);
+}
+.example-item:last-child { border-bottom: none; }
+.example-item .en {
+  color: var(--ink);
+  font-weight: 500;
+}
+.example-item .kr {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 2px;
+}
+.example-item.wrong .en {
+  color: var(--mauve);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--mauve) 60%, transparent);
+}
+.example-item.right .en { color: var(--sage); font-weight: 600; }
+
+.tip-box {
+  display: flex;
+  gap: 10px;
+  background: var(--mauve-bg);
+  border-radius: 12px;
+  padding: 13px 15px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--ink);
+}
+.tip-box .tip-icon {
+  flex-shrink: 0;
+  color: var(--mauve);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.unit-footer-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 34px;
+}
+.unit-footer-nav a {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  padding: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--ink);
+  transition: all 0.15s ease;
+}
+.unit-footer-nav a:hover {
+  border-color: var(--clay);
+  color: var(--clay);
+}
+.unit-footer-nav a.disabled {
+  color: var(--muted);
+  opacity: 0.5;
+  pointer-events: none;
+}
