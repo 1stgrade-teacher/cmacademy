@@ -231,6 +231,19 @@ a { color: inherit; text-decoration: none; }
 .status.ready { background: var(--sage-bg); color: var(--sage); }
 .status.pending { background: #EFEBE0; color: var(--muted); }
 
+/* 교재별 포인트 컬러 (book-card) */
+.book-card.look .badge { background: var(--sage); }
+.book-card.look { border-color: color-mix(in srgb, var(--sage) 30%, var(--border)); }
+
+.book-card.so1 .badge { background: var(--teal); }
+.book-card.so1 { border-color: color-mix(in srgb, var(--teal) 30%, var(--border)); }
+
+.book-card.so2 .badge { background: var(--mauve); }
+.book-card.so2 { border-color: color-mix(in srgb, var(--mauve) 30%, var(--border)); }
+
+.book-card.block .badge { background: var(--clay); }
+.book-card.block { border-color: color-mix(in srgb, var(--clay) 30%, var(--border)); }
+
 .section-label {
   font-size: 13px;
   font-weight: 700;
