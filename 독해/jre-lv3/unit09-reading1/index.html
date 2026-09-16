@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unit 09 Reading 1 - 일등급샘의 아카이브</title>
+<title>Unit 09 Reading 1 - The Use of Self-Service Kiosks - 일등급샘의 아카이브</title>
 <link rel="stylesheet" href="../../../style.css">
 </head>
 <body>
@@ -20,11 +20,36 @@
     <p>Issues · Reading 1</p>
   </div>
 
-  <p class="section-label">콘텐츠 준비중</p>
-  <p>이 리딩의 지문 · 어휘 · 문제 콘텐츠는 준비 중입니다.</p>
+  <div id="content-status">
+    <p class="section-label">확인 중...</p>
+  </div>
 
   <footer>&copy; 2026 청명학원 · 일등급샘의 아카이브</footer>
 </div>
+
+<script>
+(function () {
+  var target = "reading01.html";
+  var box = document.getElementById('content-status');
+
+  function showReady() {
+    box.innerHTML =
+      '<p class="section-label">학습 시작</p>' +
+      '<a href="' + target + '" style="display:inline-block;padding:12px 24px;' +
+      'background:var(--sage);color:#fff;border-radius:8px;text-decoration:none;' +
+      'font-weight:600;">학습 시작하기 &rarr;</a>';
+  }
+  function showPending() {
+    box.innerHTML =
+      '<p class="section-label">콘텐츠 준비중</p>' +
+      '<p>이 리딩의 지문 · 어휘 · 문제 콘텐츠는 준비 중입니다.</p>';
+  }
+
+  fetch(target, { method: 'HEAD', cache: 'no-store' })
+    .then(function (res) { res.ok ? showReady() : showPending(); })
+    .catch(showPending);
+})();
+</script>
 
 </body>
 </html>
