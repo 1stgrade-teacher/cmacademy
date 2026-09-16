@@ -45,7 +45,7 @@
       '<p>이 리딩의 지문 · 어휘 · 문제 콘텐츠는 준비 중입니다.</p>';
   }
 
-  fetch(target, { method: 'HEAD', cache: 'no-store' })
+  fetch(target, { method: 'GET', cache: 'no-store' })
     .then(function (res) { res.ok ? showReady() : showPending(); })
     .catch(showPending);
 })();
