@@ -1,0 +1,50 @@
+﻿# 일등급샘 AI강의 대본 - 1.html
+# [번호 | ...] 줄 아래의 문장이 그 구간에서 선생님 목소리로 읽힙니다. [번호 | ...] 줄은 바꾸지 마세요.
+
+[1 | 1쪽 · 제목]
+첫 번째, 1. 분사구문의 개념과 역할입니다.
+
+[2 | 1쪽 · 개념]
+분사구문은 「접속사+주어+동사」로 된 부사절을 분사를 이용해 간단한 부사구로 줄인 표현이다. 시간, 이유, 조건, 양보, 동시동작, 연속상황 등의 의미를 문맥에 따라 나타낸다.
+
+[3 | 1쪽 · 표]
+표로 정리해 볼게요. 분사구문의 기본 구조. 구분은 부사절, 형태는 접속사 플러스 주어 플러스 동사, 의미는 의미가 분명하지만 길다. 구분은 분사구문, 형태는 분사(-ing, 또는 having p.p.) 플러스 나머지, 의미는 부사절을 간단히 줄인다. 구분은 주요 기능, 형태는 문장 앞, 중간, 뒤에 위치, 의미는 시간·이유·조건·양보 등을 나타낸다. 구분은 의미, 형태는 해석, 의미는 원래 접속사. 구분은 시간, 형태는 할 때, 하는 동안, 한 후에, 의미는 when, while, after. 구분은 이유, 형태는 때문에, 해서, 의미는 because, as. 구분은 조건, 형태는 한다면, 라면, 의미는 if. 구분은 양보, 형태는 비록 일지라도, 의미는 although, though. 구분은 동시동작, 형태는 하면서, 의미는 as, while. 구분은 연속상황, 형태는 하고 나서, 의미는 and.
+
+[4 | 1쪽 · 예문]
+예문을 보겠습니다. Coming home, I saw a little puppy. 집에 오다가 나는 작은 강아지 한 마리를 보았다. 여기서는 시간: When I came home, ~를 나타냅니다. 다음 예문입니다. Being very rich, he could get whatever he wanted. 그는 매우 부유했기 때문에 원하는 것은 무엇이든 얻을 수 있었다. 여기서는 이유: Because he was very rich, ~를 나타냅니다. 다음 예문입니다. He waved his hands, saying hello to us. 그는 손을 흔들고 나서 우리에게 인사했다. 여기서는 연속상황: ~, and said hello to us를 나타냅니다.
+
+[5 | 2쪽 · 제목]
+두 번째, 2. 분사구문 만드는 방법입니다.
+
+[6 | 2쪽 · 개념]
+분사구문은 부사절에서 접속사와 중복되는 주어를 생략하고, 동사를 분사 형태로 바꾸어 만든다. 부사절과 주절의 시제가 같으면 단순 분사구문, 부사절의 시제가 더 앞서면 완료 분사구문을 쓴다.
+
+[7 | 2쪽 · 표]
+표로 정리해 볼게요. 분사구문 만드는 4단계. 단계는 1단계, 방법은 부사절의 접속사를 생략한다, 예는 Because she was cold → she was cold. 단계는 2단계, 방법은 부사절과 주절의 주어가 같으면 부사절의 주어를 생략한다, 예는 she was cold → was cold. 단계는 3단계, 방법은 시제가 같으면 동사를 「동사원형 플러스 -ing」로 바꾼다, 예는 was cold → being cold. 단계는 4단계, 방법은 부사절 시제가 주절보다 앞서면 「having 플러스 p.p.」를 쓴다, 예는 had finished → having finished. 단계는 시제 관계, 방법은 분사구문 형태, 예는 이름. 단계는 부사절 시제 = 주절 시제, 방법은 V-ing, 예는 단순 분사구문. 단계는 부사절 시제 < 주절 시제, 방법은 having 플러스 p.p., 예는 완료 분사구문. 단계는 부사절 동사가 be동사, 방법은 being 플러스 보어, 예는 Being은 생략 가능.
+
+[8 | 2쪽 · 예문]
+예문을 보겠습니다. Because she was cold, Jessy closed the window. → Being cold, Jessy closed the window. 추웠기 때문에 Jessy는 창문을 닫았다. 여기서는 주절과 부사절의 시제가 같으므로 Being cold를 쓴다.를 나타냅니다. 다음 예문입니다. After he had finished his homework, Mike played a computer game. → Having finished his homework, Mike played a computer game. 숙제를 끝낸 후에 Mike는 컴퓨터 게임을 했다. 여기서는 숙제를 끝낸 일이 게임을 한 일보다 먼저 일어났으므로 완료 분사구문을 쓴다.를 나타냅니다. 다음 예문입니다. When I walked along the street, I met an old friend. → Walking along the street, I met an old friend. 길을 걷다가 나는 옛 친구를 만났다. 여기서는 When과 중복 주어 I를 생략하고 walked를 walking으로 바꾼다.를 나타냅니다.
+
+[9 | 3쪽 · 제목]
+세 번째, 3. Being 생략과 부정 분사구문입니다.
+
+[10 | 3쪽 · 개념]
+부사절의 동사가 be동사이면 분사구문의 Being은 자주 생략된다. 분사구문의 부정은 분사 앞에 not이나 never를 놓아 만든다.
+
+[11 | 3쪽 · 표]
+표로 정리해 볼게요. Being 생략. 원래 형태는 Being sick, I stayed home., 생략 가능 형태는 Sick, I stayed home., 주의점은 Being 뒤에 형용사·명사·전치사구가 올 때 가능. 원래 형태는 Being tired, she went to bed early., 생략 가능 형태는 Tired, she went to bed early., 주의점은 이유의 의미로 자주 쓰임. 원래 형태는 Being a student, he has to study hard., 생략 가능 형태는 A student, he has to study hard., 주의점은 명사 보어도 가능하지만 문맥이 자연스러워야 함. 원래 형태는 종류, 생략 가능 형태는 형태, 주의점은 예. 원래 형태는 일반 부정, 생략 가능 형태는 Not 플러스 V-ing, 주의점은 Not knowing the answer, I kept silent. 원래 형태는 강한 부정, 생략 가능 형태는 Never 플러스 V-ing, 주의점은 Never having seen snow, he was excited. 원래 형태는 완료 부정, 생략 가능 형태는 Not having 플러스 p.p., 주의점은 Not having studied, she failed the test.
+
+[12 | 3쪽 · 예문]
+예문을 보겠습니다. Being sick and tired, I took a rest at home. → Sick and tired, I took a rest at home. 아프고 피곤해서 나는 집에서 쉬었다. 여기서는 Being은 생략할 수 있다.를 나타냅니다. 다음 예문입니다. Because I don't like peppers, I ordered a dish without them. → Not liking peppers, I ordered a dish without them. 고추를 좋아하지 않아서 나는 고추가 들어가지 않은 요리를 주문했다. 여기서는 부정어 not은 분사 liking 앞에 온다.를 나타냅니다. 다음 예문입니다. Not having enough money, he couldn't buy the ticket. 돈이 충분하지 않아서 그는 표를 살 수 없었다. 여기서는 not + V-ing 형태의 이유 분사구문이다.를 나타냅니다.
+
+[13 | 4쪽 · 제목]
+네 번째, 4. 의미별 분사구문과 비인칭 독립분사구문입니다.
+
+[14 | 4쪽 · 개념]
+분사구문은 형태만으로 의미가 정해지는 것이 아니라 문맥에 따라 의미를 판단한다. 비인칭 독립분사구문은 일반인을 주어로 하는 표현이 굳어진 숙어적 분사구문이다.
+
+[15 | 4쪽 · 표]
+표로 정리해 볼게요. 의미별 분사구문 정리. 의미는 시간, 분사구문 예는 Coming home, I saw a puppy., 부사절로 바꾸기는 When I came home, I saw a puppy. 의미는 이유, 분사구문 예는 Being very rich, he could buy it., 부사절로 바꾸기는 Because he was very rich, he could buy it. 의미는 조건, 분사구문 예는 Exercising regularly, you can stay healthy., 부사절로 바꾸기는 If you exercise regularly, you can stay healthy. 의미는 양보, 분사구문 예는 Arriving at the theater late, she could still find her seat., 부사절로 바꾸기는 Although she arrived at the theater late, she could still find her seat. 의미는 동시동작, 분사구문 예는 Listening to music, she was washing dishes., 부사절로 바꾸기는 While she was listening to music, she was washing dishes. 의미는 연속상황, 분사구문 예는 He waved his hands, saying hello to us., 부사절로 바꾸기는 He waved his hands and said hello to us. 의미는 표현, 분사구문 예는 뜻, 부사절로 바꾸기는 예문. 의미는 generally speaking, 분사구문 예는 일반적으로 말해서, 부사절로 바꾸기는 Generally speaking, women live longer than men. 의미는 frankly speaking, 분사구문 예는 솔직히 말해서, 부사절로 바꾸기는 Frankly speaking, I don't agree with you. 의미는 judging from, 분사구문 예는 로 판단하건대, 부사절로 바꾸기는 Judging from his accent, he is from Canada.
+
+[16 | 4쪽 · 예문]
+예문을 보겠습니다. Exercising regularly, you can stay healthy. 규칙적으로 운동하면 건강을 유지할 수 있다. 여기서는 조건: If you exercise regularly, ~를 나타냅니다. 다음 예문입니다. Listening to music, she was washing dishes. 그녀는 음악을 들으면서 설거지를 하고 있었다. 여기서는 동시동작: While she was listening to music, ~를 나타냅니다. 다음 예문입니다. Generally speaking, women live longer than men. 일반적으로 말해서, 여성은 남성보다 더 오래 산다. 여기서는 비인칭 독립분사구문으로 숙어처럼 외운다.를 나타냅니다.
