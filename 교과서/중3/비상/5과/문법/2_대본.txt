@@ -1,0 +1,51 @@
+﻿# 일등급샘 AI강의 대본 - 2.html
+# [번호 | ...] 줄 아래의 문장이 그 구간에서 선생님 목소리로 읽힙니다. [번호 | ...] 줄은 바꾸지 마세요.
+
+[1 | 1쪽 · 제목]
+첫 번째, 의미와 기본 형태입니다.
+
+[2 | 1쪽 · 개념]
+「so that+주어+can+동사원형」은 '~하기 위해서'라는 목적을 나타낸다. 주절의 행동을 한 이유가 that절에 제시됩니다.
+
+[3 | 1쪽 · 표]
+그럼 정리된 표를 볼께요. so that ~ can의 기본 구조. 현재·미래의 목적을 표현하는 형태는 so that 플러스 주어 플러스 can 플러스 동사원형, 그 때의 의미는 주어가 …할 수 있도록, 또는 하기 위해서입니다. 과거의 목적을 표현하는 형태는 so that 플러스 주어 플러스 could 플러스 동사원형이고, 그 의미는 과거에 주어가 …할 수 있도록, 또는 하기 위해서입니다. 주절의 시제에 따라서 조동사의 형태를 can, 또는 could로 표현하는 것을 주의해야합니다.
+
+[4 | 1쪽 · 예문]
+그럼 아래의 예문들을 보겠습니다. 첫 번째 I read the instructions for the machine so that I can use it without any problem. 나는 문제없이 그것을 사용하기 위해 그 기계의 설명서를 읽는다. so that절 이하가 설명서를 읽은 이유를 표현합니다. 그 다음 예문입니다. She studies hard so that she can pass the test. 그녀는 시험에 합격하기 위해 열심히 공부한다. 여기서는 so that절이 공부하는 목적을 나타냅니다. 마지막 예문입니다. The government built night shelters so that homeless people could sleep there. 정부는 노숙자들이 그곳에서 잘 수 있도록 야간 쉼터를 지었다. 이문장의 주절의 동사를 보면 built로 과거시제이므로 이어지는 so that절의 동사를 could로 표현했음에 유의합니다.
+
+[5 | 2쪽 · 제목]
+두 번째로 배울 내용은 in order that절과 이것을 압축한 in order to입니다.
+
+[6 | 2쪽 · 개념]
+「so that ~ can」은 「in order that ~ can」으로 바꿀 수 있습니다. 주절과 종속절의 주어가 같으면 「in order to+동사원형」으로 바꿀 수 있다.
+
+[7 | 2쪽 · 표]
+아래의 표에 내용을 정리해 놓았습니다. 첫번째 방식은 so that 대신 in order that으로 표현합니다. 예를 들어, so that she could win를 in order that she could win로 표현할 수 있습니다. 
+두번째 방식은 주절과 종속절의 주어가 같을 때, in order to 플러스 동사원형으로 표현할 수 있습니다. 예를 들어, so that she could win를  in order to win으로 압축해서 표현가능합니다. 하지만 주절과 종속절의 주어가 다를 경우라면 전환이 불가능합니다. 예를 들어 I bought her a phone so that she could use it.를 I bought her a phone in order to use it.로 바꿀 수는 없습니다.
+
+[8 | 2쪽 · 예문]
+추가 예문을 보겠습니다. Linda went through hard training so that she could win the game. Linda는 그 경기에서 이기기 위해 힘든 훈련을 받았다. 주절이 과거이므로 so that절의 조동사를 can이 아닌 could를 사용하는 점에 유의합니다. so that절의 주어 she가 주절의 주어 Linda와 동일하므로 so that 대신 in order that으로 전환이 가능하고 또한 in order to로 표현이 가능이 가능합니다.
+
+[9 | 3쪽 · 제목]
+세 번째, 3. so that can과 so that ... can의 구별입니다.
+
+[10 | 3쪽 · 개념]
+「so that ~ can」은 목적을, 「so+형용사/부사+that ... can」은 결과를 나타낸다. so 바로 뒤에 형용사나 부사가 오면 결과 구문일 가능성이 높다.
+
+[11 | 3쪽 · 표]
+표로 정리해 볼게요. 목적 구문과 결과 구문 비교. 구문은 목적, 형태는 so that 플러스 주어 플러스 can, 또는 could 플러스 동사원형, 의미는 '뭐뭐하기 위해서'입니다. 이렇게 so와 that이 붙어 있다면 that절이 목적을 표현하는 반면 그 아래의 예문처럼 so와 that이 떨어져 있고 그 사이에 형용사, 또는 부사가 놓여있다면  '매우 뭐뭐해서 뭐뭐할 수 있다'라는 인과관계를 표현합니다. 예를  들어 got up early so that she could take the bus는 '버스를 타기 위해 일찍 일어났다'이며, 'is so smart that she can solve any problem'의 의미는 '매우 똑똑해서 어떤 문제든 풀 수 있다'로 원인과 결과 관계를 표현합니다.
+
+[12 | 3쪽 · 예문]
+예문을 보겠습니다. My sister got up early so that she could take her school bus. 내 여동생은 통학 버스를 타기 위해 일찍 일어났다. 여기서는 목적: 버스를 타기 위해를 나타냅니다. 다음 예문입니다. My sister is so smart that she can solve any problem. 내 여동생은 매우 똑똑해서 어떤 문제든 풀 수 있다. 여기서는 결과: 매우 똑똑해서 풀 수 있음을 나타냅니다. 다음 예문입니다. I practice running so that I can win the race. 나는 경주에서 이기기 위해 달리기를 연습한다. 여기서는 so 뒤에 형용사/부사가 없으므로 목적 구문을 나타냅니다.
+
+[13 | 4쪽 · 제목]
+네 번째, 4. 조동사 can, could, may, will의 사용입니다.
+
+[14 | 4쪽 · 개념]
+목적절의 조동사는 의미와 시제에 따라 can, could, may, will 등으로 바뀔 수 있다. 과거의 목적은 주로 could를 쓴다.
+
+[15 | 4쪽 · 표]
+표로 정리해 볼게요. that절 조동사 선택. 조동사는 can, 쓰임은 현재·미래 상황에서 '할 수 있도록', 예시 의미는 합격할 수 있도록. 조동사는 could, 쓰임은 과거 상황에서 '할 수 있도록', 예시 의미는 사용할 수 있도록 했다. 조동사는 may, 쓰임은 격식체에서 목적·허가의 뉘앙스, 예시 의미는 도움을 받을 수 있도록. 조동사는 will, 쓰임은 미래의 결과나 의지를 강조, 예시 의미는 참여하게 하려고입니다.
+
+[16 | 4쪽 · 예문]
+자 그럼 예문을 보겠습니다. I take piano lessons so that I can play it well. 나는 피아노를 잘 치기 위해 피아노 수업을 듣는다. 여기서는 현재의 목적이므로 can를 나타냅니다. 그 다음 예문입니다. The charity started a campaign so that people could provide aid for refugees. 그 자선 단체는 사람들이 난민들에게 도움을 제공할 수 있도록 캠페인을 시작했다. 여기서는 주절이 과거이므로 could로 표현했습니다. 마지막 예문입니다. I bought my daughter a smartphone so that she could use it abroad. 나는 딸이 해외에서 그것을 사용할 수 있도록 스마트폰을 사 주었다. 여기서는 주절과 종속절의 주어가 다름에 유의합니다.
