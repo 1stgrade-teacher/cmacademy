@@ -1,0 +1,279 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>13강 noticing sentences 구문 마스터하기 — 13강</title><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@500;600;700&display=swap" rel="stylesheet"><style>html,body{margin:0;height:100%;background:#F3F3F5}#app{width:min(1040px,94vw);height:92vh;margin:4vh auto}@media (max-width:700px){#app{width:100vw;height:auto;margin:0}}
+.lp{--pk:#0E8A8C;--pk-t:#0A5F61;--pk-l:#DDF2F1;--pk-ll:#F3FAFA;--bl-l:#E9EEFB;--bl-t:#3A4FA3;height:100%;min-height:540px;background:#fff;color:#1B2733;border-radius:16px;display:flex;flex-direction:column;overflow:hidden;font-family:"IBM Plex Sans KR","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;box-shadow:0 2px 6px rgba(0,0,0,.06),0 14px 40px rgba(0,0,0,.08);outline:none}
+.lp *{box-sizing:border-box}
+.lp{word-break:keep-all;overflow-wrap:break-word}
+.lp-top{display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid #F1F1F1;position:relative}
+.lp-top::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,var(--pk),#7CCBC8)}
+.lp-brand{font-size:12.5px;font-weight:800;color:#fff;background:var(--pk);border-radius:999px;padding:3px 12px}
+.lp-name{flex:1;min-width:0;font-weight:800;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lp-slide{flex:1;min-height:0;overflow:auto;padding:30px 44px;display:flex;flex-direction:column}
+.lp-cap{flex-shrink:0;padding:10px 22px;background:#F3FAFA;border-top:1px solid #DDF2F1;font-size:15px;line-height:1.55;color:#4A5866;max-height:30%;overflow:auto}
+.lp-bar{flex-shrink:0;display:flex;align-items:center;gap:8px;padding:11px 18px;border-top:1px solid #F1F1F1;background:#FAFAFA;flex-wrap:wrap}
+.lp-tl{flex:1;min-width:120px;height:7px;background:#E3E9EE;border-radius:6px;overflow:hidden;cursor:pointer}
+.lp-tl>i{display:block;height:100%;width:0;background:var(--pk)}
+.lp-cnt{font-size:12.5px;color:#8493A1;font-variant-numeric:tabular-nums;min-width:50px;text-align:center}
+.lp select{width:auto}
+.lp button,.lp select{background:#fff;color:#1B2733;border:1px solid #DCDCDC;border-radius:8px;padding:7px 12px;font-weight:700;font-size:13.5px;cursor:pointer;font-family:inherit}
+.lp button.on{background:var(--pk-l);border-color:var(--pk-l);color:var(--pk-t)}
+.lp button.lp-play{background:var(--pk);border-color:var(--pk);color:#fff;min-width:96px}
+.lp-warn{padding:7px 20px;font-size:12.5px;color:var(--pk-t);background:var(--pk-ll)}
+.lp-tag{display:inline-block;align-self:flex-start;font-size:12.5px;font-weight:800;color:var(--pk-t);background:var(--pk-l);border-radius:999px;padding:3px 12px;margin-bottom:14px}
+.lp-cover{margin:auto 0;display:flex;gap:22px;align-items:stretch}
+.lp-qn{flex:0 0 110px;background:var(--pk);color:#fff;font-weight:800;font-size:28px;border-radius:14px;display:grid;place-items:center}
+.lp-cv{flex:1;min-width:0}
+.lp-cv .src{color:#8493A1;font-weight:700;font-size:14px}
+.lp-cv h1{margin:4px 0 2px;font-size:30px;line-height:1.25;font-weight:800}
+.lp-cv h2{margin:0 0 14px;font-size:17px;color:#4A5866;font-weight:700}
+.lp-row{display:flex;gap:10px;align-items:baseline;margin-top:6px;font-size:15.5px;padding:4px 8px;border-radius:8px}
+.lp-lb{flex:0 0 auto;font-size:12px;font-weight:800;color:var(--pk-t);background:var(--pk-l);border-radius:4px;padding:1px 8px}
+.lp-box{background:var(--pk-ll);border-radius:12px;padding:16px 20px;font-size:16.5px;line-height:1.75;color:#333}
+.lp b.key{color:var(--pk-t);background:linear-gradient(transparent 60%,#BFE8E5 60%)}
+.lp-st{border:1px solid #D6EAE9;border-radius:12px;padding:11px 16px;margin-bottom:9px}
+.lp-st h4{margin:0 0 3px;font-size:16px;color:var(--pk-t);display:flex;gap:8px;align-items:center}
+.lp-st h4 i{font-style:normal;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--pk);color:#fff;font-size:12px}
+.lp-st h4 small{color:#8493A1;font-size:12.5px}
+.lp-st p{margin:0;font-size:15px;line-height:1.65;color:#444}
+.lp-big{font-size:28px;font-weight:800}
+.lp-pill{display:inline-block;font-size:13px;font-weight:800;color:var(--pk-t);background:var(--pk-l);border-radius:999px;padding:3px 12px;margin-left:8px;vertical-align:5px}
+.lp-sig{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:15px;margin-top:8px}
+.lp-sig b{color:var(--pk-t)}
+.lp-chain{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px;font-size:15px}
+.lp-chain span.c{background:var(--bl-l);color:var(--bl-t);font-weight:700;border-radius:6px;padding:2px 10px}
+.lp-chain span.a{color:#999}
+.lp-ct{width:100%;border-collapse:collapse;margin-top:10px;font-size:14.5px}
+.lp-ct th,.lp-ct td{border:1px solid #CFE5E4;padding:6px 10px;text-align:left}
+.lp-ct th{background:var(--pk-ll);color:var(--pk-t)}
+.lp-vg{display:grid;grid-template-columns:repeat(3,1fr);gap:2px 22px}
+.lp-vg div{display:flex;gap:10px;padding:6px 2px;border-bottom:1px solid #F4F4F4;font-size:15.5px;align-items:baseline}
+.lp-vg b{font-weight:800}
+.lp-vg em{font-style:normal;font-size:11px;font-weight:700;color:var(--pk-t);background:var(--pk-l);border-radius:4px;padding:0 5px}
+.lp-vg span{color:#555;margin-left:auto;text-align:right}
+.lp-sa{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 18px}
+.lp-sa>div{border:1px solid #F1F1F1;border-radius:10px;padding:10px 14px}
+.lp-sa b.w{font-size:17px}
+.lp-sa .m{color:#666;margin-left:6px;font-size:14px}
+.lp-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;align-items:center}
+.lp-chips span{font-size:13.5px;font-weight:700;border-radius:5px;padding:1px 9px}
+.lp-chips .s{background:var(--bl-l);color:var(--bl-t)}
+.lp-chips .a{background:#FFF1D8;color:#8A5A00}
+.lp-chips .x{background:none;color:#999;padding:0}
+.lp-sno{font-size:13px;color:#8493A1;font-weight:700;margin-bottom:8px}
+.lp-sno .es{color:#fff;background:#E0952B;border-radius:4px;padding:1px 8px;font-size:11.5px;margin-left:8px}
+.lp-chunks{display:flex;flex-wrap:wrap;gap:16px 10px;margin-bottom:12px;align-items:flex-end}
+.lp-chunk{display:flex;flex-direction:column}
+.lp-chunk .ko{font-size:13px;color:var(--pk-t);font-weight:700;line-height:1.3;margin-bottom:2px}
+.lp-chunk .en{font-size:24px;font-weight:700;line-height:1.4}
+.lp-chunk+.lp-chunk{padding-left:10px;border-left:2px solid #D6EAE9}
+.lp .tgt{background:#FFF0C7;border-bottom:2.5px solid var(--pk);padding:0}
+.lp .mk{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--pk);color:#fff;font-size:11.5px;font-weight:800;margin:0 3px;vertical-align:4px;line-height:1}
+.lp-ko{font-size:16px;font-weight:700;background:var(--pk-ll);border-radius:10px;padding:9px 14px;margin-bottom:8px}
+.lp-mn{font-size:15px;line-height:1.65;background:#FFF8E8;border:1px solid #F0D9A5;border-radius:10px;padding:9px 14px;margin-bottom:8px;color:#444}
+.lp-ap{font-size:14.5px;line-height:1.6;border:1px solid #BFE8E5;border-radius:10px;padding:9px 14px}
+.lp-ap h5{margin:0 0 4px;display:inline-block;background:var(--pk);color:#fff;font-size:12px;border-radius:4px;padding:1px 9px}
+.lp-ap .gi{margin:3px 0}
+.lp-ap .gn{color:var(--pk-t);font-weight:800}
+.lp-fin ul{margin:0 0 12px;padding-left:20px;font-size:16px;line-height:1.75}
+.lp-hl{box-shadow:0 0 0 3px #7CCBC8,0 0 22px 4px rgba(14,138,140,.28)!important;border-radius:12px;transition:box-shadow .2s}
+@media (max-width:700px){.lp{min-height:0;height:100vh;height:100dvh;border-radius:0}.lp-slide{padding:18px 16px}.lp-cover{flex-direction:column}.lp-qn{flex:0 0 64px}.lp-cv h1{font-size:21px}.lp-chunk .en{font-size:18px}.lp-vg,.lp-sa{grid-template-columns:1fr}.lp-box{font-size:15px}.lp-big{font-size:21px}}
+
+.lp-box b.h{color:var(--pk-t);margin-right:8px}
+.lp{--g-ok:#1F8A57;--g-ok-l:#E9F7EF;--g-err:#D43A3A;--g-err-l:#FDECEC}
+.g-cover{margin:auto 0;text-align:left}
+.g-cover .g-unit{display:inline-block;font-size:14px;font-weight:800;color:var(--bl-t);background:var(--bl-l);border-radius:999px;padding:3px 14px;margin-bottom:10px}
+.g-cover h1{margin:0 0 18px;font-size:34px;line-height:1.25;font-weight:800}
+.g-h{margin:0 0 12px;font-size:24px;font-weight:800;line-height:1.3}
+.g-rule{background:var(--pk-ll);border-radius:12px;padding:14px 18px;font-size:17px;line-height:1.7;margin-bottom:12px}
+.g-formula{display:inline-block;margin-top:8px;background:#fff;border:1.5px solid var(--bl-l);color:var(--bl-t);font-weight:800;border-radius:8px;padding:4px 12px;font-size:16px}
+.g-exs{display:grid;gap:8px;margin-bottom:12px}
+.g-ex{border:1px solid #F1F1F1;border-radius:12px;padding:10px 16px;position:relative}
+.g-en{font-size:21px;font-weight:700;line-height:1.45}
+.g-en .fx{background:#FFF0C7;border-bottom:2.5px solid var(--pk)}
+.g-ko{font-size:15px;color:var(--pk-t);font-weight:700;margin-top:2px}
+.g-note{font-size:14px;color:#555;margin-top:3px}
+.g-add{position:absolute;top:8px;right:10px;font-size:11px;font-weight:700;color:#8493A1;background:#F4F4F4;border-radius:4px;padding:1px 6px}
+.g-tip{background:#FFF8E8;border:1px solid #F0D9A5;border-radius:12px;padding:10px 16px;font-size:15.5px;line-height:1.65}
+.g-tip>b{color:#8A6D00;margin-right:6px}
+.g-mk{border:1px solid #F1F1F1;border-radius:12px;padding:10px 16px;margin-bottom:9px}
+.g-wrong{font-size:19px;font-weight:700;color:var(--g-err)}
+.g-wrong s{text-decoration-thickness:2px}
+.g-right{font-size:19px;font-weight:700;color:var(--g-ok);margin-top:2px}
+.g-why{font-size:14.5px;color:#555;margin-top:4px}
+.g-tags{display:flex;gap:8px;align-items:flex-start}
+.g-kind{display:inline-block;font-size:12.5px;font-weight:800;color:var(--bl-t);background:var(--bl-l);border-radius:999px;padding:3px 11px}
+.g-q{font-size:18px;font-weight:700;margin-bottom:10px;line-height:1.55}
+.g-qs{font-size:22px;font-weight:700;line-height:1.5;background:#FAFAFA;border-radius:12px;padding:12px 16px;margin-bottom:10px}
+.g-opts{display:grid;gap:6px;margin-bottom:10px}
+.g-opt{display:block;width:100%;text-align:left;background:#fff!important;border:1.5px solid #E6E6E6!important;border-radius:10px!important;padding:9px 14px!important;font-size:17px!important;font-weight:600!important;cursor:pointer;color:#1B2733!important}
+.g-opt b{color:var(--pk-t);margin-right:6px}
+.g-opt.picked{border-color:var(--pk)!important;background:var(--pk-ll)!important}
+.g-opts.rv .g-opt[data-ok="1"]{border-color:var(--g-ok)!important;background:var(--g-ok-l)!important}
+.g-opts.rv .g-opt.picked:not([data-ok="1"]){border-color:var(--g-err)!important;background:var(--g-err-l)!important}
+.g-ans{display:none;background:var(--g-ok-l);border-radius:12px;padding:12px 16px;font-size:16px;line-height:1.65}
+.g-ans.rv{display:block}
+.g-ans>b{color:var(--g-ok);margin-right:6px}
+.g-ans .a{font-weight:800;font-size:18px}
+.g-exp{margin-top:4px;color:#333}
+.lp button.g-show{margin-top:4px;background:#fff;color:var(--g-ok);border-color:#C6EBD5}
+.g-sum{margin:0;padding-left:22px;font-size:18px;line-height:1.8}
+.lp-think{position:absolute;right:22px;bottom:16px;background:#1B2733;color:#fff;font-weight:800;font-size:15px;border-radius:999px;padding:8px 16px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.lp-slide{position:relative}
+@media (max-width:700px){.g-cover h1{font-size:23px}.g-h{font-size:19px}.g-en,.g-qs{font-size:17px}.g-rule{font-size:15px}.g-opt{font-size:15px!important}}
+.d-chat{display:flex;flex-direction:column;gap:8px}
+.d-bub{max-width:78%;border-radius:16px;padding:9px 15px;position:relative}
+.d-bub.d-l{align-self:flex-start;background:#F4F6F8;border-top-left-radius:4px}
+.d-bub.d-r{align-self:flex-end;background:var(--pk-ll);border-top-right-radius:4px}
+.d-bub .d-sp{font-size:12px;font-weight:800;color:#8493A1;display:block;margin-bottom:1px}
+.d-en{font-size:18px;font-weight:600;line-height:1.45}
+.d-key{background:var(--pk-ll);border-radius:14px;padding:14px 18px;margin-bottom:12px}
+.d-keyexp{font-size:24px;font-weight:800;line-height:1.35}
+.d-mean{font-size:16px;color:var(--pk-t);font-weight:700;margin-top:3px}
+.d-from{font-size:14px;color:#666;margin-top:6px}
+.d-exp{font-size:15px;line-height:1.65;margin-top:8px;color:#333}
+.d-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.d-box{border:1px solid #E9EEFB;border-radius:12px;padding:10px 14px}
+.d-box>b{display:inline-block;font-size:13px;color:var(--bl-t);background:var(--bl-l);border-radius:999px;padding:2px 10px;margin-bottom:6px}
+.d-box.a>b{color:#1F8A57;background:#E9F7EF}
+.d-box ul{margin:0;padding-left:18px;font-size:16.5px;line-height:1.75;font-weight:600}
+.d-line{border:1px solid #F1F1F1;border-radius:12px;padding:10px 16px;margin-bottom:10px}
+.d-lh{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.d-lh .d-sp{font-size:12.5px;font-weight:800;border-radius:6px;padding:1px 9px;background:#F4F6F8;color:#555}
+.d-lh .d-sp.d-r{background:var(--pk-l);color:var(--pk-t)}
+.d-ln{font-size:12px;color:#999}
+.d-en2{font-size:20px;font-weight:700;line-height:1.55}
+.d-ko{font-size:15px;color:var(--pk-t);font-weight:700;margin-top:2px}
+.d-notes{margin-top:7px;display:grid;gap:4px}
+.d-note{display:flex;gap:6px;font-size:14.5px;line-height:1.6;color:#333;align-items:baseline}
+.d-alt{margin-top:7px;background:#FFF8E8;border:1px solid #F0D9A5;border-radius:10px;padding:7px 12px;font-size:15px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.d-alt>b{color:#8A6D00;font-size:13px}
+.d-alt span{font-weight:600}
+.d-alt span+span::before{content:"/";color:#C9B95A;margin-right:10px}
+@media (max-width:700px){.d-cols{grid-template-columns:1fr}.d-en2{font-size:16px}.d-keyexp{font-size:19px}}
+
+.lp{--pk-b:#B5DEDC;--am:#E0952B;--am-l:#FFF3DC;--am-b:#F0D9A5;--am-d:#8A5A00}
+.lp-top{border-bottom:1.5px solid var(--pk)}
+.lp-top::before{height:5px;background:linear-gradient(90deg,var(--pk) 0,var(--pk) 80%,var(--am) 80%,var(--am) 100%)}
+.lp-brand{background:#fff;color:var(--pk-t);border:1px solid var(--pk);border-radius:3px;font-weight:700;letter-spacing:.02em;padding:2px 11px}
+.lp-name{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700;color:var(--pk-t)}
+.lp-tag{background:#fff;border:1px solid var(--pk-b);border-radius:3px;font-weight:700;padding:2px 12px}
+.lp-qn{flex:0 0 112px;height:112px;align-self:center;background:#fff;color:var(--pk);border:3px solid var(--pk);border-radius:50%;font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700;font-size:26px}
+.lp-cv h1,.lp-big{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700}
+.lp-lb{background:none;border:0;border-bottom:2px solid var(--am);border-radius:0;padding:0 2px;color:var(--pk-t);font-weight:700}
+.lp-box{border-radius:4px;border-left:4px solid var(--pk)}
+.lp-st{border-radius:4px;border-left:4px solid var(--pk-b)}
+.lp-st h4{color:var(--ink,#1B2733)}
+.lp-st h4 i{border-radius:4px;width:auto;min-width:24px;padding:0 4px}
+.lp-pill{background:#fff;border:1px solid var(--pk-b);border-radius:3px;font-weight:700}
+.lp-chain span.c{background:#fff;border:1px solid #AEBBE6;border-radius:3px;font-weight:600}
+.lp-ct th{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif}
+.lp-vg em{background:#fff;border:1px solid var(--pk-b);border-radius:3px}
+.lp-sa>div{border-radius:4px;border-color:var(--pk-b)}
+.lp-chips span{border-radius:3px;background:#fff}
+.lp-chips .s{border:1px solid #AEBBE6;color:#3A4FA3}
+.lp-chips .a{border:1px solid var(--am-b);color:var(--am-d);background:#FFFBF2}
+.lp-sno .es{background:var(--am);border-radius:2px;font-weight:700}
+.lp-chunk .en{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:600}
+.lp-chunk+.lp-chunk{border-left:1px solid var(--pk-b)}
+.lp .tgt{background:var(--am-l);border-bottom:2.5px dotted var(--am)}
+.lp .mk{border-radius:4px;width:auto;min-width:20px;padding:0 3px;background:var(--pk-t)}
+.lp-ko{border-radius:0;border-left:4px solid var(--pk);background:none;padding:4px 0 4px 12px}
+.lp-mn{border-radius:4px;background:var(--am-l);border-color:var(--am-b);color:#5C4510}
+.lp-ap{border-radius:4px;border:1px solid var(--pk-b);border-top:3px solid var(--pk);background:var(--pk-ll)}
+.lp-ap h5{background:none;color:var(--pk-t);padding:0;font-size:12.5px;font-weight:700}
+.lp-hl{border-radius:6px}
+.lp button.lp-play,.lp button,.lp select{border-radius:4px}
+@media (max-width:700px){.lp-qn{flex:0 0 72px;height:72px;font-size:18px}}
+
+.g-rule{border-radius:3px;border-left:4px solid var(--pk)}
+.g-formula{border-radius:2px;background:#fff;border:1px solid #AEBBE6;color:#3A4FA3}
+.g-ex{border-radius:3px}
+.g-en{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:600}
+.g-en .fx{background:var(--am-l);border-bottom:2.5px dotted var(--am)}
+.g-tip{border-radius:3px;background:var(--am-l);border-color:var(--am-b)}
+.g-mk{border-radius:3px}
+.g-kind{border-radius:2px;background:#fff;border:1px solid #AEBBE6;color:#3A4FA3}
+.g-qs{border-radius:3px}
+.g-opt{border-radius:3px!important}
+.g-ans{border-radius:3px}
+.g-add{border-radius:2px}
+.d-bub{border-radius:6px}
+.d-key{border-radius:3px;border-left:4px solid var(--pk)}
+.d-box{border-radius:3px}
+.d-box>b{border-radius:2px;background:#fff;border:1px solid #AEBBE6;color:#3A4FA3}
+.d-line{border-radius:3px}
+.d-en2,.d-keyexp{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700}
+.d-alt{border-radius:3px;background:var(--am-l);border-color:var(--am-b)}
+
+.y-sen{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-size:23px;font-weight:700;line-height:1.55;margin:4px 0 14px;color:#1B2733}
+.y-sen.sm{font-size:17px;margin-bottom:10px;color:#4A5866}
+.y-sen .fx,.y-li .fx{background:var(--am-l,#FFF3DC);border-bottom:2.5px dotted var(--am,#E0952B)}
+.y-chunks{display:grid;grid-template-columns:minmax(40%,auto) 1fr;border:1px solid var(--pk-b,#B5DEDC);border-radius:4px;margin-bottom:12px;overflow:hidden}
+.y-chunks>div{padding:7px 14px;border-bottom:1px solid #EEF3F3}
+.y-chunks .e{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:600;font-size:17px;border-right:1px solid #EEF3F3;background:#FBFEFE}
+.y-chunks .k{color:var(--pk-t);font-size:15px;font-weight:600}
+.y-box{border-radius:4px;padding:10px 14px;margin-bottom:10px;font-size:15.5px;line-height:1.7}
+.y-lb{display:inline-block;font-size:12.5px;font-weight:800;color:var(--pk-t);background:#fff;border:1px solid var(--pk-b,#B5DEDC);border-radius:3px;padding:0 8px;margin-right:8px;vertical-align:1px}
+.y-st{background:var(--pk-ll);border-left:4px solid var(--pk)}
+.y-mn{background:var(--am-l,#FFF3DC);border:1px solid var(--am-b,#F0D9A5)}
+.y-mn .y-lb{color:var(--am-d,#8A5A00);border-color:var(--am-b,#F0D9A5)}
+.y-cg{border:1px solid var(--pk-b,#B5DEDC)}
+.y-pair{padding:6px 0 4px;border-top:1px dashed #E3E9EE}
+.y-pair:first-of-type{border-top:0}
+.y-pair .f{font-family:"Noto Serif KR",Georgia,serif;font-weight:600;color:#4A5866}
+.y-pair .ar{color:var(--pk);margin:0 8px;font-weight:800}
+.y-pair .t{font-family:"Noto Serif KR",Georgia,serif;font-weight:700;color:#1B2733;background:var(--pk-ll);padding:0 4px}
+.y-pair .w{font-size:14px;color:#4A5866;margin-top:2px}
+.y-eq{display:inline-block;margin-left:10px;font-size:12.5px;font-weight:700;color:#3A4FA3;border:1px solid #AEBBE6;border-radius:3px;padding:0 7px}
+.y-pp{background:#F6F8FA;border-left:4px solid #3A4FA3}
+.y-pp .y-lb{color:#3A4FA3;border-color:#AEBBE6}
+.y-pp .p{font-family:"Noto Serif KR",Georgia,serif;font-size:18px;font-weight:700;margin-top:6px;line-height:1.55}
+.y-list{display:grid;gap:6px;margin-top:4px}
+.y-li{font-family:"Noto Serif KR",Georgia,serif;font-size:16px;line-height:1.6;display:block;padding-left:32px;text-indent:-32px}
+.y-no{display:inline-block;text-indent:0;min-width:22px;height:20px;line-height:20px;text-align:center;border-radius:3px;background:var(--pk);color:#fff;font-family:sans-serif;font-size:12px;font-weight:800;margin-right:10px;vertical-align:1px}
+@media (max-width:700px){.y-sen{font-size:18px}.y-chunks{grid-template-columns:1fr}.y-chunks .e{border-right:0}}
+</style></head><body><div id="app"></div><script>function lecturePlayer(root,D){
+  root.innerHTML='<div class="lp" tabindex="0"><div class="lp-top"><span class="lp-brand"></span><span class="lp-name"></span></div><div class="lp-warn" hidden></div><div class="lp-slide"></div><div class="lp-cap" hidden></div><div class="lp-bar"><div class="lp-tl" title="슬라이드 이동"><i></i></div><span class="lp-cnt"></span><button class="lp-cc">자막</button><select class="lp-rate" title="재생 속도"><option value="0.8">0.8x</option><option value="1" selected>1.0x</option><option value="1.2">1.2x</option><option value="1.4">1.4x</option><option value="1.6">1.6x</option><option value="2">2.0x</option></select><button class="lp-prev" aria-label="이전 슬라이드">◀</button><button class="lp-play">▶ 재생</button><button class="lp-next" aria-label="다음 슬라이드">▶</button></div></div>';
+  var q=function(s){return root.querySelector(s);},box=q(".lp"),sl=q(".lp-slide"),cap=q(".lp-cap"),cnt=q(".lp-cnt"),fill=q(".lp-tl>i"),tl=q(".lp-tl"),pp=q(".lp-play"),cc=q(".lp-cc"),warn=q(".lp-warn");
+  q(".lp-brand").textContent=D.brand;q(".lp-name").textContent=D.title;
+  var i=0,j=0,playing=false,rate=1,timer=null,tick=null,capOn=!!D.preview,noAudio=!!D.preview,a=new Audio(),think=null;
+  if(D.preview){cc.classList.add("on");}
+  function segs(){return D.slides[i].segs||[];}
+  function setFill(f){var s=segs(),n=D.slides.length,sf=s.length?(j+(f||0))/s.length:0;fill.style.width=Math.min(100,(i+sf)/n*100)+"%";}
+  function showCap(){var s=segs()[j];cap.textContent=s?s.text:"";cap.hidden=!(capOn&&s&&s.text&&s.text.trim());cc.classList.toggle("on",capOn);}
+  function clearHl(){var e=sl.querySelectorAll(".lp-hl");for(var x=0;x<e.length;x++)e[x].classList.remove("lp-hl");}
+  function hl(k){clearHl();if(!k)return;var e=sl.querySelector('[data-hl="'+k+'"]');if(e){e.classList.add("lp-hl");try{e.scrollIntoView({block:"nearest",behavior:"smooth"});}catch(_){}}}
+  function reveal(k){var e=sl.querySelectorAll('[data-rv="'+k+'"]');for(var x=0;x<e.length;x++)e[x].classList.add("rv");var b=sl.querySelector('[data-act="show"]');if(b)b.hidden=true;}
+  function stopAll(){if(timer){clearTimeout(timer);timer=null;}if(tick){clearInterval(tick);tick=null;}if(think){think.remove();think=null;}try{a.pause();}catch(_){}}
+  function silent(s){var dur=Math.max(1800,s.text.length*130/rate+700),t0=Date.now();if(!capOn){capOn=true;showCap();}
+    tick=setInterval(function(){setFill(Math.min(1,(Date.now()-t0)/dur));},200);timer=setTimeout(function(){stopAll();segEnd();},dur);}
+  function pause(sec){var left=sec,t0=Date.now();think=document.createElement("div");think.className="lp-think";think.textContent="생각할 시간 "+left+"초";sl.appendChild(think);
+    tick=setInterval(function(){left=Math.max(0,sec-Math.floor((Date.now()-t0)/1000));if(think)think.textContent="생각할 시간 "+left+"초";setFill(Math.min(1,(Date.now()-t0)/(sec*1000)));},250);
+    timer=setTimeout(function(){stopAll();segEnd();},sec*1000/Math.max(.5,rate));}
+  var bases=null,bi=0,okBase=false,att=0;
+  function cands(){if(bases)return bases;var out=[];function add(x){x=String(x||"").replace(/\/+$/,"");if(x&&out.indexOf(x)<0)out.push(x);}
+    add(D.audioDir);try{var f=decodeURIComponent(location.pathname.split("/").pop()||""),nm=f.replace(/\.html?$/i,"");if(nm){add(nm+"_audio");add(nm.replace(/_AI강의$/,"")+"_audio");}}catch(_){}
+    add("audio");bases=out;return out;}
+  function playAudio(s){a.src=encodeURI(cands()[bi])+"/"+s.n+".mp3";a.playbackRate=rate;a.play().catch(function(){});}
+  function runSeg(){stopAll();var s=segs()[j];clearHl();setFill(0);showCap();if(!s)return;hl(s.hl);if(s.reveal)reveal(s.reveal);if(!playing)return;
+    if(s.pause){pause(s.pause);return;}
+    if(noAudio){silent(s);return;}
+    att=0;playAudio(s);}
+  a.onloadeddata=function(){okBase=true;};
+  a.onerror=function(){if(!playing)return;var s=segs()[j];if(!s||s.pause)return;var L=cands().length;if(!okBase&&att<L-1){att++;bi=(bi+1)%L;playAudio(s);return;}if(!okBase)bi=(bi+1)%L;warn.hidden=false;warn.textContent="음성 파일("+cands()[bi]+"/"+s.n+".mp3)을 찾지 못해 자막으로 진행합니다.";silent(s);};
+  a.ontimeupdate=function(){if(a.duration)setFill(a.currentTime/a.duration);};
+  a.onended=function(){segEnd();};
+  function segEnd(){if(!playing)return;if(j<segs().length-1){j++;runSeg();}else if(i<D.slides.length-1){i++;show();}else{playing=false;pp.textContent="▶ 재생";clearHl();fill.style.width="100%";}}
+  function show(){stopAll();sl.innerHTML=D.slides[i].html;sl.scrollTop=0;cnt.textContent=(i+1)+" / "+D.slides.length;j=0;runSeg();}
+  function go(d){i=Math.max(0,Math.min(D.slides.length-1,i+d));show();}
+  function toggle(){playing=!playing;pp.textContent=playing?"⏸ 일시정지":"▶ 재생";if(playing){var s=segs()[j];if(!noAudio&&s&&!s.pause&&a.src&&a.currentTime>0&&!a.ended&&a.paused&&!timer){a.play().catch(function(){});}else runSeg();}else stopAll();}
+  sl.addEventListener("click",function(e){var t=e.target.closest?e.target.closest(".g-opt,[data-act]"):null;if(!t)return;
+    if(t.getAttribute("data-act")==="show"){reveal("ans");return;}
+    var g=t.parentNode;if(g&&g.classList.contains("rv"))return;[].forEach.call(g.querySelectorAll(".g-opt"),function(o){if(o!==t)o.classList.remove("picked");});t.classList.toggle("picked");});
+  q(".lp-prev").onclick=function(){go(-1);};q(".lp-next").onclick=function(){go(1);};pp.onclick=toggle;
+  cc.onclick=function(){capOn=!capOn;showCap();};
+  q(".lp-rate").onchange=function(e){rate=parseFloat(e.target.value)||1;a.playbackRate=rate;};
+  tl.onclick=function(e){var r=tl.getBoundingClientRect();i=Math.max(0,Math.min(D.slides.length-1,Math.floor((e.clientX-r.left)/r.width*D.slides.length)));show();};
+  box.addEventListener("keydown",function(e){if(e.target.tagName==="SELECT")return;if(e.key===" "){e.preventDefault();toggle();}else if(e.key==="ArrowRight")go(1);else if(e.key==="ArrowLeft")go(-1);});
+  show();
+  return {stop:function(){playing=false;pp.textContent="▶ 재생";stopAll();}};
+}
+lecturePlayer(document.getElementById("app"),{"brand":"13강","title":"13강 noticing sentences 구문 마스터하기","audioDir":"구문_13강_noticing_sentences_audio","preview":false,"count":39,"slides":[{"html":"\u003cdiv class=\"g-cover\">\u003cdiv class=\"g-unit\">13강 noticing sentences\u003c/div>\u003ch1>13강 noticing sentences 구문 마스터하기\u003c/h1>\u003cdiv class=\"lp-box\" data-hl=\"goal\">\u003cb class=\"h\">오늘의 목표\u003c/b>실전 독해에서 자주 쓰이는 핵심 구문 구조를 파악하고 직독직해 실력을 완성한다.\u003c/div>\u003c/div>","segs":[{"n":1,"text":"여러분 안녕하세요. 오늘 우리는 13강 noticing sentences 유닛의 예문들을 함께 공부할 거예요. 고등학교 시험에 꼭 나오는 알짜배기 문장들만 모았으니까 집중해 주세요. 문장의 뼈대를 정확하게 보는 눈을 키워봅시다.","hl":"goal"}]},{"html":"\u003cspan class=\"lp-tag\">구문 핵심\u003c/span>\u003ch2 class=\"g-h\">13강 noticing sentences\u003c/h2>\u003cdiv class=\"g-rule\" data-hl=\"pt\">이 유닛의 핵심은 문장 속에서 \u003cb class=\"key\">주요 구문 구조\u003c/b>를 정확하게 끊어 읽고, 문맥에 맞는 의미를 파악하여 \u003cb class=\"key\">서술어와 수식어\u003c/b>의 관계를 이해하는 것입니다.\u003c/div>\u003cdiv class=\"y-list\">\u003cdiv class=\"y-li\">\u003cspan class=\"y-no\">1\u003c/span>\u003cspan class=\"fx\">It is hard to get a constructive dialogue going when\u003c/span> the participants are only allowed to speak in a fixed order.\u003c/div>\u003cdiv class=\"y-li\">\u003cspan class=\"y-no\">2\u003c/span>Students' grammatical mistakes should be corrected \u003cspan class=\"fx\">in a way in which students are praised\u003c/span> at first and encouraged to try again, so that they can build confidence and lower their anxiety about making mistakes.\u003c/div>\u003cdiv class=\"y-li\">\u003cspan class=\"y-no\">3\u003c/span>\u003cspan class=\"fx\">Many changes have been brought about by\u003c/span> the women's movement, so it has become common for women to be successful in many jobs that once were done only by men. Women are now being taught to take responsibility for their own lives.\u003c/div>\u003cdiv class=\"y-li\">\u003cspan class=\"y-no\">4\u003c/span>The application of mathematics, rather than mere fact acquisition, \u003cspan class=\"fx\">is what will be expected of students\u003c/span> in the workplace and in life, and consequently mathematics instruction should mirror this real life situation.\u003c/div>\u003cdiv class=\"y-li\">\u003cspan class=\"y-no\">5\u003c/span>For the past seven years, since our former gym was destroyed by fire, students \u003cspan class=\"fx\">have been deprived of adequate facilities\u003c/span> for physical education classes and other activities. We have had to suspend those classes during the winter.\u003c/div>\u003cdiv class=\"y-li\">\u003cspan class=\"y-no\">6\u003c/span>Several plane crashes and near crashes \u003cspan class=\"fx\">have been attributed to\u003c/span> dangerous downward wind bursts known as wind shear.\u003c/div>\u003c/div>","segs":[{"n":2,"text":"우리가 공부할 핵심 규칙은 문장의 뼈대를 이루는 구조를 빠르게 파악하는 것이에요. 수식어와 주절을 구별해서 읽으면 복잡한 문장도 아주 쉽게 해석할 수 있답니다.","hl":"pt"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">문장 1 / 6\u003c/span>\u003cspan class=\"g-kind\">직독직해와 구문\u003c/span>\u003c/div>\u003cdiv class=\"y-sen\" data-hl=\"sen\">\u003cspan class=\"fx\">It is hard to get a constructive dialogue going when\u003c/span> the participants are only allowed to speak in a fixed order.\u003c/div>\u003cdiv class=\"y-chunks\" data-hl=\"ch\">\u003cdiv class=\"e\">It is hard to get a constructive dialogue going\u003c/div>\u003cdiv class=\"k\">건설적인 대화를 진행하는 것은 어렵다\u003c/div>\u003cdiv class=\"e\">when the participants are only allowed to speak\u003c/div>\u003cdiv class=\"k\">참가자들이 말하는 것만 허용될 때\u003c/div>\u003cdiv class=\"e\">in a fixed order.\u003c/div>\u003cdiv class=\"k\">정해진 순서로만\u003c/div>\u003c/div>\u003cdiv class=\"y-box y-st\" data-hl=\"st\">\u003cb class=\"y-lb\">구문\u003c/b>가주어 It과 진주어 to부정사 구문이며, \u003cb class=\"key\">get + 목적어 + 현재분사\u003c/b> 형태로 목적격 보어가 목적어의 상태를 설명한다.\u003c/div>","segs":[{"n":3,"text":"It is hard to get a constructive dialogue going, 건설적인 대화를 진행하는 것은 어렵다. when the participants are only allowed to speak, 참가자들이 말하는 것만 허용될 때. in a fixed order, 정해진 순서로만","hl":"ch"},{"n":4,"text":"첫 번째 문장에서는 가주어와 진주어 구문이 쓰였고, get 목적어 현재분사 구조가 쓰여서 대화가 계속 이어지게 만들다라는 의미를 나타내고 있어요.","hl":"st"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">문장 1 / 6\u003c/span>\u003cspan class=\"g-kind\">의미와 바꿔 쓰기\u003c/span>\u003c/div>\u003cdiv class=\"y-sen sm\">\u003cspan class=\"fx\">It is hard to get a constructive dialogue going when\u003c/span> the participants are only allowed to speak in a fixed order.\u003c/div>\u003cdiv class=\"y-box y-mn\" data-hl=\"mn\">\u003cb class=\"y-lb\">함축적 의미\u003c/b>자유로운 의견 교환이 차단된 경직된 토론 방식의 문제점을 지적하는 표현이다.\u003c/div>\u003cdiv class=\"y-box y-cg\" data-hl=\"rw\">\u003cb class=\"y-lb\">표현 바꿔 쓰기\u003c/b>\u003cdiv class=\"y-pair\">\u003cspan class=\"f\">get a constructive dialogue going\u003c/span>\u003cspan class=\"ar\">→\u003c/span>\u003cspan class=\"t\">make a constructive dialogue progress\u003c/span>\u003cdiv class=\"w\">get 목적어 ing 구문을 동사 make와 원형부정사 또는 진행 의미를 살린 표현으로 바꾸어 쓸 수 있다.\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"y-box y-cg\" data-hl=\"ph\">\u003cb class=\"y-lb\">어구 정리\u003c/b>\u003cdiv class=\"y-pair\">\u003cspan class=\"f\">constructive\u003c/span>\u003cspan class=\"ar\">→\u003c/span>\u003cspan class=\"t\">productive, helpful\u003c/span>\u003cspan class=\"y-eq\">constructive = productive\u003c/span>\u003cdiv class=\"w\">건설적인이라는 의미의 유의어로 바꿔 쓸 수 있다.\u003c/div>\u003c/div>\u003cdiv class=\"y-pair\">\u003cspan class=\"f\">fixed order\u003c/span>\u003cspan class=\"ar\">→\u003c/span>\u003cspan class=\"t\">predetermined sequence\u003c/span>\u003cspan class=\"y-eq\">fixed = predetermined\u003c/span>\u003cdiv class=\"w\">정해진 이라는 단어를 사전 결정된 이라는 표현으로 확장할 수 있다.\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"y-box y-pp\" data-hl=\"pp\">\u003cb class=\"y-lb\">패러프레이징\u003c/b>\u003cdiv class=\"p\">It is difficult to maintain a productive conversation if participants can only speak in a predetermined sequence.\u003c/div>\u003c/div>","segs":[{"n":5,"text":"참가자들이 정해진 순서대로만 말해야 하는 상황에서는 건설적인 대화가 이루어지기 힘들다는 의미를 담고 있죠.","hl":"mn"},{"n":6,"text":"이 표현은 get a constructive dialogue going을 make a constructive dialogue progress처럼 다른 동사 구문으로 바꾸어 쓸 수도 있어요.","hl":"rw"},{"n":7,"text":"어구를 정리해보면 constructive는 productive나 helpful로 바꿔 쓸 수 있고 fixed order는 predetermined sequence로 표현할 수 있답니다.","hl":"ph"},{"n":8,"text":"It is difficult to maintain a productive conversation if participants can only speak in a predetermined sequence라고 패러프레이징할 수 있어요.","hl":"pp"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">문장 2 / 6\u003c/span>\u003cspan class=\"g-kind\">직독직해와 구문\u003c/span>\u003c/div>\u003cdiv class=\"y-sen\" data-hl=\"sen\">Students' grammatical mistakes should be corrected \u003cspan class=\"fx\">in a way in which students are praised\u003c/span> at first and encouraged to try again, so that they can build confidence and lower their anxiety about making mistakes.\u003c/div>\u003cdiv class=\"y-chunks\" data-hl=\"ch\">\u003cdiv class=\"e\">Students' grammatical mistakes should be corrected\u003c/div>\u003cdiv class=\"k\">학생들의 문법적인 오류는 교정되어야 한다\u003c/div>\u003cdiv class=\"e\">in a way in which students are praised at first and encouraged to try again,\u003c/div>\u003cdiv class=\"k\">일단 학생들이 칭찬을 받고 다시 해보도록 격려를 받는 방식으로\u003c/div>\u003cdiv class=\"e\">so that they can build confidence\u003c/div>\u003cdiv class=\"k\">그들이 자신감을 얻을 수 있도록\u003c/div>\u003cdiv class=\"e\">and lower their anxiety about making mistakes.\u003c/div>\u003cdiv class=\"k\">그리고 실수하는 것에 대한 불안감을 낮출 수 있도록\u003c/div>\u003c/div>\u003cdiv class=\"y-box y-st\" data-hl=\"st\">\u003cb class=\"y-lb\">구문\u003c/b>관계대명사 \u003cb class=\"key\">in which\u003c/b>가 선행사 a way를 수식하며, 목적을 나타내는 \u003cb class=\"key\">so that\u003c/b> 구문이 이어진다.\u003c/div>","segs":[{"n":9,"text":"Students' grammatical mistakes should be corrected, 학생들의 문법적인 오류는 교정되어야 한다. in a way in which students are praised at first and encouraged to try again, 일단 학생들이 칭찬을 받고 다시 해보도록 격려를 받는 방식으로. so that they can build confidence, 그들이 자신감을 얻을 수 있도록. and lower their anxiety about making mistakes, 그리고 실수하는 것에 대한 불안감을 낮출 수 있도록","hl":"ch"},{"n":10,"text":"두 번째 문장에서는 선행사 way를 수식하는 관계대명사 in which 구문과 목적을 나타내는 so that 접속사가 함께 쓰였어요.","hl":"st"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">문장 2 / 6\u003c/span>\u003cspan class=\"g-kind\">의미와 바꿔 쓰기\u003c/span>\u003c/div>\u003cdiv class=\"y-sen sm\">Students' grammatical mistakes should be corrected \u003cspan class=\"fx\">in a way in which students are praised\u003c/span> at first and encouraged to try again, so that they can build confidence and lower their anxiety about making mistakes.\u003c/div>\u003cdiv class=\"y-box y-mn\" data-hl=\"mn\">\u003cb class=\"y-lb\">함축적 의미\u003c/b>학생들의 학습 효과를 높이기 위해 실수에 대해 긍정적이고 지지적인 피드백이 필요함을 강조한다.\u003c/div>\u003cdiv class=\"y-box y-cg\" data-hl=\"rw\">\u003cb class=\"y-lb\">표현 바꿔 쓰기\u003c/b>\u003cdiv class=\"y-pair\">\u003cspan class=\"f\">in a way in which\u003c/span>\u003cspan class=\"ar\">→\u003c/span>\u003cspan class=\"t\">how\u003c/span>\u003cdiv class=\"w\">선행사 way와 관계부사 how는 함께 쓰이지 않으므로 in which나 관계부사로 전환할 때 주의해야 한다.\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"y-box y-cg\" data-hl=\"ph\">\u003cb class=\"y-lb\">어구 정리\u003c/b>\u003cdiv class=\"y-pair\">\u003cspan class=\"f\">build confidence\u003c/span>\u003cspan class=\"ar\">→\u003c/span>\u003cspan class=\"t\">gain self-assurance\u003c/span>\u003cspan class=\"y-eq\">build confidence = gain self-assurance\u003c/span>\u003cdiv class=\"w\">자신감을 키우다라는 표현을 유사한 의미의 어구로 바꿨다.\u003c/div>\u003c/div>\u003cdiv class=\"y-pair\">\u003cspan class=\"f\">anxiety\u003c/span>\u003cspan class=\"ar\">→\u003c/span>\u003cspan class=\"t\">nervousness, apprehension\u003c/span>\u003cspan class=\"y-eq\">anxiety = nervousness\u003c/span>\u003cdiv class=\"w\">불안감을 뜻하는 명사 유의어이다.\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"y-box y-pp\" data-hl=\"pp\">\u003cb class=\"y-lb\">패러프레이징\u003c/b>\u003cdiv class=\"p\">Grammatical errors made by students ought to be fixed using a method where they receive initial praise and motivation to retry, helping them develop self-assurance and decrease fear of errors.\u003c/div>\u003c/div>","segs":[{"n":11,"text":"학생들이 문법 실수를 했을 때 무조건 꾸짖기보다는 칭찬과 격려를 먼저 주어서 자신감을 키워주고 불안감을 줄여주어야 한다는 뜻이에요.","hl":"mn"},{"n":12,"text":"여기서 in a way in which는 관계부사 관련 문법 포인트로 자주 출제되니 잘 기억해 두세요.","hl":"rw"},{"n":13,"text":"build confidence는 gain self-assurance로 바꿀 수 있고 anxiety는 nervousness라는 유의어로 정리할 수 있답니다.","hl":"ph"},{"n":14,"text":"Grammatical errors made by students ought to be fixed using a method where they receive initial praise and motivation to retry로 바꿔서 표현할 수 있어요.","hl":"pp"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">문장 3 / 6\u003c/span>\u003cspan class=\"g-kind\">직독직해와 구문\u003c/span>\u003c/div>\u003cdiv class=\"y-sen\" data-hl=\"sen\">\u003cspan class=\"fx\">Many changes have been brought about by\u003c/span> the women's movement, so it has become common for women to be successful in many jobs that once were done only by men. Women are now being taught to take responsibility for their own lives.\u003c/div>\u003cdiv class=\"y-chunks\" data-hl=\"ch\">\u003cdiv class=\"e\">Many changes have been brought about by the women's movement,\u003c/div>\u003cdiv class=\"k\">많은 변화들이 여성들의 활동에 의해 만들어져왔고\u003c/div>\u003cdiv class=\"e\">so it has become common for women to be successful\u003c/div>\u003cdiv class=\"k\">여성들이 성공하는 일이 흔한 것이 되었다\u003c/div>\u003cdiv class=\"e\">in many jobs that once were done only by men.\u003c/div>\u003cdiv class=\"k\">한때 남성들만이 하던 많은 직업에서\u003c/div>\u003cdiv class=\"e\">Women are now being taught\u003c/div>\u003cdiv class=\"k\">여성들은 지금 배우고 있다\u003c/div>\u003cdiv class=\"e\">to take responsibility for their own lives.\u003c/div>\u003cdiv class=\"k\">자신들의 삶에 책임을 지도록\u003c/div>\u003c/div>\u003cdiv class=\"y-box y-st\" data-hl=\"st\">\u003cb class=\"y-lb\">구문\u003c/b>현재완료 \u003cb class=\"key\">수동태\u003c/b>와 가주어 \u003cb class=\"key\">it\u003c/b> 진주어 for 의미상주어 to부정사 구문이 복합적으로 사용되었다.\u003c/div>","segs":[{"n":15,"text":"Many changes have been brought about by the women's movement, 많은 변화들이 여성들의 활동에 의해 만들어져왔고. so it has become common for women to be successful, 여성들이 성공하는 일이 흔한 것이 되었다. in many jobs that once were done only by men, 한때 남성들만이 하던 많은 직업에서. Women are now being taught, 여성들은 지금 배우고 있다. to take responsibility for their own lives, 자신들의 삶에 책임을 지도록","hl":"ch"},{"n":16,"text":"세 번째 문장에서는 현재완료 수동태인 have been brought about과 가진주어 구문이 함께 나타나고 있어요.","hl":"st"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">문장 3 / 6\u003c/span>\u003cspan class=\"g-kind\">의미와 바꿔 쓰기\u003c/span>\u003c/div>\u003cdiv class=\"y-sen sm\">\u003cspan class=\"fx\">Many changes have been brought about by\u003c/span> the women's movement, so it has become common for women to be successful in many jobs that once were done only by men. Women are now being taught to take responsibility for their own lives.\u003c/div>\u003cdiv class=\"y-box y-mn\" data-hl=\"mn\">\u003cb class=\"y-lb\">함축적 의미\u003c/b>여성 운동으로 인한 사회적 변화와 여성들의 주체적인 삶의 태도 변화를 보여준다.\u003c/div>\u003cdiv class=\"y-box y-cg\" data-hl=\"rw\">\u003cb class=\"y-lb\">표현 바꿔 쓰기\u003c/b>\u003cdiv class=\"y-pair\">\u003cspan class=\"f\">have been brought about\u003c/span>\u003cspan class=\"ar\">→\u003c/span>\u003cspan class=\"t\">have been caused\u003c/span>\u003cdiv class=\"w\">수동태 완료시제를 유지하면서 유의어 동사로 바꾸었다.\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"y-box y-cg\" data-hl=\"ph\">\u003cb class=\"y-lb\">어구 정리\u003c/b>\u003cdiv class=\"y-pair\">\u003cspan class=\"f\">bring about\u003c/span>\u003cspan class=\"ar\">→\u003c/span>\u003cspan class=\"t\">cause, result in\u003c/span>\u003cspan class=\"y-eq\">bring about = cause\u003c/span>\u003cdiv class=\"w\">~을 야기하다라는 의미의 숙어 표현이다.\u003c/div>\u003c/div>\u003cdiv class=\"y-pair\">\u003cspan class=\"f\">take responsibility for\u003c/span>\u003cspan class=\"ar\">→\u003c/span>\u003cspan class=\"t\">be accountable for\u003c/span>\u003cspan class=\"y-eq\">take responsibility = be accountable\u003c/span>\u003cdiv class=\"w\">~에 책임을 지다라는 의미의 동의어구이다.\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"y-box y-pp\" data-hl=\"pp\">\u003cb class=\"y-lb\">패러프레이징\u003c/b>\u003cdiv class=\"p\">Numerous transformations resulted from the feminist movement, making it usual for females to achieve success in occupations previously exclusive to males, and they are currently learning to govern their own destinies.\u003c/div>\u003c/div>","segs":[{"n":17,"text":"여성 운동 덕분에 사회가 많이 변해서 예전에는 남성들만의 직업이었던 분야에서 여성들이 성공하는 것이 자연스러운 일이 되었고, 이제는 스스로 삶을 책임지도록 교육받고 있다는 내용이에요.","hl":"mn"},{"n":18,"text":"bring about이라는 표현은 cause나 result in으로 바꾸어 쓸 수 있어서 시험에 아주 잘 나온답니다.","hl":"rw"},{"n":19,"text":"take responsibility for는 be accountable for라는 표현과 뜻이 같다는 것을 기억해 주세요.","hl":"ph"},{"n":20,"text":"Numerous transformations resulted from the feminist movement, making it usual for females to achieve success in occupations previously exclusive to males라고 패러프레이징할 수 있어요.","hl":"pp"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">문장 4 / 6\u003c/span>\u003cspan class=\"g-kind\">직독직해와 구문\u003c/span>\u003c/div>\u003cdiv class=\"y-sen\" data-hl=\"sen\">The application of mathematics, rather than mere fact acquisition, \u003cspan class=\"fx\">is what will be expected of students\u003c/span> in the workplace and in life, and consequently mathematics instruction should mirror this real life situation.\u003c/div>\u003cdiv class=\"y-chunks\" data-hl=\"ch\">\u003cdiv class=\"e\">The application of mathematics, rather than mere fact acquisition,\u003c/div>\u003cdiv class=\"k\">단지 사실 습득이 아닌, 수학의 적용이\u003c/div>\u003cdiv class=\"e\">is what will be expected of students in the workplace and in life,\u003c/div>\u003cdiv class=\"k\">직장이나 삶에서 학생들에게 기대되는 것일 테고\u003c/div>\u003cdiv class=\"e\">and consequently mathematics instruction\u003c/div>\u003cdiv class=\"k\">따라서 수학 교육은\u003c/div>\u003cdiv class=\"e\">should mirror this real life situation.\u003c/div>\u003cdiv class=\"k\">이러한 실생활의 상황을 반영해야만 한다.\u003c/div>\u003c/div>\u003cdiv class=\"y-box y-st\" data-hl=\"st\">\u003cb class=\"y-lb\">구문\u003c/b>선행사를 포함한 관계대명사 \u003cb class=\"key\">what\u003c/b>절이 주격 보어로 쓰였으며, rather than을 통한 대조 표현이 포함되어 있다.\u003c/div>","segs":[{"n":21,"text":"The application of mathematics, rather than mere fact acquisition, 단지 사실 습득이 아닌, 수학의 적용이. is what will be expected of students in the workplace and in life, 직장이나 삶에서 학생들에게 기대되는 것일 테고. and consequently mathematics instruction, 따라서 수학 교육은. should mirror this real life situation, 이러한 실생활의 상황을 반영해야만 한다.","hl":"ch"},{"n":22,"text":"네 번째 문장에서는 관계대명사 what이 보어 자리에 쓰여서 ~하는 것이라는 의미를 만들어내고 있어요.","hl":"st"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">문장 4 / 6\u003c/span>\u003cspan class=\"g-kind\">의미와 바꿔 쓰기\u003c/span>\u003c/div>\u003cdiv class=\"y-sen sm\">The application of mathematics, rather than mere fact acquisition, \u003cspan class=\"fx\">is what will be expected of students\u003c/span> in the workplace and in life, and consequently mathematics instruction should mirror this real life situation.\u003c/div>\u003cdiv class=\"y-box y-mn\" data-hl=\"mn\">\u003cb class=\"y-lb\">함축적 의미\u003c/b>암기식 교육에서 벗어나 실생활에 수학을 적용하는 능력을 기르는 교육의 필요성을 역설한다.\u003c/div>\u003cdiv class=\"y-box y-cg\" data-hl=\"rw\">\u003cb class=\"y-lb\">표현 바꿔 쓰기\u003c/b>\u003cdiv class=\"y-pair\">\u003cspan class=\"f\">rather than mere fact acquisition\u003c/span>\u003cspan class=\"ar\">→\u003c/span>\u003cspan class=\"t\">instead of simple memorization\u003c/span>\u003cdiv class=\"w\">단순한 암기라는 의미로 바꾸어 문맥의 명확성을 높였다.\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"y-box y-cg\" data-hl=\"ph\">\u003cb class=\"y-lb\">어구 정리\u003c/b>\u003cdiv class=\"y-pair\">\u003cspan class=\"f\">acquisition\u003c/span>\u003cspan class=\"ar\">→\u003c/span>\u003cspan class=\"t\">gathering, attainment\u003c/span>\u003cspan class=\"y-eq\">acquisition = attainment\u003c/span>\u003cdiv class=\"w\">습득이나 획득을 뜻하는 명사 유의어이다.\u003c/div>\u003c/div>\u003cdiv class=\"y-pair\">\u003cspan class=\"f\">mirror\u003c/span>\u003cspan class=\"ar\">→\u003c/span>\u003cspan class=\"t\">reflect, echo\u003c/span>\u003cspan class=\"y-eq\">mirror = reflect\u003c/span>\u003cdiv class=\"w\">반영하다라는 뜻의 동사 유의어이다.\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"y-box y-pp\" data-hl=\"pp\">\u003cb class=\"y-lb\">패러프레이징\u003c/b>\u003cdiv class=\"p\">Applying mathematical concepts, instead of simply gathering facts, is what pupils will need in their careers and everyday existence, so math teaching needs to reflect these actual circumstances.\u003c/div>\u003c/div>","segs":[{"n":23,"text":"그냥 단순한 지식 암기가 아니라 수학을 실제로 적용하는 능력이 직장과 삶에서 요구되므로, 수학 교육도 당연히 현실을 반영해야 한다는 뜻이죠.","hl":"mn"},{"n":24,"text":"rather than mere fact acquisition은 instead of simple memorization 같은 표현으로 바꾸어 쓸 수 있어요.","hl":"rw"},{"n":25,"text":"acquisition은 attainment로, mirror는 reflect라는 단어로 바꾸어 쓸 수 있다는 점을 알아두세요.","hl":"ph"},{"n":26,"text":"Applying mathematical concepts, instead of simply gathering facts, is what pupils will need in their careers로 패러프레이징할 수 있답니다.","hl":"pp"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">문장 5 / 6\u003c/span>\u003cspan class=\"g-kind\">직독직해와 구문\u003c/span>\u003c/div>\u003cdiv class=\"y-sen\" data-hl=\"sen\">For the past seven years, since our former gym was destroyed by fire, students \u003cspan class=\"fx\">have been deprived of adequate facilities\u003c/span> for physical education classes and other activities. We have had to suspend those classes during the winter.\u003c/div>\u003cdiv class=\"y-chunks\" data-hl=\"ch\">\u003cdiv class=\"e\">For the past seven years,\u003c/div>\u003cdiv class=\"k\">지난 7년간\u003c/div>\u003cdiv class=\"e\">since our former gym was destroyed by fire,\u003c/div>\u003cdiv class=\"k\">우리의 옛 체육관이 화재로 파괴된 이후\u003c/div>\u003cdiv class=\"e\">students have been deprived of adequate facilities\u003c/div>\u003cdiv class=\"k\">학생들은 적절한 시설을 빼앗겨왔다\u003c/div>\u003cdiv class=\"e\">for physical education classes and other activities.\u003c/div>\u003cdiv class=\"k\">체육수업과 다른 활동들을 위한\u003c/div>\u003cdiv class=\"e\">We have had to suspend those classes during the winter.\u003c/div>\u003cdiv class=\"k\">우리는 그런 수업들을 겨울동안에 중지해야만 했었다.\u003c/div>\u003c/div>\u003cdiv class=\"y-box y-st\" data-hl=\"st\">\u003cb class=\"y-lb\">구문\u003c/b>현재완료 \u003cb class=\"key\">수동태\u003c/b>와 \u003cb class=\"key\">since\u003c/b>절이 이끄는 부사절이 결합되어 과거부터 현재까지의 지속적인 상황을 나타낸다.\u003c/div>","segs":[{"n":27,"text":"For the past seven years, 지난 7년간. since our former gym was destroyed by fire, 우리의 옛 체육관이 화재로 파괴된 이후. students have been deprived of adequate facilities, 학생들은 적절한 시설을 빼앗겨왔다. for physical education classes and other activities, 체육수업과 다른 활동들을 위한. We have had to suspend those classes during the winter, 우리는 그런 수업들을 겨울동안에 중지해야만 했었다.","hl":"ch"},{"n":28,"text":"다섯 번째 문장에서는 현재완료 수동태인 have been deprived of가 쓰여서 지금까지 계속 박탈당해 왔다는 의미를 전달하고 있어요.","hl":"st"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">문장 5 / 6\u003c/span>\u003cspan class=\"g-kind\">의미와 바꿔 쓰기\u003c/span>\u003c/div>\u003cdiv class=\"y-sen sm\">For the past seven years, since our former gym was destroyed by fire, students \u003cspan class=\"fx\">have been deprived of adequate facilities\u003c/span> for physical education classes and other activities. We have had to suspend those classes during the winter.\u003c/div>\u003cdiv class=\"y-box y-mn\" data-hl=\"mn\">\u003cb class=\"y-lb\">함축적 의미\u003c/b>화재로 체육관이 소실된 이후 오랜 기간 학생들이 겪고 있는 교육 환경의 불편함을 드러낸다.\u003c/div>\u003cdiv class=\"y-box y-cg\" data-hl=\"rw\">\u003cb class=\"y-lb\">표현 바꿔 쓰기\u003c/b>\u003cdiv class=\"y-pair\">\u003cspan class=\"f\">have been deprived of\u003c/span>\u003cspan class=\"ar\">→\u003c/span>\u003cspan class=\"t\">have been stripped of\u003c/span>\u003cdiv class=\"w\">박탈당하다라는 의미의 수동태 표현을 동의어로 교체했다.\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"y-box y-cg\" data-hl=\"ph\">\u003cb class=\"y-lb\">어구 정리\u003c/b>\u003cdiv class=\"y-pair\">\u003cspan class=\"f\">deprive A of B\u003c/span>\u003cspan class=\"ar\">→\u003c/span>\u003cspan class=\"t\">strip A of B, rob A of B\u003c/span>\u003cspan class=\"y-eq\">deprive = strip\u003c/span>\u003cdiv class=\"w\">A에게서 B를 박탈하다라는 뜻의 주요 구문이다.\u003c/div>\u003c/div>\u003cdiv class=\"y-pair\">\u003cspan class=\"f\">suspend\u003c/span>\u003cspan class=\"ar\">→\u003c/span>\u003cspan class=\"t\">halt, postpone\u003c/span>\u003cspan class=\"y-eq\">suspend = halt\u003c/span>\u003cdiv class=\"w\">중지하다나 연기하다를 뜻하는 동사이다.\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"y-box y-pp\" data-hl=\"pp\">\u003cb class=\"y-lb\">패러프레이징\u003c/b>\u003cdiv class=\"p\">Over the last seven years, ever since the old sports hall burned down, learners have lacked proper amenities for gym lessons and extracurriculars, forcing us to halt those sessions in wintertime.\u003c/div>\u003c/div>","segs":[{"n":29,"text":"예전 체육관이 불에 탄 이후로 7년 동안 학생들이 제대로 된 체육 시설을 이용하지 못했고 겨울마다 수업을 중단할 수밖에 없었다는 안타까운 상황이에요.","hl":"mn"},{"n":30,"text":"have been deprived of를 have been stripped of 같은 표현으로 바꾸어 쓸 수도 있어요.","hl":"rw"},{"n":31,"text":"deprive A of B 구문은 strip A of B와 짝꿍이고, suspend는 halt나 postpone으로 바꿀 수 있답니다.","hl":"ph"},{"n":32,"text":"Over the last seven years, ever since the old sports hall burned down, learners have lacked proper amenities로 자연스럽게 바꿀 수 있어요.","hl":"pp"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">문장 6 / 6\u003c/span>\u003cspan class=\"g-kind\">직독직해와 구문\u003c/span>\u003c/div>\u003cdiv class=\"y-sen\" data-hl=\"sen\">Several plane crashes and near crashes \u003cspan class=\"fx\">have been attributed to\u003c/span> dangerous downward wind bursts known as wind shear.\u003c/div>\u003cdiv class=\"y-chunks\" data-hl=\"ch\">\u003cdiv class=\"e\">Several plane crashes and near crashes\u003c/div>\u003cdiv class=\"k\">몇몇 비행기 추락 사고와 추락할 뻔한 사고는\u003c/div>\u003cdiv class=\"e\">have been attributed to\u003c/div>\u003cdiv class=\"k\">탓으로 여겨져 왔다\u003c/div>\u003cdiv class=\"e\">dangerous downward wind bursts\u003c/div>\u003cdiv class=\"k\">위험한 하강 기류의\u003c/div>\u003cdiv class=\"e\">known as wind shear.\u003c/div>\u003cdiv class=\"k\">돌풍으로 알려져 있는\u003c/div>\u003c/div>\u003cdiv class=\"y-box y-st\" data-hl=\"st\">\u003cb class=\"y-lb\">구문\u003c/b>현재완료 \u003cb class=\"key\">수동태\u003c/b> 구문과 함께 \u003cb class=\"key\">A be attributed to B\u003c/b> 구조가 사용되어 원인과 결과를 연결한다.\u003c/div>","segs":[{"n":33,"text":"Several plane crashes and near crashes, 몇몇 비행기 추락 사고와 추락할 뻔한 사고는. have been attributed to, 탓으로 여겨져 왔다. dangerous downward wind bursts, 위험한 하강 기류의. known as wind shear, 돌풍으로 알려져 있는","hl":"ch"},{"n":34,"text":"여섯 번째 문장에서는 현재완료 수동태인 have been attributed to가 쓰여서 사고의 원인을 설명하고 있어요.","hl":"st"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">문장 6 / 6\u003c/span>\u003cspan class=\"g-kind\">의미와 바꿔 쓰기\u003c/span>\u003c/div>\u003cdiv class=\"y-sen sm\">Several plane crashes and near crashes \u003cspan class=\"fx\">have been attributed to\u003c/span> dangerous downward wind bursts known as wind shear.\u003c/div>\u003cdiv class=\"y-box y-mn\" data-hl=\"mn\">\u003cb class=\"y-lb\">함축적 의미\u003c/b>항공기 사고의 원인이 기상 이변인 윈드 시어에 있다는 점을 과학적으로 설명한다.\u003c/div>\u003cdiv class=\"y-box y-cg\" data-hl=\"rw\">\u003cb class=\"y-lb\">표현 바꿔 쓰기\u003c/b>\u003cdiv class=\"y-pair\">\u003cspan class=\"f\">have been attributed to\u003c/span>\u003cspan class=\"ar\">→\u003c/span>\u003cspan class=\"t\">have been caused by\u003c/span>\u003cdiv class=\"w\">~의 탓으로 돌려지다라는 표현을 원인 결과의 직접적인 수동태로 바꾸었다.\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"y-box y-cg\" data-hl=\"ph\">\u003cb class=\"y-lb\">어구 정리\u003c/b>\u003cdiv class=\"y-pair\">\u003cspan class=\"f\">be attributed to\u003c/span>\u003cspan class=\"ar\">→\u003c/span>\u003cspan class=\"t\">be ascribed to, be owing to\u003c/span>\u003cspan class=\"y-eq\">be attributed to = be ascribed to\u003c/span>\u003cdiv class=\"w\">~의 덕분으로 또는 탓으로 돌리다라는 의미의 표현이다.\u003c/div>\u003c/div>\u003cdiv class=\"y-pair\">\u003cspan class=\"f\">downward\u003c/span>\u003cspan class=\"ar\">→\u003c/span>\u003cspan class=\"t\">descending\u003c/span>\u003cspan class=\"y-eq\">downward = descending\u003c/span>\u003cdiv class=\"w\">하강하는이라는 의미의 형용사 유의어이다.\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"y-box y-pp\" data-hl=\"pp\">\u003cb class=\"y-lb\">패러프레이징\u003c/b>\u003cdiv class=\"p\">A number of aircraft accidents and close calls resulted from hazardous descending air currents referred to as wind shear.\u003c/div>\u003c/div>","segs":[{"n":35,"text":"비행기 사고나 아찔한 준사고들이 윈드 시어라고 불리는 위험한 하강 기류 때문에 발생했다고 여겨져 온다는 뜻이죠.","hl":"mn"},{"n":36,"text":"have been attributed to는 cause 동사를 활용한 have been caused by로 바꾸어 쓸 수 있어요.","hl":"rw"},{"n":37,"text":"be attributed to는 be ascribed to와 같고 downward는 descending으로 바꿀 수 있다는 것 기억해 주세요.","hl":"ph"},{"n":38,"text":"A number of aircraft accidents and close calls resulted from hazardous descending air currents referred to as wind shear라고 패러프레이징할 수 있답니다.","hl":"pp"}]},{"html":"\u003cspan class=\"lp-tag\">오늘의 정리\u003c/span>\u003ch2 class=\"g-h\">13강 noticing sentences\u003c/h2>\u003cul class=\"g-sum\" data-hl=\"sum\">\u003cli>이번 유닛에서는 \u003cb class=\"key\">가주어 진주어\u003c/b>, \u003cb class=\"key\">관계대명사\u003c/b>, \u003cb class=\"key\">현재완료 수동태\u003c/b> 등 문장의 뼈대를 잡아주는 핵심 구문들을 완벽하게 정리했습니다.\u003c/li>\u003c/ul>","segs":[{"n":39,"text":"오늘 이렇게 여섯 문장을 통해 다양한 구문 구조와 어휘들을 꼼꼼하게 살펴보았어요. 배운 내용들을 복습하면서 여러분 것으로 만드시길 바랄게요. 수고하셨습니다.","hl":"sum"}]}]});</script></body></html>

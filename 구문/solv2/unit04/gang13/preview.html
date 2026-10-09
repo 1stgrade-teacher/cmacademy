@@ -1,0 +1,279 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>수동태의 주요 패턴 정복하기 — 13강 preview</title><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@500;600;700&display=swap" rel="stylesheet"><style>html,body{margin:0;height:100%;background:#F3F3F5}#app{width:min(1040px,94vw);height:92vh;margin:4vh auto}@media (max-width:700px){#app{width:100vw;height:auto;margin:0}}
+.lp{--pk:#0E8A8C;--pk-t:#0A5F61;--pk-l:#DDF2F1;--pk-ll:#F3FAFA;--bl-l:#E9EEFB;--bl-t:#3A4FA3;height:100%;min-height:540px;background:#fff;color:#1B2733;border-radius:16px;display:flex;flex-direction:column;overflow:hidden;font-family:"IBM Plex Sans KR","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;box-shadow:0 2px 6px rgba(0,0,0,.06),0 14px 40px rgba(0,0,0,.08);outline:none}
+.lp *{box-sizing:border-box}
+.lp{word-break:keep-all;overflow-wrap:break-word}
+.lp-top{display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid #F1F1F1;position:relative}
+.lp-top::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,var(--pk),#7CCBC8)}
+.lp-brand{font-size:12.5px;font-weight:800;color:#fff;background:var(--pk);border-radius:999px;padding:3px 12px}
+.lp-name{flex:1;min-width:0;font-weight:800;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lp-slide{flex:1;min-height:0;overflow:auto;padding:30px 44px;display:flex;flex-direction:column}
+.lp-cap{flex-shrink:0;padding:10px 22px;background:#F3FAFA;border-top:1px solid #DDF2F1;font-size:15px;line-height:1.55;color:#4A5866;max-height:30%;overflow:auto}
+.lp-bar{flex-shrink:0;display:flex;align-items:center;gap:8px;padding:11px 18px;border-top:1px solid #F1F1F1;background:#FAFAFA;flex-wrap:wrap}
+.lp-tl{flex:1;min-width:120px;height:7px;background:#E3E9EE;border-radius:6px;overflow:hidden;cursor:pointer}
+.lp-tl>i{display:block;height:100%;width:0;background:var(--pk)}
+.lp-cnt{font-size:12.5px;color:#8493A1;font-variant-numeric:tabular-nums;min-width:50px;text-align:center}
+.lp select{width:auto}
+.lp button,.lp select{background:#fff;color:#1B2733;border:1px solid #DCDCDC;border-radius:8px;padding:7px 12px;font-weight:700;font-size:13.5px;cursor:pointer;font-family:inherit}
+.lp button.on{background:var(--pk-l);border-color:var(--pk-l);color:var(--pk-t)}
+.lp button.lp-play{background:var(--pk);border-color:var(--pk);color:#fff;min-width:96px}
+.lp-warn{padding:7px 20px;font-size:12.5px;color:var(--pk-t);background:var(--pk-ll)}
+.lp-tag{display:inline-block;align-self:flex-start;font-size:12.5px;font-weight:800;color:var(--pk-t);background:var(--pk-l);border-radius:999px;padding:3px 12px;margin-bottom:14px}
+.lp-cover{margin:auto 0;display:flex;gap:22px;align-items:stretch}
+.lp-qn{flex:0 0 110px;background:var(--pk);color:#fff;font-weight:800;font-size:28px;border-radius:14px;display:grid;place-items:center}
+.lp-cv{flex:1;min-width:0}
+.lp-cv .src{color:#8493A1;font-weight:700;font-size:14px}
+.lp-cv h1{margin:4px 0 2px;font-size:30px;line-height:1.25;font-weight:800}
+.lp-cv h2{margin:0 0 14px;font-size:17px;color:#4A5866;font-weight:700}
+.lp-row{display:flex;gap:10px;align-items:baseline;margin-top:6px;font-size:15.5px;padding:4px 8px;border-radius:8px}
+.lp-lb{flex:0 0 auto;font-size:12px;font-weight:800;color:var(--pk-t);background:var(--pk-l);border-radius:4px;padding:1px 8px}
+.lp-box{background:var(--pk-ll);border-radius:12px;padding:16px 20px;font-size:16.5px;line-height:1.75;color:#333}
+.lp b.key{color:var(--pk-t);background:linear-gradient(transparent 60%,#BFE8E5 60%)}
+.lp-st{border:1px solid #D6EAE9;border-radius:12px;padding:11px 16px;margin-bottom:9px}
+.lp-st h4{margin:0 0 3px;font-size:16px;color:var(--pk-t);display:flex;gap:8px;align-items:center}
+.lp-st h4 i{font-style:normal;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--pk);color:#fff;font-size:12px}
+.lp-st h4 small{color:#8493A1;font-size:12.5px}
+.lp-st p{margin:0;font-size:15px;line-height:1.65;color:#444}
+.lp-big{font-size:28px;font-weight:800}
+.lp-pill{display:inline-block;font-size:13px;font-weight:800;color:var(--pk-t);background:var(--pk-l);border-radius:999px;padding:3px 12px;margin-left:8px;vertical-align:5px}
+.lp-sig{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:15px;margin-top:8px}
+.lp-sig b{color:var(--pk-t)}
+.lp-chain{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px;font-size:15px}
+.lp-chain span.c{background:var(--bl-l);color:var(--bl-t);font-weight:700;border-radius:6px;padding:2px 10px}
+.lp-chain span.a{color:#999}
+.lp-ct{width:100%;border-collapse:collapse;margin-top:10px;font-size:14.5px}
+.lp-ct th,.lp-ct td{border:1px solid #CFE5E4;padding:6px 10px;text-align:left}
+.lp-ct th{background:var(--pk-ll);color:var(--pk-t)}
+.lp-vg{display:grid;grid-template-columns:repeat(3,1fr);gap:2px 22px}
+.lp-vg div{display:flex;gap:10px;padding:6px 2px;border-bottom:1px solid #F4F4F4;font-size:15.5px;align-items:baseline}
+.lp-vg b{font-weight:800}
+.lp-vg em{font-style:normal;font-size:11px;font-weight:700;color:var(--pk-t);background:var(--pk-l);border-radius:4px;padding:0 5px}
+.lp-vg span{color:#555;margin-left:auto;text-align:right}
+.lp-sa{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 18px}
+.lp-sa>div{border:1px solid #F1F1F1;border-radius:10px;padding:10px 14px}
+.lp-sa b.w{font-size:17px}
+.lp-sa .m{color:#666;margin-left:6px;font-size:14px}
+.lp-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;align-items:center}
+.lp-chips span{font-size:13.5px;font-weight:700;border-radius:5px;padding:1px 9px}
+.lp-chips .s{background:var(--bl-l);color:var(--bl-t)}
+.lp-chips .a{background:#FFF1D8;color:#8A5A00}
+.lp-chips .x{background:none;color:#999;padding:0}
+.lp-sno{font-size:13px;color:#8493A1;font-weight:700;margin-bottom:8px}
+.lp-sno .es{color:#fff;background:#E0952B;border-radius:4px;padding:1px 8px;font-size:11.5px;margin-left:8px}
+.lp-chunks{display:flex;flex-wrap:wrap;gap:16px 10px;margin-bottom:12px;align-items:flex-end}
+.lp-chunk{display:flex;flex-direction:column}
+.lp-chunk .ko{font-size:13px;color:var(--pk-t);font-weight:700;line-height:1.3;margin-bottom:2px}
+.lp-chunk .en{font-size:24px;font-weight:700;line-height:1.4}
+.lp-chunk+.lp-chunk{padding-left:10px;border-left:2px solid #D6EAE9}
+.lp .tgt{background:#FFF0C7;border-bottom:2.5px solid var(--pk);padding:0}
+.lp .mk{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--pk);color:#fff;font-size:11.5px;font-weight:800;margin:0 3px;vertical-align:4px;line-height:1}
+.lp-ko{font-size:16px;font-weight:700;background:var(--pk-ll);border-radius:10px;padding:9px 14px;margin-bottom:8px}
+.lp-mn{font-size:15px;line-height:1.65;background:#FFF8E8;border:1px solid #F0D9A5;border-radius:10px;padding:9px 14px;margin-bottom:8px;color:#444}
+.lp-ap{font-size:14.5px;line-height:1.6;border:1px solid #BFE8E5;border-radius:10px;padding:9px 14px}
+.lp-ap h5{margin:0 0 4px;display:inline-block;background:var(--pk);color:#fff;font-size:12px;border-radius:4px;padding:1px 9px}
+.lp-ap .gi{margin:3px 0}
+.lp-ap .gn{color:var(--pk-t);font-weight:800}
+.lp-fin ul{margin:0 0 12px;padding-left:20px;font-size:16px;line-height:1.75}
+.lp-hl{box-shadow:0 0 0 3px #7CCBC8,0 0 22px 4px rgba(14,138,140,.28)!important;border-radius:12px;transition:box-shadow .2s}
+@media (max-width:700px){.lp{min-height:0;height:100vh;height:100dvh;border-radius:0}.lp-slide{padding:18px 16px}.lp-cover{flex-direction:column}.lp-qn{flex:0 0 64px}.lp-cv h1{font-size:21px}.lp-chunk .en{font-size:18px}.lp-vg,.lp-sa{grid-template-columns:1fr}.lp-box{font-size:15px}.lp-big{font-size:21px}}
+
+.lp-box b.h{color:var(--pk-t);margin-right:8px}
+.lp{--g-ok:#1F8A57;--g-ok-l:#E9F7EF;--g-err:#D43A3A;--g-err-l:#FDECEC}
+.g-cover{margin:auto 0;text-align:left}
+.g-cover .g-unit{display:inline-block;font-size:14px;font-weight:800;color:var(--bl-t);background:var(--bl-l);border-radius:999px;padding:3px 14px;margin-bottom:10px}
+.g-cover h1{margin:0 0 18px;font-size:34px;line-height:1.25;font-weight:800}
+.g-h{margin:0 0 12px;font-size:24px;font-weight:800;line-height:1.3}
+.g-rule{background:var(--pk-ll);border-radius:12px;padding:14px 18px;font-size:17px;line-height:1.7;margin-bottom:12px}
+.g-formula{display:inline-block;margin-top:8px;background:#fff;border:1.5px solid var(--bl-l);color:var(--bl-t);font-weight:800;border-radius:8px;padding:4px 12px;font-size:16px}
+.g-exs{display:grid;gap:8px;margin-bottom:12px}
+.g-ex{border:1px solid #F1F1F1;border-radius:12px;padding:10px 16px;position:relative}
+.g-en{font-size:21px;font-weight:700;line-height:1.45}
+.g-en .fx{background:#FFF0C7;border-bottom:2.5px solid var(--pk)}
+.g-ko{font-size:15px;color:var(--pk-t);font-weight:700;margin-top:2px}
+.g-note{font-size:14px;color:#555;margin-top:3px}
+.g-add{position:absolute;top:8px;right:10px;font-size:11px;font-weight:700;color:#8493A1;background:#F4F4F4;border-radius:4px;padding:1px 6px}
+.g-tip{background:#FFF8E8;border:1px solid #F0D9A5;border-radius:12px;padding:10px 16px;font-size:15.5px;line-height:1.65}
+.g-tip>b{color:#8A6D00;margin-right:6px}
+.g-mk{border:1px solid #F1F1F1;border-radius:12px;padding:10px 16px;margin-bottom:9px}
+.g-wrong{font-size:19px;font-weight:700;color:var(--g-err)}
+.g-wrong s{text-decoration-thickness:2px}
+.g-right{font-size:19px;font-weight:700;color:var(--g-ok);margin-top:2px}
+.g-why{font-size:14.5px;color:#555;margin-top:4px}
+.g-tags{display:flex;gap:8px;align-items:flex-start}
+.g-kind{display:inline-block;font-size:12.5px;font-weight:800;color:var(--bl-t);background:var(--bl-l);border-radius:999px;padding:3px 11px}
+.g-q{font-size:18px;font-weight:700;margin-bottom:10px;line-height:1.55}
+.g-qs{font-size:22px;font-weight:700;line-height:1.5;background:#FAFAFA;border-radius:12px;padding:12px 16px;margin-bottom:10px}
+.g-opts{display:grid;gap:6px;margin-bottom:10px}
+.g-opt{display:block;width:100%;text-align:left;background:#fff!important;border:1.5px solid #E6E6E6!important;border-radius:10px!important;padding:9px 14px!important;font-size:17px!important;font-weight:600!important;cursor:pointer;color:#1B2733!important}
+.g-opt b{color:var(--pk-t);margin-right:6px}
+.g-opt.picked{border-color:var(--pk)!important;background:var(--pk-ll)!important}
+.g-opts.rv .g-opt[data-ok="1"]{border-color:var(--g-ok)!important;background:var(--g-ok-l)!important}
+.g-opts.rv .g-opt.picked:not([data-ok="1"]){border-color:var(--g-err)!important;background:var(--g-err-l)!important}
+.g-ans{display:none;background:var(--g-ok-l);border-radius:12px;padding:12px 16px;font-size:16px;line-height:1.65}
+.g-ans.rv{display:block}
+.g-ans>b{color:var(--g-ok);margin-right:6px}
+.g-ans .a{font-weight:800;font-size:18px}
+.g-exp{margin-top:4px;color:#333}
+.lp button.g-show{margin-top:4px;background:#fff;color:var(--g-ok);border-color:#C6EBD5}
+.g-sum{margin:0;padding-left:22px;font-size:18px;line-height:1.8}
+.lp-think{position:absolute;right:22px;bottom:16px;background:#1B2733;color:#fff;font-weight:800;font-size:15px;border-radius:999px;padding:8px 16px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.lp-slide{position:relative}
+@media (max-width:700px){.g-cover h1{font-size:23px}.g-h{font-size:19px}.g-en,.g-qs{font-size:17px}.g-rule{font-size:15px}.g-opt{font-size:15px!important}}
+.d-chat{display:flex;flex-direction:column;gap:8px}
+.d-bub{max-width:78%;border-radius:16px;padding:9px 15px;position:relative}
+.d-bub.d-l{align-self:flex-start;background:#F4F6F8;border-top-left-radius:4px}
+.d-bub.d-r{align-self:flex-end;background:var(--pk-ll);border-top-right-radius:4px}
+.d-bub .d-sp{font-size:12px;font-weight:800;color:#8493A1;display:block;margin-bottom:1px}
+.d-en{font-size:18px;font-weight:600;line-height:1.45}
+.d-key{background:var(--pk-ll);border-radius:14px;padding:14px 18px;margin-bottom:12px}
+.d-keyexp{font-size:24px;font-weight:800;line-height:1.35}
+.d-mean{font-size:16px;color:var(--pk-t);font-weight:700;margin-top:3px}
+.d-from{font-size:14px;color:#666;margin-top:6px}
+.d-exp{font-size:15px;line-height:1.65;margin-top:8px;color:#333}
+.d-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.d-box{border:1px solid #E9EEFB;border-radius:12px;padding:10px 14px}
+.d-box>b{display:inline-block;font-size:13px;color:var(--bl-t);background:var(--bl-l);border-radius:999px;padding:2px 10px;margin-bottom:6px}
+.d-box.a>b{color:#1F8A57;background:#E9F7EF}
+.d-box ul{margin:0;padding-left:18px;font-size:16.5px;line-height:1.75;font-weight:600}
+.d-line{border:1px solid #F1F1F1;border-radius:12px;padding:10px 16px;margin-bottom:10px}
+.d-lh{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.d-lh .d-sp{font-size:12.5px;font-weight:800;border-radius:6px;padding:1px 9px;background:#F4F6F8;color:#555}
+.d-lh .d-sp.d-r{background:var(--pk-l);color:var(--pk-t)}
+.d-ln{font-size:12px;color:#999}
+.d-en2{font-size:20px;font-weight:700;line-height:1.55}
+.d-ko{font-size:15px;color:var(--pk-t);font-weight:700;margin-top:2px}
+.d-notes{margin-top:7px;display:grid;gap:4px}
+.d-note{display:flex;gap:6px;font-size:14.5px;line-height:1.6;color:#333;align-items:baseline}
+.d-alt{margin-top:7px;background:#FFF8E8;border:1px solid #F0D9A5;border-radius:10px;padding:7px 12px;font-size:15px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.d-alt>b{color:#8A6D00;font-size:13px}
+.d-alt span{font-weight:600}
+.d-alt span+span::before{content:"/";color:#C9B95A;margin-right:10px}
+@media (max-width:700px){.d-cols{grid-template-columns:1fr}.d-en2{font-size:16px}.d-keyexp{font-size:19px}}
+
+.lp{--pk-b:#B5DEDC;--am:#E0952B;--am-l:#FFF3DC;--am-b:#F0D9A5;--am-d:#8A5A00}
+.lp-top{border-bottom:1.5px solid var(--pk)}
+.lp-top::before{height:5px;background:linear-gradient(90deg,var(--pk) 0,var(--pk) 80%,var(--am) 80%,var(--am) 100%)}
+.lp-brand{background:#fff;color:var(--pk-t);border:1px solid var(--pk);border-radius:3px;font-weight:700;letter-spacing:.02em;padding:2px 11px}
+.lp-name{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700;color:var(--pk-t)}
+.lp-tag{background:#fff;border:1px solid var(--pk-b);border-radius:3px;font-weight:700;padding:2px 12px}
+.lp-qn{flex:0 0 112px;height:112px;align-self:center;background:#fff;color:var(--pk);border:3px solid var(--pk);border-radius:50%;font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700;font-size:26px}
+.lp-cv h1,.lp-big{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700}
+.lp-lb{background:none;border:0;border-bottom:2px solid var(--am);border-radius:0;padding:0 2px;color:var(--pk-t);font-weight:700}
+.lp-box{border-radius:4px;border-left:4px solid var(--pk)}
+.lp-st{border-radius:4px;border-left:4px solid var(--pk-b)}
+.lp-st h4{color:var(--ink,#1B2733)}
+.lp-st h4 i{border-radius:4px;width:auto;min-width:24px;padding:0 4px}
+.lp-pill{background:#fff;border:1px solid var(--pk-b);border-radius:3px;font-weight:700}
+.lp-chain span.c{background:#fff;border:1px solid #AEBBE6;border-radius:3px;font-weight:600}
+.lp-ct th{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif}
+.lp-vg em{background:#fff;border:1px solid var(--pk-b);border-radius:3px}
+.lp-sa>div{border-radius:4px;border-color:var(--pk-b)}
+.lp-chips span{border-radius:3px;background:#fff}
+.lp-chips .s{border:1px solid #AEBBE6;color:#3A4FA3}
+.lp-chips .a{border:1px solid var(--am-b);color:var(--am-d);background:#FFFBF2}
+.lp-sno .es{background:var(--am);border-radius:2px;font-weight:700}
+.lp-chunk .en{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:600}
+.lp-chunk+.lp-chunk{border-left:1px solid var(--pk-b)}
+.lp .tgt{background:var(--am-l);border-bottom:2.5px dotted var(--am)}
+.lp .mk{border-radius:4px;width:auto;min-width:20px;padding:0 3px;background:var(--pk-t)}
+.lp-ko{border-radius:0;border-left:4px solid var(--pk);background:none;padding:4px 0 4px 12px}
+.lp-mn{border-radius:4px;background:var(--am-l);border-color:var(--am-b);color:#5C4510}
+.lp-ap{border-radius:4px;border:1px solid var(--pk-b);border-top:3px solid var(--pk);background:var(--pk-ll)}
+.lp-ap h5{background:none;color:var(--pk-t);padding:0;font-size:12.5px;font-weight:700}
+.lp-hl{border-radius:6px}
+.lp button.lp-play,.lp button,.lp select{border-radius:4px}
+@media (max-width:700px){.lp-qn{flex:0 0 72px;height:72px;font-size:18px}}
+
+.g-rule{border-radius:3px;border-left:4px solid var(--pk)}
+.g-formula{border-radius:2px;background:#fff;border:1px solid #AEBBE6;color:#3A4FA3}
+.g-ex{border-radius:3px}
+.g-en{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:600}
+.g-en .fx{background:var(--am-l);border-bottom:2.5px dotted var(--am)}
+.g-tip{border-radius:3px;background:var(--am-l);border-color:var(--am-b)}
+.g-mk{border-radius:3px}
+.g-kind{border-radius:2px;background:#fff;border:1px solid #AEBBE6;color:#3A4FA3}
+.g-qs{border-radius:3px}
+.g-opt{border-radius:3px!important}
+.g-ans{border-radius:3px}
+.g-add{border-radius:2px}
+.d-bub{border-radius:6px}
+.d-key{border-radius:3px;border-left:4px solid var(--pk)}
+.d-box{border-radius:3px}
+.d-box>b{border-radius:2px;background:#fff;border:1px solid #AEBBE6;color:#3A4FA3}
+.d-line{border-radius:3px}
+.d-en2,.d-keyexp{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700}
+.d-alt{border-radius:3px;background:var(--am-l);border-color:var(--am-b)}
+
+.y-sen{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-size:23px;font-weight:700;line-height:1.55;margin:4px 0 14px;color:#1B2733}
+.y-sen.sm{font-size:17px;margin-bottom:10px;color:#4A5866}
+.y-sen .fx,.y-li .fx{background:var(--am-l,#FFF3DC);border-bottom:2.5px dotted var(--am,#E0952B)}
+.y-chunks{display:grid;grid-template-columns:minmax(40%,auto) 1fr;border:1px solid var(--pk-b,#B5DEDC);border-radius:4px;margin-bottom:12px;overflow:hidden}
+.y-chunks>div{padding:7px 14px;border-bottom:1px solid #EEF3F3}
+.y-chunks .e{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:600;font-size:17px;border-right:1px solid #EEF3F3;background:#FBFEFE}
+.y-chunks .k{color:var(--pk-t);font-size:15px;font-weight:600}
+.y-box{border-radius:4px;padding:10px 14px;margin-bottom:10px;font-size:15.5px;line-height:1.7}
+.y-lb{display:inline-block;font-size:12.5px;font-weight:800;color:var(--pk-t);background:#fff;border:1px solid var(--pk-b,#B5DEDC);border-radius:3px;padding:0 8px;margin-right:8px;vertical-align:1px}
+.y-st{background:var(--pk-ll);border-left:4px solid var(--pk)}
+.y-mn{background:var(--am-l,#FFF3DC);border:1px solid var(--am-b,#F0D9A5)}
+.y-mn .y-lb{color:var(--am-d,#8A5A00);border-color:var(--am-b,#F0D9A5)}
+.y-cg{border:1px solid var(--pk-b,#B5DEDC)}
+.y-pair{padding:6px 0 4px;border-top:1px dashed #E3E9EE}
+.y-pair:first-of-type{border-top:0}
+.y-pair .f{font-family:"Noto Serif KR",Georgia,serif;font-weight:600;color:#4A5866}
+.y-pair .ar{color:var(--pk);margin:0 8px;font-weight:800}
+.y-pair .t{font-family:"Noto Serif KR",Georgia,serif;font-weight:700;color:#1B2733;background:var(--pk-ll);padding:0 4px}
+.y-pair .w{font-size:14px;color:#4A5866;margin-top:2px}
+.y-eq{display:inline-block;margin-left:10px;font-size:12.5px;font-weight:700;color:#3A4FA3;border:1px solid #AEBBE6;border-radius:3px;padding:0 7px}
+.y-pp{background:#F6F8FA;border-left:4px solid #3A4FA3}
+.y-pp .y-lb{color:#3A4FA3;border-color:#AEBBE6}
+.y-pp .p{font-family:"Noto Serif KR",Georgia,serif;font-size:18px;font-weight:700;margin-top:6px;line-height:1.55}
+.y-list{display:grid;gap:6px;margin-top:4px}
+.y-li{font-family:"Noto Serif KR",Georgia,serif;font-size:16px;line-height:1.6;display:block;padding-left:32px;text-indent:-32px}
+.y-no{display:inline-block;text-indent:0;min-width:22px;height:20px;line-height:20px;text-align:center;border-radius:3px;background:var(--pk);color:#fff;font-family:sans-serif;font-size:12px;font-weight:800;margin-right:10px;vertical-align:1px}
+@media (max-width:700px){.y-sen{font-size:18px}.y-chunks{grid-template-columns:1fr}.y-chunks .e{border-right:0}}
+</style></head><body><div id="app"></div><script>function lecturePlayer(root,D){
+  root.innerHTML='<div class="lp" tabindex="0"><div class="lp-top"><span class="lp-brand"></span><span class="lp-name"></span></div><div class="lp-warn" hidden></div><div class="lp-slide"></div><div class="lp-cap" hidden></div><div class="lp-bar"><div class="lp-tl" title="슬라이드 이동"><i></i></div><span class="lp-cnt"></span><button class="lp-cc">자막</button><select class="lp-rate" title="재생 속도"><option value="0.8">0.8x</option><option value="1" selected>1.0x</option><option value="1.2">1.2x</option><option value="1.4">1.4x</option><option value="1.6">1.6x</option><option value="2">2.0x</option></select><button class="lp-prev" aria-label="이전 슬라이드">◀</button><button class="lp-play">▶ 재생</button><button class="lp-next" aria-label="다음 슬라이드">▶</button></div></div>';
+  var q=function(s){return root.querySelector(s);},box=q(".lp"),sl=q(".lp-slide"),cap=q(".lp-cap"),cnt=q(".lp-cnt"),fill=q(".lp-tl>i"),tl=q(".lp-tl"),pp=q(".lp-play"),cc=q(".lp-cc"),warn=q(".lp-warn");
+  q(".lp-brand").textContent=D.brand;q(".lp-name").textContent=D.title;
+  var i=0,j=0,playing=false,rate=1,timer=null,tick=null,capOn=!!D.preview,noAudio=!!D.preview,a=new Audio(),think=null;
+  if(D.preview){cc.classList.add("on");}
+  function segs(){return D.slides[i].segs||[];}
+  function setFill(f){var s=segs(),n=D.slides.length,sf=s.length?(j+(f||0))/s.length:0;fill.style.width=Math.min(100,(i+sf)/n*100)+"%";}
+  function showCap(){var s=segs()[j];cap.textContent=s?s.text:"";cap.hidden=!(capOn&&s&&s.text&&s.text.trim());cc.classList.toggle("on",capOn);}
+  function clearHl(){var e=sl.querySelectorAll(".lp-hl");for(var x=0;x<e.length;x++)e[x].classList.remove("lp-hl");}
+  function hl(k){clearHl();if(!k)return;var e=sl.querySelector('[data-hl="'+k+'"]');if(e){e.classList.add("lp-hl");try{e.scrollIntoView({block:"nearest",behavior:"smooth"});}catch(_){}}}
+  function reveal(k){var e=sl.querySelectorAll('[data-rv="'+k+'"]');for(var x=0;x<e.length;x++)e[x].classList.add("rv");var b=sl.querySelector('[data-act="show"]');if(b)b.hidden=true;}
+  function stopAll(){if(timer){clearTimeout(timer);timer=null;}if(tick){clearInterval(tick);tick=null;}if(think){think.remove();think=null;}try{a.pause();}catch(_){}}
+  function silent(s){var dur=Math.max(1800,s.text.length*130/rate+700),t0=Date.now();if(!capOn){capOn=true;showCap();}
+    tick=setInterval(function(){setFill(Math.min(1,(Date.now()-t0)/dur));},200);timer=setTimeout(function(){stopAll();segEnd();},dur);}
+  function pause(sec){var left=sec,t0=Date.now();think=document.createElement("div");think.className="lp-think";think.textContent="생각할 시간 "+left+"초";sl.appendChild(think);
+    tick=setInterval(function(){left=Math.max(0,sec-Math.floor((Date.now()-t0)/1000));if(think)think.textContent="생각할 시간 "+left+"초";setFill(Math.min(1,(Date.now()-t0)/(sec*1000)));},250);
+    timer=setTimeout(function(){stopAll();segEnd();},sec*1000/Math.max(.5,rate));}
+  var bases=null,bi=0,okBase=false,att=0;
+  function cands(){if(bases)return bases;var out=[];function add(x){x=String(x||"").replace(/\/+$/,"");if(x&&out.indexOf(x)<0)out.push(x);}
+    add(D.audioDir);try{var f=decodeURIComponent(location.pathname.split("/").pop()||""),nm=f.replace(/\.html?$/i,"");if(nm){add(nm+"_audio");add(nm.replace(/_AI강의$/,"")+"_audio");}}catch(_){}
+    add("audio");bases=out;return out;}
+  function playAudio(s){a.src=encodeURI(cands()[bi])+"/"+s.n+".mp3";a.playbackRate=rate;a.play().catch(function(){});}
+  function runSeg(){stopAll();var s=segs()[j];clearHl();setFill(0);showCap();if(!s)return;hl(s.hl);if(s.reveal)reveal(s.reveal);if(!playing)return;
+    if(s.pause){pause(s.pause);return;}
+    if(noAudio){silent(s);return;}
+    att=0;playAudio(s);}
+  a.onloadeddata=function(){okBase=true;};
+  a.onerror=function(){if(!playing)return;var s=segs()[j];if(!s||s.pause)return;var L=cands().length;if(!okBase&&att<L-1){att++;bi=(bi+1)%L;playAudio(s);return;}if(!okBase)bi=(bi+1)%L;warn.hidden=false;warn.textContent="음성 파일("+cands()[bi]+"/"+s.n+".mp3)을 찾지 못해 자막으로 진행합니다.";silent(s);};
+  a.ontimeupdate=function(){if(a.duration)setFill(a.currentTime/a.duration);};
+  a.onended=function(){segEnd();};
+  function segEnd(){if(!playing)return;if(j<segs().length-1){j++;runSeg();}else if(i<D.slides.length-1){i++;show();}else{playing=false;pp.textContent="▶ 재생";clearHl();fill.style.width="100%";}}
+  function show(){stopAll();sl.innerHTML=D.slides[i].html;sl.scrollTop=0;cnt.textContent=(i+1)+" / "+D.slides.length;j=0;runSeg();}
+  function go(d){i=Math.max(0,Math.min(D.slides.length-1,i+d));show();}
+  function toggle(){playing=!playing;pp.textContent=playing?"⏸ 일시정지":"▶ 재생";if(playing){var s=segs()[j];if(!noAudio&&s&&!s.pause&&a.src&&a.currentTime>0&&!a.ended&&a.paused&&!timer){a.play().catch(function(){});}else runSeg();}else stopAll();}
+  sl.addEventListener("click",function(e){var t=e.target.closest?e.target.closest(".g-opt,[data-act]"):null;if(!t)return;
+    if(t.getAttribute("data-act")==="show"){reveal("ans");return;}
+    var g=t.parentNode;if(g&&g.classList.contains("rv"))return;[].forEach.call(g.querySelectorAll(".g-opt"),function(o){if(o!==t)o.classList.remove("picked");});t.classList.toggle("picked");});
+  q(".lp-prev").onclick=function(){go(-1);};q(".lp-next").onclick=function(){go(1);};pp.onclick=toggle;
+  cc.onclick=function(){capOn=!capOn;showCap();};
+  q(".lp-rate").onchange=function(e){rate=parseFloat(e.target.value)||1;a.playbackRate=rate;};
+  tl.onclick=function(e){var r=tl.getBoundingClientRect();i=Math.max(0,Math.min(D.slides.length-1,Math.floor((e.clientX-r.left)/r.width*D.slides.length)));show();};
+  box.addEventListener("keydown",function(e){if(e.target.tagName==="SELECT")return;if(e.key===" "){e.preventDefault();toggle();}else if(e.key==="ArrowRight")go(1);else if(e.key==="ArrowLeft")go(-1);});
+  show();
+  return {stop:function(){playing=false;pp.textContent="▶ 재생";stopAll();}};
+}
+lecturePlayer(document.getElementById("app"),{"brand":"13강 preview","title":"수동태의 주요 패턴 정복하기","audioDir":"문법_13강_수동태의_주요패턴_audio","preview":false,"count":20,"slides":[{"html":"\u003cdiv class=\"g-cover\">\u003cdiv class=\"g-unit\">13강 수동태의 주요패턴\u003c/div>\u003ch1>수동태의 주요 패턴 정복하기\u003c/h1>\u003cdiv class=\"lp-box\" data-hl=\"goal\">\u003cb class=\"h\">오늘의 목표\u003c/b>수동태의 주요 패턴인 be v-ed + 준동사와 전치사 수동구를 완벽하게 이해하고 해석한다.\u003c/div>\u003c/div>","segs":[{"n":1,"text":"안녕하세요 여러분 고등학교 영문법 마스터 과정에 오신 것을 환영해요. 오늘 우리는 수동태의 주요 패턴이라는 아주 중요한 단원을 공부할 거예요. 독해와 시험에서 자주 나오는 형태들이니까 선생님과 함께 집중해서 꼼꼼히 살펴봐요.","hl":"goal"}]},{"html":"\u003cspan class=\"lp-tag\">개념 1 / 3\u003c/span>\u003ch2 class=\"g-h\">be v-ed + to-v\u003c/h2>\u003cdiv class=\"g-rule\" data-hl=\"rule\">허락, 기대, 권유, 요청 등을 나타내는 \u003cb class=\"key\">V + O + to-v\u003c/b> 형태의 수동형은 \u003cb class=\"key\">be v-ed + to-v\u003c/b> 패턴으로 쓰여요. \n[도식: V + O + to-v ➔ 주어 + be v-ed + to-v]\u003cdiv>\u003cspan class=\"g-formula\">V + O + to-v -&gt; be v-ed + to-v\u003c/span>\u003c/div>\u003c/div>\u003cdiv class=\"g-exs\">\u003cdiv class=\"g-ex\" data-hl=\"ex-0\">\u003cdiv class=\"g-en\">I \u003cspan class=\"fx\">was told to go\u003c/span> not by train but by plane by my boss.\u003c/div>\u003cdiv class=\"g-ko\">나는 상사로부터 기차가 아니라 비행기를 타고 가라는 지시를 받았다.\u003c/div>\u003cdiv class=\"g-note\">tell의 수동형 뒤에 to-v가 온 형태\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-1\">\u003cdiv class=\"g-en\">In schools, students \u003cspan class=\"fx\">are not allowed to use\u003c/span> their smart phone.\u003c/div>\u003cdiv class=\"g-ko\">학교에서 학생들은 스마트폰을 사용하는 것이 허락되지 않는다.\u003c/div>\u003cdiv class=\"g-note\">allow의 수동형 뒤에 to-v가 온 형태\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-2\">\u003cdiv class=\"g-en\">Lower oil prices \u003cspan class=\"fx\">are expected to stimulate\u003c/span> demand.\u003c/div>\u003cdiv class=\"g-ko\">유가 하락은 수요를 자극할 것으로 기대된다.\u003c/div>\u003cdiv class=\"g-note\">expect의 수동형 뒤에 to-v가 온 형태\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"g-tip\" data-hl=\"tip\">\u003cb>주의\u003c/b>be left, be found, be seen, be heard 같은 동사들은 뒤에 \u003cb class=\"key\">v-ing\u003c/b>나 \u003cb class=\"key\">v-ed\u003c/b>를 목적격 보어처럼 취한다는 점을 기억하세요.\u003c/div>","segs":[{"n":2,"text":"첫 번째 개념은 be v-ed 플러스 투브이 패턴이에요. 허락이나 기대나 권유나 요청을 받을 때 쓰는 표현으로 원래 목적격 보어로 투부정사를 취하던 동사의 수동태랍니다. 독해에서 정말 자주 나오니까 꼭 기억해 둬야 해요.","hl":"rule"},{"n":3,"text":"첫 번째 예문을 함께 볼까요. I was told to go not by train but by plane by my boss. 나는 상사로부터 기차가 아니라 비행기를 타고 가라는 지시를 받았다라는 뜻이에요. be told 뒤에 to go가 와서 하라고 들었다라는 의미를 만들고 있죠.","hl":"ex-0"},{"n":4,"text":"두 번째 예문이에요. In schools, students are not allowed to use their smart phone. 학교에서 학생들은 스마트폰을 사용하는 것이 허락되지 않는다는 뜻이죠. are not allowed 뒤에 to use가 붙어서 허락받지 못한다는 의미를 나타내요.","hl":"ex-1"},{"n":5,"text":"세 번째 예문을 읽어 볼게요. Lower oil prices are expected to stimulate demand. 유가 하락은 수요를 자극할 것으로 기대된다는 의미예요. are expected 뒤에 to stimulate가 와서 ~할 것으로 기대된다고 해석하면 된답니다.","hl":"ex-2"},{"n":6,"text":"여기서 잠깐 주의할 팁을 줄게요. be left나 be found나 be seen이나 be heard 같은 동사들은 뒤에 to부정사가 아니라 ing나 과거분사를 취한다는 것을 꼭 기억해 주세요.","hl":"tip"}]},{"html":"\u003cspan class=\"lp-tag\">개념 2 / 3\u003c/span>\u003ch2 class=\"g-h\">be v-ed + v-ing / v-ed\u003c/h2>\u003cdiv class=\"g-rule\" data-hl=\"rule\">무엇을 하고 있거나 된 \u003cb class=\"key\">상태에 놓이는 것\u003c/b>이나 \u003cb class=\"key\">감각에 의해 지각되는 것\u003c/b>을 나타낼 때 \u003cb class=\"key\">be v-ed + v-ing / v-ed\u003c/b> 패턴을 사용해요. \n[도식: V + O + v-ing/v-ed ➔ 주어 + be v-ed + v-ing/v-ed]\u003cdiv>\u003cspan class=\"g-formula\">V + O + v-ing / v-ed -&gt; be v-ed + v-ing / v-ed\u003c/span>\u003c/div>\u003c/div>\u003cdiv class=\"g-exs\">\u003cdiv class=\"g-ex\" data-hl=\"ex-0\">\u003cdiv class=\"g-en\">Two bodies \u003cspan class=\"fx\">were found floating\u003c/span> on the coast.\u003c/div>\u003cdiv class=\"g-ko\">두 구체가 해안에 떠 있는 채로 발견되었다.\u003c/div>\u003cdiv class=\"g-note\">find의 수동형 뒤에 v-ing가 온 형태\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-1\">\u003cdiv class=\"g-en\">She \u003cspan class=\"fx\">was seen running\u003c/span> away from the scene of the crime.\u003c/div>\u003cdiv class=\"g-ko\">그녀는 범죄 현장에서 도망치는 것이 목격되었다.\u003c/div>\u003cdiv class=\"g-note\">see의 수동형 뒤에 v-ing가 온 형태\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-2\">\u003cdiv class=\"g-en\">The issue \u003cspan class=\"fx\">was left unaddressed\u003c/span> for a long time.\u003c/div>\u003cdiv class=\"g-ko\">그 문제는 오랫동안 다루어지지 않은 채 방치되었다.\u003c/div>\u003cdiv class=\"g-note\">leave의 수동형 뒤에 v-ed가 온 형태\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"g-tip\" data-hl=\"tip\">\u003cb>주의\u003c/b>v-ing와 v-ed 중 무엇이 오는지는 그것이 능동의 의미인지 수동의 의미인지 \u003cb class=\"key\">상태를 잘 판단\u003c/b>해야 해요.\u003c/div>","segs":[{"n":7,"text":"두 번째 개념은 be v-ed 플러스 ing 또는 과거분사 패턴이에요. 어떤 동작을 하고 있거나 어떤 상태에 놓여 있는 것을 나타낼 때 쓰지요. 감각동사의 수동형에서 아주 많이 쓰이는 형태랍니다.","hl":"rule"},{"n":8,"text":"네 번째 예문이에요. Two bodies were found floating on the coast. 두 구체가 해안에 떠 있는 채로 발견되었다는 뜻이죠. were found 뒤에 floating이 와서 떠 있는 상태를 나타내고 있어요.","hl":"ex-0"},{"n":9,"text":"다섯 번째 예문이에요. She was seen running away from the scene of the crime. 그녀는 범죄 현장에서 도망치는 것이 목격되었다는 의미예요. was seen 뒤에 running이 와서 도망치는 동작을 지각당한 수동의 의미를 보여줘요.","hl":"ex-1"},{"n":10,"text":"여섯 번째 예문입니다. The issue was left unaddressed for a long time. 그 문제는 오랫동안 다루어지지 않은 채 방치되었다는 뜻이에요. was left 뒤에 과거분사 unaddressed가 와서 처리되지 않은 상태를 나타내요.","hl":"ex-2"},{"n":11,"text":"주의할 점은 ing가 올지 과거분사가 올지는 그 뒤의 분사가 능동인지 수동인지를 잘 따져서 판단해야 한다는 거예요.","hl":"tip"}]},{"html":"\u003cspan class=\"lp-tag\">개념 3 / 3\u003c/span>\u003ch2 class=\"g-h\">동사구의 수동태 (be v-ed + 전치사)\u003c/h2>\u003cdiv class=\"g-rule\" data-hl=\"rule\">원래 \u003cb class=\"key\">동사 + 전치사\u003c/b> 형태의 덩어리 표현이 수동태가 되면 \u003cb class=\"key\">하나의 표현\u003c/b>으로 보고 의미를 외워야 해요. \n[도식: V + O + 전치사 ➔ 주어 + be v-ed + 전치사 (숙어처럼 암기)]\u003cdiv>\u003cspan class=\"g-formula\">V + O + 전치사 -&gt; be v-ed + 전치사\u003c/span>\u003c/div>\u003c/div>\u003cdiv class=\"g-exs\">\u003cdiv class=\"g-ex\" data-hl=\"ex-0\">\u003cdiv class=\"g-en\">I \u003cspan class=\"fx\">was reminded of\u003c/span> the good old days by the picture.\u003c/div>\u003cdiv class=\"g-ko\">나는 그 사진을 보고 옛날 좋은 시절이 생각났다.\u003c/div>\u003cdiv class=\"g-note\">remind A of B의 수동형\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-1\">\u003cdiv class=\"g-en\">Income taxes \u003cspan class=\"fx\">are based on\u003c/span> one’s earnings.\u003c/div>\u003cdiv class=\"g-ko\">소득세는 개인의 소득을 근거로 한다.\u003c/div>\u003cdiv class=\"g-note\">base A on B의 수동형\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-2\">\u003cdiv class=\"g-en\">Our success \u003cspan class=\"fx\">can be attributed to\u003c/span> your hard work.\u003c/div>\u003cdiv class=\"g-ko\">우리의 성공은 너의 노력 덕분이다.\u003c/div>\u003cdiv class=\"g-note\">attribute A to B의 수동형\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-3\">\u003cdiv class=\"g-en\">Chronic fatigue \u003cspan class=\"fx\">is associated with\u003c/span> a range of sleep problems.\u003c/div>\u003cdiv class=\"g-ko\">만성 피로는 다양한 수면 문제와 관련이 있다.\u003c/div>\u003cdiv class=\"g-note\">associate A with B의 수동형\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"g-tip\" data-hl=\"tip\">\u003cb>주의\u003c/b>\u003cb class=\"key\">remind of\u003c/b>, \u003cb class=\"key\">base on\u003c/b>, \u003cb class=\"key\">attribute to\u003c/b>, \u003cb class=\"key\">associate with\u003c/b>, \u003cb class=\"key\">view as\u003c/b> 같은 짝꿍 전치사를 정확히 기억하세요.\u003c/div>","segs":[{"n":12,"text":"세 번째 개념은 동사구의 수동태예요. 동사와 전치사가 합쳐져서 자주 쓰이는 표현들이 수동태가 되면 직역하기가 어려워지죠. 그래서 이 패턴들은 하나의 숙어처럼 그 의미를 통째로 기억해 두는 것이 좋답니다.","hl":"rule"},{"n":13,"text":"첫 번째 예문을 봐요. I was reminded of the good old days by the picture. 나는 그 사진을 보고 옛날 좋은 시절이 생각났다는 뜻이에요. was reminded of를 ~가 생각나다라는 하나의 표현으로 기억해 주세요.","hl":"ex-0"},{"n":14,"text":"두 번째 예문이에요. Income taxes are based on one’s earnings. 소득세는 개인의 소득을 근거로 한다는 의미죠. are based on을 ~를 근거로 하다라고 외우면 편해요.","hl":"ex-1"},{"n":15,"text":"세 번째 예문입니다. Our success can be attributed to your hard work. 우리의 성공은 너의 노력 덕분이라는 뜻이에요. can be attributed to가 ~ 때문이라는 의미를 나타낸답니다.","hl":"ex-2"},{"n":16,"text":"네 번째 예문이에요. Chronic fatigue is associated with a range of sleep problems. 만성 피로는 다양한 수면 문제와 관련이 있다는 뜻이죠. is associated with는 ~와 관련되다라는 뜻이에요.","hl":"ex-3"},{"n":17,"text":"팁을 주자면 remind는 of와, base는 on과, attribute는 to와, associate는 with와, view는 as와 짝꿍이라는 것을 잊지 마세요.","hl":"tip"}]},{"html":"\u003cspan class=\"lp-tag\">자주 하는 실수\u003c/span>\u003ch2 class=\"g-h\">이렇게 쓰면 틀려요\u003c/h2>\u003cdiv class=\"g-mk\" data-hl=\"mk-0\">\u003cdiv class=\"g-wrong\">✗ \u003cs>Students are allowed using their smartphones.\u003c/s>\u003c/div>\u003cdiv class=\"g-right\">✓ Students are allowed to use their smartphones.\u003c/div>\u003cdiv class=\"g-why\">allow의 수동형 뒤에는 목적격 보어로 동명사가 아니라 투부정사가 와야 해요.\u003c/div>\u003c/div>\u003cdiv class=\"g-mk\" data-hl=\"mk-1\">\u003cdiv class=\"g-wrong\">✗ \u003cs>Our success is attributed for your hard work.\u003c/s>\u003c/div>\u003cdiv class=\"g-right\">✓ Our success is attributed to your hard work.\u003c/div>\u003cdiv class=\"g-why\">attribute A to B 패턴의 수동형이므로 전치사 for가 아니라 to를 써야 해요.\u003c/div>\u003c/div>","segs":[{"n":18,"text":"학생들이 자주 틀리는 문장을 살펴볼게요. Students are allowed using their smartphones라는 문장은 틀렸어요. allow의 수동형 뒤에는 ing가 아니라 투부정사가 와야 하므로 are allowed to use로 써야 맞아요.","hl":"mk-0"},{"n":19,"text":"두 번째로 자주 틀리는 문장이에요. Our success is attributed for your hard work는 틀린 문장이지요. attribute A to B 패턴의 수동태이므로 전치사는 for가 아니라 to를 써야 올바른 문장이 돼요.","hl":"mk-1"}]},{"html":"\u003cspan class=\"lp-tag\">오늘의 정리\u003c/span>\u003ch2 class=\"g-h\">13강 수동태의 주요패턴\u003c/h2>\u003cul class=\"g-sum\" data-hl=\"sum\">\u003cli>허락, 기대, 권유 등을 나타내는 수동태는 \u003cb class=\"key\">be v-ed + to-v\u003c/b> 형태로 씁니다.\u003c/li>\u003cli>상태나 지각을 나타내는 수동태는 \u003cb class=\"key\">be v-ed + v-ing / v-ed\u003c/b> 형태로 씁니다.\u003c/li>\u003cli>동사구 수동태는 \u003cb class=\"key\">be v-ed + 전치사\u003c/b>를 \u003cb class=\"key\">하나의 표현\u003c/b>으로 외워야 합니다.\u003c/li>\u003c/ul>","segs":[{"n":20,"text":"오늘 우리는 수동태의 다양한 주요 패턴들을 함께 공부했어요. 투부정사를 취하는 수동태와 분사를 취하는 수동태 그리고 전치사와 함께 쓰이는 동사구 수동태까지 정말 수고 많았어요. 복습을 철저히 하고 다음 시간에 만나요.","hl":"sum"}]}]});</script></body></html>
