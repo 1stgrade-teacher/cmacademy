@@ -1,0 +1,279 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lesson6 watch &amp; talk 대화문 해설 강의 — lesson6</title><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@500;600;700&display=swap" rel="stylesheet"><style>html,body{margin:0;height:100%;background:#F3F3F5}#app{width:min(1040px,94vw);height:92vh;margin:4vh auto}@media (max-width:700px){#app{width:100vw;height:auto;margin:0}}
+.lp{--pk:#0E8A8C;--pk-t:#0A5F61;--pk-l:#DDF2F1;--pk-ll:#F3FAFA;--bl-l:#E9EEFB;--bl-t:#3A4FA3;height:100%;min-height:540px;background:#fff;color:#1B2733;border-radius:16px;display:flex;flex-direction:column;overflow:hidden;font-family:"IBM Plex Sans KR","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;box-shadow:0 2px 6px rgba(0,0,0,.06),0 14px 40px rgba(0,0,0,.08);outline:none}
+.lp *{box-sizing:border-box}
+.lp{word-break:keep-all;overflow-wrap:break-word}
+.lp-top{display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid #F1F1F1;position:relative}
+.lp-top::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,var(--pk),#7CCBC8)}
+.lp-brand{font-size:12.5px;font-weight:800;color:#fff;background:var(--pk);border-radius:999px;padding:3px 12px}
+.lp-name{flex:1;min-width:0;font-weight:800;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lp-slide{flex:1;min-height:0;overflow:auto;padding:30px 44px;display:flex;flex-direction:column}
+.lp-cap{flex-shrink:0;padding:10px 22px;background:#F3FAFA;border-top:1px solid #DDF2F1;font-size:15px;line-height:1.55;color:#4A5866;max-height:30%;overflow:auto}
+.lp-bar{flex-shrink:0;display:flex;align-items:center;gap:8px;padding:11px 18px;border-top:1px solid #F1F1F1;background:#FAFAFA;flex-wrap:wrap}
+.lp-tl{flex:1;min-width:120px;height:7px;background:#E3E9EE;border-radius:6px;overflow:hidden;cursor:pointer}
+.lp-tl>i{display:block;height:100%;width:0;background:var(--pk)}
+.lp-cnt{font-size:12.5px;color:#8493A1;font-variant-numeric:tabular-nums;min-width:50px;text-align:center}
+.lp select{width:auto}
+.lp button,.lp select{background:#fff;color:#1B2733;border:1px solid #DCDCDC;border-radius:8px;padding:7px 12px;font-weight:700;font-size:13.5px;cursor:pointer;font-family:inherit}
+.lp button.on{background:var(--pk-l);border-color:var(--pk-l);color:var(--pk-t)}
+.lp button.lp-play{background:var(--pk);border-color:var(--pk);color:#fff;min-width:96px}
+.lp-warn{padding:7px 20px;font-size:12.5px;color:var(--pk-t);background:var(--pk-ll)}
+.lp-tag{display:inline-block;align-self:flex-start;font-size:12.5px;font-weight:800;color:var(--pk-t);background:var(--pk-l);border-radius:999px;padding:3px 12px;margin-bottom:14px}
+.lp-cover{margin:auto 0;display:flex;gap:22px;align-items:stretch}
+.lp-qn{flex:0 0 110px;background:var(--pk);color:#fff;font-weight:800;font-size:28px;border-radius:14px;display:grid;place-items:center}
+.lp-cv{flex:1;min-width:0}
+.lp-cv .src{color:#8493A1;font-weight:700;font-size:14px}
+.lp-cv h1{margin:4px 0 2px;font-size:30px;line-height:1.25;font-weight:800}
+.lp-cv h2{margin:0 0 14px;font-size:17px;color:#4A5866;font-weight:700}
+.lp-row{display:flex;gap:10px;align-items:baseline;margin-top:6px;font-size:15.5px;padding:4px 8px;border-radius:8px}
+.lp-lb{flex:0 0 auto;font-size:12px;font-weight:800;color:var(--pk-t);background:var(--pk-l);border-radius:4px;padding:1px 8px}
+.lp-box{background:var(--pk-ll);border-radius:12px;padding:16px 20px;font-size:16.5px;line-height:1.75;color:#333}
+.lp b.key{color:var(--pk-t);background:linear-gradient(transparent 60%,#BFE8E5 60%)}
+.lp-st{border:1px solid #D6EAE9;border-radius:12px;padding:11px 16px;margin-bottom:9px}
+.lp-st h4{margin:0 0 3px;font-size:16px;color:var(--pk-t);display:flex;gap:8px;align-items:center}
+.lp-st h4 i{font-style:normal;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--pk);color:#fff;font-size:12px}
+.lp-st h4 small{color:#8493A1;font-size:12.5px}
+.lp-st p{margin:0;font-size:15px;line-height:1.65;color:#444}
+.lp-big{font-size:28px;font-weight:800}
+.lp-pill{display:inline-block;font-size:13px;font-weight:800;color:var(--pk-t);background:var(--pk-l);border-radius:999px;padding:3px 12px;margin-left:8px;vertical-align:5px}
+.lp-sig{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:15px;margin-top:8px}
+.lp-sig b{color:var(--pk-t)}
+.lp-chain{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px;font-size:15px}
+.lp-chain span.c{background:var(--bl-l);color:var(--bl-t);font-weight:700;border-radius:6px;padding:2px 10px}
+.lp-chain span.a{color:#999}
+.lp-ct{width:100%;border-collapse:collapse;margin-top:10px;font-size:14.5px}
+.lp-ct th,.lp-ct td{border:1px solid #CFE5E4;padding:6px 10px;text-align:left}
+.lp-ct th{background:var(--pk-ll);color:var(--pk-t)}
+.lp-vg{display:grid;grid-template-columns:repeat(3,1fr);gap:2px 22px}
+.lp-vg div{display:flex;gap:10px;padding:6px 2px;border-bottom:1px solid #F4F4F4;font-size:15.5px;align-items:baseline}
+.lp-vg b{font-weight:800}
+.lp-vg em{font-style:normal;font-size:11px;font-weight:700;color:var(--pk-t);background:var(--pk-l);border-radius:4px;padding:0 5px}
+.lp-vg span{color:#555;margin-left:auto;text-align:right}
+.lp-sa{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 18px}
+.lp-sa>div{border:1px solid #F1F1F1;border-radius:10px;padding:10px 14px}
+.lp-sa b.w{font-size:17px}
+.lp-sa .m{color:#666;margin-left:6px;font-size:14px}
+.lp-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;align-items:center}
+.lp-chips span{font-size:13.5px;font-weight:700;border-radius:5px;padding:1px 9px}
+.lp-chips .s{background:var(--bl-l);color:var(--bl-t)}
+.lp-chips .a{background:#FFF1D8;color:#8A5A00}
+.lp-chips .x{background:none;color:#999;padding:0}
+.lp-sno{font-size:13px;color:#8493A1;font-weight:700;margin-bottom:8px}
+.lp-sno .es{color:#fff;background:#E0952B;border-radius:4px;padding:1px 8px;font-size:11.5px;margin-left:8px}
+.lp-chunks{display:flex;flex-wrap:wrap;gap:16px 10px;margin-bottom:12px;align-items:flex-end}
+.lp-chunk{display:flex;flex-direction:column}
+.lp-chunk .ko{font-size:13px;color:var(--pk-t);font-weight:700;line-height:1.3;margin-bottom:2px}
+.lp-chunk .en{font-size:24px;font-weight:700;line-height:1.4}
+.lp-chunk+.lp-chunk{padding-left:10px;border-left:2px solid #D6EAE9}
+.lp .tgt{background:#FFF0C7;border-bottom:2.5px solid var(--pk);padding:0}
+.lp .mk{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--pk);color:#fff;font-size:11.5px;font-weight:800;margin:0 3px;vertical-align:4px;line-height:1}
+.lp-ko{font-size:16px;font-weight:700;background:var(--pk-ll);border-radius:10px;padding:9px 14px;margin-bottom:8px}
+.lp-mn{font-size:15px;line-height:1.65;background:#FFF8E8;border:1px solid #F0D9A5;border-radius:10px;padding:9px 14px;margin-bottom:8px;color:#444}
+.lp-ap{font-size:14.5px;line-height:1.6;border:1px solid #BFE8E5;border-radius:10px;padding:9px 14px}
+.lp-ap h5{margin:0 0 4px;display:inline-block;background:var(--pk);color:#fff;font-size:12px;border-radius:4px;padding:1px 9px}
+.lp-ap .gi{margin:3px 0}
+.lp-ap .gn{color:var(--pk-t);font-weight:800}
+.lp-fin ul{margin:0 0 12px;padding-left:20px;font-size:16px;line-height:1.75}
+.lp-hl{box-shadow:0 0 0 3px #7CCBC8,0 0 22px 4px rgba(14,138,140,.28)!important;border-radius:12px;transition:box-shadow .2s}
+@media (max-width:700px){.lp{min-height:0;height:100vh;height:100dvh;border-radius:0}.lp-slide{padding:18px 16px}.lp-cover{flex-direction:column}.lp-qn{flex:0 0 64px}.lp-cv h1{font-size:21px}.lp-chunk .en{font-size:18px}.lp-vg,.lp-sa{grid-template-columns:1fr}.lp-box{font-size:15px}.lp-big{font-size:21px}}
+
+.lp-box b.h{color:var(--pk-t);margin-right:8px}
+.lp{--g-ok:#1F8A57;--g-ok-l:#E9F7EF;--g-err:#D43A3A;--g-err-l:#FDECEC}
+.g-cover{margin:auto 0;text-align:left}
+.g-cover .g-unit{display:inline-block;font-size:14px;font-weight:800;color:var(--bl-t);background:var(--bl-l);border-radius:999px;padding:3px 14px;margin-bottom:10px}
+.g-cover h1{margin:0 0 18px;font-size:34px;line-height:1.25;font-weight:800}
+.g-h{margin:0 0 12px;font-size:24px;font-weight:800;line-height:1.3}
+.g-rule{background:var(--pk-ll);border-radius:12px;padding:14px 18px;font-size:17px;line-height:1.7;margin-bottom:12px}
+.g-formula{display:inline-block;margin-top:8px;background:#fff;border:1.5px solid var(--bl-l);color:var(--bl-t);font-weight:800;border-radius:8px;padding:4px 12px;font-size:16px}
+.g-exs{display:grid;gap:8px;margin-bottom:12px}
+.g-ex{border:1px solid #F1F1F1;border-radius:12px;padding:10px 16px;position:relative}
+.g-en{font-size:21px;font-weight:700;line-height:1.45}
+.g-en .fx{background:#FFF0C7;border-bottom:2.5px solid var(--pk)}
+.g-ko{font-size:15px;color:var(--pk-t);font-weight:700;margin-top:2px}
+.g-note{font-size:14px;color:#555;margin-top:3px}
+.g-add{position:absolute;top:8px;right:10px;font-size:11px;font-weight:700;color:#8493A1;background:#F4F4F4;border-radius:4px;padding:1px 6px}
+.g-tip{background:#FFF8E8;border:1px solid #F0D9A5;border-radius:12px;padding:10px 16px;font-size:15.5px;line-height:1.65}
+.g-tip>b{color:#8A6D00;margin-right:6px}
+.g-mk{border:1px solid #F1F1F1;border-radius:12px;padding:10px 16px;margin-bottom:9px}
+.g-wrong{font-size:19px;font-weight:700;color:var(--g-err)}
+.g-wrong s{text-decoration-thickness:2px}
+.g-right{font-size:19px;font-weight:700;color:var(--g-ok);margin-top:2px}
+.g-why{font-size:14.5px;color:#555;margin-top:4px}
+.g-tags{display:flex;gap:8px;align-items:flex-start}
+.g-kind{display:inline-block;font-size:12.5px;font-weight:800;color:var(--bl-t);background:var(--bl-l);border-radius:999px;padding:3px 11px}
+.g-q{font-size:18px;font-weight:700;margin-bottom:10px;line-height:1.55}
+.g-qs{font-size:22px;font-weight:700;line-height:1.5;background:#FAFAFA;border-radius:12px;padding:12px 16px;margin-bottom:10px}
+.g-opts{display:grid;gap:6px;margin-bottom:10px}
+.g-opt{display:block;width:100%;text-align:left;background:#fff!important;border:1.5px solid #E6E6E6!important;border-radius:10px!important;padding:9px 14px!important;font-size:17px!important;font-weight:600!important;cursor:pointer;color:#1B2733!important}
+.g-opt b{color:var(--pk-t);margin-right:6px}
+.g-opt.picked{border-color:var(--pk)!important;background:var(--pk-ll)!important}
+.g-opts.rv .g-opt[data-ok="1"]{border-color:var(--g-ok)!important;background:var(--g-ok-l)!important}
+.g-opts.rv .g-opt.picked:not([data-ok="1"]){border-color:var(--g-err)!important;background:var(--g-err-l)!important}
+.g-ans{display:none;background:var(--g-ok-l);border-radius:12px;padding:12px 16px;font-size:16px;line-height:1.65}
+.g-ans.rv{display:block}
+.g-ans>b{color:var(--g-ok);margin-right:6px}
+.g-ans .a{font-weight:800;font-size:18px}
+.g-exp{margin-top:4px;color:#333}
+.lp button.g-show{margin-top:4px;background:#fff;color:var(--g-ok);border-color:#C6EBD5}
+.g-sum{margin:0;padding-left:22px;font-size:18px;line-height:1.8}
+.lp-think{position:absolute;right:22px;bottom:16px;background:#1B2733;color:#fff;font-weight:800;font-size:15px;border-radius:999px;padding:8px 16px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.lp-slide{position:relative}
+@media (max-width:700px){.g-cover h1{font-size:23px}.g-h{font-size:19px}.g-en,.g-qs{font-size:17px}.g-rule{font-size:15px}.g-opt{font-size:15px!important}}
+.d-chat{display:flex;flex-direction:column;gap:8px}
+.d-bub{max-width:78%;border-radius:16px;padding:9px 15px;position:relative}
+.d-bub.d-l{align-self:flex-start;background:#F4F6F8;border-top-left-radius:4px}
+.d-bub.d-r{align-self:flex-end;background:var(--pk-ll);border-top-right-radius:4px}
+.d-bub .d-sp{font-size:12px;font-weight:800;color:#8493A1;display:block;margin-bottom:1px}
+.d-en{font-size:18px;font-weight:600;line-height:1.45}
+.d-key{background:var(--pk-ll);border-radius:14px;padding:14px 18px;margin-bottom:12px}
+.d-keyexp{font-size:24px;font-weight:800;line-height:1.35}
+.d-mean{font-size:16px;color:var(--pk-t);font-weight:700;margin-top:3px}
+.d-from{font-size:14px;color:#666;margin-top:6px}
+.d-exp{font-size:15px;line-height:1.65;margin-top:8px;color:#333}
+.d-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.d-box{border:1px solid #E9EEFB;border-radius:12px;padding:10px 14px}
+.d-box>b{display:inline-block;font-size:13px;color:var(--bl-t);background:var(--bl-l);border-radius:999px;padding:2px 10px;margin-bottom:6px}
+.d-box.a>b{color:#1F8A57;background:#E9F7EF}
+.d-box ul{margin:0;padding-left:18px;font-size:16.5px;line-height:1.75;font-weight:600}
+.d-line{border:1px solid #F1F1F1;border-radius:12px;padding:10px 16px;margin-bottom:10px}
+.d-lh{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.d-lh .d-sp{font-size:12.5px;font-weight:800;border-radius:6px;padding:1px 9px;background:#F4F6F8;color:#555}
+.d-lh .d-sp.d-r{background:var(--pk-l);color:var(--pk-t)}
+.d-ln{font-size:12px;color:#999}
+.d-en2{font-size:20px;font-weight:700;line-height:1.55}
+.d-ko{font-size:15px;color:var(--pk-t);font-weight:700;margin-top:2px}
+.d-notes{margin-top:7px;display:grid;gap:4px}
+.d-note{display:flex;gap:6px;font-size:14.5px;line-height:1.6;color:#333;align-items:baseline}
+.d-alt{margin-top:7px;background:#FFF8E8;border:1px solid #F0D9A5;border-radius:10px;padding:7px 12px;font-size:15px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.d-alt>b{color:#8A6D00;font-size:13px}
+.d-alt span{font-weight:600}
+.d-alt span+span::before{content:"/";color:#C9B95A;margin-right:10px}
+@media (max-width:700px){.d-cols{grid-template-columns:1fr}.d-en2{font-size:16px}.d-keyexp{font-size:19px}}
+
+.lp{--pk-b:#B5DEDC;--am:#E0952B;--am-l:#FFF3DC;--am-b:#F0D9A5;--am-d:#8A5A00}
+.lp-top{border-bottom:1.5px solid var(--pk)}
+.lp-top::before{height:5px;background:linear-gradient(90deg,var(--pk) 0,var(--pk) 80%,var(--am) 80%,var(--am) 100%)}
+.lp-brand{background:#fff;color:var(--pk-t);border:1px solid var(--pk);border-radius:3px;font-weight:700;letter-spacing:.02em;padding:2px 11px}
+.lp-name{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700;color:var(--pk-t)}
+.lp-tag{background:#fff;border:1px solid var(--pk-b);border-radius:3px;font-weight:700;padding:2px 12px}
+.lp-qn{flex:0 0 112px;height:112px;align-self:center;background:#fff;color:var(--pk);border:3px solid var(--pk);border-radius:50%;font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700;font-size:26px}
+.lp-cv h1,.lp-big{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700}
+.lp-lb{background:none;border:0;border-bottom:2px solid var(--am);border-radius:0;padding:0 2px;color:var(--pk-t);font-weight:700}
+.lp-box{border-radius:4px;border-left:4px solid var(--pk)}
+.lp-st{border-radius:4px;border-left:4px solid var(--pk-b)}
+.lp-st h4{color:var(--ink,#1B2733)}
+.lp-st h4 i{border-radius:4px;width:auto;min-width:24px;padding:0 4px}
+.lp-pill{background:#fff;border:1px solid var(--pk-b);border-radius:3px;font-weight:700}
+.lp-chain span.c{background:#fff;border:1px solid #AEBBE6;border-radius:3px;font-weight:600}
+.lp-ct th{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif}
+.lp-vg em{background:#fff;border:1px solid var(--pk-b);border-radius:3px}
+.lp-sa>div{border-radius:4px;border-color:var(--pk-b)}
+.lp-chips span{border-radius:3px;background:#fff}
+.lp-chips .s{border:1px solid #AEBBE6;color:#3A4FA3}
+.lp-chips .a{border:1px solid var(--am-b);color:var(--am-d);background:#FFFBF2}
+.lp-sno .es{background:var(--am);border-radius:2px;font-weight:700}
+.lp-chunk .en{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:600}
+.lp-chunk+.lp-chunk{border-left:1px solid var(--pk-b)}
+.lp .tgt{background:var(--am-l);border-bottom:2.5px dotted var(--am)}
+.lp .mk{border-radius:4px;width:auto;min-width:20px;padding:0 3px;background:var(--pk-t)}
+.lp-ko{border-radius:0;border-left:4px solid var(--pk);background:none;padding:4px 0 4px 12px}
+.lp-mn{border-radius:4px;background:var(--am-l);border-color:var(--am-b);color:#5C4510}
+.lp-ap{border-radius:4px;border:1px solid var(--pk-b);border-top:3px solid var(--pk);background:var(--pk-ll)}
+.lp-ap h5{background:none;color:var(--pk-t);padding:0;font-size:12.5px;font-weight:700}
+.lp-hl{border-radius:6px}
+.lp button.lp-play,.lp button,.lp select{border-radius:4px}
+@media (max-width:700px){.lp-qn{flex:0 0 72px;height:72px;font-size:18px}}
+
+.g-rule{border-radius:3px;border-left:4px solid var(--pk)}
+.g-formula{border-radius:2px;background:#fff;border:1px solid #AEBBE6;color:#3A4FA3}
+.g-ex{border-radius:3px}
+.g-en{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:600}
+.g-en .fx{background:var(--am-l);border-bottom:2.5px dotted var(--am)}
+.g-tip{border-radius:3px;background:var(--am-l);border-color:var(--am-b)}
+.g-mk{border-radius:3px}
+.g-kind{border-radius:2px;background:#fff;border:1px solid #AEBBE6;color:#3A4FA3}
+.g-qs{border-radius:3px}
+.g-opt{border-radius:3px!important}
+.g-ans{border-radius:3px}
+.g-add{border-radius:2px}
+.d-bub{border-radius:6px}
+.d-key{border-radius:3px;border-left:4px solid var(--pk)}
+.d-box{border-radius:3px}
+.d-box>b{border-radius:2px;background:#fff;border:1px solid #AEBBE6;color:#3A4FA3}
+.d-line{border-radius:3px}
+.d-en2,.d-keyexp{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700}
+.d-alt{border-radius:3px;background:var(--am-l);border-color:var(--am-b)}
+
+.y-sen{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-size:23px;font-weight:700;line-height:1.55;margin:4px 0 14px;color:#1B2733}
+.y-sen.sm{font-size:17px;margin-bottom:10px;color:#4A5866}
+.y-sen .fx,.y-li .fx{background:var(--am-l,#FFF3DC);border-bottom:2.5px dotted var(--am,#E0952B)}
+.y-chunks{display:grid;grid-template-columns:minmax(40%,auto) 1fr;border:1px solid var(--pk-b,#B5DEDC);border-radius:4px;margin-bottom:12px;overflow:hidden}
+.y-chunks>div{padding:7px 14px;border-bottom:1px solid #EEF3F3}
+.y-chunks .e{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:600;font-size:17px;border-right:1px solid #EEF3F3;background:#FBFEFE}
+.y-chunks .k{color:var(--pk-t);font-size:15px;font-weight:600}
+.y-box{border-radius:4px;padding:10px 14px;margin-bottom:10px;font-size:15.5px;line-height:1.7}
+.y-lb{display:inline-block;font-size:12.5px;font-weight:800;color:var(--pk-t);background:#fff;border:1px solid var(--pk-b,#B5DEDC);border-radius:3px;padding:0 8px;margin-right:8px;vertical-align:1px}
+.y-st{background:var(--pk-ll);border-left:4px solid var(--pk)}
+.y-mn{background:var(--am-l,#FFF3DC);border:1px solid var(--am-b,#F0D9A5)}
+.y-mn .y-lb{color:var(--am-d,#8A5A00);border-color:var(--am-b,#F0D9A5)}
+.y-cg{border:1px solid var(--pk-b,#B5DEDC)}
+.y-pair{padding:6px 0 4px;border-top:1px dashed #E3E9EE}
+.y-pair:first-of-type{border-top:0}
+.y-pair .f{font-family:"Noto Serif KR",Georgia,serif;font-weight:600;color:#4A5866}
+.y-pair .ar{color:var(--pk);margin:0 8px;font-weight:800}
+.y-pair .t{font-family:"Noto Serif KR",Georgia,serif;font-weight:700;color:#1B2733;background:var(--pk-ll);padding:0 4px}
+.y-pair .w{font-size:14px;color:#4A5866;margin-top:2px}
+.y-eq{display:inline-block;margin-left:10px;font-size:12.5px;font-weight:700;color:#3A4FA3;border:1px solid #AEBBE6;border-radius:3px;padding:0 7px}
+.y-pp{background:#F6F8FA;border-left:4px solid #3A4FA3}
+.y-pp .y-lb{color:#3A4FA3;border-color:#AEBBE6}
+.y-pp .p{font-family:"Noto Serif KR",Georgia,serif;font-size:18px;font-weight:700;margin-top:6px;line-height:1.55}
+.y-list{display:grid;gap:6px;margin-top:4px}
+.y-li{font-family:"Noto Serif KR",Georgia,serif;font-size:16px;line-height:1.6;display:block;padding-left:32px;text-indent:-32px}
+.y-no{display:inline-block;text-indent:0;min-width:22px;height:20px;line-height:20px;text-align:center;border-radius:3px;background:var(--pk);color:#fff;font-family:sans-serif;font-size:12px;font-weight:800;margin-right:10px;vertical-align:1px}
+@media (max-width:700px){.y-sen{font-size:18px}.y-chunks{grid-template-columns:1fr}.y-chunks .e{border-right:0}}
+</style></head><body><div id="app"></div><script>function lecturePlayer(root,D){
+  root.innerHTML='<div class="lp" tabindex="0"><div class="lp-top"><span class="lp-brand"></span><span class="lp-name"></span></div><div class="lp-warn" hidden></div><div class="lp-slide"></div><div class="lp-cap" hidden></div><div class="lp-bar"><div class="lp-tl" title="슬라이드 이동"><i></i></div><span class="lp-cnt"></span><button class="lp-cc">자막</button><select class="lp-rate" title="재생 속도"><option value="0.8">0.8x</option><option value="1" selected>1.0x</option><option value="1.2">1.2x</option><option value="1.4">1.4x</option><option value="1.6">1.6x</option><option value="2">2.0x</option></select><button class="lp-prev" aria-label="이전 슬라이드">◀</button><button class="lp-play">▶ 재생</button><button class="lp-next" aria-label="다음 슬라이드">▶</button></div></div>';
+  var q=function(s){return root.querySelector(s);},box=q(".lp"),sl=q(".lp-slide"),cap=q(".lp-cap"),cnt=q(".lp-cnt"),fill=q(".lp-tl>i"),tl=q(".lp-tl"),pp=q(".lp-play"),cc=q(".lp-cc"),warn=q(".lp-warn");
+  q(".lp-brand").textContent=D.brand;q(".lp-name").textContent=D.title;
+  var i=0,j=0,playing=false,rate=1,timer=null,tick=null,capOn=!!D.preview,noAudio=!!D.preview,a=new Audio(),think=null;
+  if(D.preview){cc.classList.add("on");}
+  function segs(){return D.slides[i].segs||[];}
+  function setFill(f){var s=segs(),n=D.slides.length,sf=s.length?(j+(f||0))/s.length:0;fill.style.width=Math.min(100,(i+sf)/n*100)+"%";}
+  function showCap(){var s=segs()[j];cap.textContent=s?s.text:"";cap.hidden=!(capOn&&s&&s.text&&s.text.trim());cc.classList.toggle("on",capOn);}
+  function clearHl(){var e=sl.querySelectorAll(".lp-hl");for(var x=0;x<e.length;x++)e[x].classList.remove("lp-hl");}
+  function hl(k){clearHl();if(!k)return;var e=sl.querySelector('[data-hl="'+k+'"]');if(e){e.classList.add("lp-hl");try{e.scrollIntoView({block:"nearest",behavior:"smooth"});}catch(_){}}}
+  function reveal(k){var e=sl.querySelectorAll('[data-rv="'+k+'"]');for(var x=0;x<e.length;x++)e[x].classList.add("rv");var b=sl.querySelector('[data-act="show"]');if(b)b.hidden=true;}
+  function stopAll(){if(timer){clearTimeout(timer);timer=null;}if(tick){clearInterval(tick);tick=null;}if(think){think.remove();think=null;}try{a.pause();}catch(_){}}
+  function silent(s){var dur=Math.max(1800,s.text.length*130/rate+700),t0=Date.now();if(!capOn){capOn=true;showCap();}
+    tick=setInterval(function(){setFill(Math.min(1,(Date.now()-t0)/dur));},200);timer=setTimeout(function(){stopAll();segEnd();},dur);}
+  function pause(sec){var left=sec,t0=Date.now();think=document.createElement("div");think.className="lp-think";think.textContent="생각할 시간 "+left+"초";sl.appendChild(think);
+    tick=setInterval(function(){left=Math.max(0,sec-Math.floor((Date.now()-t0)/1000));if(think)think.textContent="생각할 시간 "+left+"초";setFill(Math.min(1,(Date.now()-t0)/(sec*1000)));},250);
+    timer=setTimeout(function(){stopAll();segEnd();},sec*1000/Math.max(.5,rate));}
+  var bases=null,bi=0,okBase=false,att=0;
+  function cands(){if(bases)return bases;var out=[];function add(x){x=String(x||"").replace(/\/+$/,"");if(x&&out.indexOf(x)<0)out.push(x);}
+    add(D.audioDir);try{var f=decodeURIComponent(location.pathname.split("/").pop()||""),nm=f.replace(/\.html?$/i,"");if(nm){add(nm+"_audio");add(nm.replace(/_AI강의$/,"")+"_audio");}}catch(_){}
+    add("audio");bases=out;return out;}
+  function playAudio(s){a.src=encodeURI(cands()[bi])+"/"+s.n+".mp3";a.playbackRate=rate;a.play().catch(function(){});}
+  function runSeg(){stopAll();var s=segs()[j];clearHl();setFill(0);showCap();if(!s)return;hl(s.hl);if(s.reveal)reveal(s.reveal);if(!playing)return;
+    if(s.pause){pause(s.pause);return;}
+    if(noAudio){silent(s);return;}
+    att=0;playAudio(s);}
+  a.onloadeddata=function(){okBase=true;};
+  a.onerror=function(){if(!playing)return;var s=segs()[j];if(!s||s.pause)return;var L=cands().length;if(!okBase&&att<L-1){att++;bi=(bi+1)%L;playAudio(s);return;}if(!okBase)bi=(bi+1)%L;warn.hidden=false;warn.textContent="음성 파일("+cands()[bi]+"/"+s.n+".mp3)을 찾지 못해 자막으로 진행합니다.";silent(s);};
+  a.ontimeupdate=function(){if(a.duration)setFill(a.currentTime/a.duration);};
+  a.onended=function(){segEnd();};
+  function segEnd(){if(!playing)return;if(j<segs().length-1){j++;runSeg();}else if(i<D.slides.length-1){i++;show();}else{playing=false;pp.textContent="▶ 재생";clearHl();fill.style.width="100%";}}
+  function show(){stopAll();sl.innerHTML=D.slides[i].html;sl.scrollTop=0;cnt.textContent=(i+1)+" / "+D.slides.length;j=0;runSeg();}
+  function go(d){i=Math.max(0,Math.min(D.slides.length-1,i+d));show();}
+  function toggle(){playing=!playing;pp.textContent=playing?"⏸ 일시정지":"▶ 재생";if(playing){var s=segs()[j];if(!noAudio&&s&&!s.pause&&a.src&&a.currentTime>0&&!a.ended&&a.paused&&!timer){a.play().catch(function(){});}else runSeg();}else stopAll();}
+  sl.addEventListener("click",function(e){var t=e.target.closest?e.target.closest(".g-opt,[data-act]"):null;if(!t)return;
+    if(t.getAttribute("data-act")==="show"){reveal("ans");return;}
+    var g=t.parentNode;if(g&&g.classList.contains("rv"))return;[].forEach.call(g.querySelectorAll(".g-opt"),function(o){if(o!==t)o.classList.remove("picked");});t.classList.toggle("picked");});
+  q(".lp-prev").onclick=function(){go(-1);};q(".lp-next").onclick=function(){go(1);};pp.onclick=toggle;
+  cc.onclick=function(){capOn=!capOn;showCap();};
+  q(".lp-rate").onchange=function(e){rate=parseFloat(e.target.value)||1;a.playbackRate=rate;};
+  tl.onclick=function(e){var r=tl.getBoundingClientRect();i=Math.max(0,Math.min(D.slides.length-1,Math.floor((e.clientX-r.left)/r.width*D.slides.length)));show();};
+  box.addEventListener("keydown",function(e){if(e.target.tagName==="SELECT")return;if(e.key===" "){e.preventDefault();toggle();}else if(e.key==="ArrowRight")go(1);else if(e.key==="ArrowLeft")go(-1);});
+  show();
+  return {stop:function(){playing=false;pp.textContent="▶ 재생";stopAll();}};
+}
+lecturePlayer(document.getElementById("app"),{"brand":"lesson6","title":"Lesson6 watch & talk 대화문 해설 강의","audioDir":"01_audio","preview":false,"count":45,"slides":[{"html":"\u003cdiv class=\"g-cover\">\u003cdiv class=\"g-unit\">도움 요청하기 및 추천하기\u003c/div>\u003ch1>Lesson6 watch &amp; talk 대화문 해설 강의\u003c/h1>\u003cdiv class=\"lp-box\" data-hl=\"goal\">\u003cb class=\"h\">대화 상황\u003c/b>소미가 숙제를 위한 책을 찾기 위해 리암에게 도움을 요청하고, 리암이 오드리 헵번을 추천하며 그녀의 자원봉사 활동에 대해 대화하는 상황입니다.\u003c/div>\u003c/div>","segs":[{"n":1,"text":"여러분 안녕하세요. 오늘은 중학교 Lesson 6 watch and talk 대화문 해설 강의를 시작할게요. 소미가 숙제할 책을 찾으면서 리암에게 도움을 청하고 서로 추천을 주고받는 아주 유익한 내용이에요. 오늘 배울 핵심 표현과 문법을 꼼꼼하게 정리해 볼 테니까 집중해서 잘 따라오세요.","hl":"goal"}]},{"html":"\u003cspan class=\"lp-tag\">대화 듣기\u003c/span>\u003cdiv class=\"d-chat\">\u003cdiv class=\"d-bub d-l\" data-hl=\"r-0\">\u003cspan class=\"d-sp\">G\u003c/span>\u003cdiv class=\"d-en\">Liam, can you please help me? I need to find some books for my homework.\u003c/div>\u003c/div>\u003cdiv class=\"d-bub d-r\" data-hl=\"r-1\">\u003cspan class=\"d-sp\">B\u003c/span>\u003cdiv class=\"d-en\">What kinds of books are you looking for, Somi?\u003c/div>\u003c/div>\u003cdiv class=\"d-bub d-l\" data-hl=\"r-2\">\u003cspan class=\"d-sp\">G\u003c/span>\u003cdiv class=\"d-en\">I'm looking for books on famous people who helped\u003c/div>\u003c/div>\u003cdiv class=\"d-bub d-l\" data-hl=\"r-3\">\u003cdiv class=\"d-en\">others. I need to write an essay.\u003c/div>\u003c/div>\u003cdiv class=\"d-bub d-r\" data-hl=\"r-4\">\u003cspan class=\"d-sp\">B\u003c/span>\u003cdiv class=\"d-en\">Who do you want to write about?\u003c/div>\u003c/div>\u003cdiv class=\"d-bub d-l\" data-hl=\"r-5\">\u003cspan class=\"d-sp\">G\u003c/span>\u003cdiv class=\"d-en\">I was thinking about Dr. Schweitzer, but can you recommend someone else for me?\u003c/div>\u003c/div>\u003cdiv class=\"d-bub d-r\" data-hl=\"r-6\">\u003cspan class=\"d-sp\">B\u003c/span>\u003cdiv class=\"d-en\">What about Audrey Hepburn?\u003c/div>\u003c/div>\u003cdiv class=\"d-bub d-l\" data-hl=\"r-7\">\u003cspan class=\"d-sp\">G\u003c/span>\u003cdiv class=\"d-en\">I know she was a famous actor, but what did she do\u003c/div>\u003c/div>\u003cdiv class=\"d-bub d-l\" data-hl=\"r-8\">\u003cdiv class=\"d-en\">➏ to help others?\u003c/div>\u003c/div>\u003cdiv class=\"d-bub d-r\" data-hl=\"r-9\">\u003cspan class=\"d-sp\">B\u003c/span>\u003cdiv class=\"d-en\">She ➐ did a lot of volunteer work, especially for children.\u003c/div>\u003c/div>\u003cdiv class=\"d-bub d-l\" data-hl=\"r-10\">\u003cspan class=\"d-sp\">G\u003c/span>\u003cdiv class=\"d-en\">Really? Then, I can write about her. Thank you!\u003c/div>\u003c/div>\u003c/div>","segs":[{"n":2,"text":"Liam, can you please help me? I need to find some books for my homework.","hl":"r-0"},{"n":3,"text":"What kinds of books are you looking for, Somi?","hl":"r-1"},{"n":4,"text":"I'm looking for books on famous people who helped","hl":"r-2"},{"n":5,"text":"others. I need to write an essay.","hl":"r-3"},{"n":6,"text":"Who do you want to write about?","hl":"r-4"},{"n":7,"text":"I was thinking about Dr. Schweitzer, but can you recommend someone else for me?","hl":"r-5"},{"n":8,"text":"What about Audrey Hepburn?","hl":"r-6"},{"n":9,"text":"I know she was a famous actor, but what did she do","hl":"r-7"},{"n":10,"text":"➏ to help others?","hl":"r-8"},{"n":11,"text":"She ➐ did a lot of volunteer work, especially for children.","hl":"r-9"},{"n":12,"text":"Really? Then, I can write about her. Thank you!","hl":"r-10"}]},{"html":"\u003cspan class=\"lp-tag\">의사소통 기능 1\u003c/span>\u003ch2 class=\"g-h\">도움 요청하기\u003c/h2>\u003cdiv class=\"d-key\" data-hl=\"key\">\u003cdiv class=\"d-keyexp\">can you please help me?\u003c/div>\u003cdiv class=\"d-mean\">상대방에게 도움을 요청하는 표현\u003c/div>\u003cdiv class=\"d-from\">대화 속 문장: Liam, can you please help me? I need to find some books for my homework.\u003c/div>\u003cdiv class=\"d-exp\">상대방에게 \u003cb class=\"key\">도움\u003c/b>을 정중하게 요청할 때 사용하는 \u003cb class=\"key\">핵심 표현\u003c/b>이에요.\u003c/div>\u003c/div>\u003cdiv class=\"d-cols\">\u003cdiv class=\"d-box\" data-hl=\"alts\">\u003cb>같은 의미의 표현\u003c/b>\u003cul>\u003cli>Could you do me a favor?\u003c/li>\u003cli>Can you give me a hand?\u003c/li>\u003cli>Would you help me out?\u003c/li>\u003c/ul>\u003c/div>\u003cdiv class=\"d-box a\" data-hl=\"ans\">\u003cb>대답하는 표현\u003c/b>\u003cul>\u003cli>Sure, what can I do for you?\u003c/li>\u003cli>Of course, how can I help?\u003c/li>\u003cli>No problem. What do you need?\u003c/li>\u003c/ul>\u003c/div>\u003c/div>","segs":[{"n":13,"text":"첫 번째 기능은 상대방에게 도움을 요청하는 표현이에요. can you please help me라고 하면 상대방에게 도움을 요청할 수 있어요.","hl":"key"},{"n":14,"text":"이 표현은 could you do me a favor나 can you give me a hand 또는 would you help me out처럼 바꿔서 쓸 수 있어요.","hl":"alts"},{"n":15,"text":"이에 대한 응답으로는 sure, what can I do for you나 of course, how can I help 또는 no problem, what do you need라고 대답할 수 있어요.","hl":"ans"}]},{"html":"\u003cspan class=\"lp-tag\">의사소통 기능 2\u003c/span>\u003ch2 class=\"g-h\">추천하기\u003c/h2>\u003cdiv class=\"d-key\" data-hl=\"key\">\u003cdiv class=\"d-keyexp\">What about ~?\u003c/div>\u003cdiv class=\"d-mean\">~하는 게 어때?\u003c/div>\u003cdiv class=\"d-from\">대화 속 문장: What about Audrey Hepburn?\u003c/div>\u003cdiv class=\"d-exp\">제안을 나타내는 표현이지만 이 대화에서는 \u003cb class=\"key\">추천\u003c/b>하는 말로 사용되었어요.\u003c/div>\u003c/div>\u003cdiv class=\"d-cols\">\u003cdiv class=\"d-box\" data-hl=\"alts\">\u003cb>같은 의미의 표현\u003c/b>\u003cul>\u003cli>How about ~?\u003c/li>\u003cli>Why don't you ~?\u003c/li>\u003cli>I suggest you ~\u003c/li>\u003c/ul>\u003c/div>\u003cdiv class=\"d-box a\" data-hl=\"ans\">\u003cb>대답하는 표현\u003c/b>\u003cul>\u003cli>That sounds great.\u003c/li>\u003cli>Good idea.\u003c/li>\u003cli>I'll think about it.\u003c/li>\u003c/ul>\u003c/div>\u003c/div>","segs":[{"n":16,"text":"두 번째 기능은 무언가를 제안하거나 추천하는 표현이에요. what about 다음에 명사를 쓰면 ~하는 게 어때라는 뜻이 돼요.","hl":"key"},{"n":17,"text":"이 표현은 how about이나 why don't you 또는 i suggest you로 바꿔서 말할 수 있어요.","hl":"alts"},{"n":18,"text":"추천에 대한 응답으로는 that sounds great이나 good idea 또는 i'll think about it을 쓸 수 있어요.","hl":"ans"}]},{"html":"\u003cspan class=\"lp-tag\">대화 해설 1–2 / 11\u003c/span>\u003cdiv class=\"d-line\" data-hl=\"l-0\">\u003cdiv class=\"d-lh\">\u003cspan class=\"d-sp d-l\">G\u003c/span>\u003cspan class=\"d-ln\">1\u003c/span>\u003c/div>\u003cdiv class=\"d-en2\">Liam, \u003cspan class=\"mk\">1\u003c/span>\u003cspan class=\"tgt\">can you please help me?\u003c/span> I need to find some books for my homework.\u003c/div>\u003cdiv class=\"d-ko\">리암, 나 좀 도와줄래? 숙제할 책을 좀 찾아야 해.\u003c/div>\u003cdiv class=\"d-notes\">\u003cdiv class=\"d-note\">\u003cspan class=\"mk\">1\u003c/span>\u003cspan>상대방에게 \u003cb class=\"key\">도움\u003c/b>을 요청하는 \u003cb class=\"key\">표현\u003c/b>이다.\u003c/span>\u003c/div>\u003c/div>\u003cdiv class=\"d-alt\">\u003cb>같은 의도의 표현\u003c/b>\u003cspan>Liam, could you give me a hand? I need to find some books for my homework.\u003c/span>\u003c/div>\u003c/div>\u003cdiv class=\"d-line\" data-hl=\"l-1\">\u003cdiv class=\"d-lh\">\u003cspan class=\"d-sp d-r\">B\u003c/span>\u003cspan class=\"d-ln\">2\u003c/span>\u003c/div>\u003cdiv class=\"d-en2\">What kinds of books are you looking for, Somi? \u003cspan class=\"mk\">2\u003c/span>\u003c/div>\u003cdiv class=\"d-ko\">어떤 종류의 책을 찾고 있니, 소미야?\u003c/div>\u003cdiv class=\"d-notes\">\u003cdiv class=\"d-note\">\u003cspan class=\"mk\">2\u003c/span>\u003cspan>「need to+ 동사원형」은 ‘\u003cb class=\"key\">~할 필요가 있다\u003c/b>, \u003cb class=\"key\">~해야 한다\u003c/b>’라는 의미이다.\u003c/span>\u003c/div>\u003c/div>\u003c/div>","segs":[{"n":19,"text":"첫 번째 줄이에요. Liam, can you please help me? I need to find some books for my homework. 리암, 나 좀 도와줄래? 숙제할 책을 좀 찾아야 해라는 뜻이에요. 여기의 can you please help me는 상대방에게 도움을 요청하는 표현이랍니다.","hl":"l-0"},{"n":20,"text":"두 번째 줄이에요. What kinds of books are you looking for, Somi? 소미야, 어떤 종류의 책을 찾고 있니라는 뜻이에요.","hl":"l-1"}]},{"html":"\u003cspan class=\"lp-tag\">대화 해설 3–4 / 11\u003c/span>\u003cdiv class=\"d-line\" data-hl=\"l-0\">\u003cdiv class=\"d-lh\">\u003cspan class=\"d-sp d-l\">G\u003c/span>\u003cspan class=\"d-ln\">3\u003c/span>\u003c/div>\u003cdiv class=\"d-en2\">I'm looking for books \u003cspan class=\"mk\">3\u003c/span>\u003cspan class=\"tgt\">on\u003c/span> famous people who helped\u003c/div>\u003cdiv class=\"d-ko\">다른 사람들을 도운 유명한 사람들에 관한 책을 찾고 있어.\u003c/div>\u003cdiv class=\"d-notes\">\u003cdiv class=\"d-note\">\u003cspan class=\"mk\">3\u003c/span>\u003cspan>on은 ‘\u003cb class=\"key\">~에 관한\u003c/b>’이라는 의미이고, who 이하는 famous people을 수식하는 \u003cb class=\"key\">주격 관계대명사절\u003c/b>이다.\u003c/span>\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"d-line\" data-hl=\"l-1\">\u003cdiv class=\"d-lh\">\u003cspan class=\"d-ln\">4\u003c/span>\u003c/div>\u003cdiv class=\"d-en2\">others. I need to write an essay.\u003c/div>\u003cdiv class=\"d-ko\">에세이를 써야 하거든.\u003c/div>\u003c/div>","segs":[{"n":21,"text":"세 번째 줄이에요. I'm looking for books on famous people who helped라고 해요. 다른 사람들을 도운 유명한 사람들에 관한 책을 찾고 있다는 뜻이에요. 여기서 전치사 on은 ~에 관한이라는 뜻이고 who 이하는 유명한 사람들을 꾸며주는 주격 관계대명사절이에요.","hl":"l-0"},{"n":22,"text":"네 번째 줄이에요. others. I need to write an essay. 에세이를 써야 하거든이라는 뜻이에요. 여기서 need to 뒤에 동사원형을 써서 ~할 필요가 있다는 뜻을 나타내죠.","hl":"l-1"}]},{"html":"\u003cspan class=\"lp-tag\">대화 해설 5–6 / 11\u003c/span>\u003cdiv class=\"d-line\" data-hl=\"l-0\">\u003cdiv class=\"d-lh\">\u003cspan class=\"d-sp d-r\">B\u003c/span>\u003cspan class=\"d-ln\">5\u003c/span>\u003c/div>\u003cdiv class=\"d-en2\">Who do you want to write about?\u003c/div>\u003cdiv class=\"d-ko\">누구에 대해 쓰고 싶니?\u003c/div>\u003c/div>\u003cdiv class=\"d-line\" data-hl=\"l-1\">\u003cdiv class=\"d-lh\">\u003cspan class=\"d-sp d-l\">G\u003c/span>\u003cspan class=\"d-ln\">6\u003c/span>\u003c/div>\u003cdiv class=\"d-en2\">\u003cspan class=\"mk\">4\u003c/span>\u003cspan class=\"tgt\">I was thinking about\u003c/span> Dr. Schweitzer, but can you recommend someone else for me?\u003c/div>\u003cdiv class=\"d-ko\">슈바이처 박사님에 대해 생각 중이었는데, 다른 사람을 추천해 줄 수 있니?\u003c/div>\u003cdiv class=\"d-notes\">\u003cdiv class=\"d-note\">\u003cspan class=\"mk\">4\u003c/span>\u003cspan>‘~에 관해 생각하는 중이었다’라는 뜻으로, \u003cb class=\"key\">과거 진행 중이던 일\u003c/b>을 나타낸다.\u003c/span>\u003c/div>\u003c/div>\u003c/div>","segs":[{"n":23,"text":"다섯 번째 줄이에요. Who do you want to write about? 누구에 대해 쓰고 싶니라는 뜻이에요.","hl":"l-0"},{"n":24,"text":"여섯 번째 줄이에요. I was thinking about Dr. Schweitzer, but can you recommend someone else for me? 슈바이처 박사님에 대해 생각 중이었는데, 다른 사람를 추천해 줄 수 있니라는 뜻이에요. I was thinking about은 ~에 관해 생각하는 중이었다는 뜻으로 과거에 진행되던 일을 나타내요.","hl":"l-1"}]},{"html":"\u003cspan class=\"lp-tag\">대화 해설 7–8 / 11\u003c/span>\u003cdiv class=\"d-line\" data-hl=\"l-0\">\u003cdiv class=\"d-lh\">\u003cspan class=\"d-sp d-r\">B\u003c/span>\u003cspan class=\"d-ln\">7\u003c/span>\u003c/div>\u003cdiv class=\"d-en2\">\u003cspan class=\"mk\">5\u003c/span>\u003cspan class=\"tgt\">What about\u003c/span> Audrey Hepburn?\u003c/div>\u003cdiv class=\"d-ko\">오드리 헵번은 어때?\u003c/div>\u003cdiv class=\"d-notes\">\u003cdiv class=\"d-note\">\u003cspan class=\"mk\">5\u003c/span>\u003cspan>What about ~?은 ‘~하는 게 어때?’라는 뜻으로, 제안을 나타내는 표현이지만 이 대화에서는 \u003cb class=\"key\">추천하는 말\u003c/b>로 사용되었다.\u003c/span>\u003c/div>\u003c/div>\u003cdiv class=\"d-alt\">\u003cb>같은 의도의 표현\u003c/b>\u003cspan>How about Audrey Hepburn?\u003c/span>\u003c/div>\u003c/div>\u003cdiv class=\"d-line\" data-hl=\"l-1\">\u003cdiv class=\"d-lh\">\u003cspan class=\"d-sp d-l\">G\u003c/span>\u003cspan class=\"d-ln\">8\u003c/span>\u003c/div>\u003cdiv class=\"d-en2\">I know she was a famous actor, but what did she do\u003c/div>\u003cdiv class=\"d-ko\">그가 유명한 배우인 건 알지만, 무엇을 했니\u003c/div>\u003c/div>","segs":[{"n":25,"text":"일곱 번째 줄이에요. What about Audrey Hepburn? 오드리 헵번은 어때라는 뜻이에요. What about은 원래 ~하는 게 어때라는 제안 표현이지만 이 대화에서는 상대방에게 인물을 추천하는 말로 쓰였어요.","hl":"l-0"},{"n":26,"text":"여덟 번째 줄이에요. I know she was a famous actor, but what did she do라고 해요. 그녀가 유명한 배우였다는 건 알지만 무엇을 했니라는 뜻이에요.","hl":"l-1"}]},{"html":"\u003cspan class=\"lp-tag\">대화 해설 9–10 / 11\u003c/span>\u003cdiv class=\"d-line\" data-hl=\"l-0\">\u003cdiv class=\"d-lh\">\u003cspan class=\"d-ln\">9\u003c/span>\u003c/div>\u003cdiv class=\"d-en2\">➏ \u003cspan class=\"mk\">6\u003c/span>\u003cspan class=\"tgt\">to help others?\u003c/span>\u003c/div>\u003cdiv class=\"d-ko\">다른 사람들을 돕기 위해?\u003c/div>\u003cdiv class=\"d-notes\">\u003cdiv class=\"d-note\">\u003cspan class=\"mk\">6\u003c/span>\u003cspan>‘다른 사람들을 돕기 위해’라는 뜻의 \u003cb class=\"key\">목적\u003c/b>을 나타내는 \u003cb class=\"key\">부사적 용법의 to부정사구\u003c/b>이다.\u003c/span>\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"d-line\" data-hl=\"l-1\">\u003cdiv class=\"d-lh\">\u003cspan class=\"d-sp d-r\">B\u003c/span>\u003cspan class=\"d-ln\">10\u003c/span>\u003c/div>\u003cdiv class=\"d-en2\">She ➐ \u003cspan class=\"mk\">7\u003c/span>\u003cspan class=\"tgt\">did a lot of volunteer work\u003c/span>, especially for children.\u003c/div>\u003cdiv class=\"d-ko\">그녀는 많은 자원봉사 활동을 했어, 특히 어린이들을 위해.\u003c/div>\u003cdiv class=\"d-notes\">\u003cdiv class=\"d-note\">\u003cspan class=\"mk\">7\u003c/span>\u003cspan>do volunteer work는 ‘\u003cb class=\"key\">자원봉사를 하다\u003c/b>’라는 의미이고. a lot of는 ‘많은’이라는 뜻으로, \u003cb class=\"key\">lots of\u003c/b>로 바꿔 쓸 수 있다.\u003c/span>\u003c/div>\u003c/div>\u003cdiv class=\"d-alt\">\u003cb>같은 의도의 표현\u003c/b>\u003cspan>She did lots of volunteer work, especially for children.\u003c/span>\u003c/div>\u003c/div>","segs":[{"n":27,"text":"아홉 번째 줄이에요. to help others? 다른 사람들을 돕기 위해서라는 뜻이에요. 여기서 to help는 다른 사람들을 돕기 위해서라는 목적을 나타내는 부사적 용법의 to부정사구예요.","hl":"l-0"},{"n":28,"text":"열 번째 줄이에요. She did a lot of volunteer work, especially for children. 그녀는 많은 자원봉사 활동을 했어, 특히 어린이들을 위해서라는 뜻이에요. do volunteer work는 자원봉사를 하다라는 뜻이고 a lot of는 lots of로 바꿔 쓸 수 있어요.","hl":"l-1"}]},{"html":"\u003cspan class=\"lp-tag\">대화 해설 11 / 11\u003c/span>\u003cdiv class=\"d-line\" data-hl=\"l-0\">\u003cdiv class=\"d-lh\">\u003cspan class=\"d-sp d-l\">G\u003c/span>\u003cspan class=\"d-ln\">11\u003c/span>\u003c/div>\u003cdiv class=\"d-en2\">Really? Then, I can write about her. Thank you!\u003c/div>\u003cdiv class=\"d-ko\">정말? 그럼, 그녀에 대해 쓰면 되겠네. 고마워!\u003c/div>\u003c/div>","segs":[{"n":29,"text":"열한 번째 줄이에요. Really? Then, I can write about her. Thank you! 정말? 그럼, 그녀에 대해 쓰면 되겠네. 고마워라는 뜻이에요.","hl":"l-0"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">확인 문제 1 / 5\u003c/span>\u003cspan class=\"g-kind\">대체 표현\u003c/span>\u003c/div>\u003cdiv data-hl=\"q\">\u003cdiv class=\"g-q\">다음 대화의 밑줄 친 표현과 바꿔 쓸 수 있는 가장 알맞은 것을 고르세요.\u003c/div>\u003cdiv class=\"g-qs\" style=\"white-space:pre-line\">G: Liam, can you please help me?\nB: Sure, what can I do for you?\u003c/div>\u003cdiv class=\"g-opts\" data-rv=\"ans\">\u003cbutton class=\"g-opt\" data-ok=\"1\">\u003cb>①\u003c/b>Could you do me a favor?\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>②\u003c/b>What are you doing?\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>③\u003c/b>Where are you going?\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>④\u003c/b>Who are you?\u003c/button>\u003c/div>\u003c/div>\u003cdiv class=\"g-ans\" data-rv=\"ans\" data-hl=\"ans\">\u003cb>정답\u003c/b>\u003cspan class=\"a\">Could you do me a favor?\u003c/span>\u003cdiv class=\"g-exp\">도움을 요청하는 표현 can you please help me는 Could you do me a favor?로 바꿔 쓸 수 있다.\u003c/div>\u003c/div>\u003cbutton class=\"g-show\" data-act=\"show\">정답 보기\u003c/button>","segs":[{"n":30,"text":"첫 번째 문제입니다. 대화에서 도움을 요청하는 표현과 바꿔 쓸 수 있는 것을 골라 보세요. 첫 번째 보기를 잘 읽고 풀어 보세요.","hl":"q"},{"n":31,"text":"","hl":"q","pause":6},{"n":32,"text":"정답은 첫 번째 보기인 Could you do me a favor예요. 도움을 요청할 때 쓸 수 있는 표현이랍니다.","hl":"ans","reveal":"ans"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">확인 문제 2 / 5\u003c/span>\u003cspan class=\"g-kind\">빈칸\u003c/span>\u003c/div>\u003cdiv data-hl=\"q\">\u003cdiv class=\"g-q\">다음 빈칸에 들어갈 가장 알맞은 단어를 고르세요.\u003c/div>\u003cdiv class=\"g-qs\" style=\"white-space:pre-line\">I'm looking ________ books on famous people who helped others.\u003c/div>\u003cdiv class=\"g-opts\" data-rv=\"ans\">\u003cbutton class=\"g-opt\">\u003cb>①\u003c/b>at\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>②\u003c/b>on\u003c/button>\u003cbutton class=\"g-opt\" data-ok=\"1\">\u003cb>③\u003c/b>for\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>④\u003c/b>in\u003c/button>\u003c/div>\u003c/div>\u003cdiv class=\"g-ans\" data-rv=\"ans\" data-hl=\"ans\">\u003cb>정답\u003c/b>\u003cspan class=\"a\">for\u003c/span>\u003cdiv class=\"g-exp\">‘~을 찾다’라는 의미의 표현은 look for이므로 빈칸에는 전치사 for가 들어간다.\u003c/div>\u003c/div>\u003cbutton class=\"g-show\" data-act=\"show\">정답 보기\u003c/button>","segs":[{"n":33,"text":"두 번째 문제입니다. 빈칸에 들어갈 알맞은 단어를 고르는 문제예요. 문맥상 무엇을 찾고 있다는 표현을 생각하며 풀어 보세요.","hl":"q"},{"n":34,"text":"","hl":"q","pause":6},{"n":35,"text":"정답은 세 번째 보기인 for예요. look for은 ~을 찾다라는 뜻이기 때문이에요.","hl":"ans","reveal":"ans"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">확인 문제 3 / 5\u003c/span>\u003cspan class=\"g-kind\">대화 순서\u003c/span>\u003c/div>\u003cdiv data-hl=\"q\">\u003cdiv class=\"g-q\">다음 대화의 흐름이 자연스럽도록 순서대로 바르게 나열한 것을 고르세요.\u003c/div>\u003cdiv class=\"g-qs\" style=\"white-space:pre-line\">(A) What about Audrey Hepburn?\n(B) I was thinking about Dr. Schweitzer, but can you recommend someone else?\n(C) Who do you want to write about?\u003c/div>\u003cdiv class=\"g-opts\" data-rv=\"ans\">\u003cbutton class=\"g-opt\">\u003cb>①\u003c/b>(A)-(B)-(C)\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>②\u003c/b>(B)-(C)-(A)\u003c/button>\u003cbutton class=\"g-opt\" data-ok=\"1\">\u003cb>③\u003c/b>(C)-(B)-(A)\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>④\u003c/b>(B)-(A)-(C)\u003c/button>\u003c/div>\u003c/div>\u003cdiv class=\"g-ans\" data-rv=\"ans\" data-hl=\"ans\">\u003cb>정답\u003c/b>\u003cspan class=\"a\">(C)-(B)-(A)\u003c/span>\u003cdiv class=\"g-exp\">누구에 대해 쓰고 싶은지 묻고(C), 슈바이처 박사님을 생각했다며 다른 사람을 추천해 달라고 한 뒤(B), 오드리 헵번을 추천하는(A) 순서가 자연스럽다.\u003c/div>\u003c/div>\u003cbutton class=\"g-show\" data-act=\"show\">정답 보기\u003c/button>","segs":[{"n":36,"text":"세 번째 문제입니다. 대화의 순서를 올바르게 배열한 것을 고르는 문제예요. 대화의 흐름을 생각하며 풀어 보세요.","hl":"q"},{"n":37,"text":"","hl":"q","pause":6},{"n":38,"text":"정답은 세 번째 보기인 씨, 비, 에이 순서예요. 누구에 대해 쓸지 묻고 다른 사람을 추천해 달라고 한 뒤 오드리 헵번을 추천하는 흐름이 자연스럽답니다.","hl":"ans","reveal":"ans"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">확인 문제 4 / 5\u003c/span>\u003cspan class=\"g-kind\">내용 일치\u003c/span>\u003c/div>\u003cdiv data-hl=\"q\">\u003cdiv class=\"g-q\">다음 중 위 대화의 내용과 일치하는 영어 문장을 고르세요.\u003c/div>\u003cdiv class=\"g-opts\" data-rv=\"ans\">\u003cbutton class=\"g-opt\">\u003cb>①\u003c/b>Somi is looking for books for her science project.\u003c/button>\u003cbutton class=\"g-opt\" data-ok=\"1\">\u003cb>②\u003c/b>Somi was thinking about Dr. Schweitzer for her essay.\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>③\u003c/b>Audrey Hepburn did a lot of volunteer work for animals.\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>④\u003c/b>Liam recommended Dr. Schweitzer to Somi.\u003c/button>\u003c/div>\u003c/div>\u003cdiv class=\"g-ans\" data-rv=\"ans\" data-hl=\"ans\">\u003cb>정답\u003c/b>\u003cspan class=\"a\">Somi was thinking about Dr. Schweitzer for her essay.\u003c/span>\u003cdiv class=\"g-exp\">소미는 에세이를 위해 슈바이처 박사에 대해 생각하고 있었다는 내용은 대화 내용과 일치한다.\u003c/div>\u003c/div>\u003cbutton class=\"g-show\" data-act=\"show\">정답 보기\u003c/button>","segs":[{"n":39,"text":"네 번째 문제입니다. 대화의 내용과 일치하는 영어 문장을 고르는 문제예요. 보기의 영문 뜻을 잘 생각하며 골라 보세요.","hl":"q"},{"n":40,"text":"","hl":"q","pause":6},{"n":41,"text":"정답은 두 번째 보기인 Somi was thinking about Dr. Schweitzer for her essay예요. 소미가 에세이를 위해 슈바이처 박사에 대해 생각하고 있었다는 내용과 일치하죠.","hl":"ans","reveal":"ans"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">확인 문제 5 / 5\u003c/span>\u003cspan class=\"g-kind\">내용 불일치\u003c/span>\u003c/div>\u003cdiv data-hl=\"q\">\u003cdiv class=\"g-q\">다음 중 위 대화의 내용과 일치하지 않는 영어 문장을 고르세요.\u003c/div>\u003cdiv class=\"g-opts\" data-rv=\"ans\">\u003cbutton class=\"g-opt\">\u003cb>①\u003c/b>Somi needs to write an essay about famous people who helped others.\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>②\u003c/b>Liam recommended Audrey Hepburn to Somi.\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>③\u003c/b>Audrey Hepburn was a famous actor.\u003c/button>\u003cbutton class=\"g-opt\" data-ok=\"1\">\u003cb>④\u003c/b>Somi decided to write about Dr. Schweitzer in the end.\u003c/button>\u003c/div>\u003c/div>\u003cdiv class=\"g-ans\" data-rv=\"ans\" data-hl=\"ans\">\u003cb>정답\u003c/b>\u003cspan class=\"a\">Somi decided to write about Dr. Schweitzer in the end.\u003c/span>\u003cdiv class=\"g-exp\">소미는 결국 오드리 헵번에 대해 쓰겠다고 했으므로 슈바이처 박사에 대해 쓰기로 했다는 네 번째 보기는 내용과 일치하지 않는다.\u003c/div>\u003c/div>\u003cbutton class=\"g-show\" data-act=\"show\">정답 보기\u003c/button>","segs":[{"n":42,"text":"다섯 번째 문제입니다. 대화 내용과 일치하지 않는 영어 문장을 고르는 마지막 문제예요. 보기 중에서 틀린 내용을 찾아보세요.","hl":"q"},{"n":43,"text":"","hl":"q","pause":6},{"n":44,"text":"정답은 네 번째 보기인 Somi decided to write about Dr. Schweitzer in the end예요. 소미는 결국 오드리 헵번에 대해 쓰기로 했으므로 슈바이처 박사로 결정했다는 내용은 틀렸어요.","hl":"ans","reveal":"ans"}]},{"html":"\u003cspan class=\"lp-tag\">오늘의 정리\u003c/span>\u003ch2 class=\"g-h\">도움 요청하기 및 추천하기\u003c/h2>\u003cul class=\"g-sum\" data-hl=\"sum\">\u003cli>상대방에게 \u003cb class=\"key\">도움\u003c/b>을 요청할 때는 can you please help me를 사용한다.\u003c/li>\u003cli>need 다음에 to와 동사원형을 쓰면 \u003cb class=\"key\">~할 필요가 있다\u003c/b>는 뜻이 된다.\u003c/li>\u003cli>상대방에게 무언가를 \u003cb class=\"key\">추천\u003c/b>할 때는 What about ~?이나 How about ~?을 쓴다.\u003c/li>\u003c/ul>","segs":[{"n":45,"text":"오늘 이렇게 lesson 6 대화문 해설을 모두 마쳤어요. 도움을 요청하는 표현부터 책을 추천하고 이유를 묻고 답하는 표현까지 정말 중요한 내용들이 많았죠. 복습 열심히 하고 다음 강의에서 또 만나요.","hl":"sum"}]}]});</script></body></html>
