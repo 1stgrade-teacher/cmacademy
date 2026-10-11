@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>중1 시사박 6과 문법 - 일등급샘의 아카이브</title>
 <link rel="stylesheet" href="../../../../../style.css">
+<style>
+  /* 문법 포인트 카드: style.css의 area-card를 그대로 쓰고, 번호·학습지 버튼만 보탬 */
+  .grammar-cards .area-card .icon { font-family: var(--serif); font-weight: 600; font-size: 16px; }
+  .grammar-cards .area-card .count { margin-top: -8px; }
+  .grammar-cards .area-card .name { line-height: 1.45; }
+  .grammar-cards .area-card .name::after { content: ""; position: absolute; inset: 0; }
+  .grammar-cards .files { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; position: relative; z-index: 1; }
+  .grammar-cards .files a {
+    font-size: 12px; font-weight: 700; color: var(--accent-ink); background: var(--accent-bg);
+    border-radius: 999px; padding: 2px 11px;
+  }
+  .grammar-cards .files a:hover { background: var(--amber-bg); color: var(--amber-ink); }
+</style>
 </head>
 <body>
 
@@ -17,13 +30,119 @@
   <div class="hero">
     <p class="eyebrow">중1 · 시사박 · 6과 · 문법</p>
     <h1>6과 문법</h1>
+    <p>학습할 문법 포인트를 선택하세요.</p>
   </div>
 
-    <div class="unit-list compact" data-auto-list data-kind="문법" data-full="false" data-max="4"></div>
+  <!-- 이 폴더에 1.html, 2.html, 3.html ... 을 올리면 카드가 자동으로 생깁니다. (data-max번까지 확인)
+       카드 제목은 각 강의 파일의 <title>에서 가져옵니다.
+       제목을 직접 정하고 싶으면 아래 div에 data-title-1="원하는 제목" data-title-2="원하는 제목" 을 적어 주세요. -->
+  <div class="area-grid cols-2 grammar-cards" data-grammar-cards data-max="6"></div>
 
   <footer>&copy; 2026 청명학원 · 일등급샘의 아카이브</footer>
 </div>
 
-  <script src="/auto-list.js" defer></script>
+<script>
+(function () {
+  // 학습지 PDF: (번호)_worksheet.pdf 처럼 올라와 있으면 카드에 버튼으로 표시
+  var PDFS = [
+    { suffix: "_worksheet.pdf", label: "학습지" },
+    { suffix: "_worksheet-answers.pdf", label: "정답 포함" }
+  ];
+
+  function fileExists(url) {
+    return fetch(url, { method: "HEAD", cache: "no-store" })
+      .then(function (res) { return res.ok; })
+      .catch(function () { return false; });
+  }
+
+  // 강의 파일의 <title>에서 카드 제목을 가져옴. "제목 — grammar1" 같은 뒷부분은 떼어냄
+  function lectureTitle(n) {
+    return fetch("./" + n + ".html", { cache: "no-store" })
+      .then(function (res) { return res.ok ? res.text() : null; })
+      .then(function (html) {
+        if (html === null) return null;
+        var m = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+        var el = document.createElement("textarea");
+        el.innerHTML = m ? m[1] : "";
+        var title = el.value.replace(/\s+[—–]\s+[^—–]*$/, "").trim();
+        var custom = document.querySelector("[data-grammar-cards]").getAttribute("data-title-" + n);
+        return (custom && custom.trim()) || title || "문법 포인트 " + n;
+      })
+      .catch(function () { return null; });
+  }
+
+  function loadLecture(n) {
+    return lectureTitle(n).then(function (title) {
+      if (title === null) return null;
+      return Promise.all(PDFS.map(function (p) {
+        var file = n + p.suffix;
+        return fileExists("./" + file).then(function (ok) {
+          return ok ? { file: file, label: p.label } : null;
+        });
+      })).then(function (pdfs) {
+        return { n: n, title: title, pdfs: pdfs.filter(Boolean) };
+      });
+    });
+  }
+
+  function addCard(container, lec) {
+    var card = document.createElement("div");
+    card.className = "area-card grammar";
+
+    var icon = document.createElement("span");
+    icon.className = "icon";
+    icon.textContent = lec.n;
+
+    var count = document.createElement("span");
+    count.className = "count";
+    count.textContent = "문법 " + lec.n;
+
+    var name = document.createElement("a");
+    name.className = "name";
+    name.href = "./" + lec.n + ".html";
+    name.textContent = lec.title;
+
+    card.appendChild(icon);
+    card.appendChild(count);
+    card.appendChild(name);
+
+    if (lec.pdfs.length) {
+      var files = document.createElement("span");
+      files.className = "files";
+      lec.pdfs.forEach(function (p) {
+        var a = document.createElement("a");
+        a.href = "./" + p.file;
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.textContent = p.label;
+        files.appendChild(a);
+      });
+      card.appendChild(files);
+    }
+    container.appendChild(card);
+  }
+
+  function showEmpty(container) {
+    var box = document.createElement("div");
+    box.className = "empty-state";
+    box.innerHTML = "<strong>준비중</strong><p>아직 올라온 문법 강의가 없습니다.</p>";
+    container.replaceWith(box);
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var container = document.querySelector("[data-grammar-cards]");
+    if (!container) return;
+    var maxN = parseInt(container.getAttribute("data-max") || "6", 10);
+    var jobs = [];
+    for (var i = 1; i <= maxN; i++) jobs.push(loadLecture(i));
+
+    Promise.all(jobs).then(function (results) {
+      var found = results.filter(Boolean);
+      if (!found.length) return showEmpty(container);
+      found.forEach(function (lec) { addCard(container, lec); });
+    });
+  });
+})();
+</script>
 </body>
 </html>
