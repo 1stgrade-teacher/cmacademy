@@ -33,9 +33,15 @@
     var href = rowEl.getAttribute("href");
     if (!href) return;
 
-    fetch(href, { method: "HEAD", cache: "no-store" })
+    // 껍데기(placeholder) 페이지는 파일이 있어도 "준비중"으로 유지
+    // 껍데기 판별: data-placeholder 속성 또는 "아직 준비 중입니다" 문구
+    fetch(href, { cache: "no-store" })
       .then(function (res) {
-        if (res.ok) markAsReady(pillEl);
+        if (!res.ok) return;
+        return res.text().then(function (t) {
+          if (t.indexOf("data-placeholder") !== -1 || t.indexOf("아직 준비 중입니다") !== -1) return;
+          markAsReady(pillEl);
+        });
       })
       .catch(function () {
         // 네트워크 오류 시 그대로 "준비중" 유지 (안전하게 아무 것도 안 함)
