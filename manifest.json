@@ -3,8 +3,8 @@
   "short_name": "일등급샘",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f7efdc",
-  "theme_color": "#f7efdc",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
   "icons": [
     {
       "src": "/icon-192.png",
