@@ -1,31 +1,307 @@
-<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>현재완료와 과거의 차이 — AI강의</title><style>@page { size: A4; margin: 13mm 12mm; }* { box-sizing: border-box; } body { margin: 0; background: #efece4; font-family: 'Pretendard', 'Malgun Gothic', sans-serif; color: #26221a; }.doc { max-width: 760px; margin: 0 auto; background: #fff; padding: 34px 40px 46px; min-height: 100%; }.hd { border-bottom: 3px solid #26221a; padding-bottom: 12px; margin-bottom: 6px; }.hd h1 { font-size: 24px; margin: 0; letter-spacing: -0.02em; }.sec { border: 1px solid #e3ddcd; border-radius: 12px; padding: 14px 17px 12px; margin: 14px 0; background: #fffdf8; break-inside: avoid; page-break-inside: avoid; }.sec h3 { font-size: 15px; margin: 0 0 8px; display: flex; align-items: center; gap: 8px; }.sec h3 .no { display: inline-flex; align-items: center; justify-content: center; width: 21px; height: 21px; border-radius: 6px; background: #c8412b; color: #fff; font-size: 12px; flex: 0 0 auto; }.cc { font-size: 12.8px; line-height: 1.65; margin-bottom: 6px; color: #3d382f; }.gt-title { font-size: 12px; font-weight: 800; color: #6b6455; margin: 8px 0 3px; }.gt { width: 100%; border-collapse: collapse; font-size: 12.3px; margin: 4px 0 8px; break-inside: avoid; page-break-inside: avoid; }.gt th { background: #f1ede2; font-weight: 800; } .gt th, .gt td { border: 1px solid #d8d2c2; padding: 5px 9px; text-align: left; line-height: 1.5; vertical-align: top; }.ex { border-left: 3px solid #c8b98a; padding: 2px 11px; margin: 7px 0; break-inside: avoid; page-break-inside: avoid; }.ex .en { font-size: 13px; font-weight: 600; } .ex .ko { font-size: 12px; color: #6b6455; } .ex .nt { color: #a08a55; }h2.qh { font-size: 16px; margin: 26px 0 8px; padding: 8px 12px; background: #26221a; color: #fff; border-radius: 8px; break-after: avoid; }h2.qh.np, h2.qh.ans { page-break-before: always; break-before: page; }.q { font-size: 12.8px; line-height: 1.7; margin: 9px 0; break-inside: avoid; page-break-inside: avoid; }.ak { font-size: 12.3px; line-height: 1.65; margin: 7px 0; break-inside: avoid; page-break-inside: avoid; }.ak .expl { color: #6b6455; margin: 2px 0 0 16px; }body.lecsel .sec { position: relative; cursor: pointer; }body.lecsel .sec::after { content: '\2610'; position: absolute; top: 7px; right: 10px; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border: 2px solid #b9b1a0; border-radius: 6px; background: #fff; color: transparent; font-size: 14px; font-weight: 900; }body.lecsel .sec:hover { outline: 3px solid #4338CA; outline-offset: 2px; background: #eef0ff; }body.lecsel .sec.lec-on { outline: 3px solid #c8412b; outline-offset: 2px; background: #fff3f0; }body.lecsel .sec.lec-on::after { content: '\2714'; background: #c8412b; border-color: #c8412b; color: #fff; }.sec.lec-playing { outline: 3px solid #16a34a !important; outline-offset: 2px; background: #f0fdf4 !important; }.sec.lec-gen { outline: 3px dashed #f59e0b !important; outline-offset: 2px; background: #fffbeb !important; }body.lecsel .sec.lec-gen::after { content: '' !important; border: 3px solid rgba(245,158,11,.3); border-top-color: #f59e0b; border-radius: 50%; background: transparent; animation: gbcspin .8s linear infinite; }@keyframes gbcspin { to { transform: rotate(360deg); } }[data-hl].gbc-hl { background: #fff3b0 !important; box-shadow: 0 0 0 3px #fde68a, 0 0 18px 4px rgba(253,182,4,.35); border-radius: 8px; transition: background .2s, box-shadow .2s; }[data-hl].gbc-hl table { background: transparent !important; }@media print { body { background: #fff; } .doc { max-width: none; padding: 0; } .gbc-hl { box-shadow: none !important; background: transparent !important; } }
-html,body{height:100%;margin:0;overflow:hidden;background:#f4f1ea;font-family:Pretendard,'Malgun Gothic',sans-serif;-webkit-text-size-adjust:100%;}
-.gl-head{position:fixed;top:0;left:0;right:0;height:46px;display:flex;align-items:center;padding:0 16px;background:#f4f1ea;color:#26221a;font-weight:800;font-size:15px;z-index:8;border-bottom:1px solid #e5dfd0;word-break:keep-all;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
-.gl-stage{position:fixed;top:46px;left:0;right:0;bottom:84px;overflow-y:auto;overflow-x:hidden;padding:20px 16px;-webkit-overflow-scrolling:touch;}
-.gl-item{display:none;max-width:860px;margin:0 auto;background:#fff;border:1px solid #ddd6c6;border-radius:12px;padding:18px 20px;word-break:keep-all;overflow-wrap:break-word;overflow-x:auto;}
-.gl-item.on{display:block;}
-.gl-item img{max-width:100%;height:auto;}
-.gl-item table{width:100%;border-collapse:collapse;}
-.gl-hl{background:#fff3b0 !important;box-shadow:0 0 0 3px #fde68a,0 0 16px 3px rgba(253,182,4,.32);border-radius:8px;transition:background .2s,box-shadow .2s;}
-.gl-hl table{background:transparent !important;}
-.gl-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:8px;background:#26221a;color:#fff;border-radius:999px;padding:6px 12px;box-shadow:0 6px 24px rgba(0,0,0,.35);z-index:9;max-width:96vw;}
-.gl-bar button{border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;padding:0;line-height:1;}
-.gl-bar .nav{width:30px;height:30px;border-radius:50%;background:#57534a;font-size:13px;flex:0 0 auto;}
-.gl-bar .nav:disabled{opacity:.38;cursor:default;}
-.gl-bar .play{width:36px;height:36px;border-radius:50%;background:#c8412b;font-size:15px;flex:0 0 auto;}
-.gl-bar .play.on{background:#16a34a;}
-.gl-cnt{color:#e0dacb;font-size:12px;min-width:44px;text-align:center;font-variant-numeric:tabular-nums;}
-.gl-tl{position:relative;width:150px;height:16px;display:flex;align-items:center;cursor:pointer;flex:0 1 auto;touch-action:none;}
-.gl-tl .tr{width:100%;height:5px;border-radius:4px;background:rgba(255,255,255,.22);overflow:hidden;}
-.gl-tl .tf{display:block;height:100%;width:0;background:#c8412b;border-radius:4px;}
-.gl-tm{color:#e0dacb;font-size:11px;font-variant-numeric:tabular-nums;white-space:nowrap;}
-@media (max-width:680px){
-.gl-head{height:42px;font-size:14px;}
-.gl-stage{top:42px;bottom:82px;padding:12px 9px;}
-.gl-item{padding:13px 13px;border-radius:10px;}
-.gl-item h3,.gl-item h4{font-size:15px !important;line-height:1.4 !important;}
-.gl-item .cc,.gl-item .concept{font-size:13.5px !important;line-height:1.7 !important;}
-.gl-item table{font-size:11.5px !important;}
-.gl-item th,.gl-item td{padding:4px 6px !important;line-height:1.45 !important;}
-.gl-item .ex .en{font-size:13.5px !important;}.gl-item .ex .ko{font-size:12px !important;}
-}</style></head><body><div class="gl-head">🎧 현재완료와 과거의 차이 — AI강의</div><div class="gl-stage" id="stage"><div class="gl-item on" id="gl0"><div class="sec" data-lec="0"><h3 data-hl="title"><span class="no">1</span>1. 현재완료와 과거의 기본 차이</h3><div class="cc" data-hl="concept">★ 현재완료는 과거에 일어난 일이 현재와 연결되어 있을 때 쓰고, 과거는 과거의 사실이나 일을 그냥 말할 때 씁니다.</div><div data-hl="table"><div class="gt-title">🗂 현재완료 vs 과거</div><table class="gt"><tbody><tr><th>구분</th><th>뜻</th><th>시제의 느낌</th></tr><tr><td>현재완료</td><td>과거의 일이 현재와 관련 있음</td><td>현재에 더 가까움</td></tr><tr><td>과거</td><td>과거의 일이 끝남</td><td>과거에만 있음</td></tr></tbody></table></div><div data-hl="example"><div class="ex"><div class="en">I have lost my key.</div><div class="ko">나는 열쇠를 잃어버렸다. <span class="nt">— 지금 열쇠가 없다는 현재의 결과가 중요함.</span></div></div><div class="ex"><div class="en">I lost my key yesterday.</div><div class="ko">나는 어제 열쇠를 잃어버렸다. <span class="nt">— 어제라는 과거의 시점을 분명히 나타냄.</span></div></div></div></div></div><div class="gl-item" id="gl1"><div class="sec" data-lec="1"><h3 data-hl="title"><span class="no">2</span>2. 현재완료와 함께 쓸 수 없는 과거 부사(구)</h3><div class="cc" data-hl="concept">★ 현재완료는 특정한 과거 시점을 분명히 나타내는 부사(구)와 함께 쓸 수 없습니다.</div><div data-hl="table"><div class="gt-title">🗂 현재완료와 함께 못 쓰는 말</div><table class="gt"><tbody><tr><th>부사/표현</th><th>이유</th><th>예시</th></tr><tr><td>ago</td><td>과거에서 지금으로부터의 시간 차를 나타냄</td><td>two years ago</td></tr><tr><td>last + 시간</td><td>과거의 특정 시점을 나타냄</td><td>last night, last week</td></tr><tr><td>yesterday</td><td>명백한 과거를 나타냄</td><td>yesterday morning</td></tr><tr><td>in + 연도</td><td>특정 연도를 나타냄</td><td>in 2010</td></tr><tr><td>when ~ ?</td><td>과거의 특정 때를 묻는 말</td><td>When did you arrive?</td></tr></tbody></table></div><div data-hl="example"><div class="ex"><div class="en">My aunt was in Paris two years ago.</div><div class="ko">우리 이모는 2년 전에 파리에 있었다. <span class="nt">— has been은 쓰지 않음.</span></div></div><div class="ex"><div class="en">He met one of his friends last night.</div><div class="ko">그는 어젯밤에 친구 중 한 명을 만났다. <span class="nt">— last night는 과거를 나타내므로 과거형 사용.</span></div></div><div class="ex"><div class="en">Tina sold her old car yesterday.</div><div class="ko">티나는 어제 낡은 차를 팔았다. <span class="nt">— yesterday와 현재완료는 함께 쓰지 않음.</span></div></div></div></div></div><div class="gl-item" id="gl2"><div class="sec" data-lec="2"><h3 data-hl="title"><span class="no">3</span>3. 날짜·연도·특정 시점 표현과 과거형</h3><div class="cc" data-hl="concept">★ in + 연도, yesterday, last ~, ago처럼 ‘언제’가 분명한 표현이 있으면 과거형을 씁니다.</div><div data-hl="table"><div class="gt-title">🗂 특정 과거 시점 표현</div><table class="gt"><tbody><tr><th>표현</th><th>쓰는 시제</th><th>예</th></tr><tr><td>in 2010</td><td>과거형</td><td>I wrote a book in 2010.</td></tr><tr><td>yesterday</td><td>과거형</td><td>She called me yesterday.</td></tr><tr><td>last year</td><td>과거형</td><td>We visited Busan last year.</td></tr></tbody></table></div><div data-hl="example"><div class="ex"><div class="en">I wrote a book in 2010.</div><div class="ko">나는 2010년에 책 한 권을 썼다. <span class="nt">— 2010년은 명백한 과거이므로 과거형.</span></div></div><div class="ex"><div class="en">They arrived in LA last Friday.</div><div class="ko">그들은 지난 금요일에 LA에 도착했다. <span class="nt">— last Friday는 과거를 나타냄.</span></div></div></div></div></div><div class="gl-item" id="gl3"><div class="sec" data-lec="3"><h3 data-hl="title"><span class="no">4</span>4. When이 들어간 질문과 현재완료</h3><div class="cc" data-hl="concept">★ when은 과거의 특정 시점을 묻는 말이므로, 과거형과 함께 쓰고 현재완료와는 쓰지 않습니다.</div><div data-hl="table"><div class="gt-title">🗂 When 질문의 시제</div><table class="gt"><tbody><tr><th>문장</th><th>올바른 시제</th><th>이유</th></tr><tr><td>When did they arrive in LA?</td><td>과거형</td><td>도착한 때를 묻는 질문이기 때문</td></tr><tr><td>When did you meet him?</td><td>과거형</td><td>만난 시점이 과거의 특정 때이기 때문</td></tr></tbody></table></div><div data-hl="example"><div class="ex"><div class="en">When did they arrive in LA?</div><div class="ko">그들은 언제 LA에 도착했니? <span class="nt">— When + 과거형이 자연스럽다.</span></div></div><div class="ex"><div class="en">When did you buy this bag?</div><div class="ko">이 가방은 언제 샀니? <span class="nt">— 특정 과거 시점을 묻는 질문.</span></div></div></div></div></div><div class="gl-item" id="gl4"><div class="sec" data-lec="4"><h3 data-hl="title"><span class="no">5</span>5. 한눈에 정리</h3><div class="cc" data-hl="concept">★ 현재완료는 ‘과거와 연결된 현재’, 과거형은 ‘과거의 특정 시점’입니다. 그래서 과거를 정확히 나타내는 표현이 나오면 과거형을 써야 합니다.</div><div data-hl="table"><div class="gt-title">🗂 마지막 정리</div><table class="gt"><tbody><tr><th>시제</th><th>어울리는 표현</th><th>예문</th></tr><tr><td>현재완료</td><td>just, already, yet, ever, never, for, since</td><td>I have lived here for two years.</td></tr><tr><td>과거형</td><td>ago, last, yesterday, in + 연도, when</td><td>I lived here in 2010.</td></tr></tbody></table></div><div data-hl="example"><div class="ex"><div class="en">I have lived here for two years.</div><div class="ko">나는 여기서 2년 동안 살아왔다. <span class="nt">— for는 기간을 나타내며 현재와 연결됨.</span></div></div><div class="ex"><div class="en">I lived here in 2010.</div><div class="ko">나는 2010년에 여기서 살았다. <span class="nt">— in 2010은 특정 과거 시점.</span></div></div><div class="ex"><div class="en">Have you ever been to Japan?</div><div class="ko">너는 일본에 가 본 적이 있니? <span class="nt">— ever는 현재완료와 잘 어울림.</span></div></div></div></div></div></div><div class="gl-bar"><button class="nav" id="prev" onclick="go(-1)" title="이전 (←)">⏮</button><button id="pp" class="play" onclick="toggle()" title="재생/일시정지 (Space)">▶</button><button class="nav" id="next" onclick="go(1)" title="다음 (→)">⏭</button><span class="gl-tl" id="tl" title="클릭/드래그로 위치 이동"><span class="tr"><i class="tf" id="tlf"></i></span></span><span class="gl-tm" id="tm">0:00 / 0:00</span><span class="gl-cnt" id="cnt"></span><select id="rate" title="재생 속도" style="background:#57534a;color:#fff;border:0;border-radius:999px;padding:4px 7px;font-weight:700;font-size:12px;cursor:pointer;"><option value="1">1.0x</option><option value="1.2">1.2x</option><option value="1.4">1.4x</option><option value="1.6">1.6x</option><option value="1.8">1.8x</option><option value="2">2.0x</option></select></div><script>var A=[[{"u":"./point11_audio/1.mp3","hl":"title"},{"u":"./point11_audio/2.mp3","hl":"concept"},{"u":"./point11_audio/3.mp3","hl":"table"},{"u":"./point11_audio/4.mp3","hl":"example"}],[{"u":"./point11_audio/5.mp3","hl":"title"},{"u":"./point11_audio/6.mp3","hl":"concept"},{"u":"./point11_audio/7.mp3","hl":"table"},{"u":"./point11_audio/8.mp3","hl":"example"}],[{"u":"./point11_audio/9.mp3","hl":"title"},{"u":"./point11_audio/10.mp3","hl":"concept"},{"u":"./point11_audio/11.mp3","hl":"table"},{"u":"./point11_audio/12.mp3","hl":"example"}],[{"u":"./point11_audio/13.mp3","hl":"title"},{"u":"./point11_audio/14.mp3","hl":"concept"},{"u":"./point11_audio/15.mp3","hl":"table"},{"u":"./point11_audio/16.mp3","hl":"example"}],[{"u":"./point11_audio/17.mp3","hl":"title"},{"u":"./point11_audio/18.mp3","hl":"concept"},{"u":"./point11_audio/19.mp3","hl":"table"},{"u":"./point11_audio/20.mp3","hl":"example"}]];var idx=0,seg=0,playing=false,tmr=null,BR=1400,rate=1;var au=new Audio();var rsel=document.getElementById("rate");if(rsel)rsel.onchange=function(){rate=parseFloat(rsel.value)||1;try{au.playbackRate=rate;}catch(_){}};function fmt(t){t=Math.max(0,Math.floor(t||0));return Math.floor(t/60)+":"+("0"+(t%60)).slice(-2);}function updTl(){var f=document.getElementById("tlf"),t=document.getElementById("tm");var d=(au.duration&&isFinite(au.duration))?au.duration:0;var c=au.currentTime||0;if(f)f.style.width=(d?(c/d*100):0)+"%";if(t)t.textContent=fmt(c)+" / "+fmt(d);}au.addEventListener("timeupdate",updTl);au.addEventListener("loadedmetadata",updTl);au.addEventListener("ended",updTl);(function(){var tl=document.getElementById("tl");if(!tl)return;var drag=false;function seekAt(ev){var r=tl.getBoundingClientRect();var x=((ev.touches&&ev.touches[0])?ev.touches[0].clientX:ev.clientX)-r.left;var p=Math.max(0,Math.min(1,x/r.width));if(au.duration&&isFinite(au.duration)){au.currentTime=p*au.duration;updTl();}}tl.addEventListener("mousedown",function(e){drag=true;seekAt(e);e.preventDefault();});document.addEventListener("mousemove",function(e){if(drag)seekAt(e);});document.addEventListener("mouseup",function(){drag=false;});tl.addEventListener("touchstart",function(e){seekAt(e);},{passive:true});tl.addEventListener("touchmove",function(e){seekAt(e);},{passive:true});})();function segs(){return A[idx]||[];}function slide(){return document.querySelector(".gl-item.on");}function clearHl(){var hs=document.querySelectorAll(".gl-hl");for(var i=0;i<hs.length;i++)hs[i].classList.remove("gl-hl");}function applyHl(key){clearHl();if(!key)return;var s=slide();if(!s)return;var el=s.querySelector("[data-hl=\""+key+"\"]");if(el){el.classList.add("gl-hl");try{el.scrollIntoView({block:"nearest"});}catch(_){}}}function mark(){var its=document.querySelectorAll(".gl-item");for(var i=0;i<its.length;i++)its[i].classList.toggle("on",i===idx);clearHl();var c=document.getElementById("cnt");if(c)c.textContent=(idx+1)+" / "+A.length;var st=document.getElementById("stage");if(st)st.scrollTop=0;document.getElementById("prev").disabled=idx<=0;document.getElementById("next").disabled=idx>=A.length-1;}function stopAu(){try{au.pause();}catch(_){}if(tmr){clearTimeout(tmr);tmr=null;}}function playSeg(){var ss=segs();if(seg>=ss.length){nextSlide();return;}var s=ss[seg];applyHl(s.hl);if(!s.u){tmr=setTimeout(nextSeg,1200);return;}au.src=s.u;au.playbackRate=rate;au.onended=nextSeg;au.onerror=nextSeg;var p=au.play();if(p&&p.catch)p.catch(function(){});}function nextSeg(){seg++;playSeg();}function nextSlide(){clearHl();if(idx<A.length-1){tmr=setTimeout(function(){idx++;seg=0;mark();playSeg();},BR);}else{playing=false;paint();}}function play(){stopAu();playing=true;paint();playSeg();}function paint(){var pp=document.getElementById("pp");pp.textContent=playing?"⏸":"▶";pp.classList.toggle("on",playing);}function toggle(){if(playing){stopAu();playing=false;paint();return;}playing=true;paint();if(au.src&&au.currentTime>0&&!au.ended){var p=au.play();if(p&&p.catch)p.catch(function(){});}else playSeg();}function go(d){var n=Math.max(0,Math.min(A.length-1,idx+d));if(n===idx)return;stopAu();idx=n;seg=0;mark();if(playing)play();}document.addEventListener("keydown",function(e){if(e.key==="ArrowRight"||e.key==="PageDown"){e.preventDefault();go(1);}else if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();go(-1);}else if(e.key===" "){e.preventDefault();toggle();}});mark();</script></body></html>
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>현재완료, 그럼 과거 부사랑은 왜 못 써요? — point11</title><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@500;600;700&display=swap" rel="stylesheet"><style>html,body{margin:0;height:100%;background:#F3F3F5}#app{width:min(1040px,94vw);height:92vh;margin:4vh auto}@media (max-width:700px){#app{width:100vw;height:auto;margin:0}}
+.p-ins{font-size:15.5px;font-weight:700;color:#4A5866;margin:4px 0 10px;display:flex;gap:8px;align-items:baseline}
+.p-no{flex:0 0 auto;font-size:15px;font-weight:800;color:#fff;background:#3A4FA3;border-radius:6px;padding:1px 9px}
+.p-q{font-size:21px;line-height:1.9;color:#1B2733}
+.p-q.sm{font-size:16.5px;line-height:1.75}
+.p-psg{border:1.5px solid #CFD6E4;border-radius:10px;padding:12px 16px;font-size:17px;line-height:1.95;background:#FBFCFE;font-family:"Noto Serif KR",Georgia,serif}
+.p-psg.sm{font-size:14.5px;line-height:1.75;padding:8px 12px}
+.p-box{display:inline-flex;align-items:center;gap:6px;border:2px solid #3A4FA3;border-radius:6px;padding:0 8px;margin:0 3px;background:#fff;line-height:1.5}
+.p-box i{font-style:normal;color:#9AA3B5}
+.p-box span.ok{background:#FFE7A3;color:#B43C0C;font-weight:800;border-radius:4px;padding:0 4px}
+.p-u{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px}
+.p-blank{display:inline-block;min-width:5em;border-bottom:2px solid #8493A1;margin:0 4px;vertical-align:-2px}
+.p-words{margin-top:8px;font-size:16px;color:#4A5866;background:#F6F8FB;border-radius:8px;padding:8px 12px;line-height:1.7}
+.p-opts{display:grid;gap:6px;margin-top:10px;font-size:18px;line-height:1.6}
+.p-opts.sm{font-size:15px;gap:3px}
+.p-op{padding:2px 4px}
+.p-mini{border:1px dashed #CFD6E4;border-radius:10px;padding:8px 12px;margin-bottom:10px;max-height:46%;overflow:auto}
+.p-steps{display:grid;gap:8px}
+.p-st{border-left:4px solid #0E8A8C;background:#F3FAFA;border-radius:6px;padding:8px 12px;font-size:16px;line-height:1.7}
+.p-st b.l{display:inline-block;color:#0A5F61;font-size:13px;font-weight:800;background:#DDF2F1;border-radius:4px;padding:0 7px;margin-right:8px}
+.p-fin{margin-top:10px;font-size:16px;line-height:1.7}
+.p-ab{display:inline-block;background:#B43C0C;color:#fff;font-weight:800;border-radius:6px;padding:2px 12px;margin-right:8px}
+.p-full{margin-top:6px;font-size:17px;font-weight:700}
+.p-ko{color:#4A5866;font-size:15px}
+.p-trap{margin-top:10px;background:#FFF3DC;border:1px solid #F0D9A5;border-radius:8px;padding:8px 12px;font-size:15.5px;line-height:1.7}
+.p-trap b{color:#8A5A00;margin-right:8px}
+.p-pts{margin:10px 0 0;padding-left:20px;font-size:16.5px;line-height:1.8}
+.g-kind.p-sol{background:#0E8A8C;color:#fff}
+
+.lp{--pk:#0E8A8C;--pk-t:#0A5F61;--pk-l:#DDF2F1;--pk-ll:#F3FAFA;--bl-l:#E9EEFB;--bl-t:#3A4FA3;height:100%;min-height:540px;background:#fff;color:#1B2733;border-radius:16px;display:flex;flex-direction:column;overflow:hidden;font-family:"IBM Plex Sans KR","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;box-shadow:0 2px 6px rgba(0,0,0,.06),0 14px 40px rgba(0,0,0,.08);outline:none}
+.lp *{box-sizing:border-box}
+.lp{word-break:keep-all;overflow-wrap:break-word}
+.lp-top{display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid #F1F1F1;position:relative}
+.lp-top::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,var(--pk),#7CCBC8)}
+.lp-brand{font-size:12.5px;font-weight:800;color:#fff;background:var(--pk);border-radius:999px;padding:3px 12px}
+.lp-name{flex:1;min-width:0;font-weight:800;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lp-slide{flex:1;min-height:0;overflow:auto;padding:30px 44px;display:flex;flex-direction:column}
+.lp-cap{flex-shrink:0;padding:10px 22px;background:#F3FAFA;border-top:1px solid #DDF2F1;font-size:15px;line-height:1.55;color:#4A5866;max-height:30%;overflow:auto}
+.lp-bar{flex-shrink:0;display:flex;align-items:center;gap:8px;padding:11px 18px;border-top:1px solid #F1F1F1;background:#FAFAFA;flex-wrap:wrap}
+.lp-tl{flex:1;min-width:120px;height:7px;background:#E3E9EE;border-radius:6px;overflow:hidden;cursor:pointer}
+.lp-tl>i{display:block;height:100%;width:0;background:var(--pk)}
+.lp-cnt{font-size:12.5px;color:#8493A1;font-variant-numeric:tabular-nums;min-width:50px;text-align:center}
+.lp select{width:auto}
+.lp button,.lp select{background:#fff;color:#1B2733;border:1px solid #DCDCDC;border-radius:8px;padding:7px 12px;font-weight:700;font-size:13.5px;cursor:pointer;font-family:inherit}
+.lp button.on{background:var(--pk-l);border-color:var(--pk-l);color:var(--pk-t)}
+.lp button.lp-play{background:var(--pk);border-color:var(--pk);color:#fff;min-width:96px}
+.lp-warn{padding:7px 20px;font-size:12.5px;color:var(--pk-t);background:var(--pk-ll)}
+.lp-tag{display:inline-block;align-self:flex-start;font-size:12.5px;font-weight:800;color:var(--pk-t);background:var(--pk-l);border-radius:999px;padding:3px 12px;margin-bottom:14px}
+.lp-cover{margin:auto 0;display:flex;gap:22px;align-items:stretch}
+.lp-qn{flex:0 0 110px;background:var(--pk);color:#fff;font-weight:800;font-size:28px;border-radius:14px;display:grid;place-items:center}
+.lp-cv{flex:1;min-width:0}
+.lp-cv .src{color:#8493A1;font-weight:700;font-size:14px}
+.lp-cv h1{margin:4px 0 2px;font-size:30px;line-height:1.25;font-weight:800}
+.lp-cv h2{margin:0 0 14px;font-size:17px;color:#4A5866;font-weight:700}
+.lp-row{display:flex;gap:10px;align-items:baseline;margin-top:6px;font-size:15.5px;padding:4px 8px;border-radius:8px}
+.lp-lb{flex:0 0 auto;font-size:12px;font-weight:800;color:var(--pk-t);background:var(--pk-l);border-radius:4px;padding:1px 8px}
+.lp-box{background:var(--pk-ll);border-radius:12px;padding:16px 20px;font-size:16.5px;line-height:1.75;color:#333}
+.lp b.key{color:var(--pk-t);background:linear-gradient(transparent 60%,#BFE8E5 60%)}
+.lp-st{border:1px solid #D6EAE9;border-radius:12px;padding:11px 16px;margin-bottom:9px}
+.lp-st h4{margin:0 0 3px;font-size:16px;color:var(--pk-t);display:flex;gap:8px;align-items:center}
+.lp-st h4 i{font-style:normal;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--pk);color:#fff;font-size:12px}
+.lp-st h4 small{color:#8493A1;font-size:12.5px}
+.lp-st p{margin:0;font-size:15px;line-height:1.65;color:#444}
+.lp-big{font-size:28px;font-weight:800}
+.lp-pill{display:inline-block;font-size:13px;font-weight:800;color:var(--pk-t);background:var(--pk-l);border-radius:999px;padding:3px 12px;margin-left:8px;vertical-align:5px}
+.lp-sig{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:15px;margin-top:8px}
+.lp-sig b{color:var(--pk-t)}
+.lp-chain{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px;font-size:15px}
+.lp-chain span.c{background:var(--bl-l);color:var(--bl-t);font-weight:700;border-radius:6px;padding:2px 10px}
+.lp-chain span.a{color:#999}
+.lp-ct{width:100%;border-collapse:collapse;margin-top:10px;font-size:14.5px}
+.lp-ct th,.lp-ct td{border:1px solid #CFE5E4;padding:6px 10px;text-align:left}
+.lp-ct th{background:var(--pk-ll);color:var(--pk-t)}
+.lp-vg{display:grid;grid-template-columns:repeat(3,1fr);gap:2px 22px}
+.lp-vg div{display:flex;gap:10px;padding:6px 2px;border-bottom:1px solid #F4F4F4;font-size:15.5px;align-items:baseline}
+.lp-vg b{font-weight:800}
+.lp-vg em{font-style:normal;font-size:11px;font-weight:700;color:var(--pk-t);background:var(--pk-l);border-radius:4px;padding:0 5px}
+.lp-vg span{color:#555;margin-left:auto;text-align:right}
+.lp-sa{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 18px}
+.lp-sa>div{border:1px solid #F1F1F1;border-radius:10px;padding:10px 14px}
+.lp-sa b.w{font-size:17px}
+.lp-sa .m{color:#666;margin-left:6px;font-size:14px}
+.lp-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;align-items:center}
+.lp-chips span{font-size:13.5px;font-weight:700;border-radius:5px;padding:1px 9px}
+.lp-chips .s{background:var(--bl-l);color:var(--bl-t)}
+.lp-chips .a{background:#FFF1D8;color:#8A5A00}
+.lp-chips .x{background:none;color:#999;padding:0}
+.lp-sno{font-size:13px;color:#8493A1;font-weight:700;margin-bottom:8px}
+.lp-sno .es{color:#fff;background:#E0952B;border-radius:4px;padding:1px 8px;font-size:11.5px;margin-left:8px}
+.lp-chunks{display:flex;flex-wrap:wrap;gap:16px 10px;margin-bottom:12px;align-items:flex-end}
+.lp-chunk{display:flex;flex-direction:column}
+.lp-chunk .ko{font-size:13px;color:var(--pk-t);font-weight:700;line-height:1.3;margin-bottom:2px}
+.lp-chunk .en{font-size:24px;font-weight:700;line-height:1.4}
+.lp-chunk+.lp-chunk{padding-left:10px;border-left:2px solid #D6EAE9}
+.lp .tgt{background:#FFF0C7;border-bottom:2.5px solid var(--pk);padding:0}
+.lp .mk{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--pk);color:#fff;font-size:11.5px;font-weight:800;margin:0 3px;vertical-align:4px;line-height:1}
+.lp-ko{font-size:16px;font-weight:700;background:var(--pk-ll);border-radius:10px;padding:9px 14px;margin-bottom:8px}
+.lp-mn{font-size:15px;line-height:1.65;background:#FFF8E8;border:1px solid #F0D9A5;border-radius:10px;padding:9px 14px;margin-bottom:8px;color:#444}
+.lp-ap{font-size:14.5px;line-height:1.6;border:1px solid #BFE8E5;border-radius:10px;padding:9px 14px}
+.lp-ap h5{margin:0 0 4px;display:inline-block;background:var(--pk);color:#fff;font-size:12px;border-radius:4px;padding:1px 9px}
+.lp-ap .gi{margin:3px 0}
+.lp-ap .gn{color:var(--pk-t);font-weight:800}
+.lp-fin ul{margin:0 0 12px;padding-left:20px;font-size:16px;line-height:1.75}
+.lp-hl{box-shadow:0 0 0 3px #7CCBC8,0 0 22px 4px rgba(14,138,140,.28)!important;border-radius:12px;transition:box-shadow .2s}
+@media (max-width:700px){.lp{min-height:0;height:100vh;height:100dvh;border-radius:0}.lp-slide{padding:18px 16px}.lp-cover{flex-direction:column}.lp-qn{flex:0 0 64px}.lp-cv h1{font-size:21px}.lp-chunk .en{font-size:18px}.lp-vg,.lp-sa{grid-template-columns:1fr}.lp-box{font-size:15px}.lp-big{font-size:21px}}
+
+.lp-box b.h{color:var(--pk-t);margin-right:8px}
+.lp{--g-ok:#1F8A57;--g-ok-l:#E9F7EF;--g-err:#D43A3A;--g-err-l:#FDECEC}
+.g-cover{margin:auto 0;text-align:left}
+.g-cover .g-unit{display:inline-block;font-size:14px;font-weight:800;color:var(--bl-t);background:var(--bl-l);border-radius:999px;padding:3px 14px;margin-bottom:10px}
+.g-cover h1{margin:0 0 18px;font-size:34px;line-height:1.25;font-weight:800}
+.g-h{margin:0 0 12px;font-size:24px;font-weight:800;line-height:1.3}
+.g-rule{background:var(--pk-ll);border-radius:12px;padding:14px 18px;font-size:17px;line-height:1.7;margin-bottom:12px}
+.g-formula{display:inline-block;margin-top:8px;background:#fff;border:1.5px solid var(--bl-l);color:var(--bl-t);font-weight:800;border-radius:8px;padding:4px 12px;font-size:16px}
+.g-exs{display:grid;gap:8px;margin-bottom:12px}
+.g-ex{border:1px solid #F1F1F1;border-radius:12px;padding:10px 16px;position:relative}
+.g-en{font-size:21px;font-weight:700;line-height:1.45}
+.g-en .fx{background:#FFF0C7;border-bottom:2.5px solid var(--pk)}
+.g-ko{font-size:15px;color:var(--pk-t);font-weight:700;margin-top:2px}
+.g-note{font-size:14px;color:#555;margin-top:3px}
+.g-add{position:absolute;top:8px;right:10px;font-size:11px;font-weight:700;color:#8493A1;background:#F4F4F4;border-radius:4px;padding:1px 6px}
+.g-tip{background:#FFF8E8;border:1px solid #F0D9A5;border-radius:12px;padding:10px 16px;font-size:15.5px;line-height:1.65}
+.g-tip>b{color:#8A6D00;margin-right:6px}
+.g-mk{border:1px solid #F1F1F1;border-radius:12px;padding:10px 16px;margin-bottom:9px}
+.g-wrong{font-size:19px;font-weight:700;color:var(--g-err)}
+.g-wrong s{text-decoration-thickness:2px}
+.g-right{font-size:19px;font-weight:700;color:var(--g-ok);margin-top:2px}
+.g-why{font-size:14.5px;color:#555;margin-top:4px}
+.g-tags{display:flex;gap:8px;align-items:flex-start}
+.g-kind{display:inline-block;font-size:12.5px;font-weight:800;color:var(--bl-t);background:var(--bl-l);border-radius:999px;padding:3px 11px}
+.g-q{font-size:18px;font-weight:700;margin-bottom:10px;line-height:1.55}
+.g-qs{font-size:22px;font-weight:700;line-height:1.5;background:#FAFAFA;border-radius:12px;padding:12px 16px;margin-bottom:10px}
+.g-opts{display:grid;gap:6px;margin-bottom:10px}
+.g-opt{display:block;width:100%;text-align:left;background:#fff!important;border:1.5px solid #E6E6E6!important;border-radius:10px!important;padding:9px 14px!important;font-size:17px!important;font-weight:600!important;cursor:pointer;color:#1B2733!important}
+.g-opt b{color:var(--pk-t);margin-right:6px}
+.g-opt.picked{border-color:var(--pk)!important;background:var(--pk-ll)!important}
+.g-opts.rv .g-opt[data-ok="1"]{border-color:var(--g-ok)!important;background:var(--g-ok-l)!important}
+.g-opts.rv .g-opt.picked:not([data-ok="1"]){border-color:var(--g-err)!important;background:var(--g-err-l)!important}
+.g-ans{display:none;background:var(--g-ok-l);border-radius:12px;padding:12px 16px;font-size:16px;line-height:1.65}
+.g-ans.rv{display:block}
+.g-ans>b{color:var(--g-ok);margin-right:6px}
+.g-ans .a{font-weight:800;font-size:18px}
+.g-exp{margin-top:4px;color:#333}
+.lp button.g-show{margin-top:4px;background:#fff;color:var(--g-ok);border-color:#C6EBD5}
+.g-sum{margin:0;padding-left:22px;font-size:18px;line-height:1.8}
+.lp-think{position:absolute;right:22px;bottom:16px;background:#1B2733;color:#fff;font-weight:800;font-size:15px;border-radius:999px;padding:8px 16px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.lp-slide{position:relative}
+@media (max-width:700px){.g-cover h1{font-size:23px}.g-h{font-size:19px}.g-en,.g-qs{font-size:17px}.g-rule{font-size:15px}.g-opt{font-size:15px!important}}
+.d-chat{display:flex;flex-direction:column;gap:8px}
+.d-bub{max-width:78%;border-radius:16px;padding:9px 15px;position:relative}
+.d-bub.d-l{align-self:flex-start;background:#F4F6F8;border-top-left-radius:4px}
+.d-bub.d-r{align-self:flex-end;background:var(--pk-ll);border-top-right-radius:4px}
+.d-bub .d-sp{font-size:12px;font-weight:800;color:#8493A1;display:block;margin-bottom:1px}
+.d-en{font-size:18px;font-weight:600;line-height:1.45}
+.d-key{background:var(--pk-ll);border-radius:14px;padding:14px 18px;margin-bottom:12px}
+.d-keyexp{font-size:24px;font-weight:800;line-height:1.35}
+.d-mean{font-size:16px;color:var(--pk-t);font-weight:700;margin-top:3px}
+.d-from{font-size:14px;color:#666;margin-top:6px}
+.d-exp{font-size:15px;line-height:1.65;margin-top:8px;color:#333}
+.d-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.d-box{border:1px solid #E9EEFB;border-radius:12px;padding:10px 14px}
+.d-box>b{display:inline-block;font-size:13px;color:var(--bl-t);background:var(--bl-l);border-radius:999px;padding:2px 10px;margin-bottom:6px}
+.d-box.a>b{color:#1F8A57;background:#E9F7EF}
+.d-box ul{margin:0;padding-left:18px;font-size:16.5px;line-height:1.75;font-weight:600}
+.d-line{border:1px solid #F1F1F1;border-radius:12px;padding:10px 16px;margin-bottom:10px}
+.d-lh{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.d-lh .d-sp{font-size:12.5px;font-weight:800;border-radius:6px;padding:1px 9px;background:#F4F6F8;color:#555}
+.d-lh .d-sp.d-r{background:var(--pk-l);color:var(--pk-t)}
+.d-ln{font-size:12px;color:#999}
+.d-en2{font-size:20px;font-weight:700;line-height:1.55}
+.d-ko{font-size:15px;color:var(--pk-t);font-weight:700;margin-top:2px}
+.d-notes{margin-top:7px;display:grid;gap:4px}
+.d-note{display:flex;gap:6px;font-size:14.5px;line-height:1.6;color:#333;align-items:baseline}
+.d-alt{margin-top:7px;background:#FFF8E8;border:1px solid #F0D9A5;border-radius:10px;padding:7px 12px;font-size:15px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.d-alt>b{color:#8A6D00;font-size:13px}
+.d-alt span{font-weight:600}
+.d-alt span+span::before{content:"/";color:#C9B95A;margin-right:10px}
+@media (max-width:700px){.d-cols{grid-template-columns:1fr}.d-en2{font-size:16px}.d-keyexp{font-size:19px}}
+
+.lp{--pk-b:#B5DEDC;--am:#E0952B;--am-l:#FFF3DC;--am-b:#F0D9A5;--am-d:#8A5A00}
+.lp-top{border-bottom:1.5px solid var(--pk)}
+.lp-top::before{height:5px;background:linear-gradient(90deg,var(--pk) 0,var(--pk) 80%,var(--am) 80%,var(--am) 100%)}
+.lp-brand{background:#fff;color:var(--pk-t);border:1px solid var(--pk);border-radius:3px;font-weight:700;letter-spacing:.02em;padding:2px 11px}
+.lp-name{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700;color:var(--pk-t)}
+.lp-tag{background:#fff;border:1px solid var(--pk-b);border-radius:3px;font-weight:700;padding:2px 12px}
+.lp-qn{flex:0 0 112px;height:112px;align-self:center;background:#fff;color:var(--pk);border:3px solid var(--pk);border-radius:50%;font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700;font-size:26px}
+.lp-cv h1,.lp-big{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700}
+.lp-lb{background:none;border:0;border-bottom:2px solid var(--am);border-radius:0;padding:0 2px;color:var(--pk-t);font-weight:700}
+.lp-box{border-radius:4px;border-left:4px solid var(--pk)}
+.lp-st{border-radius:4px;border-left:4px solid var(--pk-b)}
+.lp-st h4{color:var(--ink,#1B2733)}
+.lp-st h4 i{border-radius:4px;width:auto;min-width:24px;padding:0 4px}
+.lp-pill{background:#fff;border:1px solid var(--pk-b);border-radius:3px;font-weight:700}
+.lp-chain span.c{background:#fff;border:1px solid #AEBBE6;border-radius:3px;font-weight:600}
+.lp-ct th{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif}
+.lp-vg em{background:#fff;border:1px solid var(--pk-b);border-radius:3px}
+.lp-sa>div{border-radius:4px;border-color:var(--pk-b)}
+.lp-chips span{border-radius:3px;background:#fff}
+.lp-chips .s{border:1px solid #AEBBE6;color:#3A4FA3}
+.lp-chips .a{border:1px solid var(--am-b);color:var(--am-d);background:#FFFBF2}
+.lp-sno .es{background:var(--am);border-radius:2px;font-weight:700}
+.lp-chunk .en{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:600}
+.lp-chunk+.lp-chunk{border-left:1px solid var(--pk-b)}
+.lp .tgt{background:var(--am-l);border-bottom:2.5px dotted var(--am)}
+.lp .mk{border-radius:4px;width:auto;min-width:20px;padding:0 3px;background:var(--pk-t)}
+.lp-ko{border-radius:0;border-left:4px solid var(--pk);background:none;padding:4px 0 4px 12px}
+.lp-mn{border-radius:4px;background:var(--am-l);border-color:var(--am-b);color:#5C4510}
+.lp-ap{border-radius:4px;border:1px solid var(--pk-b);border-top:3px solid var(--pk);background:var(--pk-ll)}
+.lp-ap h5{background:none;color:var(--pk-t);padding:0;font-size:12.5px;font-weight:700}
+.lp-hl{border-radius:6px}
+.lp button.lp-play,.lp button,.lp select{border-radius:4px}
+@media (max-width:700px){.lp-qn{flex:0 0 72px;height:72px;font-size:18px}}
+
+.g-rule{border-radius:3px;border-left:4px solid var(--pk)}
+.g-formula{border-radius:2px;background:#fff;border:1px solid #AEBBE6;color:#3A4FA3}
+.g-ex{border-radius:3px}
+.g-en{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:600}
+.g-en .fx{background:var(--am-l);border-bottom:2.5px dotted var(--am)}
+.g-tip{border-radius:3px;background:var(--am-l);border-color:var(--am-b)}
+.g-mk{border-radius:3px}
+.g-kind{border-radius:2px;background:#fff;border:1px solid #AEBBE6;color:#3A4FA3}
+.g-qs{border-radius:3px}
+.g-opt{border-radius:3px!important}
+.g-ans{border-radius:3px}
+.g-add{border-radius:2px}
+.d-bub{border-radius:6px}
+.d-key{border-radius:3px;border-left:4px solid var(--pk)}
+.d-box{border-radius:3px}
+.d-box>b{border-radius:2px;background:#fff;border:1px solid #AEBBE6;color:#3A4FA3}
+.d-line{border-radius:3px}
+.d-en2,.d-keyexp{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700}
+.d-alt{border-radius:3px;background:var(--am-l);border-color:var(--am-b)}
+
+.y-sen{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-size:23px;font-weight:700;line-height:1.55;margin:4px 0 14px;color:#1B2733}
+.y-sen.sm{font-size:17px;margin-bottom:10px;color:#4A5866}
+.y-sen .fx,.y-li .fx{background:var(--am-l,#FFF3DC);border-bottom:2.5px dotted var(--am,#E0952B)}
+.y-chunks{display:grid;grid-template-columns:minmax(40%,auto) 1fr;border:1px solid var(--pk-b,#B5DEDC);border-radius:4px;margin-bottom:12px;overflow:hidden}
+.y-chunks>div{padding:7px 14px;border-bottom:1px solid #EEF3F3}
+.y-chunks .e{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:600;font-size:17px;border-right:1px solid #EEF3F3;background:#FBFEFE}
+.y-chunks .k{color:var(--pk-t);font-size:15px;font-weight:600}
+.y-box{border-radius:4px;padding:10px 14px;margin-bottom:10px;font-size:15.5px;line-height:1.7}
+.y-lb{display:inline-block;font-size:12.5px;font-weight:800;color:var(--pk-t);background:#fff;border:1px solid var(--pk-b,#B5DEDC);border-radius:3px;padding:0 8px;margin-right:8px;vertical-align:1px}
+.y-st{background:var(--pk-ll);border-left:4px solid var(--pk)}
+.y-mn{background:var(--am-l,#FFF3DC);border:1px solid var(--am-b,#F0D9A5)}
+.y-mn .y-lb{color:var(--am-d,#8A5A00);border-color:var(--am-b,#F0D9A5)}
+.y-cg{border:1px solid var(--pk-b,#B5DEDC)}
+.y-pair{padding:6px 0 4px;border-top:1px dashed #E3E9EE}
+.y-pair:first-of-type{border-top:0}
+.y-pair .f{font-family:"Noto Serif KR",Georgia,serif;font-weight:600;color:#4A5866}
+.y-pair .ar{color:var(--pk);margin:0 8px;font-weight:800}
+.y-pair .t{font-family:"Noto Serif KR",Georgia,serif;font-weight:700;color:#1B2733;background:var(--pk-ll);padding:0 4px}
+.y-pair .w{font-size:14px;color:#4A5866;margin-top:2px}
+.y-eq{display:inline-block;margin-left:10px;font-size:12.5px;font-weight:700;color:#3A4FA3;border:1px solid #AEBBE6;border-radius:3px;padding:0 7px}
+.y-pp{background:#F6F8FA;border-left:4px solid #3A4FA3}
+.y-pp .y-lb{color:#3A4FA3;border-color:#AEBBE6}
+.y-pp .p{font-family:"Noto Serif KR",Georgia,serif;font-size:18px;font-weight:700;margin-top:6px;line-height:1.55}
+.y-list{display:grid;gap:6px;margin-top:4px}
+.y-li{font-family:"Noto Serif KR",Georgia,serif;font-size:16px;line-height:1.6;display:block;padding-left:32px;text-indent:-32px}
+.y-no{display:inline-block;text-indent:0;min-width:22px;height:20px;line-height:20px;text-align:center;border-radius:3px;background:var(--pk);color:#fff;font-family:sans-serif;font-size:12px;font-weight:800;margin-right:10px;vertical-align:1px}
+@media (max-width:700px){.y-sen{font-size:18px}.y-chunks{grid-template-columns:1fr}.y-chunks .e{border-right:0}}
+</style></head><body><div id="app"></div><script>function lecturePlayer(root,D){
+  root.innerHTML='<div class="lp" tabindex="0"><div class="lp-top"><span class="lp-brand"></span><span class="lp-name"></span></div><div class="lp-warn" hidden></div><div class="lp-slide"></div><div class="lp-cap" hidden></div><div class="lp-bar"><div class="lp-tl" title="슬라이드 이동"><i></i></div><span class="lp-cnt"></span><button class="lp-cc">자막</button><select class="lp-rate" title="재생 속도"><option value="0.8">0.8x</option><option value="1" selected>1.0x</option><option value="1.2">1.2x</option><option value="1.4">1.4x</option><option value="1.6">1.6x</option><option value="2">2.0x</option></select><button class="lp-prev" aria-label="이전 슬라이드">◀</button><button class="lp-play">▶ 재생</button><button class="lp-next" aria-label="다음 슬라이드">▶</button></div></div>';
+  var q=function(s){return root.querySelector(s);},box=q(".lp"),sl=q(".lp-slide"),cap=q(".lp-cap"),cnt=q(".lp-cnt"),fill=q(".lp-tl>i"),tl=q(".lp-tl"),pp=q(".lp-play"),cc=q(".lp-cc"),warn=q(".lp-warn");
+  q(".lp-brand").textContent=D.brand;q(".lp-name").textContent=D.title;
+  var i=0,j=0,playing=false,rate=1,timer=null,tick=null,capOn=!!D.preview,noAudio=!!D.preview,a=new Audio(),think=null;
+  if(D.preview){cc.classList.add("on");}
+  function segs(){return D.slides[i].segs||[];}
+  function setFill(f){var s=segs(),n=D.slides.length,sf=s.length?(j+(f||0))/s.length:0;fill.style.width=Math.min(100,(i+sf)/n*100)+"%";}
+  function showCap(){var s=segs()[j];cap.textContent=s?s.text:"";cap.hidden=!(capOn&&s&&s.text&&s.text.trim());cc.classList.toggle("on",capOn);}
+  function clearHl(){var e=sl.querySelectorAll(".lp-hl");for(var x=0;x<e.length;x++)e[x].classList.remove("lp-hl");}
+  function hl(k){clearHl();if(!k)return;var e=sl.querySelector('[data-hl="'+k+'"]');if(e){e.classList.add("lp-hl");try{e.scrollIntoView({block:"nearest",behavior:"smooth"});}catch(_){}}}
+  function reveal(k){var e=sl.querySelectorAll('[data-rv="'+k+'"]');for(var x=0;x<e.length;x++)e[x].classList.add("rv");var b=sl.querySelector('[data-act="show"]');if(b)b.hidden=true;}
+  function stopAll(){if(timer){clearTimeout(timer);timer=null;}if(tick){clearInterval(tick);tick=null;}if(think){think.remove();think=null;}try{a.pause();}catch(_){}}
+  function silent(s){var dur=Math.max(1800,s.text.length*130/rate+700),t0=Date.now();if(!capOn){capOn=true;showCap();}
+    tick=setInterval(function(){setFill(Math.min(1,(Date.now()-t0)/dur));},200);timer=setTimeout(function(){stopAll();segEnd();},dur);}
+  function pause(sec){var left=sec,t0=Date.now();think=document.createElement("div");think.className="lp-think";think.textContent="생각할 시간 "+left+"초";sl.appendChild(think);
+    tick=setInterval(function(){left=Math.max(0,sec-Math.floor((Date.now()-t0)/1000));if(think)think.textContent="생각할 시간 "+left+"초";setFill(Math.min(1,(Date.now()-t0)/(sec*1000)));},250);
+    timer=setTimeout(function(){stopAll();segEnd();},sec*1000/Math.max(.5,rate));}
+  var bases=null,bi=0,okBase=false,att=0;
+  function cands(){if(bases)return bases;var out=[];function add(x){x=String(x||"").replace(/\/+$/,"");if(x&&out.indexOf(x)<0)out.push(x);}
+    add(D.audioDir);try{var f=decodeURIComponent(location.pathname.split("/").pop()||""),nm=f.replace(/\.html?$/i,"");if(nm){add(nm+"_audio");add(nm.replace(/_AI강의$/,"")+"_audio");}}catch(_){}
+    add("audio");bases=out;return out;}
+  function playAudio(s){a.src=encodeURI(cands()[bi])+"/"+s.n+".mp3";a.playbackRate=rate;a.play().catch(function(){});}
+  function runSeg(){stopAll();var s=segs()[j];clearHl();setFill(0);showCap();if(!s)return;hl(s.hl);if(s.reveal)reveal(s.reveal);if(!playing)return;
+    if(s.pause){pause(s.pause);return;}
+    if(noAudio){silent(s);return;}
+    att=0;playAudio(s);}
+  a.onloadeddata=function(){okBase=true;};
+  a.onerror=function(){if(!playing)return;var s=segs()[j];if(!s||s.pause)return;var L=cands().length;if(!okBase&&att<L-1){att++;bi=(bi+1)%L;playAudio(s);return;}if(!okBase)bi=(bi+1)%L;warn.hidden=false;warn.textContent="음성 파일("+cands()[bi]+"/"+s.n+".mp3)을 찾지 못해 자막으로 진행합니다.";silent(s);};
+  a.ontimeupdate=function(){if(a.duration)setFill(a.currentTime/a.duration);};
+  a.onended=function(){segEnd();};
+  function segEnd(){if(!playing)return;if(j<segs().length-1){j++;runSeg();}else if(i<D.slides.length-1){i++;show();}else{playing=false;pp.textContent="▶ 재생";clearHl();fill.style.width="100%";}}
+  function show(){stopAll();sl.innerHTML=D.slides[i].html;sl.scrollTop=0;cnt.textContent=(i+1)+" / "+D.slides.length;j=0;runSeg();}
+  function go(d){i=Math.max(0,Math.min(D.slides.length-1,i+d));show();}
+  function toggle(){playing=!playing;pp.textContent=playing?"⏸ 일시정지":"▶ 재생";if(playing){var s=segs()[j];if(!noAudio&&s&&!s.pause&&a.src&&a.currentTime>0&&!a.ended&&a.paused&&!timer){a.play().catch(function(){});}else runSeg();}else stopAll();}
+  sl.addEventListener("click",function(e){var t=e.target.closest?e.target.closest(".g-opt,[data-act]"):null;if(!t)return;
+    if(t.getAttribute("data-act")==="show"){reveal("ans");return;}
+    var g=t.parentNode;if(g&&g.classList.contains("rv"))return;[].forEach.call(g.querySelectorAll(".g-opt"),function(o){if(o!==t)o.classList.remove("picked");});t.classList.toggle("picked");});
+  q(".lp-prev").onclick=function(){go(-1);};q(".lp-next").onclick=function(){go(1);};pp.onclick=toggle;
+  cc.onclick=function(){capOn=!capOn;showCap();};
+  q(".lp-rate").onchange=function(e){rate=parseFloat(e.target.value)||1;a.playbackRate=rate;};
+  tl.onclick=function(e){var r=tl.getBoundingClientRect();i=Math.max(0,Math.min(D.slides.length-1,Math.floor((e.clientX-r.left)/r.width*D.slides.length)));show();};
+  box.addEventListener("keydown",function(e){if(e.target.tagName==="SELECT")return;if(e.key===" "){e.preventDefault();toggle();}else if(e.key==="ArrowRight")go(1);else if(e.key==="ArrowLeft")go(-1);});
+  show();
+  return {stop:function(){playing=false;pp.textContent="▶ 재생";stopAll();}};
+}
+lecturePlayer(document.getElementById("app"),{"brand":"point11","title":"현재완료, 그럼 과거 부사랑은 왜 못 써요?","audioDir":"point11_audio","preview":false,"count":38,"slides":[{"html":"\u003cdiv class=\"g-cover\">\u003cdiv class=\"g-unit\">Chapter02 시제 – 현재완료와 과거 부사\u003c/div>\u003ch1>현재완료, 그럼 과거 부사랑은 왜 못 써요?\u003c/h1>\u003cdiv class=\"lp-box\" data-hl=\"goal\">\u003cb class=\"h\">오늘의 목표\u003c/b>현재완료는 yesterday, ago, in+연도, When ~? 같은 명백한 과거 표현과 함께 쓸 수 없음을 이해하고 문장을 바르게 고칠 수 있다.\u003c/div>\u003c/div>","segs":[{"n":1,"text":"안녕하세요, 여러분! 오늘은 현재완료와 아주 친해지고 싶은데, 딱 하나 사이가 안 좋은 친구가 있어요. 바로 yesterday나 ago처럼 과거를 콕 집어 주는 표현이에요. 왜 그런지 예문으로 하나씩 확인해 보고, 마지막에는 문제도 같이 풀어 볼 거예요. 오늘 수업만 잘 따라오면 시제 문제에서 실수할 일이 확 줄어들 거예요.","hl":"goal"}]},{"html":"\u003cspan class=\"lp-tag\">개념 1 / 3\u003c/span>\u003ch2 class=\"g-h\">현재완료와 과거 부사는 같이 쓸 수 없다\u003c/h2>\u003cdiv class=\"g-rule\" data-hl=\"rule\">현재완료는 과거의 일을 말하지만 \u003cb class=\"key\">현재\u003c/b>와 이어져 있는 시제예요. 그래서 yesterday, ago, last night처럼 명백한 \u003cb class=\"key\">과거\u003c/b>를 가리키는 부사(구)와는 함께 쓸 수 없어요. 이때는 자연스럽게 \u003cb class=\"key\">과거시제\u003c/b>를 써야 해요.\u003cdiv>\u003cspan class=\"g-formula\">과거 부사(yesterday, ago, last ~) + 주어 + 동사과거형 / have(has) + p.p. + 과거 부사 (X)\u003c/span>\u003c/div>\u003c/div>\u003cdiv class=\"g-exs\">\u003cdiv class=\"g-ex\" data-hl=\"ex-0\">\u003cdiv class=\"g-en\">My aunt \u003cspan class=\"fx\">was\u003c/span> in Paris two years ago.\u003c/div>\u003cdiv class=\"g-ko\">우리 이모는 이 년 전에 파리에 있었다.\u003c/div>\u003cdiv class=\"g-note\">two years ago가 있으므로 has been이 아니라 was를 씁니다.\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-1\">\u003cdiv class=\"g-en\">He \u003cspan class=\"fx\">met\u003c/span> one of his friends last night.\u003c/div>\u003cdiv class=\"g-ko\">그는 어젯밤에 친구 한 명을 만났다.\u003c/div>\u003cdiv class=\"g-note\">last night이 있으므로 has met이 아니라 met을 씁니다.\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-2\">\u003cdiv class=\"g-en\">Tina \u003cspan class=\"fx\">sold\u003c/span> her old car yesterday.\u003c/div>\u003cdiv class=\"g-ko\">티나는 어제 그녀의 낡은 차를 팔았다.\u003c/div>\u003cdiv class=\"g-note\">yesterday가 있으므로 has sold가 아니라 sold를 씁니다.\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"g-tip\" data-hl=\"tip\">\u003cb>주의\u003c/b>과거 부사가 보이면 \u003cb class=\"key\">현재완료\u003c/b>를 의심하고 \u003cb class=\"key\">과거시제\u003c/b>로 바꿔 보세요.\u003c/div>","segs":[{"n":2,"text":"현재완료는 과거에 일어난 일을 지금의 시점에서 이야기하는 시제예요. 그래서 지금과 연결되어 있는 느낌이 강하죠. 그런데 yesterday나 ago처럼 과거의 한 시점을 딱 잘라서 가리키는 말이 붙으면 그 연결이 끊어져 버려요. 그래서 이런 표현이 있으면 현재완료 대신 과거시제를 써야 자연스러워요. 예문으로 직접 확인해 볼까요?","hl":"rule"},{"n":3,"text":"My aunt was in Paris two years ago. 우리 이모는 이 년 전에 파리에 있었다는 뜻이에요. 뒤에 two years ago라는 과거 표현이 있으니 현재완료 has been은 쓸 수 없고 과거시제 was를 써야 해요.","hl":"ex-0"},{"n":4,"text":"He met one of his friends last night. 그는 어젯밤에 친구 한 명을 만났다는 뜻이에요. last night이 보이면 과거시제 met이 정답이고, has met은 틀린 표현이에요.","hl":"ex-1"},{"n":5,"text":"Tina sold her old car yesterday. 티나는 어제 낡은 차를 팔았다는 뜻이에요. yesterday가 있으니까 sold를 쓰고, has sold는 쓸 수 없어요.","hl":"ex-2"},{"n":6,"text":"시험에서 가장 많이 나오는 함정이 바로 이 부분이에요. 문장에 yesterday나 ago가 보이면 현재완료를 의심하고, 과거시제로 바꿀 수 있는지 먼저 확인해 보세요.","hl":"tip"}]},{"html":"\u003cspan class=\"lp-tag\">개념 2 / 3\u003c/span>\u003ch2 class=\"g-h\">in + 연도, When 의문문도 과거시제\u003c/h2>\u003cdiv class=\"g-rule\" data-hl=\"rule\">in + \u003cb class=\"key\">연도\u003c/b>처럼 과거의 시점을 콕 집어 주는 표현도 현재완료와 함께 쓸 수 없어요. 과거의 일을 \u003cb class=\"key\">When\u003c/b>으로 물을 때도 did + 주어 + \u003cb class=\"key\">동사원형\u003c/b> 형태를 써요.\u003cdiv>\u003cspan class=\"g-formula\">in + 연도 → 과거시제 / When + did + 주어 + 동사원형 ~?\u003c/span>\u003c/div>\u003c/div>\u003cdiv class=\"g-exs\">\u003cdiv class=\"g-ex\" data-hl=\"ex-0\">\u003cdiv class=\"g-en\">I \u003cspan class=\"fx\">wrote\u003c/span> a book in 2010.\u003c/div>\u003cdiv class=\"g-ko\">나는 이천십 년에 책 한 권을 썼다.\u003c/div>\u003cdiv class=\"g-note\">in + 연도가 있으므로 have written이 아니라 wrote를 씁니다.\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-1\">\u003cdiv class=\"g-en\">When \u003cspan class=\"fx\">did they arrive\u003c/span> in LA?\u003c/div>\u003cdiv class=\"g-ko\">그들은 언제 로스앤젤레스에 도착했니?\u003c/div>\u003cdiv class=\"g-note\">When으로 과거를 물으면 did + 주어 + 동사원형을 씁니다.\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-2\">\u003cspan class=\"g-add\">보충 예문\u003c/span>\u003cdiv class=\"g-en\">She \u003cspan class=\"fx\">has worked\u003c/span> here for three years.\u003c/div>\u003cdiv class=\"g-ko\">그녀는 여기서 삼 년 동안 일해 왔다.\u003c/div>\u003cdiv class=\"g-note\">for + 기간은 현재완료와 함께 쓸 수 있습니다.\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"g-tip\" data-hl=\"tip\">\u003cb>주의\u003c/b>\u003cb class=\"key\">When\u003c/b>이 있는 의문문에서는 have/has 대신 \u003cb class=\"key\">did\u003c/b>를 쓰는지 꼭 확인하세요.\u003c/div>","segs":[{"n":7,"text":"이번에는 숫자로 된 연도와 when 의문문을 볼게요. in과 연도가 붙으면 그때라는 한 시점을 가리키니까 과거시제를 써요. 그리고 when으로 과거의 일을 물을 때는 did를 앞에 세우고 동사를 원형으로 돌려놓아야 해요. 이 두 가지만 기억해도 많은 문제가 바로 풀려요.","hl":"rule"},{"n":8,"text":"I wrote a book in 2010. 나는 이천십 년에 책 한 권을 썼다는 뜻이에요. in과 연도가 함께 나오면 과거시제 wrote를 쓰고, have written은 쓸 수 없어요.","hl":"ex-0"},{"n":9,"text":"When did they arrive in LA? 그들은 언제 로스앤젤레스에 도착했냐고 묻는 문장이에요. When으로 물을 때는 did they arrive처럼 did 다음에 동사원형을 쓰고, When have they arrived는 틀린 표현이에요.","hl":"ex-1"},{"n":10,"text":"She has worked here for three years. 그녀는 여기서 삼 년 동안 일해 왔다는 뜻이에요. for와 기간은 지금까지 이어지는 느낌이라 현재완료와 아주 잘 어울려요.","hl":"ex-2"},{"n":11,"text":"헷갈릴 때는 when 뒤에 did가 있는지만 봐도 절반은 맞힐 수 있어요. When did you go처럼 did가 나오면 뒤에는 반드시 동사원형이 와요.","hl":"tip"}]},{"html":"\u003cspan class=\"lp-tag\">개념 3 / 3\u003c/span>\u003ch2 class=\"g-h\">since와 for는 현재완료와 함께 쓴다\u003c/h2>\u003cdiv class=\"g-rule\" data-hl=\"rule\">since + \u003cb class=\"key\">과거 시점\u003c/b>, for + \u003cb class=\"key\">기간\u003c/b>은 과거에 시작한 일이 지금까지 이어짐을 나타내므로 현재완료와 잘 어울려요. 다만 since 뒤에 ago가 붙은 표현이 와도 현재완료는 그대로 쓸 수 있어요.\u003cdiv>\u003cspan class=\"g-formula\">have/has + p.p. + since + 과거 시점 / for + 기간\u003c/span>\u003c/div>\u003c/div>\u003cdiv class=\"g-exs\">\u003cdiv class=\"g-ex\" data-hl=\"ex-0\">\u003cspan class=\"g-add\">보충 예문\u003c/span>\u003cdiv class=\"g-en\">It \u003cspan class=\"fx\">has rained\u003c/span> since yesterday.\u003c/div>\u003cdiv class=\"g-ko\">어제부터 비가 내리고 있다.\u003c/div>\u003cdiv class=\"g-note\">since + 과거 시점은 현재완료와 함께 씁니다.\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-1\">\u003cspan class=\"g-add\">보충 예문\u003c/span>\u003cdiv class=\"g-en\">We \u003cspan class=\"fx\">have visited\u003c/span> the country many times since last year.\u003c/div>\u003cdiv class=\"g-ko\">우리는 작년부터 그 나라를 여러 번 방문했다.\u003c/div>\u003cdiv class=\"g-note\">since last year는 현재완료와 함께 쓸 수 있습니다.\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-2\">\u003cspan class=\"g-add\">보충 예문\u003c/span>\u003cdiv class=\"g-en\">The store \u003cspan class=\"fx\">has been\u003c/span> closed until now.\u003c/div>\u003cdiv class=\"g-ko\">그 가게는 지금까지 문을 닫고 있었다.\u003c/div>\u003cdiv class=\"g-note\">until now는 지금까지 이어지므로 현재완료와 어울립니다.\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"g-tip\" data-hl=\"tip\">\u003cb>주의\u003c/b>과거 표현이 있어도 \u003cb class=\"key\">since\u003c/b> 뒤에 있으면 \u003cb class=\"key\">현재완료\u003c/b>를 쓸 수 있어요.\u003c/div>","segs":[{"n":12,"text":"그럼 현재완료와 친한 표현도 알려 줄게요. since 뒤에 과거의 시점이 오면 그때부터 지금까지라는 뜻이 되고, for 뒤에 기간이 오면 그 기간 동안 쭉이라는 뜻이 돼요. 둘 다 지금까지 이어지는 느낌이라 현재완료와 아주 잘 어울려요. 그래서 ago가 있어도 since 뒤에 있으면 현재완료를 쓸 수 있다는 점, 꼭 기억해 두세요.","hl":"rule"},{"n":13,"text":"It has rained since yesterday. 어제부터 비가 내리고 있다는 뜻이에요. since yesterday처럼 시작점을 말해 주면 지금까지 이어지는 느낌이라 현재완료 has rained를 써요.","hl":"ex-0"},{"n":14,"text":"We have visited the country many times since last year. 우리는 작년부터 그 나라를 여러 번 방문했다는 뜻이에요. last year가 있지만 since 뒤에 있으니 현재완료 have visited를 그대로 써요.","hl":"ex-1"},{"n":15,"text":"The store has been closed until now. 그 가게는 지금까지 문을 닫고 있었다는 뜻이에요. until now는 지금까지 쭉이라는 뜻이라 현재완료 has been과 자연스럽게 어울려요.","hl":"ex-2"},{"n":16,"text":"정말 중요한 포인트예요. ago, last, yesterday가 보인다고 무조건 과거시제라고 생각하지 말고, since 뒤에 있는지부터 확인해 보세요.","hl":"tip"}]},{"html":"\u003cspan class=\"lp-tag\">자주 하는 실수\u003c/span>\u003ch2 class=\"g-h\">이렇게 쓰면 틀려요\u003c/h2>\u003cdiv class=\"g-mk\" data-hl=\"mk-0\">\u003cdiv class=\"g-wrong\">✗ \u003cs>I have met him yesterday.\u003c/s>\u003c/div>\u003cdiv class=\"g-right\">✓ I met him yesterday.\u003c/div>\u003cdiv class=\"g-why\">yesterday는 명백한 과거 표현이라 현재완료와 함께 쓸 수 없습니다.\u003c/div>\u003c/div>\u003cdiv class=\"g-mk\" data-hl=\"mk-1\">\u003cdiv class=\"g-wrong\">✗ \u003cs>She has been in Paris two years ago.\u003c/s>\u003c/div>\u003cdiv class=\"g-right\">✓ She was in Paris two years ago.\u003c/div>\u003cdiv class=\"g-why\">ago가 붙은 과거 표현이 있으므로 과거시제 was를 써야 합니다.\u003c/div>\u003c/div>\u003cdiv class=\"g-mk\" data-hl=\"mk-2\">\u003cdiv class=\"g-wrong\">✗ \u003cs>When have you joined the club?\u003c/s>\u003c/div>\u003cdiv class=\"g-right\">✓ When did you join the club?\u003c/div>\u003cdiv class=\"g-why\">When으로 과거를 물을 때는 did + 주어 + 동사원형을 씁니다.\u003c/div>\u003c/div>","segs":[{"n":17,"text":"I have met him yesterday라고 쓰면 어색하게 들려요. yesterday가 있으니까 과거시제로 바꿔서 I met him yesterday라고 해야 해요.","hl":"mk-0"},{"n":18,"text":"She has been in Paris two years ago는 틀린 문장이에요. two years ago가 과거를 콕 집어 주니까 She was in Paris two years ago처럼 과거시제를 써야 해요.","hl":"mk-1"},{"n":19,"text":"When have you joined the club은 어색한 문장이에요. When으로 과거의 일을 물을 때는 When did you join the club처럼 did를 쓰고 동사를 원형으로 바꿔요.","hl":"mk-2"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">확인 문제 1 / 6\u003c/span>\u003cspan class=\"g-kind\">객관식\u003c/span>\u003c/div>\u003cdiv data-hl=\"q\">\u003cdiv class=\"g-q\">다음 중 어법상 알맞은 문장을 고르세요.\u003c/div>\u003cdiv class=\"g-opts\" data-rv=\"ans\">\u003cbutton class=\"g-opt\" data-ok=\"1\">\u003cb>①\u003c/b>She worked in the library last year.\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>②\u003c/b>She has worked in the library last year.\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>③\u003c/b>I have met him yesterday.\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>④\u003c/b>When have you joined the club?\u003c/button>\u003c/div>\u003c/div>\u003cdiv class=\"g-ans\" data-rv=\"ans\" data-hl=\"ans\">\u003cb>정답\u003c/b>\u003cspan class=\"a\">She worked in the library last year.\u003c/span>\u003cdiv class=\"g-exp\">last year가 있으므로 과거시제 worked를 씁니다. 나머지는 모두 현재완료와 과거 표현을 함께 쓴 잘못된 문장입니다.\u003c/div>\u003c/div>\u003cbutton class=\"g-show\" data-act=\"show\">정답 보기\u003c/button>","segs":[{"n":20,"text":"이제 첫 번째 문제예요. 다음 중 어법상 알맞은 문장을 고르는 문제입니다. 보기를 하나씩 읽어 보면서 과거 표현이 있는지 찾아보세요. 잠시 멈추고 직접 골라 볼까요?","hl":"q"},{"n":21,"text":"","hl":"q","pause":6},{"n":22,"text":"정답은 첫 번째 문장이에요. She worked in the library last year. 라고 해야 하고, last year가 있으니 과거시제 worked를 써요. 두 번째 문장은 현재완료에 last year를 붙여서 틀렸고, 세 번째는 yesterday, 네 번째는 When과 함께 have를 써서 모두 틀린 문장이에요.","hl":"ans","reveal":"ans"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">확인 문제 2 / 6\u003c/span>\u003cspan class=\"g-kind\">빈칸\u003c/span>\u003c/div>\u003cdiv data-hl=\"q\">\u003cdiv class=\"g-q\">괄호 안의 단어를 알맞은 형태로 바꿔 빈칸을 채우세요.\u003c/div>\u003cdiv class=\"g-qs\">It ____ since yesterday. (rain)\u003c/div>\u003c/div>\u003cdiv class=\"g-ans\" data-rv=\"ans\" data-hl=\"ans\">\u003cb>정답\u003c/b>\u003cspan class=\"a\">has rained\u003c/span>\u003cdiv class=\"g-exp\">since yesterday는 과거부터 지금까지 이어짐을 나타내므로 현재완료 has rained를 씁니다.\u003c/div>\u003c/div>\u003cbutton class=\"g-show\" data-act=\"show\">정답 보기\u003c/button>","segs":[{"n":23,"text":"두 번째 문제는 빈칸 채우기예요. It blank since yesterday. 라는 문장에서 rain을 알맞은 형태로 바꿔야 합니다. since yesterday가 힌트예요. 잠시 멈추고 직접 써 보세요.","hl":"q"},{"n":24,"text":"","hl":"q","pause":6},{"n":25,"text":"정답은 has rained예요. since yesterday는 어제부터 지금까지 이어지고 있다는 뜻이라 현재완료를 써요. 그래서 It has rained since yesterday. 가 됩니다.","hl":"ans","reveal":"ans"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">확인 문제 3 / 6\u003c/span>\u003cspan class=\"g-kind\">객관식\u003c/span>\u003c/div>\u003cdiv data-hl=\"q\">\u003cdiv class=\"g-q\">빈칸에 들어갈 말로 알맞은 것을 고르세요.\u003c/div>\u003cdiv class=\"g-qs\">Sam ____ the gold medal twice since 2023.\u003c/div>\u003cdiv class=\"g-opts\" data-rv=\"ans\">\u003cbutton class=\"g-opt\">\u003cb>①\u003c/b>won\u003c/button>\u003cbutton class=\"g-opt\" data-ok=\"1\">\u003cb>②\u003c/b>has won\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>③\u003c/b>have won\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>④\u003c/b>wins\u003c/button>\u003c/div>\u003c/div>\u003cdiv class=\"g-ans\" data-rv=\"ans\" data-hl=\"ans\">\u003cb>정답\u003c/b>\u003cspan class=\"a\">has won\u003c/span>\u003cdiv class=\"g-exp\">since 이천이십삼 년처럼 지금까지 이어지는 표현이 있으므로 현재완료 has won을 씁니다.\u003c/div>\u003c/div>\u003cbutton class=\"g-show\" data-act=\"show\">정답 보기\u003c/button>","segs":[{"n":26,"text":"세 번째 문제예요. Sam blank the gold medal twice since twenty twenty three. 빈칸에 들어갈 표현을 네 개의 보기 중에서 골라 보세요. 주어가 Sam이라는 것도 잊지 마세요. 잠시 멈추고 직접 풀어 보세요.","hl":"q"},{"n":27,"text":"","hl":"q","pause":6},{"n":28,"text":"정답은 두 번째 보기 has won이에요. since와 연도가 있으니 지금까지 이어지는 현재완료를 쓰고, 주어가 Sam이라서 has를 골라요. 그래서 Sam has won the gold medal twice since twenty twenty three. 가 정답입니다.","hl":"ans","reveal":"ans"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">확인 문제 4 / 6\u003c/span>\u003cspan class=\"g-kind\">오류 수정\u003c/span>\u003c/div>\u003cdiv data-hl=\"q\">\u003cdiv class=\"g-q\">다음 문장에서 틀린 부분을 바르게 고쳐 쓰세요.\u003c/div>\u003cdiv class=\"g-qs\">When have you joined the club?\u003c/div>\u003c/div>\u003cdiv class=\"g-ans\" data-rv=\"ans\" data-hl=\"ans\">\u003cb>정답\u003c/b>\u003cspan class=\"a\">When did you join the club?\u003c/span>\u003cdiv class=\"g-exp\">When으로 과거의 일을 물을 때는 did + 주어 + 동사원형을 씁니다.\u003c/div>\u003c/div>\u003cbutton class=\"g-show\" data-act=\"show\">정답 보기\u003c/button>","segs":[{"n":29,"text":"네 번째 문제는 틀린 부분을 고치는 문제예요. When have you joined the club? 이 문장에서 어색한 부분을 찾아 바르게 고쳐 보세요. 잠시 멈추고 직접 풀어 보세요.","hl":"q"},{"n":30,"text":"","hl":"q","pause":6},{"n":31,"text":"정답은 When did you join the club? 예요. When으로 과거의 일을 물을 때는 have가 아니라 did를 쓰고, 동사는 원형 join으로 바꿔 줘야 해요.","hl":"ans","reveal":"ans"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">확인 문제 5 / 6\u003c/span>\u003cspan class=\"g-kind\">빈칸\u003c/span>\u003c/div>\u003cdiv data-hl=\"q\">\u003cdiv class=\"g-q\">괄호 안의 단어를 알맞은 형태로 바꿔 빈칸을 채우세요.\u003c/div>\u003cdiv class=\"g-qs\">I ____ you about the party yesterday. (tell)\u003c/div>\u003c/div>\u003cdiv class=\"g-ans\" data-rv=\"ans\" data-hl=\"ans\">\u003cb>정답\u003c/b>\u003cspan class=\"a\">told\u003c/span>\u003cdiv class=\"g-exp\">yesterday가 있으므로 현재완료가 아니라 과거시제 told를 씁니다.\u003c/div>\u003c/div>\u003cbutton class=\"g-show\" data-act=\"show\">정답 보기\u003c/button>","segs":[{"n":32,"text":"다섯 번째 문제예요. I blank you about the party yesterday. 라는 문장에서 tell을 알맞은 형태로 바꿔 보세요. 문장 끝에 어떤 표현이 있는지 잘 보세요. 잠시 멈추고 직접 풀어 보세요.","hl":"q"},{"n":33,"text":"","hl":"q","pause":6},{"n":34,"text":"정답은 told예요. 문장 끝에 yesterday가 있으니까 현재완료 have told는 쓸 수 없고 과거시제 told를 써요. 그래서 I told you about the party yesterday. 가 됩니다.","hl":"ans","reveal":"ans"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">확인 문제 6 / 6\u003c/span>\u003cspan class=\"g-kind\">영작\u003c/span>\u003c/div>\u003cdiv data-hl=\"q\">\u003cdiv class=\"g-q\">다음 우리말을 영어로 쓰세요.\u003c/div>\u003cdiv class=\"g-qs\">나는 이천십오 년에 지미를 처음 만났다.\u003c/div>\u003c/div>\u003cdiv class=\"g-ans\" data-rv=\"ans\" data-hl=\"ans\">\u003cb>정답\u003c/b>\u003cspan class=\"a\">I met Jimmy for the first time in 2015.\u003c/span>\u003cdiv class=\"g-exp\">in + 연도는 명백한 과거 시점이므로 과거시제 met을 씁니다.\u003c/div>\u003c/div>\u003cbutton class=\"g-show\" data-act=\"show\">정답 보기\u003c/button>","segs":[{"n":35,"text":"마지막 문제는 영작이에요. 나는 이천십오 년에 지미를 처음 만났다. 라는 문장을 영어로 써 보세요. 처음 만났다는 표현도 함께 넣어야 해요. 잠시 멈추고 직접 써 보세요.","hl":"q"},{"n":36,"text":"","hl":"q","pause":6},{"n":37,"text":"정답은 I met Jimmy for the first time in twenty fifteen. 이에요. in과 연도가 있으니까 현재완료가 아니라 과거시제 met을 써요. 처음 만났다는 뜻은 for the first time으로 표현하면 됩니다.","hl":"ans","reveal":"ans"}]},{"html":"\u003cspan class=\"lp-tag\">오늘의 정리\u003c/span>\u003ch2 class=\"g-h\">Chapter02 시제 – 현재완료와 과거 부사\u003c/h2>\u003cul class=\"g-sum\" data-hl=\"sum\">\u003cli>현재완료는 \u003cb class=\"key\">현재\u003c/b>와 이어지므로 yesterday, ago, last 같은 명백한 \u003cb class=\"key\">과거\u003c/b> 표현과 함께 쓸 수 없어요.\u003c/li>\u003cli>in + 연도가 있으면 \u003cb class=\"key\">과거시제\u003c/b>, When으로 과거를 물으면 \u003cb class=\"key\">did\u003c/b> + 주어 + 동사원형을 써요.\u003c/li>\u003cli>\u003cb class=\"key\">since\u003c/b> + 과거 시점, for + 기간은 지금까지 이어지므로 현재완료와 함께 쓸 수 있어요.\u003c/li>\u003c/ul>","segs":[{"n":38,"text":"오늘은 현재완료와 과거 부사의 관계를 배웠어요. yesterday, ago, last, in과 연도, When 의문문이 보이면 현재완료 대신 과거시제를 쓴다는 점, 꼭 기억해 두세요. 반대로 since 뒤에 과거 시점이 오면 현재완료를 그대로 쓸 수 있다는 것도 잊지 마세요. 오늘 배운 내용으로 문제를 다시 한 번 풀어 보면 훨씬 오래 기억에 남을 거예요. 수업 들어 주셔서 고마워요, 다음 시간에 만나요!","hl":"sum"}]}]});</script></body></html>
