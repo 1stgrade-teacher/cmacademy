@@ -1,0 +1,304 @@
+[강의 녹음 대본] 분사구문의 다양한 형태 1
+
+음성 파일 폴더 이름: lesson-01_audio
+강의 HTML 파일과 같은 위치에 이 폴더를 만들고, 아래 번호대로 음성 파일을 넣어 주세요.
+
+────────────────────────
+1.mp3   (슬라이드 1)
+안녕하세요, 여러분. 오늘은 마법같은 블록구문 실전편에서 분사구문의 다양한 형태를 공부해요. 분사구문이 완료, 수동, 부정, 접속사 결합, 독립 주어와 만나면 어떻게 달라지는지 차근차근 살펴볼 거예요. 문장을 끊어 읽으면서 의미가 살아나는 구조를 함께 익혀 봅시다.
+
+────────────────────────
+2.mp3   (슬라이드 2)
+오늘은 분사구문이 여러 모습으로 변하는 경우를 배워요. 분사구문은 접속사와 주어를 줄이면서 원인이나 양보, 조건, 동시 상황을 나타내죠. 의미를 분명히 해야 할 때는 접속사나 의미상 주어를 남겨요. 완료나 수동의 느낌은 having been으로 표현한다는 점도 꼭 기억해 주세요.
+
+────────────────────────
+3.mp3   (슬라이드 3)
+Not having been to the city before, 전에 그 도시에 가본 적이 없었기 때문에. I needed, 나는 필요했다. some tourist pamphlets, 몇 개의 여행자용 팜플렛이
+
+────────────────────────
+4.mp3   (슬라이드 3)
+여기서 Not having been은 완료 분사구문이에요. 주어 I가 도시에 가본 적이 없는 일이 팜플렛이 필요했던 때보다 먼저라서 having been을 쓴 거죠. 분사구문의 부정은 not을 분사 앞에 두면 됩니다.
+
+────────────────────────
+5.mp3   (슬라이드 4)
+이 말은 전에 그 도시에 가본 적이 없어서 여행 안내 책자가 필요했다는 뜻이에요. 경험이 없으니까 정보가 필요했던 자연스러운 상황을 보여 주죠. 그래서 because I had not been to the city before처럼 이유를 살려 이해하면 쉬워요.
+
+────────────────────────
+6.mp3   (슬라이드 4)
+표현을 바꿔 쓸 때는 Not having been to를 Because I had not been to로 풀 수 있어요. 그러면 이유를 나타내는 절이 되어 의미가 아주 선명해지죠. 시험에서는 완료 분사구문을 절로 바꾸는 문제가 자주 나와요.
+
+────────────────────────
+7.mp3   (슬라이드 4)
+pamphlet은 소책자나 안내 책자라는 뜻이에요. tourist pamphlets는 tourist brochures로 바꿔 쓸 수 있죠. needed는 required로 바꾸면 조금 더 격식 있는 느낌이에요.
+
+────────────────────────
+8.mp3   (슬라이드 4)
+뜻을 그대로 살려 바꾸면 Because I had never visited the city before, I needed a few tourist brochures.라고 할 수 있어요. 완료 분사구문을 이유 절로 풀고 pamphlet을 brochures로 바꾼 문장이에요.
+
+────────────────────────
+9.mp3   (슬라이드 5)
+Can we sustain, 우리는 유지할 수 있을까. our standard of living, 우리의 생활 수준을. in the same ecological space, 동일한 생태적 공간에서. while consuming the resources of that space?, 그 공간의 자원을 소비하면서?
+
+────────────────────────
+10.mp3   (슬라이드 5)
+while consuming은 접속사 while이 붙은 분사구문이에요. 의미를 분명하게 하려고 while을 남겨 둔 형태죠. 원래는 while we are consuming으로 풀어 쓸 수 있어요.
+
+────────────────────────
+11.mp3   (슬라이드 6)
+이 문장은 같은 생태 공간에서 그 공간의 자원을 쓰면서 생활 수준을 계속 유지할 수 있느냐고 묻고 있어요. 편리함과 환경 부담을 동시에 생각해 보자는 뉘앙스죠. while 이하를 절로 풀면 의미가 더 또렷해져요.
+
+────────────────────────
+12.mp3   (슬라이드 6)
+while consuming은 while we consume으로 바꿔 쓸 수 있어요. 분사구문에 주어와 시제를 다시 넣어 준 것이죠. 이렇게 하면 누가 소비하는지와 언제인지가 분명해져요.
+
+────────────────────────
+13.mp3   (슬라이드 6)
+sustain은 maintain으로 바꿔 쓸 수 있어요. standard of living은 living standard라고도 해요. consume은 use up이나 use로 바꿔 표현할 수 있습니다.
+
+────────────────────────
+14.mp3   (슬라이드 6)
+패러프레이징하면 Can we maintain our living standard within the same ecological space while using that space's resources?가 돼요. sustain과 consume을 각각 maintain과 use로 바꿔도 핵심 뜻은 그대로예요.
+
+────────────────────────
+15.mp3   (슬라이드 7)
+The fundamental problem, 근본적인 문제는. most patients face, 대부분의 환자들이 직면하는. is an inability to love themselves, 자신을 사랑하지 못하는 것이다. having been unloved by others, 다른 사람들에 의해 사랑받지 못했기 때문에. during some crucial part of their lives, 그들의 삶의 어떤 결정적인 기간 동안에
+
+────────────────────────
+16.mp3   (슬라이드 7)
+having been unloved는 완료 수동 분사구문이에요. 환자들이 사랑받지 못한 일이 현재의 문제보다 이전이고 수동 관계라서 having been이 쓰였죠. 또 문장 주어와 분사구문 주어가 달라도 흐름이 자연스러우면 주어를 따로 쓰지 않는데 이것을 현수분사구문이라고 해요.
+
+────────────────────────
+17.mp3   (슬라이드 8)
+대부분의 환자가 겪는 근본 문제는 자신을 사랑하지 못한다는 것이에요. 그 이유로 삶의 중요한 시기에 다른 사람에게 사랑받지 못한 경험을 들고 있죠. 그래서 이 문장은 상처의 원인과 현재의 어려움을 함께 설명해요.
+
+────────────────────────
+18.mp3   (슬라이드 8)
+having been unloved는 because they had been unloved로 바꿀 수 있어요. 완료 수동 분사구문을 이유를 나타내는 절로 풀어 준 거죠. 이렇게 쓰면 환자들이 사랑받지 못한 과거 경험이 원인으로 드러나요.
+
+────────────────────────
+19.mp3   (슬라이드 8)
+fundamental은 basic으로 바꿀 수 있어요. crucial은 critical이나 very important로 바꿔 쓸 수 있죠. inability to love themselves는 being unable to love themselves로 풀어 쓸 수 있어요.
+
+────────────────────────
+20.mp3   (슬라이드 8)
+바꿔 말하면 The basic problem that most patients face is that they cannot love themselves, because they were unloved by others during an important period of their lives.예요. 어려운 단어를 쉽게 풀고 분사구문을 이유 절로 바꿨어요.
+
+────────────────────────
+21.mp3   (슬라이드 9)
+I sat quietly in a chair, 나는 의자에 조용히 앉아 있었다. my only actions, (그러면서) 나의 유일한 행동은. consisting of taking notes, 필기하는 것으로 구성되었고. and stuffing my ears with wadded toilet paper, 그리고 내 귀를 뭉친 휴지로 채우는 것이었다
+
+────────────────────────
+22.mp3   (슬라이드 9)
+my only actions consisting은 의미상 주어가 있는 분사구문이에요. 문장 주어 I와 분사구문 주어 my only actions가 다르기 때문에 주어를 남긴 거죠. consisting 뒤에는 taking notes와 stuffing 이하가 of의 목적어로 나란히 연결되어 있어요.
+
+────────────────────────
+23.mp3   (슬라이드 10)
+나는 의자에 조용히 앉아 있었고 내가 한 일이라고는 필기하고 귀를 휴지로 막은 것뿐이었다는 뜻이에요. 주변 상황에 집중하거나 소음을 막으려는 모습이 그려지죠. 다소 익살스러운 분위기도 느낄 수 있어요.
+
+────────────────────────
+24.mp3   (슬라이드 10)
+my only actions consisting은 and my only actions consisted로 바꿔 쓸 수 있어요. 분사구문을 and로 이어진 독립절로 바꾼 것이죠. 그러면 두 문장의 관계가 더 직접적으로 보여요.
+
+────────────────────────
+25.mp3   (슬라이드 10)
+consist of는 be made up of로 바꿔 쓸 수 있어요. stuff A with B는 fill A with B로 바꿀 수 있죠. wadded는 crumpled나 pressed into a ball로 표현할 수 있어요.
+
+────────────────────────
+26.mp3   (슬라이드 10)
+같은 뜻으로는 I sat quietly in a chair, and my only actions were taking notes and filling my ears with crumpled toilet paper.라고 할 수 있어요. 분사구문을 and로 이어진 절로 바꾸고 wadded를 crumpled로 풀었죠.
+
+────────────────────────
+27.mp3   (슬라이드 11)
+Though seriously injured, 비록 심하게 다쳤지만. the pilot crawled out of the wreckage, 그 조종사는 잔해에서 기어 나왔다. and was flown by helicopter, 그리고 헬리콥터에 의해 이송되었다. to a nearby medical center, 근처의 의료 센터로
+
+────────────────────────
+28.mp3   (슬라이드 11)
+Though seriously injured는 양보의 뜻을 살린 분사구문이에요. Though가 과거분사 injured 앞에 붙어서 비록 심하게 다쳤지만이라는 의미를 분명히 하죠. 주어 the pilot이 다친 대상이라서 수동의 injured가 온 겁니다.
+
+────────────────────────
+29.mp3   (슬라이드 12)
+조종사는 심하게 다쳤지만 잔해 밖으로 기어 나왔고 헬리콥터로 치료를 받으러 갔다는 내용이에요. 부상에도 불구하고 구조를 향해 움직인 긴박한 상황을 보여 주죠. Though가 양보의 느낌을 살려 줘요.
+
+────────────────────────
+30.mp3   (슬라이드 12)
+Though seriously injured는 Although he was seriously injured로 바꿀 수 있어요. 접속사와 주어와 be동사를 모두 살려 준 완전한 절이죠. 양보의 의미가 더 분명해집니다.
+
+────────────────────────
+31.mp3   (슬라이드 12)
+Though는 Although로 바꿔 쓸 수 있어요. seriously injured는 badly hurt로 쉽게 바꿀 수 있죠. crawled out of는 crept out of로 바꾸면 조금 더 조용히 기어 나오는 느낌이에요.
+
+────────────────────────
+32.mp3   (슬라이드 12)
+패러프레이징 문장은 Although he was badly injured, the pilot crawled out of the wreckage and was taken by helicopter to a nearby medical center.예요. Though를 Although로, injured를 badly hurt로 풀어 썼어요.
+
+────────────────────────
+33.mp3   (슬라이드 13)
+Turned down for countless jobs, 무수한 일자리에서 거절당했지만. Jenny didn't give up hope, Jenny는 희망을 포기하지 않았다. and is now a successful architect, 그리고 지금은 성공한 건축가이다
+
+────────────────────────
+34.mp3   (슬라이드 13)
+Turned down은 수동 분사구문이에요. 원래는 Having been turned down으로 쓸 수 있는데 Having been이 생략된 형태로 볼 수 있죠. Jenny가 거절당한 일이 먼저이고 수동 관계라서 과거분사가 쓰였어요.
+
+────────────────────────
+35.mp3   (슬라이드 14)
+Jenny는 수많은 일자리에서 거절당했지만 희망을 버리지 않았고 지금은 성공한 건축가가 되었다는 뜻이에요. 실패가 계속되어도 포기하지 않은 끈기를 강조하죠. 첫 부분을 Though she had been turned down으로 풀면 대조가 분명해져요.
+
+────────────────────────
+36.mp3   (슬라이드 14)
+Turned down은 Even though she had been turned down으로 바꿔 쓸 수 있어요. 생략된 Having been과 주어를 모두 살려 준 형태죠. 거절당한 일이 먼저 있었다는 시간 관계도 드러나요.
+
+────────────────────────
+37.mp3   (슬라이드 14)
+turn down은 reject로 바꿔 쓸 수 있어요. countless는 numerous나 too many to count로 표현할 수 있죠. give up hope는 lose hope로 바꿔 쓸 수 있어요.
+
+────────────────────────
+38.mp3   (슬라이드 14)
+뜻을 살려 바꾸면 Even though Jenny had been rejected for numerous jobs, she did not lose hope and is now a successful architect.예요. 생략된 수동 완료를 살리고 turn down을 reject로 바꿨어요.
+
+────────────────────────
+39.mp3   (슬라이드 15)
+In recent history, 최근의 역사에서. countries with the highest net inward migration, 순유입이 가장 높은 나라들이. have also had the highest growth rates, 또한 가장 높은 성장률을 보였다. the two factors clearly being linked in harmony, 그 두 요소는 분명 조화롭게 연결되어 있다
+
+────────────────────────
+40.mp3   (슬라이드 15)
+the two factors clearly being linked는 의미상 주어가 있는 분사구문이에요. 문장 주어 countries와 분사구문 주어 the two factors가 달라서 주어를 남겼죠. being linked는 두 요소가 연결되어 있다는 수동의 의미를 담고 있어요.
+
+────────────────────────
+41.mp3   (슬라이드 16)
+최근 역사에서 순유입이 가장 높은 나라들이 성장률도 가장 높았다는 내용이에요. 그리고 그 두 요소가 조화롭게 연결되어 있다고 덧붙이죠. 이주와 성장이 서로 관련되어 있다는 해석을 담고 있어요.
+
+────────────────────────
+42.mp3   (슬라이드 16)
+the two factors clearly being linked는 and the two factors are clearly linked로 바꿀 수 있어요. 분사구문을 and로 이어진 절로 바꾼 것이죠. 그러면 두 요소가 연결되어 있다는 주장이 독립적으로 보여요.
+
+────────────────────────
+43.mp3   (슬라이드 16)
+net inward migration은 net immigration으로 간단히 표현할 수 있어요. growth rate는 rate of growth로 바꿔 쓸 수 있죠. in harmony는 harmoniously로 바꿔 쓸 수 있어요.
+
+────────────────────────
+44.mp3   (슬라이드 16)
+패러프레이징하면 In recent history, countries with the highest net immigration have also had the highest growth rates, and the two factors are clearly linked harmoniously.예요. 분사구문을 and 절로 바꾸고 in harmony를 harmoniously로 바꿨죠.
+
+────────────────────────
+45.mp3   (슬라이드 17)
+When faced with a bunch of watermelons, 한 무더기의 수박을 마주하게 될 때. all promising delicious juiciness inside, 모두 속에 맛있는 즙이 있을 것 같은데. how do you know, 당신은 어떻게 아는가. which one to pick?, 어느 것을 골라야 할지?
+
+────────────────────────
+46.mp3   (슬라이드 17)
+When faced with는 접속사 when이 붙은 분사구문이에요. faced는 수박을 마주하는 대상인 you와 수동 관계라서 과거분사로 쓰였죠. all promising 이하는 삽입된 분사구문으로 all을 의미상 주어로 가져요.
+
+────────────────────────
+47.mp3   (슬라이드 18)
+수박 한 무더기를 앞에 두면 모두 속이 맛있을 것처럼 보여서 어느 것을 골라야 할지 알기 어렵다는 뜻이에요. 겉만 보고 판단하기 어려운 상황을 재미있게 표현했죠. all promising은 수박들이 좋은 속을 약속하는 듯하다는 느낌을 줘요.
+
+────────────────────────
+48.mp3   (슬라이드 18)
+When faced with는 When you are faced with로 바꿀 수 있어요. 생략된 주어 you와 be동사를 다시 넣은 거죠. 누가 수박을 마주하는지 분명해져요.
+
+────────────────────────
+49.mp3   (슬라이드 18)
+be faced with는 be confronted with로 바꿀 수 있어요. a bunch of는 a group of나 a pile of로 바꿀 수 있죠. promising은 giving promise of로 풀어 쓸 수 있어요.
+
+────────────────────────
+50.mp3   (슬라이드 18)
+바꿔 말하면 When you are faced with a pile of watermelons that all seem to promise delicious juice inside, how do you know which one to choose?예요. 주어와 be동사를 살리고 pick을 choose로 바꿨어요.
+
+────────────────────────
+51.mp3   (슬라이드 19)
+The time spent in lamenting their lot, 자신의 운명을 한탄하면서 보낸 시간은. if applied to honest endeavor, 만약 정직한 노력에 쓰인다면. would yield splendid results, 멋진 결과를 낼 것이다. and give them proper places in the world, 그리고 그들에게 세상에서 적절한 자리를 줄 것이다
+
+────────────────────────
+52.mp3   (슬라이드 19)
+if applied to는 조건의 뜻을 살린 분사구문이에요. 주어와 동사 사이에 삽입되어서 만약 쓰인다면이라는 의미를 더해 주죠. The time은 과거분사 spent가 이끄는 어구의 수식을 받고 있어요.
+
+────────────────────────
+53.mp3   (슬라이드 20)
+자신의 운명을 한탄하며 보낸 시간을 정직한 노력에 쓴다면 좋은 결과가 나오고 세상에서 제자리를 찾을 수 있다는 뜻이에요. 후회나 불평 대신 노력으로 방향을 바꾸자는 조언이 담겨 있죠. if applied는 그런 가정을 짧게 표현해요.
+
+────────────────────────
+54.mp3   (슬라이드 20)
+if applied to는 if it were applied to로 바꿀 수 있어요. 조건의 분사구문을 가정법 절로 풀어 준 것이죠. 시간이라는 주어와 수동의 의미가 또렷해져요.
+
+────────────────────────
+55.mp3   (슬라이드 20)
+lament는 complain about이나 mourn으로 바꿀 수 있어요. lot은 fate나 situation으로 바꿀 수 있죠. yield는 produce로, splendid는 excellent로 바꿔 쓸 수 있어요.
+
+────────────────────────
+56.mp3   (슬라이드 20)
+같은 뜻으로는 The time spent complaining about their fate, if it were used for honest effort, would produce excellent results and give them proper places in the world.예요. 조건 분사구문을 완전한 절로 풀고 yield를 produce로 바꿨어요.
+
+────────────────────────
+57.mp3   (슬라이드 21)
+The making of a contract, 계약을 하는 것은. requires the mutual agreement, 필요로 한다. of two or more persons or parties, 둘 이상의 사람이나 단체의 상호 합의를. one of them ordinarily making an offer, 그들 중 한쪽이 보통 제안을 하고. and another accepting, 그리고 다른 한쪽은 받아들인다
+
+────────────────────────
+58.mp3   (슬라이드 21)
+one of them ordinarily making은 주어가 있는 분사구문이에요. 접속사 없이 두 절을 이어야 해서 준동사가 필요하고 one of them이 의미상 주어라서 making을 쓴 거죠. another accepting도 같은 방식으로 이어져요.
+
+────────────────────────
+59.mp3   (슬라이드 22)
+계약을 만들려면 둘 이상의 사람이나 단체가 서로 합의해야 한다는 내용이에요. 보통 한쪽이 제안하고 다른 한쪽이 받아들이는 방식이죠. 계약의 기본 조건을 차분하게 설명하는 문장이에요.
+
+────────────────────────
+60.mp3   (슬라이드 22)
+one of them ordinarily making은 one of them ordinarily makes로 바꿀 수 있어요. 분사구문을 독립절로 바꾼 것이죠. another accepting도 another accepts로 바꾸면 구조가 평행해져요.
+
+────────────────────────
+61.mp3   (슬라이드 22)
+require는 call for로 바꿔 쓸 수 있어요. mutual agreement는 agreement on both sides로 풀어 쓸 수 있죠. party는 group이나 side로 바꿔 표현할 수 있어요.
+
+────────────────────────
+62.mp3   (슬라이드 22)
+패러프레이징하면 Making a contract requires the mutual agreement of two or more people or parties, with one side usually making an offer and the other accepting it.예요. 분사구문을 with 구문으로 자연스럽게 풀어 썼어요.
+
+────────────────────────
+63.mp3   (슬라이드 23)
+There being a dispute over a topic of environment, 환경이라는 주제에 대해 논쟁이 있기 때문에. the country is to make an effective law, 그 나라는 효과적인 법률을 만들 예정이다. for its sustainable development, 지속 가능한 개발을 위해서
+
+────────────────────────
+64.mp3   (슬라이드 23)
+There being은 there가 그대로 남은 분사구문이에요. 문장 주어 the country와 분사구문의 주어가 다르다는 것을 There로 보여 주는 거죠. is to make는 예정을 나타내는 be to 용법이에요.
+
+────────────────────────
+65.mp3   (슬라이드 24)
+환경 문제에 대한 논쟁이 있기 때문에 그 나라가 지속 가능한 발전을 위해 효과적인 법을 만들 예정이라는 뜻이에요. 갈등이 법 제정의 배경이 된다는 흐름이죠. There being이 원인이나 배경을 자연스럽게 이어 줘요.
+
+────────────────────────
+66.mp3   (슬라이드 24)
+There being은 Because there is로 바꿀 수 있어요. 분사구문을 이유를 나타내는 절로 풀어 준 거죠. 논쟁이 있다는 배경이 원인으로 분명해져요.
+
+────────────────────────
+67.mp3   (슬라이드 24)
+dispute는 argument나 disagreement로 바꿀 수 있어요. sustainable은 able to be maintained로 풀어 쓸 수 있죠. is to make는 is scheduled to make나 is going to make로 바꿀 수 있어요.
+
+────────────────────────
+68.mp3   (슬라이드 24)
+바꿔 말하면 Because there is a dispute over an environmental topic, the country is going to make an effective law for its sustainable development.예요. There being을 이유 절로 풀고 예정의 is to를 is going to로 바꿨어요.
+
+────────────────────────
+69.mp3   (슬라이드 25)
+When expelled from the nucleus of an atom, 원자핵에서 방출되었을 때. a neutron is unstable, 중성자는 불안정하다. and decayed to form a proton and an electron, 그리고 양성자와 전자를 형성하기 위해 붕괴된다
+
+────────────────────────
+70.mp3   (슬라이드 25)
+When expelled from은 접속사 when이 붙은 수동 분사구문이에요. 주어 a neutron이 방출되는 대상이라서 과거분사 expelled가 와야 하죠. when을 붙여서 방출되었을 때라는 의미를 분명히 했어요.
+
+────────────────────────
+71.mp3   (슬라이드 26)
+중성자는 원자핵에서 방출되면 불안정해지고 붕괴해서 양성자와 전자를 만든다는 과학 설명이에요. expelled가 중성자가 방출되는 수동 상황을 보여 주죠. when 덕분에 방출되었을 때라는 조건이 분명해져요.
+
+────────────────────────
+72.mp3   (슬라이드 26)
+When expelled from은 When it is expelled from으로 바꿀 수 있어요. 수동 분사구문에 주어와 be동사를 다시 넣은 형태죠. 중성자가 방출되는 상황이 정확해집니다.
+
+────────────────────────
+73.mp3   (슬라이드 26)
+expelled는 ejected나 driven out으로 바꿀 수 있어요. nucleus는 core로 쉽게 바꿀 수 있죠. decayed는 broke down이나 changed into simpler forms로 표현할 수 있어요.
+
+────────────────────────
+74.mp3   (슬라이드 26)
+같은 뜻으로는 When a neutron is expelled from an atomic nucleus, it is unstable and decays to form a proton and an electron.예요. 수동 분사구문을 완전한 절로 풀고 decayed를 decays로 자연스럽게 다듬었어요.
+
+────────────────────────
+75.mp3   (슬라이드 27)
+오늘은 분사구문이 완료, 수동, 부정, 접속사 결합, 의미상 주어와 만나는 다양한 모습을 배웠어요. 분사구문의 부정은 not을 분사 앞에 두고, 완료나 수동은 having been으로 표현한다는 점을 기억해 주세요. 접속사를 남기면 의미가 분명해지고, 주어가 다르면 의미상 주어를 쓸 수 있죠. 오늘 배운 구조를 문장에서 직접 찾아보면서 복습해 보세요. 수고했습니다.

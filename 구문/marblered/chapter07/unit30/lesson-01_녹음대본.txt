@@ -1,0 +1,304 @@
+[강의 녹음 대본] 부사 역할을 하는 to부정사, 문맥으로 의미 잡기
+
+음성 파일 폴더 이름: lesson-01_audio
+강의 HTML 파일과 같은 위치에 이 폴더를 만들고, 아래 번호대로 음성 파일을 넣어 주세요.
+
+────────────────────────
+1.mp3   (슬라이드 1)
+안녕하세요, 여러분. 오늘은 마법같은 블록구문 실전편에서 부사 역할을 하는 to부정사의 의미를 배워 볼 거예요. to부정사가 목적만 나타내는 것이 아니라 결과, 감정의 원인, 조건, 판단의 근거까지 다양하게 쓰인다는 점이 오늘의 포인트입니다. 문장을 끊어 읽으면서 to부정사가 어떤 의미로 쓰였는지 함께 찾아봅시다.
+
+────────────────────────
+2.mp3   (슬라이드 2)
+부사 역할을 하는 to부정사는 문장에서 목적, 결과, 감정의 원인, 조건, 판단의 근거 같은 다양한 의미를 나타냅니다. 그래서 무조건 하기 위해서라고만 해석하면 안 되고, 앞뒤 문맥을 먼저 봐야 해요. so as to나 in order to는 목적을 분명히 할 때, only to는 예상 밖의 결과를 강조할 때 자주 쓰입니다. 오늘은 이 다섯 가지 의미를 문장 속에서 구별하는 연습을 해 봅시다.
+
+────────────────────────
+3.mp3   (슬라이드 3)
+Charles Dickens, 찰스 디킨스는. used, 사용했다. his desperate experience, 그의 절망적인 경험을. as a child laborer, 아동 노동자로서. in Victorian England, 빅토리아 시대 영국에서. to write David Copperfield, 데이비드 코퍼필드를 쓰기 위해서
+
+────────────────────────
+4.mp3   (슬라이드 3)
+먼저 첫 번째 문장을 볼게요. to write는 David Copperfield를 쓰기 위해서라는 목적을 나타내는 부사적 to부정사예요. Charles Dickens used his desperate experience라는 뼈대 뒤에 to write가 붙어서 그 경험을 왜 활용했는지 설명해 주죠.
+
+────────────────────────
+5.mp3   (슬라이드 4)
+이 문장은 디킨스가 아동 노동자로 겪은 힘든 경험이 David Copperfield를 쓰는 밑거름이 되었다는 뜻이에요. 절망적인 경험이 오히려 작품을 쓰게 한 힘이었다는 점을 기억해 주세요.
+
+────────────────────────
+6.mp3   (슬라이드 4)
+used는 drew on으로 바꿔도 경험을 활용했다는 뜻이 잘 살아요. 목적을 더 분명히 하고 싶으면 to write를 in order to write나 so as to write로 바꿔 쓸 수 있습니다.
+
+────────────────────────
+7.mp3   (슬라이드 4)
+desperate는 hopeless와 가까운 표현이고, used는 drew on으로 바꿔 쓸 수 있어요. as a child laborer는 while working as a child처럼 풀어 쓸 수 있습니다.
+
+────────────────────────
+8.mp3   (슬라이드 4)
+이제 같은 뜻을 자연스럽게 바꾼 문장을 읽어 볼게요. Charles Dickens drew on his painful experience as a child worker in Victorian England in order to write David Copperfield. 경험을 활용해서 작품을 썼다는 핵심은 그대로죠.
+
+────────────────────────
+9.mp3   (슬라이드 5)
+That Friday morning, 그 금요일 아침에. I awoke, 나는 깨어나서. to find myself, 내가 있음을 알게 되었다. caught in the middle, 한가운데에 처해 있는. of a social media storm, 소셜 미디어 폭풍의
+
+────────────────────────
+10.mp3   (슬라이드 5)
+두 번째 문장에서는 awoke 뒤에 to find가 이어져요. 이 to find는 깨어나서 결국 알게 되었다는 결과를 나타내는 부사적 to부정사입니다. find myself caught는 내가 처해 있는 모습을 발견했다는 뜻으로 이해하면 돼요.
+
+────────────────────────
+11.mp3   (슬라이드 6)
+금요일 아침에 일어나 보니 내가 social media controversy의 한복판에 있더라는 뜻이에요. storm은 실제 폭풍이 아니라 온라인에서 벌어진 거센 논란을 비유한 표현입니다.
+
+────────────────────────
+12.mp3   (슬라이드 6)
+to find를 and found로 풀면 깨어났다 그리고 발견했다는 두 동작이 잘 드러나요. social media storm은 social media controversy로 바꾸면 뜻이 더 분명해집니다.
+
+────────────────────────
+13.mp3   (슬라이드 6)
+awoke는 woke up으로 바꿀 수 있고, caught in the middle of는 at the center of로 바꿀 수 있어요. storm은 controversy처럼 실제 의미로 풀어 쓸 수 있습니다.
+
+────────────────────────
+14.mp3   (슬라이드 6)
+바꾼 문장을 읽어 볼게요. That Friday morning, I woke up and found myself at the center of a social media controversy. 논란의 한복판에 있었다는 뜻은 그대로입니다.
+
+────────────────────────
+15.mp3   (슬라이드 7)
+Our brain, 우리의 뇌는. organizes, 체계화한다. the available sensory information, 이용 가능한 감각 정보를. and environmental stimuli, 그리고 환경 자극을. so as to make sense out of, 이해하기 위해서. millions of bits and pieces of data, 수백만 개의 이리저리 흩어진 자료를
+
+────────────────────────
+16.mp3   (슬라이드 7)
+세 번째 문장에서는 so as to make가 목적을 나타내요. to부정사만으로도 목적을 말할 수 있지만 so as to를 쓰면 이해하기 위해서라는 목적이 더 분명해집니다. 그래서 so as to make sense out of는 자료를 이해하기 위해서라고 해석해요.
+
+────────────────────────
+17.mp3   (슬라이드 8)
+우리 뇌는 감각 정보와 환경 자극을 정리해서 흩어진 수많은 자료를 의미 있게 이해한다는 뜻이에요. 복잡한 정보를 쓸모 있는 형태로 바꾼다고 생각하면 됩니다.
+
+────────────────────────
+18.mp3   (슬라이드 8)
+so as to는 in order to로 바꿔도 목적이 잘 드러나요. make sense out of는 understand로 바꾸면 학생들이 이해하기 쉬운 문장이 됩니다.
+
+────────────────────────
+19.mp3   (슬라이드 8)
+make sense out of는 understand와 같은 뜻이고, bits and pieces는 흩어진 조각들이라는 표현이에요. stimuli는 자극이나 단서라는 뜻으로 기억해 두세요.
+
+────────────────────────
+20.mp3   (슬라이드 8)
+같은 뜻의 문장을 읽어 볼게요. Our brain arranges the sensory information and environmental cues available to us in order to understand millions of scattered pieces of data. 뇌가 정보를 정리해 이해한다는 핵심은 유지됩니다.
+
+────────────────────────
+21.mp3   (슬라이드 9)
+When at length, 마침내. the deal was settled, 그 거래가 합의에 이르렀을 때. Dr. Paul, Paul 박사는. was delighted, 기뻤다. to purchase the carving, 그 조각품을 구입하게 되어. at a reasonable price, 적절한 가격에
+
+────────────────────────
+22.mp3   (슬라이드 9)
+네 번째 문장에서는 delighted 뒤에 to purchase가 와요. 이 to purchase는 기쁨의 원인을 나타내는 부사적 to부정사입니다. 그래서 was delighted to purchase는 사게 되어 기뻤다라고 해석합니다.
+
+────────────────────────
+23.mp3   (슬라이드 10)
+마침내 거래가 성사되었고 Paul 박사는 적절한 가격에 조각품을 사게 되어 기뻤다는 뜻이에요. at length는 여기서 마침내라는 의미로 쓰였습니다.
+
+────────────────────────
+24.mp3   (슬라이드 10)
+was delighted to purchase는 was very happy that he purchased로 풀어 쓸 수 있어요. at a reasonable price는 at a fair price로 바꿔도 자연스럽습니다.
+
+────────────────────────
+25.mp3   (슬라이드 10)
+at length는 finally, settle은 be agreed, reasonable은 fair로 바꿔 쓸 수 있습니다. 가격 표현에서는 reasonable과 fair가 자주 함께 나와요.
+
+────────────────────────
+26.mp3   (슬라이드 10)
+바꾼 문장을 읽어 볼게요. When the deal was finally settled, Dr. Paul was very happy that he purchased the carving at a fair price. 거래가 성사되고 기뻤다는 의미가 그대로 살아 있습니다.
+
+────────────────────────
+27.mp3   (슬라이드 11)
+If, 만약. an activity, 어떤 활동이. is easy to perform, 하기 쉽고. easy to fit into your schedule, 당신의 일정에 맞추기 쉬우며. and easy to love, 그리고 좋아하기 쉽다면. you're, 당신은. more likely, 더욱 ~할 가능성이 높다. to stick with it, 그것을 계속할
+
+────────────────────────
+28.mp3   (슬라이드 11)
+다섯 번째 문장에는 easy 뒤에 to perform, to fit, to love가 이어져요. 이 to부정사들은 하기에라는 뜻으로 easy를 꾸며 줍니다. 그래서 easy to perform은 하기 쉽다는 뜻이 됩니다.
+
+────────────────────────
+29.mp3   (슬라이드 12)
+활동이 하기 쉽고 일정에 넣기 쉬우며 좋아하기 쉽다면 그 활동을 계속할 가능성이 높다는 뜻이에요. 쉽고 즐거운 활동이 습관으로 이어진다는 조언이죠.
+
+────────────────────────
+30.mp3   (슬라이드 12)
+you are more likely to stick with it은 you will probably keep doing it으로 바꿀 수 있어요. easy to fit into your schedule은 easy to work into your schedule로 바꿔도 뜻이 잘 통합니다.
+
+────────────────────────
+31.mp3   (슬라이드 12)
+stick with는 keep doing, fit into는 work into로 바꿀 수 있어요. be likely to는 probably처럼 가능성 표현으로 풀어 쓸 수 있습니다.
+
+────────────────────────
+32.mp3   (슬라이드 12)
+같은 뜻으로 바꾼 문장을 읽어 볼게요. If an activity is easy to do, easy to work into your schedule, and easy to enjoy, you will probably keep doing it. 하기 쉽고 즐거우면 계속하게 된다는 뜻입니다.
+
+────────────────────────
+33.mp3   (슬라이드 13)
+We should carefully think, 우리는 조심스럽게 생각해야 한다. about the reason for someone's behavior, 어떤 사람의 행동의 이유에 대해. to avoid, 피하기 위해서. coming to a hasty conclusion, 성급한 결론에 도달하는 것을. about it, 그것에 대한
+
+────────────────────────
+34.mp3   (슬라이드 13)
+여섯 번째 문장에서는 to avoid가 목적을 나타내요. 어떤 사람의 행동 이유를 조심스럽게 생각하는 목적이 성급한 결론을 피하기 위해서라는 거죠. to avoid 뒤에는 동명사 coming이 와서 피하다의 대상이 됩니다.
+
+────────────────────────
+35.mp3   (슬라이드 14)
+누군가가 왜 그렇게 행동했는지 충분히 따져 보고 섣불리 결론을 내리지 말라는 뜻이에요. hasty는 성급한이라는 뜻으로 기억해 주세요.
+
+────────────────────────
+36.mp3   (슬라이드 14)
+to avoid coming to a hasty conclusion은 so as not to jump to a hasty conclusion으로 바꿀 수 있어요. carefully think about는 consider carefully로 간결하게 바꿀 수 있습니다.
+
+────────────────────────
+37.mp3   (슬라이드 14)
+hasty는 rushed, come to a conclusion은 reach a conclusion, think about은 consider로 바꿀 수 있어요. 시험에서는 결론에 도달하다라는 표현이 자주 나옵니다.
+
+────────────────────────
+38.mp3   (슬라이드 14)
+바꾼 문장을 읽어 볼게요. We should consider carefully why someone behaved that way so as not to jump to a hasty conclusion about it. 성급한 판단을 피하자는 뜻이 잘 드러납니다.
+
+────────────────────────
+39.mp3   (슬라이드 15)
+When temperatures near 0°C, 온도가 섭씨 0도에 가까워질 때. water molecules, 물 분자는. start bonding with one another, 서로 결합하기 시작한다. to form a crystal structure, 그래서 결정 구조를 형성한다
+
+────────────────────────
+40.mp3   (슬라이드 15)
+일곱 번째 문장에서 to form은 결과를 나타내는 부사적 to부정사예요. 물 분자가 서로 결합해서 그 결과 결정 구조를 형성한다는 뜻을 이어 줍니다.
+
+────────────────────────
+41.mp3   (슬라이드 16)
+온도가 섭씨 영 도에 가까워지면 물 분자가 서로 붙어서 결정 구조를 만든다는 뜻이에요. 물이 얼음 결정이 되는 과정을 설명하는 문장입니다.
+
+────────────────────────
+42.mp3   (슬라이드 16)
+to form은 forming으로 바꿔 결과를 분사구로 표현할 수 있어요. near zero degrees Celsius는 approach zero degrees Celsius처럼 동사로 풀어 쓸 수 있습니다.
+
+────────────────────────
+43.mp3   (슬라이드 16)
+bond with는 combine with, one another는 each other, form은 create로 바꿀 수 있어요. 과학 지문에서 자주 나오는 표현들이니 익혀 두세요.
+
+────────────────────────
+44.mp3   (슬라이드 16)
+같은 뜻의 문장을 읽어 볼게요. When temperatures approach zero degrees Celsius, water molecules begin to combine with each other, forming a crystal structure. 결합해서 결정 구조를 만든다는 의미가 유지됩니다.
+
+────────────────────────
+45.mp3   (슬라이드 17)
+We, 우리는. would be honored, 영광일 것입니다. to have you as a guest, 당신을 손님으로 모신다면. at the annual festival, 해마다 열리는 축제에
+
+────────────────────────
+46.mp3   (슬라이드 17)
+여덟 번째 문장에서 to have는 조건을 나타내는 부사적 to부정사예요. would be honored와 함께 쓰여 만약 당신을 손님으로 모신다면이라는 가정의 뜻을 만듭니다.
+
+────────────────────────
+47.mp3   (슬라이드 18)
+해마다 열리는 축제에 당신을 손님으로 모실 수 있다면 영광이겠다는 정중한 초대의 말이에요. 상대를 아주 귀하게 대접하는 느낌을 줍니다.
+
+────────────────────────
+48.mp3   (슬라이드 18)
+We would be honored to have you as a guest는 We would be delighted if you could join us as a guest로 바꿀 수 있어요. annual은 every year로 풀어 쓸 수 있습니다.
+
+────────────────────────
+49.mp3   (슬라이드 18)
+be honored는 be privileged, annual은 yearly, have you as a guest는 welcome you as a guest로 바꿀 수 있어요. 초대 표현에서 자주 쓰이는 어구입니다.
+
+────────────────────────
+50.mp3   (슬라이드 18)
+바꾼 문장을 읽어 볼게요. We would be delighted if you could join us as a guest at the festival held every year. 정중하게 초대하는 뜻이 잘 살아 있습니다.
+
+────────────────────────
+51.mp3   (슬라이드 19)
+If you are fortunate, 만약 당신이 운이 좋다면. to have opportunity, 기회를 가질 때. it is your duty, 그것은 당신의 의무이다. to make sure, 반드시 ~하도록 하는 것은. other people have those opportunities, 다른 사람들도 그러한 기회를 갖도록. as well, 또한
+
+────────────────────────
+52.mp3   (슬라이드 19)
+아홉 번째 문장에서는 to have opportunity가 fortunate를 꾸며요. 기회를 가질 만큼 운이 좋다는 뜻으로 해석하면 됩니다. 또 it은 가주어이고 to make sure 이하는 진주어라는 점도 꼭 기억해 주세요.
+
+────────────────────────
+53.mp3   (슬라이드 20)
+기회를 가질 만큼 운이 좋다면 다른 사람도 그런 기회를 가질 수 있도록 도와야 한다는 뜻이에요. 혼자만 누리지 말고 나누라는 메시지입니다.
+
+────────────────────────
+54.mp3   (슬라이드 20)
+to have opportunity는 lucky enough to have opportunities로 풀어 쓸 수 있어요. it is your duty to make sure는 you have a duty to ensure that으로 바꾸면 주어가 분명해집니다.
+
+────────────────────────
+55.mp3   (슬라이드 20)
+fortunate는 lucky, make sure는 ensure, as well은 too로 바꿀 수 있어요. make sure 뒤에는 that절이 올 수 있다는 점도 함께 기억해 주세요.
+
+────────────────────────
+56.mp3   (슬라이드 20)
+바꾼 문장을 읽어 볼게요. If you are lucky enough to have opportunities, you have a duty to ensure that others have the same opportunities too. 기회를 나누어야 한다는 뜻이 잘 드러납니다.
+
+────────────────────────
+57.mp3   (슬라이드 21)
+We can't help but think, 우리는 생각하지 않을 수 없다. James must have his head in the clouds, James가 엉뚱한 공상에 잠긴 것이 틀림없다고. to talk like that, 그렇게 말하다니
+
+────────────────────────
+58.mp3   (슬라이드 21)
+열 번째 문장에서 to talk는 판단의 근거를 나타내는 부사적 to부정사예요. 그렇게 말하다니 James가 공상에 잠겼다고 판단하는 근거를 제시합니다. think 뒤에는 that이 생략되어 있다고 이해하면 됩니다.
+
+────────────────────────
+59.mp3   (슬라이드 22)
+James가 그렇게 말하는 걸 보니 머릿속이 공상으로 가득한 게 틀림없다고 생각하지 않을 수 없다는 뜻이에요. 현실과 동떨어진 말을 한다는 비유적인 판단입니다.
+
+────────────────────────
+60.mp3   (슬라이드 22)
+cannot help but think는 cannot help thinking으로 바꿔도 같은 뜻이에요. have his head in the clouds는 be daydreaming으로 풀어 쓸 수 있습니다.
+
+────────────────────────
+61.mp3   (슬라이드 22)
+cannot help but 다음에는 동사원형이 오고, cannot help 뒤에는 동명사가 와요. have one's head in the clouds는 공상에 잠기다라는 관용 표현입니다.
+
+────────────────────────
+62.mp3   (슬라이드 22)
+바꾼 문장을 읽어 볼게요. We cannot help thinking that James must be daydreaming to say something like that. 그렇게 말하다니 공상에 잠겼다는 뜻이 잘 살아 있습니다.
+
+────────────────────────
+63.mp3   (슬라이드 23)
+Have you ever found yourself, 당신은 발견한 적이 있는가 자신이. speaking to someone at length, 어떤 사람에게 상세히 말하고 있는 것을. only to realize, 그러나 결국 깨닫게 된. they haven't heard a single thing, 그들이 하나도 듣지 않았다는 것을. you've said?, 당신이 말했던
+
+────────────────────────
+64.mp3   (슬라이드 23)
+열한 번째 문장에서는 only to realize가 결과를 나타내요. 오랫동안 말했지만 결국 깨닫게 되었다는 예상 밖의 결과를 강조합니다. realize 뒤에는 that이, a single thing 뒤에는 관계대명사가 생략되어 있어요.
+
+────────────────────────
+65.mp3   (슬라이드 24)
+누군가에게 한참 열심히 말했는데 상대가 내 말을 하나도 듣지 못했다는 걸 뒤늦게 깨닫는 상황이에요. 허무하고 당황스러운 느낌이 담겨 있습니다.
+
+────────────────────────
+66.mp3   (슬라이드 24)
+only to realize는 but then realized로 풀어 쓸 수 있어요. at length는 for a long time으로 바꾸면 뜻이 더 쉽게 드러납니다.
+
+────────────────────────
+67.mp3   (슬라이드 24)
+only to는 예상 밖의 결과를 나타내고, at length는 for a long time, a single thing은 anything at all로 바꿀 수 있어요. 부정 강조 표현에 주의해 주세요.
+
+────────────────────────
+68.mp3   (슬라이드 24)
+바꾼 문장을 읽어 볼게요. Have you ever found yourself talking to someone for a long time, only to realize that they have not heard anything you said? 오랫동안 말했지만 결국 못 들었다는 상황이 잘 드러납니다.
+
+────────────────────────
+69.mp3   (슬라이드 25)
+A child, 아이는. who has been repeatedly criticized, 반복해서 비판을 받아온. for poor performance on math, 수학에서의 부족한 성과로 인해. may learn to dodge difficult math problems, 어려운 수학 문제를 피하는 것을 배울지도 모른다. in order to avoid further punishment, 더 심한 처벌을 피하기 위해서
+
+────────────────────────
+70.mp3   (슬라이드 25)
+열두 번째 문장에서는 in order to avoid가 목적을 나타내요. 더 심한 처벌을 피하기 위해서라는 목적을 분명히 하기 위해 in order to를 썼습니다. A child는 who절의 수식을 받는다는 점도 함께 봐 주세요.
+
+────────────────────────
+71.mp3   (슬라이드 26)
+수학 성적이 좋지 않다고 반복해서 비판받은 아이는 더 심한 처벌을 피하려고 어려운 문제를 피하는 법을 배울 수 있다는 뜻이에요. 비판이 회피 행동을 만들 수 있다는 점을 보여 줍니다.
+
+────────────────────────
+72.mp3   (슬라이드 26)
+in order to avoid further punishment는 so as to avoid more punishment로 바꿀 수 있어요. may learn to dodge는 might learn to avoid로 바꾸면 뜻이 더 쉽게 느껴집니다.
+
+────────────────────────
+73.mp3   (슬라이드 26)
+criticize는 blame, dodge는 avoid, further는 more로 바꿀 수 있어요. in order to는 목적을 분명히 하는 표현으로 기억해 주세요.
+
+────────────────────────
+74.mp3   (슬라이드 26)
+바꾼 문장을 읽어 볼게요. A child who has been repeatedly blamed for poor performance in math may learn to avoid difficult math problems so as to escape more punishment. 비판과 회피, 처벌의 관계가 그대로 드러납니다.
+
+────────────────────────
+75.mp3   (슬라이드 27)
+오늘은 부사 역할을 하는 to부정사의 여러 의미를 살펴봤어요. 목적, 결과, 감정의 원인, 조건, 판단의 근거까지 문맥에 따라 해석이 달라진다는 점이 핵심입니다. so as to, in order to, only to 같은 확장 표현도 함께 기억해 두세요. 다음 시간에도 문장의 뼈대를 먼저 잡고 to부정사의 의미를 문맥으로 판단해 봅시다.

@@ -1,0 +1,304 @@
+[강의 녹음 대본] Unit 28 명사, 관계사절
+
+음성 파일 폴더 이름: lesson-01_audio
+강의 HTML 파일과 같은 위치에 이 폴더를 만들고, 아래 번호대로 음성 파일을 넣어 주세요.
+
+────────────────────────
+1.mp3   (슬라이드 1)
+안녕하세요, 여러분. 오늘은 명사와 관계사절을 이어 주는 구문을 집중적으로 연습해 볼 거예요. 콤마 뒤에 who나 which, when이나 where가 나오면 앞의 명사나 앞 절을 덧붙여 설명한다는 느낌으로 읽으면 됩니다. some of which나 each of which처럼 of와 관계대명사가 결합한 표현도 함께 익혀 볼게요. 직독직해부터 뜻, 바꿔 쓰기까지 차근차근 따라와 주세요.
+
+────────────────────────
+2.mp3   (슬라이드 2)
+먼저 콤마 뒤의 who나 which를 보세요. 이 관계대명사는 앞에 있는 명사나 앞 절 전체를 덧붙여 설명하는 계속적 용법으로 쓰여요. when이나 where는 앞의 시간이나 장소를 and then, and there처럼 이어 주는 관계부사로 이해하면 쉽습니다. 그리고 some of which나 each of which는 부정대명사와 관계대명사가 of로 연결된 형태로, 우리말로는 그것들 중 일부, 각각의 것처럼 해석해요.
+
+────────────────────────
+3.mp3   (슬라이드 3)
+Costa Rica was discovered and named, 코스타리카는 발견되고 명명되었다. by Christopher Columbus, 크리스토퍼 콜럼버스에 의해. who thought it might be a land rich with gold, 그리고 그는 그것이 금이 풍부한 땅일 것이라고 생각했다
+
+────────────────────────
+4.mp3   (슬라이드 3)
+첫 번째 문장을 보면 Christopher Columbus 뒤에 콤마와 who가 나오죠. 여기서 who는 콜럼버스가 어떤 사람인지 덧붙여 설명하는 주격 관계대명사예요. 그리고 thought 뒤에는 that이 생략되어 있어서, 그는 그것이 금이 풍부한 땅일 수도 있다고 생각했다는 구조로 읽으면 됩니다.
+
+────────────────────────
+5.mp3   (슬라이드 4)
+이 문장은 콜럼버스가 코스타리카를 발견하고 이름을 붙였으며, 그 땅에 금이 많을 것이라고 기대했다는 뜻이에요. who 이하는 콜럼버스에 대한 덧붙임 설명이라서, 문장의 중심 뼈대는 코스타리카가 발견되고 명명되었다는 부분입니다. 그래서 관계사절을 지워도 큰 줄기는 그대로 남아요.
+
+────────────────────────
+6.mp3   (슬라이드 4)
+이때 who thought 부분은 and he thought로 바꿔 두 문장처럼 풀어 쓸 수 있어요. 또 rich with gold는 abundant in gold로 바꾸면 같은 뜻을 조금 더 격식 있게 표현할 수 있습니다.
+
+────────────────────────
+7.mp3   (슬라이드 4)
+be discovered and named by는 be found and given its name by처럼 풀어 쓸 수 있어요. rich with는 abundant in으로, might be는 could be로 바꿔도 의미가 잘 통합니다.
+
+────────────────────────
+8.mp3   (슬라이드 4)
+이 문장은 Christopher Columbus discovered Costa Rica and gave it its name, believing that it could be a land abundant in gold라고 바꿔 말할 수 있어요. 수동태를 능동태로 바꾸어도 콜럼버스가 발견하고 이름을 붙였다는 뜻은 그대로입니다.
+
+────────────────────────
+9.mp3   (슬라이드 5)
+Change, 변화는. which is an essential part of our life, 그것은 우리 삶의 필수적인 부분인데. can have both positive and negative effects, 긍정적인 영향과 부정적인 영향을 둘 다 미칠 수 있다
+
+────────────────────────
+10.mp3   (슬라이드 5)
+두 번째 문장에서는 Change 뒤에 콤마와 which가 나오죠. 이 which는 변화를 받으면서 우리 삶의 필수적인 부분이라는 설명을 끼워 넣는 삽입절이에요. 그래서 which부터 life까지는 잠깐 덧붙이는 정보로 읽고, 주어 Change의 동사 can have로 돌아오면 됩니다.
+
+────────────────────────
+11.mp3   (슬라이드 6)
+이 문장은 변화가 우리 삶에서 꼭 필요한 부분이지만, 그 영향이 좋을 수도 있고 나쁠 수도 있다는 뜻이에요. 관계사절은 변화에 대한 부가 설명이라서 없어도 문장의 중심은 변화가 긍정적 영향과 부정적 영향을 모두 미칠 수 있다는 것입니다.
+
+────────────────────────
+12.mp3   (슬라이드 6)
+which is an essential part of our life는 and it is an essential part of our life로 풀어 쓸 수 있어요. have both positive and negative effects는 affect us in both good and bad ways로 바꾸면 더 자연스럽게 들립니다.
+
+────────────────────────
+13.mp3   (슬라이드 6)
+an essential part of는 a necessary part of로 바꿀 수 있고, have effects는 have an influence로 표현할 수 있어요. positive and negative는 good and bad로 바꿔도 같은 뜻을 전달합니다.
+
+────────────────────────
+14.mp3   (슬라이드 6)
+전체 문장은 Change, a necessary part of our life, can influence us in both good and bad ways라고 바꿔 말할 수 있어요. 삽입절을 명사구로 줄여도 변화의 두 가지 영향이라는 뜻은 그대로입니다.
+
+────────────────────────
+15.mp3   (슬라이드 7)
+Yesterday is history, 어제는 역사이다. tomorrow is a mystery, 내일은 미스터리이다. today is a gift of God, 오늘은 신의 선물이다. which is why we call it the present, 그리고 그것이 우리가 오늘을 present라고 부르는 이유이다
+
+────────────────────────
+16.mp3   (슬라이드 7)
+세 번째 문장에서는 콤마 뒤의 which가 오늘은 신의 선물이라는 앞 절 전체를 받아요. 그래서 which is why는 그것이 바로 우리가 오늘을 present라고 부르는 이유라는 뜻으로 이어집니다. 앞 절 내용을 한 덩어리로 받는 계속적 관계대명사라고 기억해 주세요.
+
+────────────────────────
+17.mp3   (슬라이드 8)
+이 문장은 어제는 이미 지나간 역사이고 내일은 아직 모르는 것이며 오늘은 신이 준 선물이라는 뜻이에요. 여기서 present는 선물이라는 뜻과 현재라는 뜻을 함께 살린 말장난이죠. 그래서 오늘을 선물처럼 소중히 여기자는 메시지로 읽을 수 있습니다.
+
+────────────────────────
+18.mp3   (슬라이드 8)
+which is why we call it the present는 and that is why we call today the present로 풀어 쓸 수 있어요. a gift of God는 a gift from God으로 바꾸면 신이 준 선물이라는 의미가 더 자연스럽게 느껴집니다.
+
+────────────────────────
+19.mp3   (슬라이드 8)
+Yesterday is history는 Yesterday is already past로 바꿀 수 있고, a mystery는 an unknown처럼 표현할 수 있어요. a gift of God는 a gift from God로도 자주 씁니다.
+
+────────────────────────
+20.mp3   (슬라이드 8)
+전체 문장은 Yesterday is already past, tomorrow is unknown, and today is a gift from God, which is why we call it the present라고 바꿔 말할 수 있어요. 뜻은 그대로이면서 표현이 조금 더 쉽게 풀렸습니다.
+
+────────────────────────
+21.mp3   (슬라이드 9)
+Urbanization has been taking place, 도시화는 일어나고 있는 중이다. since the Neolithic Revolution, 신석기 혁명 이래로. when agriculture enabled food surpluses, 그때 농업은 잉여 식량이. to create a division of labor in settlements, 정착지에서 분업을 만들도록 가능하게 했다
+
+────────────────────────
+22.mp3   (슬라이드 9)
+네 번째 문장에서는 the Neolithic Revolution 뒤에 콤마와 when이 나옵니다. 여기서 when은 신석기 혁명이라는 시간 명사를 받아 and then처럼 그때라는 의미로 이어 주는 관계부사예요. 그래서 when 이하는 신석기 혁명 당시에 어떤 일이 있었는지 덧붙여 설명합니다.
+
+────────────────────────
+23.mp3   (슬라이드 10)
+이 문장은 도시화가 신석기 혁명 이후 계속 일어나 왔다는 뜻이에요. 그 시기에 농업 덕분에 잉여 식량이 생겼고, 그것이 정착지에서 분업을 만들어 냈다는 배경을 설명하고 있습니다. when 이하는 혁명이 어떤 변화를 가져왔는지 알려 주는 정보입니다.
+
+────────────────────────
+24.mp3   (슬라이드 10)
+when agriculture enabled food surpluses to create는 and then agriculture enabled food surpluses to create로 풀어 쓸 수 있어요. enabled food surpluses to create는 made it possible for food surpluses to create로 바꾸면 가능하게 했다는 뜻이 더 분명해집니다.
+
+────────────────────────
+25.mp3   (슬라이드 10)
+take place는 occur로 바꿀 수 있고, food surpluses는 surplus food로 표현할 수 있어요. a division of labor는 the separation of work처럼 풀어 쓸 수 있습니다.
+
+────────────────────────
+26.mp3   (슬라이드 10)
+전체 문장은 Urbanization has occurred since the Neolithic Revolution, when agriculture made it possible for surplus food to create a division of labor in settlements라고 바꿔 말할 수 있어요. 시간의 흐름과 원인 결과가 그대로 살아 있습니다.
+
+────────────────────────
+27.mp3   (슬라이드 11)
+Homer's Iliad, 호메로스의 일리아드는. which contained descriptions of actual places, 그것은 실제 장소에 대한 서술을 포함했는데. was the basis for many early maps, 많은 초기 지도에 대한 기반이었다
+
+────────────────────────
+28.mp3   (슬라이드 11)
+다섯 번째 문장에서는 Homer's Iliad 뒤에 which가 콤마와 함께 나옵니다. 이 which는 일리아드를 받아서 실제 장소에 대한 묘사를 포함했다는 설명을 끼워 넣는 삽입절이에요. 삽입절이 끝나면 was the basis for로 이어져서 일리아드가 초기 지도의 기반이 되었다고 말합니다.
+
+────────────────────────
+29.mp3   (슬라이드 12)
+이 문장은 일리아드에 실제 장소를 묘사한 내용이 있어서 많은 초기 지도가 그것을 바탕으로 만들어졌다는 뜻이에요. 관계사절은 일리아드가 어떤 점에서 지도에 영향을 주었는지 알려 주는 덧붙임 정보입니다.
+
+────────────────────────
+30.mp3   (슬라이드 12)
+which contained descriptions of actual places는 and it contained descriptions of actual places로 풀어 쓸 수 있어요. was the basis for는 served as the foundation for로 바꾸면 더 격식 있는 표현이 됩니다.
+
+────────────────────────
+31.mp3   (슬라이드 12)
+contain은 include로 바꿀 수 있고, actual places는 real places로 표현할 수 있어요. the basis for는 the foundation for로 바꿔도 뜻이 잘 통합니다.
+
+────────────────────────
+32.mp3   (슬라이드 12)
+전체 문장은 Homer's Iliad, which included descriptions of real places, served as the foundation for many early maps라고 바꿔 말할 수 있어요. 관계사절을 살짝 바꿔도 일리아드가 초기 지도의 바탕이 되었다는 뜻은 그대로입니다.
+
+────────────────────────
+33.mp3   (슬라이드 13)
+Cognitive computing is supported, 인지 컴퓨팅은 뒷받침된다. by machine learning and deep learning technology, 기계 학습과 딥 러닝 기술에 의해. which allows computers to autonomously learn from data, 그리고 그것은 컴퓨터가 자체적으로 데이터로부터 학습할 수 있게 한다
+
+────────────────────────
+34.mp3   (슬라이드 13)
+여섯 번째 문장에서는 technology 뒤에 콤마와 which가 나옵니다. 여기서 which는 앞에 나온 기술과 앞 문장 전체 내용을 받아서, 그 기술이 컴퓨터를 어떻게 도와주는지 덧붙여 설명해요. 또 to autonomously learn은 to와 learn 사이에 부사가 들어간 분리부정사로, 자체적으로 학습한다는 점을 강조합니다.
+
+────────────────────────
+35.mp3   (슬라이드 14)
+이 문장은 인지 컴퓨팅이 기계 학습과 딥 러닝 기술의 뒷받침을 받는다는 뜻이에요. 그리고 그 기술 덕분에 컴퓨터가 데이터로부터 스스로 배울 수 있다는 설명이 which 절에 담겨 있습니다.
+
+────────────────────────
+36.mp3   (슬라이드 14)
+which allows computers to autonomously learn from data는 and this allows computers to learn from data on their own으로 풀어 쓸 수 있어요. is supported by는 is backed by로 바꾸면 뒷받침된다는 느낌이 더 살아납니다.
+
+────────────────────────
+37.mp3   (슬라이드 14)
+autonomously는 on their own으로 바꿀 수 있고, be supported by는 be backed by로 표현할 수 있어요. cognitive는 thinking과 관련된이라는 뜻으로 풀어 이해하면 좋습니다.
+
+────────────────────────
+38.mp3   (슬라이드 14)
+전체 문장은 Cognitive computing is backed by machine learning and deep learning technology, and this lets computers learn from data on their own이라고 바꿔 말할 수 있어요. which 절을 and this로 풀어도 의미는 그대로 전달됩니다.
+
+────────────────────────
+39.mp3   (슬라이드 15)
+Maurice Maeterlinck studied law, 모리스 마테를링크는 법학을 공부했다. and worked as a lawyer, 그리고 변호사로 일했다. until 1889, 1889년까지. when he decided to devote himself to writing, 그때 그는 글쓰기에 전념하기로 결심했다. In 1897, 1897년에. he went to Paris, 그는 파리로 갔다. where he met many of the leading symbolist writers of the day, 그리고 거기서 그는 그 당시의 여러 주요 상징주의 작가들을 만났다
+
+────────────────────────
+40.mp3   (슬라이드 15)
+일곱 번째 문장은 두 개의 문장으로 이루어져 있어요. 앞 문장에서는 시간을 나타내는 말 뒤에 when이 나와서 그때 그가 글쓰기에 전념하기로 결심했다는 설명을 이어 줍니다. 뒤 문장에서는 Paris 뒤에 where가 나와서 그곳에서 당대의 주요 상징주의 작가들을 만났다고 덧붙여 설명해요.
+
+────────────────────────
+41.mp3   (슬라이드 16)
+이 문장은 마테를링크가 법을 공부하고 변호사로 일하다가 어느 시점에 글쓰기에 전념했고, 나중에 파리로 가서 당대의 주요 상징주의 작가들을 만났다는 뜻이에요. when은 시간의 전환점을, where는 장소에서의 만남을 자연스럽게 이어 줍니다.
+
+────────────────────────
+42.mp3   (슬라이드 16)
+until the year, when he decided to devote himself to writing은 and then he decided to devote himself to writing으로 풀어 쓸 수 있어요. where he met many of the leading symbolist writers of the day는 and there he met many leading symbolist writers of that time으로 바꿀 수 있습니다.
+
+────────────────────────
+43.mp3   (슬라이드 16)
+devote oneself to는 dedicate oneself to로 바꿀 수 있고, leading은 major로 표현할 수 있어요. of the day는 of that time으로 바꾸면 그 당시라는 뜻이 더 쉽게 드러납니다.
+
+────────────────────────
+44.mp3   (슬라이드 16)
+전체 문장은 Maurice Maeterlinck studied law and worked as a lawyer until he decided to dedicate himself to writing, and later in Paris he met many major symbolist writers of that time이라고 바꿔 말할 수 있어요. 시간과 장소를 나타내는 관계부사를 풀어 써도 인생의 흐름은 그대로 전달됩니다.
+
+────────────────────────
+45.mp3   (슬라이드 17)
+Jobs may not be permanent, 일자리는 영구적이지 않을 수도 있다. and you may lose your job, 그리고 당신은 당신의 일자리를 잃을 수도 있다. for countless reasons, 수많은 이유로. some of which you may not even be responsible for, 그리고 그것들 중의 일부에 대해 당신은 심지어 책임이 없을 수도 있다
+
+────────────────────────
+46.mp3   (슬라이드 17)
+여덟 번째 문장에서는 some of which가 나옵니다. 이 표현은 앞에 나온 countless reasons를 받아서 그것들 중 일부라는 뜻을 만들어요. 부정대명사가 관계대명사 앞에 올 때는 some of which처럼 of를 가운데 두는 어순을 쓴다는 점을 기억해 주세요.
+
+────────────────────────
+47.mp3   (슬라이드 18)
+이 문장은 일자리가 영구적이지 않을 수 있고, 여러 가지 이유로 일을 잃을 수 있다는 뜻이에요. 그 이유들 중에는 본인이 책임이 없는 것도 있을 수 있다는 점을 some of which가 덧붙여 말해 줍니다.
+
+────────────────────────
+48.mp3   (슬라이드 18)
+some of which you may not even be responsible for는 and you may not even be responsible for some of them으로 풀어 쓸 수 있어요. for countless reasons는 for numerous reasons로 바꿔도 수많은 이유라는 뜻이 유지됩니다.
+
+────────────────────────
+49.mp3   (슬라이드 18)
+countless는 numerous로, permanent는 lasting으로 바꿀 수 있어요. be responsible for는 be accountable for로 표현하면 책임이 있다는 뜻을 더 격식 있게 전달합니다.
+
+────────────────────────
+50.mp3   (슬라이드 18)
+전체 문장은 Jobs may not last forever, and you may lose your job for numerous reasons, some of which may not be your fault at all이라고 바꿔 말할 수 있어요. some of which의 의미를 your fault로 풀어도 책임이 없다는 뜻이 잘 살아납니다.
+
+────────────────────────
+51.mp3   (슬라이드 19)
+The spontaneous wish to learn, 배우고 싶다는 자연스러운 소망은. which every normal child has, 그것은 정상인 아이들 모두가 갖고 있는데. as shown in their efforts to walk and talk, 아이들의 걷고 말하는 노력에서 보이는 것처럼. should be the driving force in education, 교육에 있어서 추진력이 되어야 한다
+
+────────────────────────
+52.mp3   (슬라이드 19)
+아홉 번째 문장에서는 주어 The spontaneous wish to learn 뒤에 which every normal child has가 콤마로 끼어 있습니다. 이 which는 배우고 싶은 소망을 받아서 모든 정상적인 아이가 그것을 가지고 있다고 보충 설명해요. 또 as shown in은 as it is shown in처럼 it is가 생략된 표현으로 이해하면 쉽습니다.
+
+────────────────────────
+53.mp3   (슬라이드 20)
+이 문장은 모든 아이가 걷고 말하려고 애쓰는 모습에서 보이듯이, 배우고 싶어 하는 자연스러운 마음이 교육의 추진력이 되어야 한다는 뜻이에요. 관계사절은 그 마음이 모든 정상적인 아이에게 있다는 점을 강조합니다.
+
+────────────────────────
+54.mp3   (슬라이드 20)
+which every normal child has는 and every normal child has it으로 풀어 쓸 수 있어요. as shown in their efforts to walk and talk는 as can be seen in their efforts to walk and talk로 바꾸면 의미가 더 분명해집니다.
+
+────────────────────────
+55.mp3   (슬라이드 20)
+spontaneous는 natural로 바꿀 수 있고, driving force는 main power로 표현할 수 있어요. efforts to는 attempts to로 바꿔도 뜻이 잘 통합니다.
+
+────────────────────────
+56.mp3   (슬라이드 20)
+전체 문장은 The natural desire to learn, which every normal child has, as can be seen in their attempts to walk and talk, should be the main power in education이라고 바꿔 말할 수 있어요. 관계사절과 as 표현을 살짝 바꿔도 교육의 추진력이라는 핵심은 그대로입니다.
+
+────────────────────────
+57.mp3   (슬라이드 21)
+The bodies of all living creatures, 모든 살아 있는 생물의 몸은. are organized into many different systems, 여러 가지 다른 체계로 조직되어 있다. each of which has a certain function, 그리고 각각의 체계는 특정 기능을 가진다
+
+────────────────────────
+58.mp3   (슬라이드 21)
+열 번째 문장에서는 each of which가 나옵니다. 이 표현은 앞에 나온 many different systems를 받아서 그 각각이라는 뜻을 만들어요. each of which has a certain function은 and each of these systems has a certain function처럼 풀어 쓸 수 있습니다.
+
+────────────────────────
+59.mp3   (슬라이드 22)
+이 문장은 모든 생물의 몸이 여러 가지 체계로 조직되어 있고, 그 각각의 체계가 특정한 기능을 맡고 있다는 뜻이에요. each of which는 여러 체계를 하나하나 짚어 주는 역할을 합니다.
+
+────────────────────────
+60.mp3   (슬라이드 22)
+each of which has a certain function은 and each of these systems has a certain function으로 바꿀 수 있어요. are organized into는 are divided into로 바꾸면 나뉘어 조직된다는 의미가 더 쉽게 다가옵니다.
+
+────────────────────────
+61.mp3   (슬라이드 22)
+living creatures는 living beings로, a certain function은 a specific role로 바꿀 수 있어요. be organized into는 be structured into로 표현해도 뜻이 잘 통합니다.
+
+────────────────────────
+62.mp3   (슬라이드 22)
+전체 문장은 The bodies of all living beings are divided into many different systems, and each of these systems has a specific role이라고 바꿔 말할 수 있어요. each of which를 and each of these systems로 풀어도 각 체계의 기능이라는 뜻은 그대로입니다.
+
+────────────────────────
+63.mp3   (슬라이드 23)
+One remarkable aspect of aboriginal culture, 원주민 문화의 한 가지 눈에 띄는 면은. is the concept of "totemism,", '토테미즘'이라는 개념이다. where the tribal member at birth assumes the soul and identity of a part of nature, 그리고 거기서 부족 구성원은 출생 시에 자연의 일부의 영혼과 정체성을 취한다
+
+────────────────────────
+64.mp3   (슬라이드 23)
+열한 번째 문장에서는 totemism 뒤에 where가 나옵니다. 여기서 where는 장소만 받는 것이 아니라 토테미즘이라는 개념을 받아서 그 개념 안에서라는 의미로 이어 줘요. 그래서 where 이하는 토테미즘이 어떻게 작동하는지 보충 설명합니다.
+
+────────────────────────
+65.mp3   (슬라이드 24)
+이 문장은 원주민 문화의 눈에 띄는 특징 하나가 토테미즘이라는 개념이고, 그 안에서 부족 구성원이 태어날 때 자연의 일부가 지닌 영혼과 정체성을 받아들인다는 뜻이에요. where 이하는 개념의 구체적인 내용을 알려 줍니다.
+
+────────────────────────
+66.mp3   (슬라이드 24)
+where the tribal member at birth assumes는 and in this concept the tribal member at birth assumes로 풀어 쓸 수 있어요. assumes the soul and identity of는 takes on the soul and identity of로 바꾸면 의미가 더 쉽게 느껴집니다.
+
+────────────────────────
+67.mp3   (슬라이드 24)
+remarkable은 notable로, aboriginal은 indigenous로 바꿀 수 있어요. assume은 take on으로 표현하면 받아들인다는 뜻이 잘 드러납니다.
+
+────────────────────────
+68.mp3   (슬라이드 24)
+전체 문장은 One notable aspect of indigenous culture is the concept of totemism, in which a tribal member at birth takes on the soul and identity of a part of nature라고 바꿔 말할 수 있어요. where를 in which로 풀어도 개념 안에서라는 뜻은 그대로입니다.
+
+────────────────────────
+69.mp3   (슬라이드 25)
+The television crime drama isn't such a hit, 텔레비전 범죄 드라마는 그렇게 큰 히트작이 아니다. with police officers, 경찰관들에게는. who have criticized the series, 그들은 그 시리즈를 비판해 왔다. for presenting a highly misleading image, 대단히 오해의 소지가 있는 모습을 보여 준다는 이유로. of how crimes are solved, 범죄가 어떻게 해결되는지에 대한
+
+────────────────────────
+70.mp3   (슬라이드 25)
+열두 번째 문장에서는 police officers 뒤에 콤마와 who가 나옵니다. 이 who는 경찰관들을 받아서 그들이 이 드라마를 비판해 왔다고 보충 설명하는 주격 관계대명사예요. 그리고 of 뒤의 how crimes are solved는 범죄가 어떻게 해결되는지라는 명사절로, 전치사 of의 목적어 역할을 합니다.
+
+────────────────────────
+71.mp3   (슬라이드 26)
+이 문장은 텔레비전 범죄 드라마가 경찰관들에게 그렇게 인기 있는 프로그램이 아니라는 뜻이에요. 경찰관들은 드라마가 범죄 해결 과정을 지나치게 오해하게 만든다고 비판해 왔다는 설명이 who 절에 담겨 있습니다.
+
+────────────────────────
+72.mp3   (슬라이드 26)
+who have criticized the series for presenting a highly misleading image는 and they have criticized the series because it presents a highly misleading image로 풀어 쓸 수 있어요. isn't such a hit with는 is not very popular with로 바꾸면 인기가 많지 않다는 뜻이 쉽게 드러납니다.
+
+────────────────────────
+73.mp3   (슬라이드 26)
+a hit with는 popular with로 바꿀 수 있고, criticize는 condemn으로 표현할 수 있어요. misleading은 deceptive로 바꾸면 오해를 불러일으키는이라는 뜻이 잘 살아납니다.
+
+────────────────────────
+74.mp3   (슬라이드 26)
+전체 문장은 The television crime drama is not very popular with police officers, and they have criticized the series because it presents a highly deceptive picture of how crimes are solved라고 바꿔 말할 수 있어요. 관계사절을 이유를 나타내는 절로 풀어도 뜻은 그대로입니다.
+
+────────────────────────
+75.mp3   (슬라이드 27)
+오늘은 콤마 뒤 관계사절이 앞 명사나 앞 절을 덧붙여 설명하는 구문을 배웠어요. who와 which는 계속적 관계대명사로, when과 where는 and then과 and there의 느낌으로 읽으면 됩니다. some of which와 each of which는 그것들 중 일부, 각각이라는 뜻을 만드는 중요한 표현이에요. 문장을 끊어 읽으면서 관계사절이 어디까지 이어지는지 확인하고 오늘 수업을 마무리해 볼게요.

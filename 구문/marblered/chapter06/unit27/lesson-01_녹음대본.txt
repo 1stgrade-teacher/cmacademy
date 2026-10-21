@@ -1,0 +1,304 @@
+[강의 녹음 대본] 멀리 떨어진 관계사절, 선행사와 다시 연결하기
+
+음성 파일 폴더 이름: lesson-01_audio
+강의 HTML 파일과 같은 위치에 이 폴더를 만들고, 아래 번호대로 음성 파일을 넣어 주세요.
+
+────────────────────────
+1.mp3   (슬라이드 1)
+안녕하세요, 여러분. 오늘은 마법같은 블록구문 실전편에서 명사와 관계사절이 떨어져 있는 구문을 배워요. 영어 문장은 수식어구가 끼어들면 선행사와 관계사절 사이가 멀어질 수 있어요. 그래도 선행사를 찾고 관계사절의 역할을 보면 문장이 훨씬 선명하게 보입니다.
+
+────────────────────────
+2.mp3   (슬라이드 2)
+오늘의 핵심은 관계사절이 선행사와 멀리 떨어져 있어도 당황하지 않는 거예요. 먼저 수식어구를 걷어 내고 선행사를 찾아보세요. 그다음 관계대명사가 주격인지 목적격인지 보고, 동사의 수가 선행사와 맞는지 확인하면 됩니다.
+
+────────────────────────
+3.mp3   (슬라이드 3)
+I can't think of, 나는 떠올릴 수 없다. any good film, 어떤 좋은 영화도. at the moment, 지금으로서는. that I'd like to see, 내가 보고 싶은
+
+────────────────────────
+4.mp3   (슬라이드 3)
+이 문장은 목적격 관계대명사 that이 이끄는 절이 any good film를 꾸며 줘요. 그런데 at the moment라는 수식어구가 끼어 있어서 that절이 선행사와 떨어져 보이죠. that은 see의 목적어 역할을 하므로 뒤에 목적어가 따로 없어요.
+
+────────────────────────
+5.mp3   (슬라이드 4)
+이 말은 지금 당장은 보고 싶은 영화가 잘 떠오르지 않는다는 뜻이에요. 영화 자체가 없다기보다는 마음에 드는 영화가 생각나지 않는다는 뉘앙스예요.
+
+────────────────────────
+6.mp3   (슬라이드 4)
+표현을 바꿔 보면 come up with를 써서 떠올리다라는 의미를 살릴 수 있어요. at the moment는 right now로 바꿔도 같은 뜻이 자연스럽게 전달됩니다.
+
+────────────────────────
+7.mp3   (슬라이드 4)
+think of는 come up with로 바꿀 수 있고, at the moment는 right now와 같은 표현이에요. film은 movie로 바꿔도 의미 차이가 거의 없습니다.
+
+────────────────────────
+8.mp3   (슬라이드 4)
+오늘 문장은 Right now, I can't come up with a good movie that I want to watch라고 바꿔 말할 수 있어요. 현재 시점과 보고 싶은 영화라는 의미가 그대로 담겨 있습니다.
+
+────────────────────────
+9.mp3   (슬라이드 5)
+That government is best, 그러한 정부가 최고이다. which governs least, 가장 적게 통치하는. because its people discipline themselves, 왜냐하면 그 국민이 스스로를 규율하기 때문에
+
+────────────────────────
+10.mp3   (슬라이드 5)
+이 문장은 주격 관계대명사 which절이 That government를 꾸며요. 원래는 That government which governs least is best처럼 붙어 있지만, is best 뒤로 절이 이동해서 멀리 떨어져 보이는 구조예요. which는 governs의 주어입니다.
+
+────────────────────────
+11.mp3   (슬라이드 6)
+제퍼슨의 말처럼 국민이 스스로를 잘 다스리면 정부가 많이 간섭하지 않아도 된다는 뜻이에요. 그래서 가장 적게 통치하는 정부가 가장 좋은 정부라는 역설적인 표현이 됩니다.
+
+────────────────────────
+12.mp3   (슬라이드 6)
+이 문장은 The best government is the one that governs the least라고 바꾸면 구조가 아주 분명해져요. discipline themselves는 control their own behavior처럼 풀어 쓸 수 있습니다.
+
+────────────────────────
+13.mp3   (슬라이드 6)
+govern은 rule로, discipline은 train처럼 바꿔 쓸 수 있어요. least는 가장 적게라는 뜻으로 최소한의 통치를 강조합니다.
+
+────────────────────────
+14.mp3   (슬라이드 6)
+전체 문장은 The best government is the one that governs the least, since its citizens control themselves라고 바꿔 말할 수 있어요. 국민의 자기 규율과 최소 통치라는 의미가 그대로 살아 있습니다.
+
+────────────────────────
+15.mp3   (슬라이드 7)
+Some people recognize humans as, 어떤 사람들은 인간을 인지한다. the only one, 유일한 것으로. among the living organisms, 살아 있는 유기체 중에서. that can change its behavior, 자신의 행동을 바꿀 수 있는. to preserve other species, 다른 종을 보존하기 위해
+
+────────────────────────
+16.mp3   (슬라이드 7)
+이 문장은 주격 관계대명사 that절이 the only one을 꾸며 줘요. among the living organisms라는 전치사구가 중간에 끼어서 that절이 선행사와 떨어져 보이죠. that절 안에서는 the only one이 can change의 주어 역할을 합니다.
+
+────────────────────────
+17.mp3   (슬라이드 8)
+이 말은 인간만이 다른 생물을 보호하려고 행동을 바꿀 수 있는 존재라는 생각을 담고 있어요. 유일한 존재라는 점을 강하게 주장하는 표현입니다.
+
+────────────────────────
+18.mp3   (슬라이드 8)
+recognize humans as는 regard humans as로 바꿔 쓸 수 있어요. preserve other species는 protect other species로 바꿔도 뜻이 잘 통합니다.
+
+────────────────────────
+19.mp3   (슬라이드 8)
+recognize A as B는 regard A as B와 같은 뜻으로 자주 바뀝니다. preserve는 protect로 바꿀 수 있고, the only one은 the sole one처럼 표현할 수 있어요.
+
+────────────────────────
+20.mp3   (슬라이드 8)
+전체 문장은 Some people regard humans as the only living organism that can alter its behavior to protect other species라고 바꿀 수 있어요. 인간을 유일한 존재로 본다는 의미가 유지됩니다.
+
+────────────────────────
+21.mp3   (슬라이드 9)
+Courage doesn't always roar, 용기가 항상 으르렁거리는 것은 아니다.. Sometimes courage is the little voice, 때때로 용기는 작은 목소리이다. at the end of the day, 하루의 끝에. that says "I'll try again tomorrow.", 나는 내일 다시 시도해 볼 거야라고 말하는
+
+────────────────────────
+22.mp3   (슬라이드 9)
+이 문장은 the little voice를 꾸미는 주격 관계대명사 that절이 at the end of the day 뒤에 떨어져 있는 구조예요. that은 says의 주어이고, 인용문 안의 I는 용기를 가리킵니다.
+
+────────────────────────
+23.mp3   (슬라이드 10)
+용기는 항상 크게 소리치는 모습이 아니라 조용히 다시 해 보자고 말하는 작은 목소리일 수 있다는 뜻이에요. 하루가 끝난 뒤에도 희망을 놓지 않는 태도를 강조합니다.
+
+────────────────────────
+24.mp3   (슬라이드 10)
+Courage does not always roar는 Courage is not always loud처럼 바꿀 수 있어요. the little voice는 the small inner voice로 바꾸면 내면의 목소리라는 느낌이 더 살아납니다.
+
+────────────────────────
+25.mp3   (슬라이드 10)
+roar는 be loud로 풀어 쓸 수 있고, little voice는 inner voice와 비슷하게 쓰입니다. try again은 make another attempt로 바꿀 수 있어요.
+
+────────────────────────
+26.mp3   (슬라이드 10)
+전체 문장은 Courage is not always loud. Sometimes it is the small inner voice at the end of the day saying, I will try again tomorrow라고 바꿀 수 있어요. 조용한 용기라는 의미가 그대로 전달됩니다.
+
+────────────────────────
+27.mp3   (슬라이드 11)
+Creative solutions are required, 창의적인 해결책이 요구된다. which not only answer yesterday's questions, 어제의 질문에 답할 뿐만 아니라. but also anticipate tomorrow's needs, 내일의 필요를 예견하기도 하는
+
+────────────────────────
+28.mp3   (슬라이드 11)
+이 문장은 주격 관계대명사 which절이 Creative solutions를 꾸며요. which절이 are required 뒤로 이동해서 선행사와 멀리 떨어져 있죠. which는 answer와 anticipate의 공통 주어입니다.
+
+────────────────────────
+29.mp3   (슬라이드 12)
+창의적인 해결책은 어제의 질문에 답만 하는 것이 아니라 내일의 필요까지 미리 예견해야 한다는 뜻이에요. 과거와 미래를 모두 고려하는 해결책을 강조합니다.
+
+────────────────────────
+30.mp3   (슬라이드 12)
+not only A but also B는 both A and B로 바꿔 병렬 구조를 더 분명히 할 수 있어요. are required는 We need로 바꾸면 능동태로 자연스럽게 풀립니다.
+
+────────────────────────
+31.mp3   (슬라이드 12)
+require는 need로, anticipate는 foresee로 바꿀 수 있어요. answer는 respond to처럼 바꿔 쓸 수 있습니다.
+
+────────────────────────
+32.mp3   (슬라이드 12)
+전체 문장은 We need creative solutions that both respond to yesterday's questions and foresee tomorrow's needs라고 바꿀 수 있어요. 과거의 질문과 미래의 필요를 함께 다룬다는 뜻입니다.
+
+────────────────────────
+33.mp3   (슬라이드 13)
+A gene is a part of a cell, 유전자는 세포의 일부이다. in a living thing, 생명체 안에 있는. that controls what it looks like, 그것이 어떻게 생겼는지를 통제하는. how it grows, 그것이 어떻게 자라는지. and how it develops, 그리고 그것이 어떻게 발달하는지를
+
+────────────────────────
+34.mp3   (슬라이드 13)
+이 문장은 주격 관계대명사 that절이 a part of a cell을 꾸며 줘요. in a living thing이라는 수식어구가 중간에 있어서 that절이 선행사와 떨어져 보입니다. that절 안에는 what it looks like, how it grows, how it develops라는 세 개의 간접의문문이 and로 연결되어 있어요.
+
+────────────────────────
+35.mp3   (슬라이드 14)
+유전자는 생명체의 세포 안에서 생김새와 성장, 발달을 조절하는 부분이라는 뜻이에요. 쉽게 말하면 생명체의 설계도 역할을 하는 단위라고 볼 수 있습니다.
+
+────────────────────────
+36.mp3   (슬라이드 14)
+controls는 regulates로 바꾸면 조절한다는 뜻이 더 분명해져요. 세 개의 간접의문문은 its appearance, growth, and development처럼 명사구로 압축할 수 있습니다.
+
+────────────────────────
+37.mp3   (슬라이드 14)
+a part of는 a portion of와 비슷하고, control은 regulate로 바꿀 수 있어요. develop은 mature나 grow처럼 문맥에 맞게 바꿔 쓸 수 있습니다.
+
+────────────────────────
+38.mp3   (슬라이드 14)
+전체 문장은 A gene is a part of a cell in a living organism that regulates its appearance, growth, and development라고 바꿀 수 있어요. 유전자가 생명체의 모습과 성장과 발달을 조절한다는 뜻입니다.
+
+────────────────────────
+39.mp3   (슬라이드 15)
+Hospices care for patients, 호스피스는 환자들을 돌본다. suffering from incurable diseases, 불치병으로 고통받고 있는. who are not expected, 예상되지 않는. to live for more than a year, 일 년 넘게 살 것으로
+
+────────────────────────
+40.mp3   (슬라이드 15)
+이 문장은 주격 관계대명사 who절이 patients를 꾸며요. suffering from incurable diseases라는 현재분사구가 patients를 수식하면서 who절을 뒤로 밀어내는 구조입니다. who절은 patients에 대한 설명을 이어 줍니다.
+
+────────────────────────
+41.mp3   (슬라이드 16)
+호스피스가 불치병을 앓고 있고 일 년 넘게 살기 어렵다고 여겨지는 환자들을 돌본다는 뜻이에요. 치료보다 돌봄과 편안함에 초점을 둔 표현입니다.
+
+────────────────────────
+42.mp3   (슬라이드 16)
+patients suffering from incurable diseases는 patients who suffer from incurable diseases로 풀어 쓸 수 있어요. are not expected to live는 are not likely to live로 바꾸면 가능성의 의미가 분명해집니다.
+
+────────────────────────
+43.mp3   (슬라이드 16)
+care for는 look after로 바꿀 수 있고, suffer from은 be afflicted with처럼 표현할 수 있어요. incurable은 untreatable과 비슷한 뜻으로 쓰입니다.
+
+────────────────────────
+44.mp3   (슬라이드 16)
+전체 문장은 Hospices look after patients with incurable diseases who are not likely to live longer than a year라고 바꿀 수 있어요. 말기 환자를 돌본다는 의미가 그대로 남아 있습니다.
+
+────────────────────────
+45.mp3   (슬라이드 17)
+From smart cities to self-driving cars, 스마트 도시부터 자율 주행 자동차까지. technology is needed, 기술이 요구된다. that can allow devices and services, 장치와 서비스가 하게 할 수 있는. to access great volumes of data, 대량의 데이터에 접근하도록
+
+────────────────────────
+46.mp3   (슬라이드 17)
+이 문장은 주격 관계대명사 that절이 technology를 꾸며요. that절이 is needed 뒤로 이동해서 선행사와 떨어져 있죠. allow A to B 구조에서 devices and services가 A, access가 B 역할을 합니다.
+
+────────────────────────
+47.mp3   (슬라이드 18)
+스마트 도시부터 자율 주행 자동차까지 여러 분야에서 장치와 서비스가 많은 데이터에 접근하도록 돕는 기술이 필요하다는 뜻이에요. 데이터를 얼마나 잘 활용하느냐가 중요하다는 메시지입니다.
+
+────────────────────────
+48.mp3   (슬라이드 18)
+technology is needed that can allow는 we need technology that can enable로 바꿀 수 있어요. great volumes of data는 large amounts of data로 풀어 쓸 수 있습니다.
+
+────────────────────────
+49.mp3   (슬라이드 18)
+allow A to B는 enable A to B와 같은 구조로 바꿀 수 있어요. great volumes of는 large amounts of와 비슷하고, access는 gain access to로 풀어 쓸 수 있습니다.
+
+────────────────────────
+50.mp3   (슬라이드 18)
+전체 문장은 We need technology that can enable devices and services to access large amounts of data, from smart cities to self-driving cars라고 바꿀 수 있어요. 여러 분야에서 데이터 접근을 돕는 기술이 필요하다는 뜻입니다.
+
+────────────────────────
+51.mp3   (슬라이드 19)
+The time will come, 때가 올 것이다. when people will see, 사람들이 알게 될. that my paintings are worth, 나의 그림들이 가치가 있다는 것을. more than the price of the paint, 물감 가격보다 더
+
+────────────────────────
+52.mp3   (슬라이드 19)
+이 문장은 관계부사 when절이 The time을 꾸며요. 주어가 길어져서 will come 뒤로 when절이 이동한 구조입니다. when절 안의 that절은 people will see의 목적어 역할을 합니다.
+
+────────────────────────
+53.mp3   (슬라이드 20)
+사람들이 언젠가 내 그림의 가치가 물감 가격보다 훨씬 크다는 사실을 깨닫게 될 것이라는 뜻이에요. 작가의 확신과 자부심이 담긴 말입니다.
+
+────────────────────────
+54.mp3   (슬라이드 20)
+The time will come when은 There will come a time when으로 바꿔 쓸 수 있어요. are worth more than은 are more valuable than으로 풀어 쓰면 의미가 더 분명해집니다.
+
+────────────────────────
+55.mp3   (슬라이드 20)
+be worth는 be valuable로 바꿀 수 있고, see는 이 문맥에서 realize로 이해할 수 있어요. more than은 over와 비슷하게 쓰입니다.
+
+────────────────────────
+56.mp3   (슬라이드 20)
+전체 문장은 There will come a time when people realize that my paintings are more valuable than the cost of the paint라고 바꿀 수 있어요. 그림의 가치를 깨닫는 때가 온다는 뜻입니다.
+
+────────────────────────
+57.mp3   (슬라이드 21)
+The ultimate life force lies, 궁극적인 생명력은 있다. in tiny cellular factories of energy, 아주 작은 에너지 세포 공장에. called mitochondria, 미토콘드리아라고 불리는. that burn nearly all the oxygen, 거의 모든 산소를 연소시키는. we breathe in, 우리가 들이마시는
+
+────────────────────────
+58.mp3   (슬라이드 21)
+이 문장은 주격 관계대명사 that절이 tiny cellular factories of energy를 꾸며요. called mitochondria라는 삽입어구가 중간에 들어가 있고, that절의 동사 burn은 복수 선행사에 맞춘 형태입니다. we breathe in은 oxygen을 꾸미는 짧은 관계사절처럼 이해할 수 있어요.
+
+────────────────────────
+59.mp3   (슬라이드 22)
+궁극적인 생명력이 미토콘드리아라는 작은 세포 공장에 있고, 그 공장들이 우리가 들이마시는 산소의 거의 전부를 연소한다는 뜻이에요. 세포 안에서 에너지가 만들어진다는 생물학적 설명입니다.
+
+────────────────────────
+60.mp3   (슬라이드 22)
+tiny cellular factories of energy는 small energy factories in cells처럼 풀어 쓸 수 있어요. burn은 use up으로, breathe in은 inhale로 바꾸면 뜻이 더 분명해집니다.
+
+────────────────────────
+61.mp3   (슬라이드 22)
+ultimate는 fundamental과 비슷하고, tiny는 very small로 풀 수 있어요. breathe in은 inhale과 같은 뜻으로 바꿀 수 있습니다.
+
+────────────────────────
+62.mp3   (슬라이드 22)
+전체 문장은 The ultimate life force lies in small energy factories in cells, called mitochondria, which use up almost all the oxygen we inhale라고 바꿀 수 있어요. 세포 공장이 산소를 사용해 생명력을 만든다는 의미입니다.
+
+────────────────────────
+63.mp3   (슬라이드 23)
+Most professors see themselves, 대부분의 교수들은 스스로를 인지한다. in a position of professional authority, 전문적인 권위의 입장에서. over their students, 자신들의 학생들에 대한. which they earned, 그들이 얻은. by many years of study, 오랜 세월의 연구로
+
+────────────────────────
+64.mp3   (슬라이드 23)
+이 문장은 목적격 관계대명사 which절이 professional authority를 꾸며요. over their students라는 수식어구 때문에 which절이 선행사와 떨어져 있습니다. which는 they earned의 목적어 역할을 합니다.
+
+────────────────────────
+65.mp3   (슬라이드 24)
+대부분의 교수는 오랜 연구로 얻은 전문적 권위를 학생들보다 높은 위치로 생각한다는 뜻이에요. 교수와 학생 사이의 권위 관계를 보여 주는 문장입니다.
+
+────────────────────────
+66.mp3   (슬라이드 24)
+earned by many years of study는 gained through many years of research로 바꿀 수 있어요. professional authority over their students는 학생들에 대한 전문적 권위라는 뜻으로 풀어 쓸 수 있습니다.
+
+────────────────────────
+67.mp3   (슬라이드 24)
+authority는 power와 비슷한 뜻으로 쓰이고, earn은 gain으로 바꿀 수 있어요. by는 through로 바꿔 수단이나 과정을 나타낼 수 있습니다.
+
+────────────────────────
+68.mp3   (슬라이드 24)
+전체 문장은 Most professors see themselves as having professional authority over their students, which they gained through many years of study라고 바꿀 수 있어요. 오랜 연구로 얻은 권위라는 의미가 유지됩니다.
+
+────────────────────────
+69.mp3   (슬라이드 25)
+Art has mostly been considered, 예술은 주로 고려되어 왔다. in terms of seeking beauty, 아름다움을 추구하는 것의 측면에서. but there are other reasons, 그러나 다른 이유들이 있다. deeply rooted in the human experience, 인간의 경험 속에 깊이 자리 잡은. that create needs for art, 예술에 대한 필요성을 창조하는
+
+────────────────────────
+70.mp3   (슬라이드 25)
+이 문장은 주격 관계대명사 that절이 other reasons를 꾸며요. deeply rooted in the human experience라는 과거분사구가 reasons를 수식하면서 that절을 뒤로 밀어냅니다. that절의 동사 create는 복수 선행사 reasons에 맞춘 형태입니다.
+
+────────────────────────
+71.mp3   (슬라이드 26)
+예술은 아름다움을 추구하는 관점에서만 생각되어 왔지만, 인간 경험에 깊이 뿌리내린 다른 이유들도 예술에 대한 필요를 만든다는 뜻이에요. 예술의 이유를 더 넓게 보는 관점입니다.
+
+────────────────────────
+72.mp3   (슬라이드 26)
+create needs for art는 give rise to a need for art로 바꿀 수 있어요. deeply rooted in the human experience는 firmly based on human experience처럼 풀어 쓸 수 있습니다.
+
+────────────────────────
+73.mp3   (슬라이드 26)
+in terms of는 in regard to와 비슷하고, rooted in은 based on으로 바꿀 수 있어요. create는 produce로 바꿔도 뜻이 잘 통합니다.
+
+────────────────────────
+74.mp3   (슬라이드 26)
+전체 문장은 Art has mostly been considered in terms of seeking beauty, but there are other reasons, deeply rooted in human experience, that produce a need for art라고 바꿀 수 있어요. 예술이 아름다움만을 위한 것이 아니라는 의미가 살아 있습니다.
+
+────────────────────────
+75.mp3   (슬라이드 27)
+오늘은 수식어구 때문에 선행사와 떨어진 관계사절을 찾는 방법을 배웠어요. 관계사절이 멀리 있어도 먼저 선행사를 찾고, 관계대명사가 주격인지 목적격인지 확인하는 것이 핵심입니다. 또 관계사절 동사의 수가 선행사와 맞는지도 꼭 살펴보세요. 그럼 오늘 배운 내용을 복습하면서 다음 시간에 또 만나요.
