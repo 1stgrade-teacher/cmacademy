@@ -1,0 +1,336 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>완벽한 문장의 시작! 주어와 동사 찾기 — 주어, 동사 판단</title><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@500;600;700&display=swap" rel="stylesheet"><style>html,body{margin:0;height:100%;background:#F3F3F5}#app{width:min(1040px,94vw);height:92vh;margin:4vh auto}@media (max-width:700px){#app{width:100vw;height:auto;margin:0}}
+.v-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.v-chips span{background:#fff;border:1px solid #D9D2F5;color:#5A3FC0;font-weight:700;border-radius:999px;padding:2px 11px;font-size:14.5px}
+.v-card{display:flex;flex-direction:column;gap:12px}
+.v-w{font-family:"Noto Serif KR",Georgia,serif;font-size:46px;font-weight:700;color:#1B2733;letter-spacing:-.01em;line-height:1.15}
+.v-hide{visibility:hidden}.v-hide.rv{visibility:visible}
+.v-m{font-size:22px;font-weight:800;color:#0A5F61;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline}
+.v-m2{font-size:15.5px;font-weight:600;color:#4A5866}
+.v-lb{font-size:12.5px;font-weight:800;color:#fff;background:#0E8A8C;border-radius:5px;padding:1px 9px;vertical-align:3px}
+.v-root{font-size:16px;line-height:1.7;color:#333;background:#F6F3FF;border-radius:10px;padding:8px 14px}
+.v-root .v-lb{background:#6B4FC8;margin-right:8px}
+.v-ex{border-left:4px solid #0E8A8C;background:#F3FAFA;border-radius:8px;padding:10px 14px}
+.v-en{font-family:"Noto Serif KR",Georgia,serif;font-size:19px;line-height:1.7}
+.v-ko{font-size:15px;color:#4A5866;margin-top:2px}
+.v-more{display:grid;gap:6px;font-size:15.5px}
+.v-more>div{display:flex;flex-wrap:wrap;gap:6px;align-items:baseline}
+.v-t{font-size:12.5px;font-weight:800;border-radius:4px;padding:1px 8px;background:#EEF1F4;color:#4A5866}
+.v-t.s{background:#E9EEFB;color:#3A4FA3}.v-t.a{background:#FFF3DC;color:#8A5A00}.v-t.c{background:#FDE8E8;color:#B42318}
+.v-c{border:1px solid #E3E9EE;border-radius:6px;padding:0 8px;font-weight:600}
+.v-c.s{border-color:#AEBBE6;color:#3A4FA3}.v-c.a{border-color:#F0D9A5;color:#8A5A00}
+.v-c i{font-style:normal;font-size:11.5px;color:#8493A1}
+.v-cf b{font-family:"Noto Serif KR",Georgia,serif;color:#B42318}
+.v-cf small{flex-basis:100%;color:#4A5866;font-size:14.5px;padding-left:2px}
+.v-rev{display:grid;grid-template-columns:repeat(2,1fr);gap:4px 26px;margin-top:6px}
+.v-rev>div{display:flex;gap:12px;align-items:baseline;padding:6px 6px;border-bottom:1px solid #F1F1F1;font-size:17px;border-radius:6px}
+.v-rev b{font-family:"Noto Serif KR",Georgia,serif;min-width:40%}
+.v-rev span{color:#0A5F61;font-weight:700}
+.v-rev.sm{grid-template-columns:repeat(3,1fr);gap:2px 18px}.v-rev.sm>div{font-size:14.5px;padding:4px}
+
+.p-ins{font-size:15.5px;font-weight:700;color:#4A5866;margin:4px 0 10px;display:flex;gap:8px;align-items:baseline}
+.p-no{flex:0 0 auto;font-size:15px;font-weight:800;color:#fff;background:#3A4FA3;border-radius:6px;padding:1px 9px}
+.p-q{font-size:21px;line-height:1.9;color:#1B2733}
+.p-q.sm{font-size:16.5px;line-height:1.75}
+.p-psg{border:1.5px solid #CFD6E4;border-radius:10px;padding:12px 16px;font-size:17px;line-height:1.95;background:#FBFCFE;font-family:"Noto Serif KR",Georgia,serif}
+.p-psg.sm{font-size:14.5px;line-height:1.75;padding:8px 12px}
+.p-box{display:inline-flex;align-items:center;gap:6px;border:2px solid #3A4FA3;border-radius:6px;padding:0 8px;margin:0 3px;background:#fff;line-height:1.5}
+.p-box i{font-style:normal;color:#9AA3B5}
+.p-box span.ok{background:#FFE7A3;color:#B43C0C;font-weight:800;border-radius:4px;padding:0 4px}
+.p-u{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px}
+.p-blank{display:inline-block;min-width:5em;border-bottom:2px solid #8493A1;margin:0 4px;vertical-align:-2px}
+.p-words{margin-top:8px;font-size:16px;color:#4A5866;background:#F6F8FB;border-radius:8px;padding:8px 12px;line-height:1.7}
+.p-opts{display:grid;gap:6px;margin-top:10px;font-size:18px;line-height:1.6}
+.p-opts.sm{font-size:15px;gap:3px}
+.p-op{padding:2px 4px}
+.p-mini{border:1px dashed #CFD6E4;border-radius:10px;padding:8px 12px;margin-bottom:10px;max-height:46%;overflow:auto}
+.p-steps{display:grid;gap:8px}
+.p-st{border-left:4px solid #0E8A8C;background:#F3FAFA;border-radius:6px;padding:8px 12px;font-size:16px;line-height:1.7}
+.p-st b.l{display:inline-block;color:#0A5F61;font-size:13px;font-weight:800;background:#DDF2F1;border-radius:4px;padding:0 7px;margin-right:8px}
+.p-fin{margin-top:10px;font-size:16px;line-height:1.7}
+.p-ab{display:inline-block;background:#B43C0C;color:#fff;font-weight:800;border-radius:6px;padding:2px 12px;margin-right:8px}
+.p-full{margin-top:6px;font-size:17px;font-weight:700}
+.p-ko{color:#4A5866;font-size:15px}
+.p-trap{margin-top:10px;background:#FFF3DC;border:1px solid #F0D9A5;border-radius:8px;padding:8px 12px;font-size:15.5px;line-height:1.7}
+.p-trap b{color:#8A5A00;margin-right:8px}
+.p-pts{margin:10px 0 0;padding-left:20px;font-size:16.5px;line-height:1.8}
+.g-kind.p-sol{background:#0E8A8C;color:#fff}
+
+.lp{--pk:#0E8A8C;--pk-t:#0A5F61;--pk-l:#DDF2F1;--pk-ll:#F3FAFA;--bl-l:#E9EEFB;--bl-t:#3A4FA3;height:100%;min-height:540px;background:#fff;color:#1B2733;border-radius:16px;display:flex;flex-direction:column;overflow:hidden;font-family:"IBM Plex Sans KR","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;box-shadow:0 2px 6px rgba(0,0,0,.06),0 14px 40px rgba(0,0,0,.08);outline:none}
+.lp *{box-sizing:border-box}
+.lp{word-break:keep-all;overflow-wrap:break-word}
+.lp-top{display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid #F1F1F1;position:relative}
+.lp-top::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,var(--pk),#7CCBC8)}
+.lp-brand{font-size:12.5px;font-weight:800;color:#fff;background:var(--pk);border-radius:999px;padding:3px 12px}
+.lp-name{flex:1;min-width:0;font-weight:800;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lp-slide{flex:1;min-height:0;overflow:auto;padding:30px 44px;display:flex;flex-direction:column}
+.lp-cap{flex-shrink:0;padding:10px 22px;background:#F3FAFA;border-top:1px solid #DDF2F1;font-size:15px;line-height:1.55;color:#4A5866;max-height:30%;overflow:auto}
+.lp-bar{flex-shrink:0;display:flex;align-items:center;gap:8px;padding:11px 18px;border-top:1px solid #F1F1F1;background:#FAFAFA;flex-wrap:wrap}
+.lp-tl{flex:1;min-width:120px;height:7px;background:#E3E9EE;border-radius:6px;overflow:hidden;cursor:pointer}
+.lp-tl>i{display:block;height:100%;width:0;background:var(--pk)}
+.lp-cnt{font-size:12.5px;color:#8493A1;font-variant-numeric:tabular-nums;min-width:50px;text-align:center}
+.lp select{width:auto}
+.lp button,.lp select{background:#fff;color:#1B2733;border:1px solid #DCDCDC;border-radius:8px;padding:7px 12px;font-weight:700;font-size:13.5px;cursor:pointer;font-family:inherit}
+.lp button.on{background:var(--pk-l);border-color:var(--pk-l);color:var(--pk-t)}
+.lp button.lp-play{background:var(--pk);border-color:var(--pk);color:#fff;min-width:96px}
+.lp-warn{padding:7px 20px;font-size:12.5px;color:var(--pk-t);background:var(--pk-ll)}
+.lp-tag{display:inline-block;align-self:flex-start;font-size:12.5px;font-weight:800;color:var(--pk-t);background:var(--pk-l);border-radius:999px;padding:3px 12px;margin-bottom:14px}
+.lp-cover{margin:auto 0;display:flex;gap:22px;align-items:stretch}
+.lp-qn{flex:0 0 110px;background:var(--pk);color:#fff;font-weight:800;font-size:28px;border-radius:14px;display:grid;place-items:center}
+.lp-cv{flex:1;min-width:0}
+.lp-cv .src{color:#8493A1;font-weight:700;font-size:14px}
+.lp-cv h1{margin:4px 0 2px;font-size:30px;line-height:1.25;font-weight:800}
+.lp-cv h2{margin:0 0 14px;font-size:17px;color:#4A5866;font-weight:700}
+.lp-row{display:flex;gap:10px;align-items:baseline;margin-top:6px;font-size:15.5px;padding:4px 8px;border-radius:8px}
+.lp-lb{flex:0 0 auto;font-size:12px;font-weight:800;color:var(--pk-t);background:var(--pk-l);border-radius:4px;padding:1px 8px}
+.lp-box{background:var(--pk-ll);border-radius:12px;padding:16px 20px;font-size:16.5px;line-height:1.75;color:#333}
+.lp b.key{color:var(--pk-t);background:linear-gradient(transparent 60%,#BFE8E5 60%)}
+.lp-st{border:1px solid #D6EAE9;border-radius:12px;padding:11px 16px;margin-bottom:9px}
+.lp-st h4{margin:0 0 3px;font-size:16px;color:var(--pk-t);display:flex;gap:8px;align-items:center}
+.lp-st h4 i{font-style:normal;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--pk);color:#fff;font-size:12px}
+.lp-st h4 small{color:#8493A1;font-size:12.5px}
+.lp-st p{margin:0;font-size:15px;line-height:1.65;color:#444}
+.lp-big{font-size:28px;font-weight:800}
+.lp-pill{display:inline-block;font-size:13px;font-weight:800;color:var(--pk-t);background:var(--pk-l);border-radius:999px;padding:3px 12px;margin-left:8px;vertical-align:5px}
+.lp-sig{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:15px;margin-top:8px}
+.lp-sig b{color:var(--pk-t)}
+.lp-chain{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px;font-size:15px}
+.lp-chain span.c{background:var(--bl-l);color:var(--bl-t);font-weight:700;border-radius:6px;padding:2px 10px}
+.lp-chain span.a{color:#999}
+.lp-ct{width:100%;border-collapse:collapse;margin-top:10px;font-size:14.5px}
+.lp-ct th,.lp-ct td{border:1px solid #CFE5E4;padding:6px 10px;text-align:left}
+.lp-ct th{background:var(--pk-ll);color:var(--pk-t)}
+.lp-vg{display:grid;grid-template-columns:repeat(3,1fr);gap:2px 22px}
+.lp-vg div{display:flex;gap:10px;padding:6px 2px;border-bottom:1px solid #F4F4F4;font-size:15.5px;align-items:baseline}
+.lp-vg b{font-weight:800}
+.lp-vg em{font-style:normal;font-size:11px;font-weight:700;color:var(--pk-t);background:var(--pk-l);border-radius:4px;padding:0 5px}
+.lp-vg span{color:#555;margin-left:auto;text-align:right}
+.lp-sa{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 18px}
+.lp-sa>div{border:1px solid #F1F1F1;border-radius:10px;padding:10px 14px}
+.lp-sa b.w{font-size:17px}
+.lp-sa .m{color:#666;margin-left:6px;font-size:14px}
+.lp-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;align-items:center}
+.lp-chips span{font-size:13.5px;font-weight:700;border-radius:5px;padding:1px 9px}
+.lp-chips .s{background:var(--bl-l);color:var(--bl-t)}
+.lp-chips .a{background:#FFF1D8;color:#8A5A00}
+.lp-chips .x{background:none;color:#999;padding:0}
+.lp-sno{font-size:13px;color:#8493A1;font-weight:700;margin-bottom:8px}
+.lp-sno .es{color:#fff;background:#E0952B;border-radius:4px;padding:1px 8px;font-size:11.5px;margin-left:8px}
+.lp-chunks{display:flex;flex-wrap:wrap;gap:16px 10px;margin-bottom:12px;align-items:flex-end}
+.lp-chunk{display:flex;flex-direction:column}
+.lp-chunk .ko{font-size:13px;color:var(--pk-t);font-weight:700;line-height:1.3;margin-bottom:2px}
+.lp-chunk .en{font-size:24px;font-weight:700;line-height:1.4}
+.lp-chunk+.lp-chunk{padding-left:10px;border-left:2px solid #D6EAE9}
+.lp .tgt{background:#FFF0C7;border-bottom:2.5px solid var(--pk);padding:0}
+.lp .mk{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--pk);color:#fff;font-size:11.5px;font-weight:800;margin:0 3px;vertical-align:4px;line-height:1}
+.lp-ko{font-size:16px;font-weight:700;background:var(--pk-ll);border-radius:10px;padding:9px 14px;margin-bottom:8px}
+.lp-mn{font-size:15px;line-height:1.65;background:#FFF8E8;border:1px solid #F0D9A5;border-radius:10px;padding:9px 14px;margin-bottom:8px;color:#444}
+.lp-ap{font-size:14.5px;line-height:1.6;border:1px solid #BFE8E5;border-radius:10px;padding:9px 14px}
+.lp-ap h5{margin:0 0 4px;display:inline-block;background:var(--pk);color:#fff;font-size:12px;border-radius:4px;padding:1px 9px}
+.lp-ap .gi{margin:3px 0}
+.lp-ap .gn{color:var(--pk-t);font-weight:800}
+.lp-fin ul{margin:0 0 12px;padding-left:20px;font-size:16px;line-height:1.75}
+.lp-hl{box-shadow:0 0 0 3px #7CCBC8,0 0 22px 4px rgba(14,138,140,.28)!important;border-radius:12px;transition:box-shadow .2s}
+@media (max-width:700px){.lp{min-height:0;height:100vh;height:100dvh;border-radius:0}.lp-slide{padding:18px 16px}.lp-cover{flex-direction:column}.lp-qn{flex:0 0 64px}.lp-cv h1{font-size:21px}.lp-chunk .en{font-size:18px}.lp-vg,.lp-sa{grid-template-columns:1fr}.lp-box{font-size:15px}.lp-big{font-size:21px}}
+
+.lp-box b.h{color:var(--pk-t);margin-right:8px}
+.lp{--g-ok:#1F8A57;--g-ok-l:#E9F7EF;--g-err:#D43A3A;--g-err-l:#FDECEC}
+.g-cover{margin:auto 0;text-align:left}
+.g-cover .g-unit{display:inline-block;font-size:14px;font-weight:800;color:var(--bl-t);background:var(--bl-l);border-radius:999px;padding:3px 14px;margin-bottom:10px}
+.g-cover h1{margin:0 0 18px;font-size:34px;line-height:1.25;font-weight:800}
+.g-h{margin:0 0 12px;font-size:24px;font-weight:800;line-height:1.3}
+.g-rule{background:var(--pk-ll);border-radius:12px;padding:14px 18px;font-size:17px;line-height:1.7;margin-bottom:12px}
+.g-formula{display:inline-block;margin-top:8px;background:#fff;border:1.5px solid var(--bl-l);color:var(--bl-t);font-weight:800;border-radius:8px;padding:4px 12px;font-size:16px}
+.g-exs{display:grid;gap:8px;margin-bottom:12px}
+.g-ex{border:1px solid #F1F1F1;border-radius:12px;padding:10px 16px;position:relative}
+.g-en{font-size:21px;font-weight:700;line-height:1.45}
+.g-en .fx{background:#FFF0C7;border-bottom:2.5px solid var(--pk)}
+.g-ko{font-size:15px;color:var(--pk-t);font-weight:700;margin-top:2px}
+.g-note{font-size:14px;color:#555;margin-top:3px}
+.g-add{position:absolute;top:8px;right:10px;font-size:11px;font-weight:700;color:#8493A1;background:#F4F4F4;border-radius:4px;padding:1px 6px}
+.g-tip{background:#FFF8E8;border:1px solid #F0D9A5;border-radius:12px;padding:10px 16px;font-size:15.5px;line-height:1.65}
+.g-tip>b{color:#8A6D00;margin-right:6px}
+.g-mk{border:1px solid #F1F1F1;border-radius:12px;padding:10px 16px;margin-bottom:9px}
+.g-wrong{font-size:19px;font-weight:700;color:var(--g-err)}
+.g-wrong s{text-decoration-thickness:2px}
+.g-right{font-size:19px;font-weight:700;color:var(--g-ok);margin-top:2px}
+.g-why{font-size:14.5px;color:#555;margin-top:4px}
+.g-tags{display:flex;gap:8px;align-items:flex-start}
+.g-kind{display:inline-block;font-size:12.5px;font-weight:800;color:var(--bl-t);background:var(--bl-l);border-radius:999px;padding:3px 11px}
+.g-q{font-size:18px;font-weight:700;margin-bottom:10px;line-height:1.55}
+.g-qs{font-size:22px;font-weight:700;line-height:1.5;background:#FAFAFA;border-radius:12px;padding:12px 16px;margin-bottom:10px}
+.g-opts{display:grid;gap:6px;margin-bottom:10px}
+.g-opt{display:block;width:100%;text-align:left;background:#fff!important;border:1.5px solid #E6E6E6!important;border-radius:10px!important;padding:9px 14px!important;font-size:17px!important;font-weight:600!important;cursor:pointer;color:#1B2733!important}
+.g-opt b{color:var(--pk-t);margin-right:6px}
+.g-opt.picked{border-color:var(--pk)!important;background:var(--pk-ll)!important}
+.g-opts.rv .g-opt[data-ok="1"]{border-color:var(--g-ok)!important;background:var(--g-ok-l)!important}
+.g-opts.rv .g-opt.picked:not([data-ok="1"]){border-color:var(--g-err)!important;background:var(--g-err-l)!important}
+.g-ans{display:none;background:var(--g-ok-l);border-radius:12px;padding:12px 16px;font-size:16px;line-height:1.65}
+.g-ans.rv{display:block}
+.g-ans>b{color:var(--g-ok);margin-right:6px}
+.g-ans .a{font-weight:800;font-size:18px}
+.g-exp{margin-top:4px;color:#333}
+.lp button.g-show{margin-top:4px;background:#fff;color:var(--g-ok);border-color:#C6EBD5}
+.g-sum{margin:0;padding-left:22px;font-size:18px;line-height:1.8}
+.lp-think{position:absolute;right:22px;bottom:16px;background:#1B2733;color:#fff;font-weight:800;font-size:15px;border-radius:999px;padding:8px 16px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.lp-slide{position:relative}
+@media (max-width:700px){.g-cover h1{font-size:23px}.g-h{font-size:19px}.g-en,.g-qs{font-size:17px}.g-rule{font-size:15px}.g-opt{font-size:15px!important}}
+.d-chat{display:flex;flex-direction:column;gap:8px}
+.d-bub{max-width:78%;border-radius:16px;padding:9px 15px;position:relative}
+.d-bub.d-l{align-self:flex-start;background:#F4F6F8;border-top-left-radius:4px}
+.d-bub.d-r{align-self:flex-end;background:var(--pk-ll);border-top-right-radius:4px}
+.d-bub .d-sp{font-size:12px;font-weight:800;color:#8493A1;display:block;margin-bottom:1px}
+.d-en{font-size:18px;font-weight:600;line-height:1.45}
+.d-key{background:var(--pk-ll);border-radius:14px;padding:14px 18px;margin-bottom:12px}
+.d-keyexp{font-size:24px;font-weight:800;line-height:1.35}
+.d-mean{font-size:16px;color:var(--pk-t);font-weight:700;margin-top:3px}
+.d-from{font-size:14px;color:#666;margin-top:6px}
+.d-exp{font-size:15px;line-height:1.65;margin-top:8px;color:#333}
+.d-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.d-box{border:1px solid #E9EEFB;border-radius:12px;padding:10px 14px}
+.d-box>b{display:inline-block;font-size:13px;color:var(--bl-t);background:var(--bl-l);border-radius:999px;padding:2px 10px;margin-bottom:6px}
+.d-box.a>b{color:#1F8A57;background:#E9F7EF}
+.d-box ul{margin:0;padding-left:18px;font-size:16.5px;line-height:1.75;font-weight:600}
+.d-line{border:1px solid #F1F1F1;border-radius:12px;padding:10px 16px;margin-bottom:10px}
+.d-lh{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.d-lh .d-sp{font-size:12.5px;font-weight:800;border-radius:6px;padding:1px 9px;background:#F4F6F8;color:#555}
+.d-lh .d-sp.d-r{background:var(--pk-l);color:var(--pk-t)}
+.d-ln{font-size:12px;color:#999}
+.d-en2{font-size:20px;font-weight:700;line-height:1.55}
+.d-ko{font-size:15px;color:var(--pk-t);font-weight:700;margin-top:2px}
+.d-notes{margin-top:7px;display:grid;gap:4px}
+.d-note{display:flex;gap:6px;font-size:14.5px;line-height:1.6;color:#333;align-items:baseline}
+.d-alt{margin-top:7px;background:#FFF8E8;border:1px solid #F0D9A5;border-radius:10px;padding:7px 12px;font-size:15px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.d-alt>b{color:#8A6D00;font-size:13px}
+.d-alt span{font-weight:600}
+.d-alt span+span::before{content:"/";color:#C9B95A;margin-right:10px}
+@media (max-width:700px){.d-cols{grid-template-columns:1fr}.d-en2{font-size:16px}.d-keyexp{font-size:19px}}
+
+.lp{--pk-b:#B5DEDC;--am:#E0952B;--am-l:#FFF3DC;--am-b:#F0D9A5;--am-d:#8A5A00}
+.lp-top{border-bottom:1.5px solid var(--pk)}
+.lp-top::before{height:5px;background:linear-gradient(90deg,var(--pk) 0,var(--pk) 80%,var(--am) 80%,var(--am) 100%)}
+.lp-brand{background:#fff;color:var(--pk-t);border:1px solid var(--pk);border-radius:3px;font-weight:700;letter-spacing:.02em;padding:2px 11px}
+.lp-name{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700;color:var(--pk-t)}
+.lp-tag{background:#fff;border:1px solid var(--pk-b);border-radius:3px;font-weight:700;padding:2px 12px}
+.lp-qn{flex:0 0 112px;height:112px;align-self:center;background:#fff;color:var(--pk);border:3px solid var(--pk);border-radius:50%;font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700;font-size:26px}
+.lp-cv h1,.lp-big{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700}
+.lp-lb{background:none;border:0;border-bottom:2px solid var(--am);border-radius:0;padding:0 2px;color:var(--pk-t);font-weight:700}
+.lp-box{border-radius:4px;border-left:4px solid var(--pk)}
+.lp-st{border-radius:4px;border-left:4px solid var(--pk-b)}
+.lp-st h4{color:var(--ink,#1B2733)}
+.lp-st h4 i{border-radius:4px;width:auto;min-width:24px;padding:0 4px}
+.lp-pill{background:#fff;border:1px solid var(--pk-b);border-radius:3px;font-weight:700}
+.lp-chain span.c{background:#fff;border:1px solid #AEBBE6;border-radius:3px;font-weight:600}
+.lp-ct th{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif}
+.lp-vg em{background:#fff;border:1px solid var(--pk-b);border-radius:3px}
+.lp-sa>div{border-radius:4px;border-color:var(--pk-b)}
+.lp-chips span{border-radius:3px;background:#fff}
+.lp-chips .s{border:1px solid #AEBBE6;color:#3A4FA3}
+.lp-chips .a{border:1px solid var(--am-b);color:var(--am-d);background:#FFFBF2}
+.lp-sno .es{background:var(--am);border-radius:2px;font-weight:700}
+.lp-chunk .en{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:600}
+.lp-chunk+.lp-chunk{border-left:1px solid var(--pk-b)}
+.lp .tgt{background:var(--am-l);border-bottom:2.5px dotted var(--am)}
+.lp .mk{border-radius:4px;width:auto;min-width:20px;padding:0 3px;background:var(--pk-t)}
+.lp-ko{border-radius:0;border-left:4px solid var(--pk);background:none;padding:4px 0 4px 12px}
+.lp-mn{border-radius:4px;background:var(--am-l);border-color:var(--am-b);color:#5C4510}
+.lp-ap{border-radius:4px;border:1px solid var(--pk-b);border-top:3px solid var(--pk);background:var(--pk-ll)}
+.lp-ap h5{background:none;color:var(--pk-t);padding:0;font-size:12.5px;font-weight:700}
+.lp-hl{border-radius:6px}
+.lp button.lp-play,.lp button,.lp select{border-radius:4px}
+@media (max-width:700px){.lp-qn{flex:0 0 72px;height:72px;font-size:18px}}
+
+.g-rule{border-radius:3px;border-left:4px solid var(--pk)}
+.g-formula{border-radius:2px;background:#fff;border:1px solid #AEBBE6;color:#3A4FA3}
+.g-ex{border-radius:3px}
+.g-en{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:600}
+.g-en .fx{background:var(--am-l);border-bottom:2.5px dotted var(--am)}
+.g-tip{border-radius:3px;background:var(--am-l);border-color:var(--am-b)}
+.g-mk{border-radius:3px}
+.g-kind{border-radius:2px;background:#fff;border:1px solid #AEBBE6;color:#3A4FA3}
+.g-qs{border-radius:3px}
+.g-opt{border-radius:3px!important}
+.g-ans{border-radius:3px}
+.g-add{border-radius:2px}
+.d-bub{border-radius:6px}
+.d-key{border-radius:3px;border-left:4px solid var(--pk)}
+.d-box{border-radius:3px}
+.d-box>b{border-radius:2px;background:#fff;border:1px solid #AEBBE6;color:#3A4FA3}
+.d-line{border-radius:3px}
+.d-en2,.d-keyexp{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700}
+.d-alt{border-radius:3px;background:var(--am-l);border-color:var(--am-b)}
+
+.y-sen{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-size:23px;font-weight:700;line-height:1.55;margin:4px 0 14px;color:#1B2733}
+.y-sen.sm{font-size:17px;margin-bottom:10px;color:#4A5866}
+.y-sen .fx,.y-li .fx{background:var(--am-l,#FFF3DC);border-bottom:2.5px dotted var(--am,#E0952B)}
+.y-chunks{display:grid;grid-template-columns:minmax(40%,auto) 1fr;border:1px solid var(--pk-b,#B5DEDC);border-radius:4px;margin-bottom:12px;overflow:hidden}
+.y-chunks>div{padding:7px 14px;border-bottom:1px solid #EEF3F3}
+.y-chunks .e{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:600;font-size:17px;border-right:1px solid #EEF3F3;background:#FBFEFE}
+.y-chunks .k{color:var(--pk-t);font-size:15px;font-weight:600}
+.y-box{border-radius:4px;padding:10px 14px;margin-bottom:10px;font-size:15.5px;line-height:1.7}
+.y-lb{display:inline-block;font-size:12.5px;font-weight:800;color:var(--pk-t);background:#fff;border:1px solid var(--pk-b,#B5DEDC);border-radius:3px;padding:0 8px;margin-right:8px;vertical-align:1px}
+.y-st{background:var(--pk-ll);border-left:4px solid var(--pk)}
+.y-mn{background:var(--am-l,#FFF3DC);border:1px solid var(--am-b,#F0D9A5)}
+.y-mn .y-lb{color:var(--am-d,#8A5A00);border-color:var(--am-b,#F0D9A5)}
+.y-cg{border:1px solid var(--pk-b,#B5DEDC)}
+.y-pair{padding:6px 0 4px;border-top:1px dashed #E3E9EE}
+.y-pair:first-of-type{border-top:0}
+.y-pair .f{font-family:"Noto Serif KR",Georgia,serif;font-weight:600;color:#4A5866}
+.y-pair .ar{color:var(--pk);margin:0 8px;font-weight:800}
+.y-pair .t{font-family:"Noto Serif KR",Georgia,serif;font-weight:700;color:#1B2733;background:var(--pk-ll);padding:0 4px}
+.y-pair .w{font-size:14px;color:#4A5866;margin-top:2px}
+.y-eq{display:inline-block;margin-left:10px;font-size:12.5px;font-weight:700;color:#3A4FA3;border:1px solid #AEBBE6;border-radius:3px;padding:0 7px}
+.y-pp{background:#F6F8FA;border-left:4px solid #3A4FA3}
+.y-pp .y-lb{color:#3A4FA3;border-color:#AEBBE6}
+.y-pp .p{font-family:"Noto Serif KR",Georgia,serif;font-size:18px;font-weight:700;margin-top:6px;line-height:1.55}
+.y-list{display:grid;gap:6px;margin-top:4px}
+.y-li{font-family:"Noto Serif KR",Georgia,serif;font-size:16px;line-height:1.6;display:block;padding-left:32px;text-indent:-32px}
+.y-no{display:inline-block;text-indent:0;min-width:22px;height:20px;line-height:20px;text-align:center;border-radius:3px;background:var(--pk);color:#fff;font-family:sans-serif;font-size:12px;font-weight:800;margin-right:10px;vertical-align:1px}
+@media (max-width:700px){.y-sen{font-size:18px}.y-chunks{grid-template-columns:1fr}.y-chunks .e{border-right:0}}
+</style></head><body><div id="app"></div><script>function lecturePlayer(root,D){
+  root.innerHTML='<div class="lp" tabindex="0"><div class="lp-top"><span class="lp-brand"></span><span class="lp-name"></span></div><div class="lp-warn" hidden></div><div class="lp-slide"></div><div class="lp-cap" hidden></div><div class="lp-bar"><div class="lp-tl" title="슬라이드 이동"><i></i></div><span class="lp-cnt"></span><button class="lp-cc">자막</button><select class="lp-rate" title="재생 속도"><option value="0.8">0.8x</option><option value="1" selected>1.0x</option><option value="1.2">1.2x</option><option value="1.4">1.4x</option><option value="1.6">1.6x</option><option value="2">2.0x</option></select><button class="lp-prev" aria-label="이전 슬라이드">◀</button><button class="lp-play">▶ 재생</button><button class="lp-next" aria-label="다음 슬라이드">▶</button></div></div>';
+  var q=function(s){return root.querySelector(s);},box=q(".lp"),sl=q(".lp-slide"),cap=q(".lp-cap"),cnt=q(".lp-cnt"),fill=q(".lp-tl>i"),tl=q(".lp-tl"),pp=q(".lp-play"),cc=q(".lp-cc"),warn=q(".lp-warn");
+  q(".lp-brand").textContent=D.brand;q(".lp-name").textContent=D.title;
+  var i=0,j=0,playing=false,rate=1,timer=null,tick=null,capOn=!!D.preview,noAudio=!!D.preview,a=new Audio(),think=null;
+  if(D.preview){cc.classList.add("on");}
+  function segs(){return D.slides[i].segs||[];}
+  function setFill(f){var s=segs(),n=D.slides.length,sf=s.length?(j+(f||0))/s.length:0;fill.style.width=Math.min(100,(i+sf)/n*100)+"%";}
+  function showCap(){var s=segs()[j];cap.textContent=s?s.text:"";cap.hidden=!(capOn&&s&&s.text&&s.text.trim());cc.classList.toggle("on",capOn);}
+  function clearHl(){var e=sl.querySelectorAll(".lp-hl");for(var x=0;x<e.length;x++)e[x].classList.remove("lp-hl");}
+  function hl(k){clearHl();if(!k)return;var e=sl.querySelector('[data-hl="'+k+'"]');if(e){e.classList.add("lp-hl");try{e.scrollIntoView({block:"nearest",behavior:"smooth"});}catch(_){}}}
+  function reveal(k){var e=sl.querySelectorAll('[data-rv="'+k+'"]');for(var x=0;x<e.length;x++)e[x].classList.add("rv");var b=sl.querySelector('[data-act="show"]');if(b)b.hidden=true;}
+  function stopAll(){if(timer){clearTimeout(timer);timer=null;}if(tick){clearInterval(tick);tick=null;}if(think){think.remove();think=null;}try{a.pause();}catch(_){}}
+  function silent(s){var dur=Math.max(1800,s.text.length*130/rate+700),t0=Date.now();if(!capOn){capOn=true;showCap();}
+    tick=setInterval(function(){setFill(Math.min(1,(Date.now()-t0)/dur));},200);timer=setTimeout(function(){stopAll();segEnd();},dur);}
+  function pause(sec){var left=sec,t0=Date.now();think=document.createElement("div");think.className="lp-think";think.textContent="생각할 시간 "+left+"초";sl.appendChild(think);
+    tick=setInterval(function(){left=Math.max(0,sec-Math.floor((Date.now()-t0)/1000));if(think)think.textContent="생각할 시간 "+left+"초";setFill(Math.min(1,(Date.now()-t0)/(sec*1000)));},250);
+    timer=setTimeout(function(){stopAll();segEnd();},sec*1000/Math.max(.5,rate));}
+  var bases=null,bi=0,okBase=false,att=0;
+  function cands(){if(bases)return bases;var out=[];function add(x){x=String(x||"").replace(/\/+$/,"");if(x&&out.indexOf(x)<0)out.push(x);}
+    add(D.audioDir);try{var f=decodeURIComponent(location.pathname.split("/").pop()||""),nm=f.replace(/\.html?$/i,"");if(nm){add(nm+"_audio");add(nm.replace(/_AI강의$/,"")+"_audio");}}catch(_){}
+    add("audio");bases=out;return out;}
+  function playAudio(s){a.src=encodeURI(cands()[bi])+"/"+s.n+".mp3";a.playbackRate=rate;a.play().catch(function(){});}
+  function runSeg(){stopAll();var s=segs()[j];clearHl();setFill(0);showCap();if(!s)return;hl(s.hl);if(s.reveal)reveal(s.reveal);if(!playing)return;
+    if(s.pause){pause(s.pause);return;}
+    if(noAudio){silent(s);return;}
+    att=0;playAudio(s);}
+  a.onloadeddata=function(){okBase=true;};
+  a.onerror=function(){if(!playing)return;var s=segs()[j];if(!s||s.pause)return;var L=cands().length;if(!okBase&&att<L-1){att++;bi=(bi+1)%L;playAudio(s);return;}if(!okBase)bi=(bi+1)%L;warn.hidden=false;warn.textContent="음성 파일("+cands()[bi]+"/"+s.n+".mp3)을 찾지 못해 자막으로 진행합니다.";silent(s);};
+  a.ontimeupdate=function(){if(a.duration)setFill(a.currentTime/a.duration);};
+  a.onended=function(){segEnd();};
+  function segEnd(){if(!playing)return;if(j<segs().length-1){j++;runSeg();}else if(i<D.slides.length-1){i++;show();}else{playing=false;pp.textContent="▶ 재생";clearHl();fill.style.width="100%";}}
+  function show(){stopAll();sl.innerHTML=D.slides[i].html;sl.scrollTop=0;cnt.textContent=(i+1)+" / "+D.slides.length;j=0;runSeg();}
+  function go(d){i=Math.max(0,Math.min(D.slides.length-1,i+d));show();}
+  function toggle(){playing=!playing;pp.textContent=playing?"⏸ 일시정지":"▶ 재생";if(playing){var s=segs()[j];if(!noAudio&&s&&!s.pause&&a.src&&a.currentTime>0&&!a.ended&&a.paused&&!timer){a.play().catch(function(){});}else runSeg();}else stopAll();}
+  sl.addEventListener("click",function(e){var t=e.target.closest?e.target.closest(".g-opt,[data-act]"):null;if(!t)return;
+    if(t.getAttribute("data-act")==="show"){reveal("ans");return;}
+    var g=t.parentNode;if(g&&g.classList.contains("rv"))return;[].forEach.call(g.querySelectorAll(".g-opt"),function(o){if(o!==t)o.classList.remove("picked");});t.classList.toggle("picked");});
+  q(".lp-prev").onclick=function(){go(-1);};q(".lp-next").onclick=function(){go(1);};pp.onclick=toggle;
+  cc.onclick=function(){capOn=!capOn;showCap();};
+  q(".lp-rate").onchange=function(e){rate=parseFloat(e.target.value)||1;a.playbackRate=rate;};
+  tl.onclick=function(e){var r=tl.getBoundingClientRect();i=Math.max(0,Math.min(D.slides.length-1,Math.floor((e.clientX-r.left)/r.width*D.slides.length)));show();};
+  box.addEventListener("keydown",function(e){if(e.target.tagName==="SELECT")return;if(e.key===" "){e.preventDefault();toggle();}else if(e.key==="ArrowRight")go(1);else if(e.key==="ArrowLeft")go(-1);});
+  show();
+  return {stop:function(){playing=false;pp.textContent="▶ 재생";stopAll();}};
+}
+lecturePlayer(document.getElementById("app"),{"brand":"주어, 동사 판단","title":"완벽한 문장의 시작! 주어와 동사 찾기","audioDir":"lecture_audio","preview":false,"count":43,"slides":[{"html":"\u003cdiv class=\"g-cover\">\u003cdiv class=\"g-unit\">09강 주어, 동사 판단\u003c/div>\u003ch1>완벽한 문장의 시작! 주어와 동사 찾기\u003c/h1>\u003cdiv class=\"lp-box\" data-hl=\"goal\">\u003cb class=\"h\">오늘의 목표\u003c/b>문장의 주인인 주어 자리에 올 수 있는 다양한 형태와 수식을 받는 주어를 정확히 찾아내어 문장의 뼈대를 세운다.\u003c/div>\u003c/div>","segs":[{"n":1,"text":"안녕하세요 여러분, 오늘 우리 함께 09강 주어와 동사 판단 단원을 정복해 봐요. 영어 문장을 읽을 때 문장의 주인공인 주어가 누구인지, 행동을 나타내는 동사가 어디에 있는지 찾는 것은 정말 중요하죠. 오늘 저와 함께 주어 자리에 올 수 있는 여러 가지 모습과 주어를 꾸며주는 수식어까지 완벽하게 파헤쳐 보겠어요.","hl":"goal"}]},{"html":"\u003cspan class=\"lp-tag\">개념 1 / 4\u003c/span>\u003ch2 class=\"g-h\">주어 자리에 오는 명사, 명사구, 명사절\u003c/h2>\u003cdiv class=\"g-rule\" data-hl=\"rule\">문장의 주인공인 주어 자리에는 보통 \u003cb class=\"key\">명사\u003c/b>나 대명사가 오지만, \u003cb class=\"key\">명사구\u003c/b>나 \u003cb class=\"key\">명사절\u003c/b>처럼 덩어리가 통째로 주어로 오기도 해요.\u003cdiv>\u003cspan class=\"g-formula\">명사(구/절) + 동사\u003c/span>\u003c/div>\u003c/div>\u003cdiv class=\"g-exs\">\u003cdiv class=\"g-ex\" data-hl=\"ex-0\">\u003cdiv class=\"g-en\">\u003cspan class=\"fx\">All his wealth\u003c/span> couldn’t bring him happiness.\u003c/div>\u003cdiv class=\"g-ko\">모든 그의 부도 그에게 행복을 가져다주지 못했다.\u003c/div>\u003cdiv class=\"g-note\">명사구(All his wealth)가 주어로 쓰인 문장\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-1\">\u003cdiv class=\"g-en\">\u003cspan class=\"fx\">Dropping atomic bombs on Japan\u003c/span> ended World War II.\u003c/div>\u003cdiv class=\"g-ko\">일본에 원자폭탄을 투하한 것이 세계2차 대전을 끝냈다.\u003c/div>\u003cdiv class=\"g-note\">동명사구(Dropping atomic bombs on Japan)가 주어로 쓰인 문장\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-2\">\u003cdiv class=\"g-en\">\u003cspan class=\"fx\">To argue with him\u003c/span> is a waste of time.\u003c/div>\u003cdiv class=\"g-ko\">그와 논쟁을 벌이는 것은 시간 낭비이다.\u003c/div>\u003cdiv class=\"g-note\">투부정사구(To argue with him)가 주어로 쓰인 문장\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-3\">\u003cdiv class=\"g-en\">\u003cspan class=\"fx\">What I enjoy most\u003c/span> is traveling around and visiting new places.\u003c/div>\u003cdiv class=\"g-ko\">내가 가장 즐기는 것은 여행을 다니고 새로운 장소를 방문하는 것이다.\u003c/div>\u003cdiv class=\"g-note\">관계대명사 what 절이 주어로 쓰인 문장\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"g-tip\" data-hl=\"tip\">\u003cb>주의\u003c/b>주어가 너무 길면 가주어 \u003cb class=\"key\">It\u003c/b>을 문장 맨 앞에 쓰고 진짜 주어는 뒤로 보낼 수 있어요.\u003c/div>","segs":[{"n":2,"text":"문장에서 가장 중요한 주인공이 바로 주어예요. 주어 자리에는 보통 명사나 대명사가 오지만 때로는 여러 단어가 뭉친 명사구와 문장 형태인 명사절도 주어 자리에 올 수 있답니다.","hl":"rule"},{"n":3,"text":"첫 번째 예문을 함께 볼게요. All his wealth couldn’t bring him happiness라고 되어 있죠. 여기서 모든 그의 부라는 뜻의 All his wealth가 문장의 주어로 쓰였어요.","hl":"ex-0"},{"n":4,"text":"두 번째 예문이에요. Dropping atomic bombs on Japan ended World War II라고 했죠. 일본에 원자폭탄을 투하한 것이라는 동명사구 전체가 주어 역할을 하고 있어요.","hl":"ex-1"},{"n":5,"text":"세 번째 예문을 보죠. To argue with him is a waste of time이에요. 그와 논쟁을 벌이는 것이라는 투부정사구가 주어로 맨 앞에 나와 있어요.","hl":"ex-2"},{"n":6,"text":"네 번째 예문입니다. What I enjoy most is traveling around and visiting new places라고 했죠. 내가 가장 즐기는 것이라는 what 절이 주어로 쓰였어요.","hl":"ex-3"},{"n":7,"text":"주어 자리에 투부정사나 대절처럼 긴 덩어리가 오면 문장이 무거워 보여요. 그럴 때는 가주어 It을 앞에 쓰고 진짜 주어를 뒤로 보내서 깔끔하게 만들어 줄 수 있답니다.","hl":"tip"}]},{"html":"\u003cspan class=\"lp-tag\">개념 2 / 4\u003c/span>\u003ch2 class=\"g-h\">가주어를 사용한 문장과 명사절 주어\u003c/h2>\u003cdiv class=\"g-rule\" data-hl=\"rule\">길어진 주어 대신 가주어 \u003cb class=\"key\">It\u003c/b>을 쓰고 진짜 주어는 뒤로 보낼 수 있으며, \u003cb class=\"key\">that절\u003c/b>이나 whether절도 주어가 될 수 있어요.\u003cdiv>\u003cspan class=\"g-formula\">It ~ to부정사 / that절\u003c/span>\u003c/div>\u003c/div>\u003cdiv class=\"g-exs\">\u003cdiv class=\"g-ex\" data-hl=\"ex-0\">\u003cdiv class=\"g-en\">\u003cspan class=\"fx\">That students learn better when they cooperate\u003c/span> has been proven\u003c/div>\u003cdiv class=\"g-ko\">학생들이 협력할 때 더 잘 배운다는 것은 사실인 것으로 증명되었다.\u003c/div>\u003cdiv class=\"g-note\">that절이 주어로 쓰인 문장\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-1\">\u003cdiv class=\"g-en\">\u003cspan class=\"fx\">It\u003c/span> is a waste of time to argue with him.\u003c/div>\u003cdiv class=\"g-ko\">그와 논쟁을 벌이는 것은 시간 낭비이다.\u003c/div>\u003cdiv class=\"g-note\">가주어 It과 진주어 투부정사 구문\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-2\">\u003cdiv class=\"g-en\">\u003cspan class=\"fx\">It\u003c/span> has been proven true that students learn better when they\u003c/div>\u003cdiv class=\"g-ko\">학생들이 협력할 때 더 잘 배운다는 것은 사실인 것으로 증명되었다.\u003c/div>\u003cdiv class=\"g-note\">가주어 It과 진주어 that절 구문\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-3\">\u003cdiv class=\"g-en\">It will make no difference \u003cspan class=\"fx\">whether you take a taxi or a bus\u003c/span>.\u003c/div>\u003cdiv class=\"g-ko\">택시를 타든 버스를 타든 별 차이가 없을 것이다.\u003c/div>\u003cdiv class=\"g-note\">whether절이 진주어로 쓰인 문장\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"g-tip\" data-hl=\"tip\">\u003cb>주의\u003c/b>whether절이 주어일 때도 가주어 It을 활용하여 문장을 자연스럽게 쓸 수 있어요.\u003c/div>","segs":[{"n":8,"text":"앞서 배운 긴 주어들을 문장 뒤로 보내고 빈자리를 It으로 채우는 문장들을 살펴볼게요. 또한 사실을 나타내는 that절이나 인지 아닌지를 묻는 whether절도 주어로 아주 잘 쓰인답니다.","hl":"rule"},{"n":9,"text":"첫 번째 예문을 읽어 볼게요. That students learn better when they cooperate has been proven이에요. 학생들이 협력할 때 더 잘 배운다는 사실 전체가 주어로 쓰였어요.","hl":"ex-0"},{"n":10,"text":"두 번째 예문이에요. It is a waste of time to argue with him이라고 했죠. 앞서 배운 투부정사 주어를 뒤로 보내고 가주어 It을 쓴 형태예요.","hl":"ex-1"},{"n":11,"text":"세 번째 예문을 보죠. It has been proven true that students learn better when they로 되어 있어요. that절이 너무 길어서 뒤로 가고 가주어 It이 자리를 대신했네요.","hl":"ex-2"},{"n":12,"text":"네 번째 예문입니다. It will make no difference whether you take a taxi or a bus예요. 택시를 타든 버스를 타든 차이가 없다는 내용이 진주어로 뒤에 와 있어요.","hl":"ex-3"},{"n":13,"text":"whether절이 주어로 올 때도 역시 가주어 It을 문장 앞에 써서 균형 있는 문장을 만들 수 있다는 것을 꼭 기억해 주세요.","hl":"tip"}]},{"html":"\u003cspan class=\"lp-tag\">개념 3 / 4\u003c/span>\u003ch2 class=\"g-h\">주어를 수식하는 형용사구와 분사\u003c/h2>\u003cdiv class=\"g-rule\" data-hl=\"rule\">주어 뒤에서 명사를 꾸며주는 \u003cb class=\"key\">투부정사\u003c/b>, \u003cb class=\"key\">현재분사\u003c/b>, \u003cb class=\"key\">과거분사\u003c/b> 등의 수식어구를 잘 구분해야 해요.\u003cdiv>\u003cspan class=\"g-formula\">주어 + 형용사구/분사 + 동사\u003c/span>\u003c/div>\u003c/div>\u003cdiv class=\"g-exs\">\u003cdiv class=\"g-ex\" data-hl=\"ex-0\">\u003cdiv class=\"g-en\">His desire \u003cspan class=\"fx\">to become an actor\u003c/span> began in high school.\u003c/div>\u003cdiv class=\"g-ko\">배우가 되고자 하는 그의 열망은 고등학교 때 시작되었다.\u003c/div>\u003cdiv class=\"g-note\">투부정사구가 주어를 수식하는 문장\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-1\">\u003cdiv class=\"g-en\">A black cat \u003cspan class=\"fx\">crossing your path\u003c/span> is believed to be a sign of bad luck.\u003c/div>\u003cdiv class=\"g-ko\">가는 길을 가로지르는 검은 고양이는 불운의 징조로 믿어진다.\u003c/div>\u003cdiv class=\"g-note\">현재분사구가 주어를 수식하는 문장\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-2\">\u003cdiv class=\"g-en\">Dogs \u003cspan class=\"fx\">kept indoors\u003c/span> often have problems with depression and anxiety.\u003c/div>\u003cdiv class=\"g-ko\">실내에서 키운 개는 종종 우울증과 불안증의 문제가 있다.\u003c/div>\u003cdiv class=\"g-note\">과거분사구가 주어를 수식하는 문장\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"g-tip\" data-hl=\"tip\">\u003cb>주의\u003c/b>분사가 주어를 뒤에서 꾸밀 때 수동과 능동의 의미 관계를 잘 살펴봐야 해요.\u003c/div>","segs":[{"n":14,"text":"주어 뒤에 붙어서 주어를 더 자세히 설명해 주는 수식어구들을 알아볼게요. 투부정사나 분사 같은 표현이 주어 바로 뒤에서 명사를 꾸며줄 수 있답니다.","hl":"rule"},{"n":15,"text":"첫 번째 예문을 봅시다. His desire to become an actor began in high school이에요. 배우가 되고자 하는이라는 투부정사구가 주어 desire를 꾸며주고 있어요.","hl":"ex-0"},{"n":16,"text":"두 번째 예문이에요. A black cat crossing your path is believed to be a sign of bad luck이라고 했죠. 길을 가로지르는이라는 현재분사구 분홍빛 표현이 고양이를 수식해요.","hl":"ex-1"},{"n":17,"text":"세 번째 예문을 보죠. Dogs kept indoors often have problems with depression and anxiety예요. 실내에서 키워진다는 의미의 과거분사구가 개들을 꾸며주고 있네요.","hl":"ex-2"},{"n":18,"text":"분사가 주어를 꾸밀 때 능동이면 현재분사를, 수동이면 과거분사를 쓴다는 점을 잊지 마세요.","hl":"tip"}]},{"html":"\u003cspan class=\"lp-tag\">개념 4 / 4\u003c/span>\u003ch2 class=\"g-h\">전치사구와 관계대명사절의 주어 수식\u003c/h2>\u003cdiv class=\"g-rule\" data-hl=\"rule\">주어는 \u003cb class=\"key\">전치사구\u003c/b>나 \u003cb class=\"key\">관계대명사절\u003c/b>의 수식을 받아 길어질 수 있으며, 진짜 동사의 위치를 잘 찾아야 해요.\u003cdiv>\u003cspan class=\"g-formula\">주어 + 전치사구/관계대명사절 + 동사\u003c/span>\u003c/div>\u003c/div>\u003cdiv class=\"g-exs\">\u003cdiv class=\"g-ex\" data-hl=\"ex-0\">\u003cdiv class=\"g-en\">People \u003cspan class=\"fx\">with high blood pressure\u003c/span> need to exercise every day.\u003c/div>\u003cdiv class=\"g-ko\">고혈압이 있는 사람들은 매일 운동을 해야 한다.\u003c/div>\u003cdiv class=\"g-note\">전치사구가 주어를 수식하는 문장\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-1\">\u003cdiv class=\"g-en\">Money \u003cspan class=\"fx\">that we use to make profits\u003c/span> is called an investment.\u003c/div>\u003cdiv class=\"g-ko\">이윤을 내기 위해서 사용하는 돈은 투자라고 불린다.\u003c/div>\u003cdiv class=\"g-note\">관계대명사절이 주어를 수식하는 문장\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"g-tip\" data-hl=\"tip\">\u003cb>주의\u003c/b>수식어구가 길어도 주어와 진짜 동사 사이의 수 일치를 틀리지 않도록 조심하세요.\u003c/div>","segs":[{"n":19,"text":"마지막으로 주어가 전치사구나 관계대명사절 때문에 길어지는 경우를 살펴볼게요. 수식어구에 현혹되지 말고 문장의 진짜 동사를 찾아내는 것이 핵심이에요.","hl":"rule"},{"n":20,"text":"첫 번째 예문을 읽어 볼게요. People with high blood pressure need to exercise every day예요. 고혈압을 가진이라는 전치사구가 사람들을 꾸며주고 있죠.","hl":"ex-0"},{"n":21,"text":"두 번째 예문이에요. Money that we use to make profits is called an investment라고 했어요. 우리가 이윤을 내기 위해 사용하는이라는 관계대명사절이 돈을 수식해요.","hl":"ex-1"},{"n":22,"text":"주어와 동사 사이에 긴 수식어가 끼어 있더라도 당황하지 말고 진짜 주어의 단수와 복수를 파악해서 동사와 짝을 맞춰 주세요.","hl":"tip"}]},{"html":"\u003cspan class=\"lp-tag\">자주 하는 실수\u003c/span>\u003ch2 class=\"g-h\">이렇게 쓰면 틀려요\u003c/h2>\u003cdiv class=\"g-mk\" data-hl=\"mk-0\">\u003cdiv class=\"g-wrong\">✗ \u003cs>To argue with him are a waste of time.\u003c/s>\u003c/div>\u003cdiv class=\"g-right\">✓ To argue with him is a waste of time.\u003c/div>\u003cdiv class=\"g-why\">투부정사구가 주어일 때는 단수 취급을 하므로 동사는 are가 아니라 is를 써야 해요.\u003c/div>\u003c/div>\u003cdiv class=\"g-mk\" data-hl=\"mk-1\">\u003cdiv class=\"g-wrong\">✗ \u003cs>Dogs keeping indoors often have problems.\u003c/s>\u003c/div>\u003cdiv class=\"g-right\">✓ Dogs kept indoors often have problems.\u003c/div>\u003cdiv class=\"g-why\">개들이 실내에서 '키워지는' 수동의 의미이므로 현재분사 keeping이 아니라 과거분사 kept를 써야 해요.\u003c/div>\u003c/div>","segs":[{"n":23,"text":"학생들이 자주 하는 실수 중 하나예요. To argue with him are a waste of time이라고 쓰면 틀려요. 투부정사구 주어는 단수 취급하므로 is를 써야 맞답니다.","hl":"mk-0"},{"n":24,"text":"두 번째 자주 틀리는 부분이에요. Dogs keeping indoors라고 쓰면 개들이 직접 실내에서 키우는 뜻이 돼요. 개들은 키워지는 것이므로 과거분사 kept를 써야 올바른 문장이 돼요.","hl":"mk-1"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">확인 문제 1 / 6\u003c/span>\u003cspan class=\"g-kind\">객관식\u003c/span>\u003c/div>\u003cdiv data-hl=\"q\">\u003cdiv class=\"g-q\">다음 문장의 주어 자리에 올 수 없는 것은 무엇인가요?\u003c/div>\u003cdiv class=\"g-qs\">____ is a waste of time.\u003c/div>\u003cdiv class=\"g-opts\" data-rv=\"ans\">\u003cbutton class=\"g-opt\">\u003cb>①\u003c/b>All his wealth\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>②\u003c/b>To argue with him\u003c/button>\u003cbutton class=\"g-opt\" data-ok=\"1\">\u003cb>③\u003c/b>Happily\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>④\u003c/b>That students learn better\u003c/button>\u003c/div>\u003c/div>\u003cdiv class=\"g-ans\" data-rv=\"ans\" data-hl=\"ans\">\u003cb>정답\u003c/b>\u003cspan class=\"a\">Happily\u003c/span>\u003cdiv class=\"g-exp\">부사인 Happily는 명사 역할을 할 수 없으므로 주어 자리에 올 수 없어요.\u003c/div>\u003c/div>\u003cbutton class=\"g-show\" data-act=\"show\">정답 보기\u003c/button>","segs":[{"n":25,"text":"첫 번째 문제입니다. 빈칸에 들어갈 수 없는 것을 고르는 문제네요. 화면에 나오는 보기들을 잘 읽고 잠시 멈춘 뒤 정답을 골라 보세요.","hl":"q"},{"n":26,"text":"","hl":"q","pause":6},{"n":27,"text":"정답은 세 번째 보기인 Happily예요. 부사는 주어 자리에 올 수 없기 때문이죠.","hl":"ans","reveal":"ans"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">확인 문제 2 / 6\u003c/span>\u003cspan class=\"g-kind\">빈칸\u003c/span>\u003c/div>\u003cdiv data-hl=\"q\">\u003cdiv class=\"g-q\">다음 문장에서 가주어 자리에 알맞은 단어를 쓰세요.\u003c/div>\u003cdiv class=\"g-qs\">____ is a waste of time to argue with him.\u003c/div>\u003c/div>\u003cdiv class=\"g-ans\" data-rv=\"ans\" data-hl=\"ans\">\u003cb>정답\u003c/b>\u003cspan class=\"a\">It\u003c/span>\u003cdiv class=\"g-exp\">진주어인 to부정사를 뒤로 보내고 문장 맨 앞 빈자리를 채우는 가주어는 It이에요.\u003c/div>\u003c/div>\u003cbutton class=\"g-show\" data-act=\"show\">정답 보기\u003c/button>","segs":[{"n":28,"text":"두 번째 문제입니다. 빈칸에 알맞은 단어를 쓰는 문제예요. 잠시 멈추고 빈칸에 무엇이 들어갈지 적어 보세요.","hl":"q"},{"n":29,"text":"","hl":"q","pause":6},{"n":30,"text":"정답은 It이에요. 진주어를 뒤로 보내고 빈자리를 채우는 가주어는 바로 It이랍니다.","hl":"ans","reveal":"ans"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">확인 문제 3 / 6\u003c/span>\u003cspan class=\"g-kind\">오류 수정\u003c/span>\u003c/div>\u003cdiv data-hl=\"q\">\u003cdiv class=\"g-q\">다음 문장에서 어법상 틀린 부분을 찾아 바르게 고쳐 전체 문장을 쓰세요.\u003c/div>\u003cdiv class=\"g-qs\">To argue with him are a waste of time.\u003c/div>\u003c/div>\u003cdiv class=\"g-ans\" data-rv=\"ans\" data-hl=\"ans\">\u003cb>정답\u003c/b>\u003cspan class=\"a\">To argue with him is a waste of time.\u003c/span>\u003cdiv class=\"g-exp\">투부정사구 주어는 단수 취급하므로 동사 are를 단수 동사인 is로 고쳐야 해요.\u003c/div>\u003c/div>\u003cbutton class=\"g-show\" data-act=\"show\">정답 보기\u003c/button>","segs":[{"n":31,"text":"세 번째 문제입니다. 문장에서 틀린 부분을 찾아 고치는 오류 수정 문제예요. 잠시 멈추고 바른 문장으로 고쳐 보세요.","hl":"q"},{"n":32,"text":"","hl":"q","pause":6},{"n":33,"text":"정답은 To argue with him is a waste of time이에요. 투부정사구 주어는 단수 취급하므로 are를 is로 고쳐야 해요.","hl":"ans","reveal":"ans"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">확인 문제 4 / 6\u003c/span>\u003cspan class=\"g-kind\">배열\u003c/span>\u003c/div>\u003cdiv data-hl=\"q\">\u003cdiv class=\"g-q\">다음 단어들을 올바르게 배열하여 문장을 완성하세요.\u003c/div>\u003cdiv class=\"g-qs\">( wealth / All / his / bring / couldn’t / happiness / him )\u003c/div>\u003c/div>\u003cdiv class=\"g-ans\" data-rv=\"ans\" data-hl=\"ans\">\u003cb>정답\u003c/b>\u003cspan class=\"a\">All his wealth couldn’t bring him happiness\u003c/span>\u003cdiv class=\"g-exp\">주어인 All his wealth가 맨 처음에 오고 조동사 couldn't와 동사원형 bring이 이어져요.\u003c/div>\u003c/div>\u003cbutton class=\"g-show\" data-act=\"show\">정답 보기\u003c/button>","segs":[{"n":34,"text":"네 번째 문제입니다. 괄호 안의 단어들을 바르게 배열하는 문제네요. 잠시 멈추고 공책에 순서대로 적어 보세요.","hl":"q"},{"n":35,"text":"","hl":"q","pause":6},{"n":36,"text":"정답은 All his wealth couldn’t bring him happiness예요. 주어 다음에 조동사와 동사가 잘 연결되었죠.","hl":"ans","reveal":"ans"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">확인 문제 5 / 6\u003c/span>\u003cspan class=\"g-kind\">영작\u003c/span>\u003c/div>\u003cdiv data-hl=\"q\">\u003cdiv class=\"g-q\">다음 우리말 뜻에 맞게 빈칸을 영작하세요.\u003c/div>\u003cdiv class=\"g-qs\">이윤을 내기 위해서 사용하는 돈은 투자라고 불린다. -&gt; ____ that we use to make profits is called an investment.\u003c/div>\u003c/div>\u003cdiv class=\"g-ans\" data-rv=\"ans\" data-hl=\"ans\">\u003cb>정답\u003c/b>\u003cspan class=\"a\">Money\u003c/span>\u003cdiv class=\"g-exp\">주어에 해당하는 단어 '돈'을 뜻하는 Money가 와야 해요.\u003c/div>\u003c/div>\u003cbutton class=\"g-show\" data-act=\"show\">정답 보기\u003c/button>","segs":[{"n":37,"text":"다섯 번째 문제입니다. 제시된 우리말을 참고하여 빈칸에 알맞은 영단어를 쓰는 영작 문제예요. 잠시 멈추고 직접 써 보세요.","hl":"q"},{"n":38,"text":"","hl":"q","pause":6},{"n":39,"text":"정답은 Money예요. 주어인 돈을 뜻하는 명사 Money가 문장 맨 처음에 와야 하죠.","hl":"ans","reveal":"ans"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">확인 문제 6 / 6\u003c/span>\u003cspan class=\"g-kind\">객관식\u003c/span>\u003c/div>\u003cdiv data-hl=\"q\">\u003cdiv class=\"g-q\">다음 중 주어를 수식하는 분사의 쓰임이 옳지 않은 것은 무엇인가요?\u003c/div>\u003cdiv class=\"g-opts\" data-rv=\"ans\">\u003cbutton class=\"g-opt\">\u003cb>①\u003c/b>A black cat crossing your path\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>②\u003c/b>Dogs kept indoors\u003c/button>\u003cbutton class=\"g-opt\" data-ok=\"1\">\u003cb>③\u003c/b>People with high blood pressure\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>④\u003c/b>Money that we use\u003c/button>\u003c/div>\u003c/div>\u003cdiv class=\"g-ans\" data-rv=\"ans\" data-hl=\"ans\">\u003cb>정답\u003c/b>\u003cspan class=\"a\">Money that we use\u003c/span>\u003cdiv class=\"g-exp\">Money that we use는 관계대명사절의 수식을 받는 것이지 분사구의 수식을 받는 것이 아니에요.\u003c/div>\u003c/div>\u003cbutton class=\"g-show\" data-act=\"show\">정답 보기\u003c/button>","segs":[{"n":40,"text":"마지막 여섯 번째 문제입니다. 보기 중 분사의 수식을 받는 주어가 아닌 것을 골라 보세요. 잠시 생각하고 정답을 골라 보세요.","hl":"q"},{"n":41,"text":"","hl":"q","pause":6},{"n":42,"text":"정답은 네 번째 보기인 Money that we use예요. 이것은 관계대명사절의 수식을 받는 형태랍니다.","hl":"ans","reveal":"ans"}]},{"html":"\u003cspan class=\"lp-tag\">오늘의 정리\u003c/span>\u003ch2 class=\"g-h\">09강 주어, 동사 판단\u003c/h2>\u003cul class=\"g-sum\" data-hl=\"sum\">\u003cli>주어 자리에는 명사, 대명사뿐만 아니라 \u003cb class=\"key\">명사구\u003c/b>와 \u003cb class=\"key\">명사절\u003c/b>도 올 수 있어요.\u003c/li>\u003cli>길어진 주어는 가주어 \u003cb class=\"key\">It\u003c/b>을 쓰고 뒤로 보낼 수 있어요.\u003c/li>\u003cli>주어는 투부정사, 분사, \u003cb class=\"key\">전치사구\u003c/b>, \u003cb class=\"key\">관계대명사절\u003c/b>의 수식을 받을 수 있어요.\u003c/li>\u003c/ul>","segs":[{"n":43,"text":"오늘 우리는 주어 자리에 올 수 있는 다양한 형태와 주어를 꾸며주는 수식어구에 대해 확실히 배웠어요. 주어와 동사를 정확히 찾는 연습을 꾸준히 한다면 어떤 어려운 영어 문장도 두렵지 않을 거예요. 오늘 배운 내용을 복습하면서 오늘 강의를 마무리할게요. 수고 많았어요.","hl":"sum"}]}]});</script><script src="/chat-widget.js" defer></script>
+</body></html>
