@@ -1,0 +1,164 @@
+[강의 녹음 대본] Unit 1 주어와 동사의 이해: 동사·대동사·수 일치 핵심 정리
+
+음성 파일 폴더 이름: 문법_Unit_1_주어와_동사의_이해_2_audio
+강의 HTML 파일과 같은 위치에 이 폴더를 만들고, 아래 번호대로 음성 파일을 넣어 주세요.
+
+────────────────────────
+1.mp3   (슬라이드 1)
+안녕하세요, 여러분. 오늘은 주어와 동사의 이해 단원을 함께 공부해요. 문장을 이루는 동사의 역할부터 대동사, 주어와 동사의 수 일치까지 예문으로 차근차근 살펴볼게요. 마지막에는 간단한 문제도 함께 풀어 보면서 오늘 배운 내용을 확인해 봅시다.
+
+────────────────────────
+2.mp3   (슬라이드 2)
+먼저 문장에는 동사가 꼭 필요하다는 점부터 기억해요. 동사를 두 개 쓰고 싶을 때는 and나 but 같은 접속어구로 연결해야 하고, 접속어구가 없으면 하나는 준동사로 바꿔야 해요. 명령문은 동사원형이 문장을 이끌고, 그 앞에는 You should가 생략된 것으로 볼 수 있어요. 이 원리를 예문으로 하나씩 확인해 볼게요.
+
+────────────────────────
+3.mp3   (슬라이드 2)
+The relationship between money and happiness is a complicated one. 돈과 행복의 관계는 복잡한 것이다라는 뜻이에요. 이 문장에서 is는 문장을 구성하는 데 반드시 필요한 동사이고, being은 동사 자리에 혼자 설 수 없어요.
+
+────────────────────────
+4.mp3   (슬라이드 2)
+She closed the door and went back to her bed. 그녀는 문을 닫고 침대로 돌아갔다는 뜻이에요. and가 closed와 went를 연결해 두 동작을 자연스럽게 이어 주고 있죠.
+
+────────────────────────
+5.mp3   (슬라이드 2)
+Take your umbrella with you on your way out tomorrow morning. 내일 아침 나갈 때 우산을 챙기라는 뜻이에요. Take가 동사원형으로 시작하는 명령문이라서 Taking이 아니라 Take를 써야 해요.
+
+────────────────────────
+6.mp3   (슬라이드 2)
+Try to talk to yourself in positive terms. 긍정적인 말로 자신에게 말해 보라는 뜻이에요. 명령문에서 목적어가 주어 자신이면 yourself를 써서 자신에게 말한다는 의미를 분명히 해요.
+
+────────────────────────
+7.mp3   (슬라이드 2)
+명령문에서는 주어 you가 숨어 있다고 생각하면 편해요. 그래서 목적어가 주어 자신일 때는 yourself 같은 재귀대명사를 씁니다.
+
+────────────────────────
+8.mp3   (슬라이드 3)
+이번에는 대동사예요. 앞에 나온 동사구를 똑같이 반복하기 싫을 때 do나 be동사, have, 조동사 같은 대동사로 짧게 받아 줍니다. 이때 대동사는 앞 동사의 종류에 맞추고, 대동사가 쓰인 절의 주어와 시제에도 맞춰야 해요. 예문을 보면 어떤 동사구를 대신하는지 쉽게 알 수 있을 거예요.
+
+────────────────────────
+9.mp3   (슬라이드 3)
+Animals do not express their pain as humans do. 동물들은 인간이 아픔을 표현하는 방식처럼 아픔을 표현하지 않는다는 뜻이에요. 뒤의 do는 앞에 나온 express their pain을 대신하는 대동사예요.
+
+────────────────────────
+10.mp3   (슬라이드 3)
+Cats are much more sensitive to smell than we are. 고양이들은 우리보다 냄새에 훨씬 더 민감하다는 뜻이에요. are는 앞의 are sensitive to smell을 반복하지 않으려고 쓴 be동사 대동사예요.
+
+────────────────────────
+11.mp3   (슬라이드 3)
+I can not speak Spanish, but my sister can. 나는 스페인어를 말할 수 없지만 내 여동생은 할 수 있다는 뜻이에요. can은 앞의 can speak Spanish를 대신하는 조동사 대동사예요.
+
+────────────────────────
+12.mp3   (슬라이드 3)
+대동사를 고를 때는 앞에 어떤 동사가 나왔는지를 먼저 보세요. 일반동사면 do, be동사나 진행형이면 be동사, 완료형이면 have, 조동사면 같은 조동사로 받는다고 정리해 두면 좋아요.
+
+────────────────────────
+13.mp3   (슬라이드 4)
+주어가 길어질 때는 당황하지 말고 핵심 주어를 찾아야 해요. 전치사구나 to부정사구, 분사구, 관계사절 같은 수식어는 주어의 수를 결정하지 않고, 수식어를 걷어 낸 뒤 마지막에 해석되는 명사가 진짜 주어예요. to부정사구나 동명사구, 명사절이 주어일 때는 단수동사를 쓴다는 점도 꼭 기억해요. 동격절이 붙은 명사는 그 명사의 수에 동사를 맞춥니다. 예문으로 핵심 주어를 직접 찾아볼게요.
+
+────────────────────────
+14.mp3   (슬라이드 4)
+Opportunities to work abroad are limited to a very few people. 해외에서 일할 기회는 극소수에게 제한되어 있다는 뜻이에요. to work abroad는 Opportunities를 꾸미는 수식어이고, 핵심 주어 Opportunities가 복수라서 are를 써요.
+
+────────────────────────
+15.mp3   (슬라이드 4)
+The income gap between genders is decreasing in many countries. 성별 간 소득 격차는 많은 나라에서 줄고 있다는 뜻이에요. between genders를 걷어 내면 핵심 주어 The income gap이 단수라서 is가 맞아요.
+
+────────────────────────
+16.mp3   (슬라이드 4)
+Wearing masks helps protect us and everyone around us. 마스크를 쓰는 것은 우리와 주변 모든 사람을 보호하는 데 도움이 된다는 뜻이에요. 동명사구 Wearing masks가 주어라서 단수동사 helps를 써요.
+
+────────────────────────
+17.mp3   (슬라이드 4)
+The evidence that the new drugs are better is weak. 새 약이 더 낫다는 증거는 약하다는 뜻이에요. that the new drugs are better는 The evidence와 동격인 절이고, 동사의 수는 핵심 명사 The evidence에 맞춰 is를 써요.
+
+────────────────────────
+18.mp3   (슬라이드 4)
+수식어는 주어를 자세히 설명해 줄 뿐 동사의 수를 바꾸지 않아요. 전치사구나 분사구, to부정사구, 관계사절이 보이면 잠시 걷어 내고 핵심 주어만 남겨 보세요.
+
+────────────────────────
+19.mp3   (슬라이드 5)
+마지막으로 단수와 복수 취급을 구분해 볼게요. one of나 each of, every로 시작하는 주어는 단수로 보고, the rich처럼 the와 형용사가 사람들을 뜻할 때는 복수로 봐요. police와 cattle은 항상 복수 취급하고, a number of는 다수라서 복수, the number of는 수라서 단수예요. 대표 예문으로 이 원리를 확인해 봅시다.
+
+────────────────────────
+20.mp3   (슬라이드 5)
+One of the passengers was injured in the car accident. 승객 중 한 명이 자동차 사고에서 다쳤다는 뜻이에요. one of 다음에 복수명사가 와도 주어는 단수로 보기 때문에 was를 써요.
+
+────────────────────────
+21.mp3   (슬라이드 5)
+Each of the explanations has its merits and shortcomings. 각 설명에는 각각 장점과 단점이 있다는 뜻이에요. each of 뒤에 복수명사가 있어도 단수 취급해서 has를 써요.
+
+────────────────────────
+22.mp3   (슬라이드 5)
+The rich pay more taxes because they earn more money. 부자들은 더 많은 돈을 벌기 때문에 더 많은 세금을 낸다는 뜻이에요. the rich가 부자들이라는 복수 보통명사라서 pay를 써요.
+
+────────────────────────
+23.mp3   (슬라이드 5)
+The police are looking for a man with blonde hair. 경찰은 금발 머리 남자를 찾고 있다는 뜻이에요. police는 항상 복수 취급하는 집합명사라서 are를 써요.
+
+────────────────────────
+24.mp3   (슬라이드 5)
+a number of와 the number of는 모양이 비슷하지만 뜻과 동사의 수가 완전히 달라요. 상관접속사로 주어가 연결되면 뒤에 나온 명사의 수에 동사를 맞춘다는 점도 함께 기억해 두세요.
+
+────────────────────────
+25.mp3   (슬라이드 6)
+She closed the door and going back to her bed라고 하면 and 뒤에 정동사가 아니라 준동사가 와서 어색해요. 이때는 She closed the door and went back to her bed처럼 두 번째 동사를 정동사 went로 써야 해요.
+
+────────────────────────
+26.mp3   (슬라이드 6)
+One of the passengers were injured in the car accident라고 쓰면 주어의 수를 잘못 맞춘 문장이에요. one of 뒤에 복수명사가 와도 주어는 단수로 보기 때문에 was를 써야 해요.
+
+────────────────────────
+27.mp3   (슬라이드 6)
+The police is looking for a man with blonde hair라고 하면 police의 수 취급을 놓친 거예요. police는 항상 복수 취급하는 집합명사라서 are를 써야 합니다.
+
+────────────────────────
+28.mp3   (슬라이드 7)
+첫 번째 문제입니다. After dinner I watch television or 빈칸 the dogs for a walk. 빈칸에 to take와 take 중 알맞은 것을 골라 보세요. 잠시 멈추고 직접 풀어 보세요.
+
+────────────────────────
+30.mp3   (슬라이드 7)
+정답은 take예요. or가 watch와 take를 연결하고 있으므로 두 번째 동사도 동사원형으로 써야 해요. to take를 쓰면 접속어구 없이 준동사가 되어 문장 구조가 어긋나요.
+
+────────────────────────
+31.mp3   (슬라이드 8)
+두 번째 문제입니다. 빈칸 to turn off the lights before leaving the office. 빈칸에 Remember와 Remembering 중 알맞은 것을 골라 보세요. 잠시 멈추고 직접 풀어 보세요.
+
+────────────────────────
+33.mp3   (슬라이드 8)
+정답은 Remember예요. 명령문은 동사원형이 이끌기 때문에 Remember to turn off the lights before leaving the office라고 해야 해요. Remembering은 동명사라서 명령문의 동사 자리에 올 수 없어요.
+
+────────────────────────
+34.mp3   (슬라이드 9)
+세 번째 문제입니다. I have the same right as everyone in this country 빈칸. 빈칸에 is와 does 중 알맞은 것을 골라 보세요. 잠시 멈추고 직접 풀어 보세요.
+
+────────────────────────
+36.mp3   (슬라이드 9)
+정답은 does예요. 앞에 나온 have the same right를 반복하지 않기 위해 대동사를 쓰는데, 주어 everyone이 단수라서 does가 맞아요. is는 be동사라서 일반동사 have를 대신할 수 없어요.
+
+────────────────────────
+37.mp3   (슬라이드 10)
+네 번째 문제입니다. My brother is now physically better than he 빈칸 ten years ago. 빈칸에 was와 did 중 알맞은 것을 골라 보세요. 잠시 멈추고 직접 풀어 보세요.
+
+────────────────────────
+39.mp3   (슬라이드 10)
+정답은 was예요. 앞에 나온 is physically better를 반복하지 않으려고 be동사 대동사를 쓰고, ten years ago에 맞춰 과거형 was를 써요. did는 일반동사를 대신할 때 쓰는 대동사라 여기에는 맞지 않아요.
+
+────────────────────────
+40.mp3   (슬라이드 11)
+다섯 번째 문제입니다. Birds living in this region 빈칸 becoming less diverse. 빈칸에 is와 are 중 알맞은 것을 골라 보세요. 잠시 멈추고 직접 풀어 보세요.
+
+────────────────────────
+42.mp3   (슬라이드 11)
+정답은 are예요. 주어에서 마지막에 해석되는 핵심 명사는 Birds이고 복수라서 are를 써야 해요. living in this region은 Birds를 꾸미는 수식어라 동사의 수를 결정하지 않아요.
+
+────────────────────────
+43.mp3   (슬라이드 12)
+여섯 번째 문제입니다. Every country in the world 빈칸 established a system of laws. 빈칸에 has와 have 중 알맞은 것을 골라 보세요. 잠시 멈추고 직접 풀어 보세요.
+
+────────────────────────
+45.mp3   (슬라이드 12)
+정답은 has예요. Every로 시작하는 주어는 단수 취급하기 때문에 has를 써야 해요. in the world는 country를 꾸미는 수식어라서 주어의 수에 영향을 주지 않아요.
+
+────────────────────────
+46.mp3   (슬라이드 13)
+오늘은 문장을 이루는 동사의 역할부터 대동사, 주어와 동사의 수 일치까지 공부했어요. 문장에는 동사가 꼭 필요하고 두 동사를 이을 때는 접속어구를 쓴다는 점, 앞에 나온 동사구는 대동사로 짧게 받는다는 점을 기억해요. 주어가 길어도 핵심 주어의 수에 동사를 맞추고, 단수와 복수 취급 규칙을 적용하면 된답니다. 예문과 문제를 다시 보면서 오늘 배운 내용을 꼭 복습하고, 다음 시간에 또 만나요.
