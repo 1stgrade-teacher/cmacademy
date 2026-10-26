@@ -6,6 +6,8 @@
 // Vercel → Project → Settings → Environment Variables
 //   NOTION_TOKEN        (필수) 노션 통합(Integration) 비밀 키 (ntn_... 또는 secret_...)
 //   NOTION_DB_ID        (필수) '인강 학습 인증 기록' 데이터베이스 ID
+//   NOTION_STUDENT_DB_ID (선택) '인강 학생별 기록' 데이터베이스 ID
+//                        (안 넣으면 기록 DB의 '학생 페이지' 연결에서 자동으로 찾음)
 //   SHEET_WEBHOOK_URL   (선택) 구글 시트 Apps Script 웹앱 주소 (시트에도 같이 쌓기)
 //   DEEPSEEK_API_KEY    (선택) 있으면 한줄요약 AI 평가 + 확인문제 없는 강의에 AI 문제 출제
 //   CHAT_CODE           (선택) AI 조교와 같은 입장 코드. 넣으면 코드를 아는 학생만 제출 가능
@@ -113,6 +115,69 @@ const QUIZ_SYS = `너는 영어 학원 선생님이야. [강의 내용]만 근�
 (ans는 정답 보기의 0부터 시작하는 번호, opts에는 번호 기호를 붙이지 마)`;
 
 // ---------- 노션 ----------
+function notionHeaders() {
+  return { Authorization: "Bearer " + process.env.NOTION_TOKEN, "Notion-Version": NOTION_VER, "Content-Type": "application/json" };
+}
+async function notionCall(path, method, body) {
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), 8000);
+  try {
+    const r = await fetch("https://api.notion.com/v1/" + path, { method, headers: notionHeaders(), body: body ? JSON.stringify(body) : undefined, signal: ctl.signal });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) console.error("notion", path, r.status, JSON.stringify(j).slice(0, 300));
+    return r.ok ? j : null;
+  } catch (e) {
+    console.error("notion", path, e && e.message);
+    return null;
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+// 학생별 페이지 ('인강 학생별 기록' DB) — 이름+반이 같으면 같은 학생
+const STUDENT_REL = "학생 페이지";
+let studentDb = null;            // { id, titleProp } 또는 false(없음)
+const studentCache = new Map();  // "이름|반" -> page id
+async function getStudentDb(recordDb) {
+  if (studentDb !== null) return studentDb;
+  let id = (process.env.NOTION_STUDENT_DB_ID || "").replace(/-/g, "").trim();
+  if (!id) {
+    const db = await notionCall("databases/" + recordDb, "GET");
+    if (!db) return null; // 잠깐 실패한 것일 수 있으니 기억하지 않음
+    const rel = db.properties && db.properties[STUDENT_REL];
+    id = rel && rel.type === "relation" && rel.relation && rel.relation.database_id;
+    if (!id) { studentDb = false; return false; }
+  }
+  const sdb = await notionCall("databases/" + id, "GET");
+  if (!sdb) return null;
+  const titleProp = Object.keys(sdb.properties || {}).find((k) => sdb.properties[k].type === "title") || "이름";
+  const hasCls = sdb.properties && sdb.properties["반"] && sdb.properties["반"].type === "select";
+  studentDb = { id, titleProp, hasCls };
+  return studentDb;
+}
+function normName(n) {
+  n = clip(n, 30).replace(/\s+/g, " ");
+  return /[가-힣]/.test(n) ? n.replace(/\s/g, "") : n; // 한글 이름은 띄어쓰기 차이를 무시
+}
+async function findOrCreateStudent(recordDb, name, cls) {
+  const sdb = await getStudentDb(recordDb);
+  if (!sdb) return null;
+  const key = name + "|" + cls;
+  if (studentCache.has(key)) return studentCache.get(key);
+  const and = [{ property: sdb.titleProp, title: { equals: name } }];
+  if (sdb.hasCls) and.push({ property: "반", select: { equals: cls } });
+  const q = await notionCall("databases/" + sdb.id + "/query", "POST", { filter: { and }, page_size: 1 });
+  let id = q && q.results && q.results[0] && q.results[0].id;
+  if (!id && q) {
+    const props = { [sdb.titleProp]: { title: rt(name) } };
+    if (sdb.hasCls) props["반"] = sel(cls);
+    const pg = await notionCall("pages", "POST", { parent: { database_id: sdb.id }, properties: props });
+    id = pg && pg.id;
+  }
+  if (id) { studentCache.set(key, id); if (studentCache.size > 3000) studentCache.clear(); }
+  return id || null;
+}
+
 function rt(s) {
   s = clip(s, 1990);
   return s ? [{ type: "text", text: { content: s } }] : [];
@@ -159,8 +224,15 @@ async function toNotion(rec) {
     children.push({ object: "block", type: "quote", quote: { rich_text: rt(rec.message) } });
   }
 
+  // 학생 페이지에 연결 (실패해도 기록 저장은 계속)
+  let studentLinked = false;
+  try {
+    const sid = await findOrCreateStudent(db, rec.name, rec.cls);
+    if (sid) { props[STUDENT_REL] = { relation: [{ id: sid }] }; studentLinked = true; }
+  } catch (e) { console.error("student", e && e.message); }
+
   const body = JSON.stringify({ parent: { database_id: db }, properties: props, children });
-  const headers = { Authorization: "Bearer " + token, "Notion-Version": NOTION_VER, "Content-Type": "application/json" };
+  const headers = notionHeaders();
   let r = await fetch("https://api.notion.com/v1/pages", { method: "POST", headers, body });
   if (!r.ok) {
     const t = await r.text().catch(() => "");
@@ -169,11 +241,11 @@ async function toNotion(rec) {
     if (r.status === 400 && /select|option/i.test(t)) {
       ["반", "영역", "판정", "이해도", "AI 요약평가"].forEach((k) => delete props[k]);
       r = await fetch("https://api.notion.com/v1/pages", { method: "POST", headers, body: JSON.stringify({ parent: { database_id: db }, properties: props, children }) });
-      if (r.ok) return { ok: true, partial: true };
+      if (r.ok) return { ok: true, partial: true, student: studentLinked };
     }
     return { ok: false, why: "http" + r.status };
   }
-  return { ok: true };
+  return { ok: true, student: studentLinked };
 }
 
 async function toSheet(rec) {
@@ -253,7 +325,7 @@ module.exports = async function handler(req, res) {
   if (!checkRate(ip, "n", limit)) return sendJson(res, 429, { error: "day", msg: "오늘 제출 횟수를 모두 사용했어요." });
 
   const st = b.student || {}, pg = b.page || {}, s = b.stats || {}, qz = b.quiz || {};
-  const name = clip(st.name, 30);
+  const name = normName(st.name);
   if (!name) return sendJson(res, 400, { error: "name", msg: "이름을 입력해 주세요." });
   const summary = clip(b.summary, 400);
   if (summary.length < 5) return sendJson(res, 400, { error: "summary", msg: "오늘 배운 내용을 한 줄로 적어 주세요." });
@@ -294,5 +366,5 @@ module.exports = async function handler(req, res) {
       msg: unset ? "학습 인증이 아직 준비되지 않았어요. (선생님: Vercel에 NOTION_TOKEN, NOTION_DB_ID를 넣어 주세요)" : "기록을 저장하지 못했어요. 잠시 뒤 다시 제출해 주세요.",
     });
   }
-  return sendJson(res, 200, { ok: true, verdict: rec.verdict, score, right, total, aiGrade, aiFeedback, saved: { notion: nr.ok, sheet: sr.ok } });
+  return sendJson(res, 200, { ok: true, verdict: rec.verdict, score, right, total, aiGrade, aiFeedback, saved: { notion: nr.ok, student: !!nr.student, sheet: sr.ok } });
 };
