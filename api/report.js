@@ -118,15 +118,20 @@ const QUIZ_SYS = `너는 영어 학원 선생님이야. [강의 내용]만 근�
 function notionHeaders() {
   return { Authorization: "Bearer " + process.env.NOTION_TOKEN, "Notion-Version": NOTION_VER, "Content-Type": "application/json" };
 }
+let lastNotionErr = null;
 async function notionCall(path, method, body) {
   const ctl = new AbortController();
   const t = setTimeout(() => ctl.abort(), 8000);
   try {
     const r = await fetch("https://api.notion.com/v1/" + path, { method, headers: notionHeaders(), body: body ? JSON.stringify(body) : undefined, signal: ctl.signal });
     const j = await r.json().catch(() => ({}));
-    if (!r.ok) console.error("notion", path, r.status, JSON.stringify(j).slice(0, 300));
+    if (!r.ok) {
+      lastNotionErr = { path: path.replace(/[0-9a-f]{32}/gi, "ID"), status: r.status, code: j && j.code, msg: clip(j && j.message, 160) };
+      console.error("notion", path, r.status, JSON.stringify(j).slice(0, 300));
+    }
     return r.ok ? j : null;
   } catch (e) {
+    lastNotionErr = { path: path.replace(/[0-9a-f]{32}/gi, "ID"), status: 0, code: "network", msg: clip(e && e.message, 120) };
     console.error("notion", path, e && e.message);
     return null;
   } finally {
@@ -164,14 +169,23 @@ async function findOrCreateStudent(recordDb, name, cls) {
   if (!sdb) return null;
   const key = name + "|" + cls;
   if (studentCache.has(key)) return studentCache.get(key);
-  const and = [{ property: sdb.titleProp, title: { equals: name } }];
-  if (sdb.hasCls) and.push({ property: "반", select: { equals: cls } });
-  const q = await notionCall("databases/" + sdb.id + "/query", "POST", { filter: { and }, page_size: 1 });
-  let id = q && q.results && q.results[0] && q.results[0].id;
-  if (!id && q) {
+  // 이름이 같은 학생을 모두 가져와서(최대 100명) 반은 코드에서 비교
+  const q = await notionCall("databases/" + sdb.id + "/query", "POST", { filter: { property: sdb.titleProp, title: { equals: name } }, page_size: 100 });
+  if (!q) return null; // 조회 실패 시 중복 생성을 막기 위해 만들지 않음
+  const same = (q.results || []).find((pg) => {
+    if (!sdb.hasCls) return true;
+    const c = pg.properties && pg.properties["반"] && pg.properties["반"].select;
+    return (c && c.name || "") === cls;
+  });
+  let id = same && same.id;
+  if (!id) {
     const props = { [sdb.titleProp]: { title: rt(name) } };
     if (sdb.hasCls) props["반"] = sel(cls);
-    const pg = await notionCall("pages", "POST", { parent: { database_id: sdb.id }, properties: props });
+    let pg = await notionCall("pages", "POST", { parent: { database_id: sdb.id }, properties: props });
+    if (!pg && sdb.hasCls) { // 반 선택지 문제로 실패했을 수 있으니 반 없이 한 번 더
+      delete props["반"];
+      pg = await notionCall("pages", "POST", { parent: { database_id: sdb.id }, properties: props });
+    }
     id = pg && pg.id;
   }
   if (id) { studentCache.set(key, id); if (studentCache.size > 3000) studentCache.clear(); }
@@ -278,6 +292,13 @@ function verdictOf(score, coverage, aiGrade) {
 }
 
 module.exports = async function handler(req, res) {
+  if (req.method === "GET" && /[?&]check=1\b/.test(req.url || "")) {
+    // 점검용: 학생별 기록 DB에 연결되는지 확인 (비밀 값은 보여 주지 않음)
+    lastNotionErr = null;
+    studentDb = null;
+    const sdb = process.env.NOTION_TOKEN && process.env.NOTION_DB_ID ? await getStudentDb(String(process.env.NOTION_DB_ID).replace(/-/g, "")) : null;
+    return sendJson(res, 200, { studentDb: sdb ? "ok" : sdb === false ? "no-relation" : "error", titleProp: sdb && sdb.titleProp, lastError: lastNotionErr });
+  }
   if (req.method === "GET") {
     return sendJson(res, 200, {
       ok: true,
