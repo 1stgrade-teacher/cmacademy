@@ -20,7 +20,8 @@
   // 반 목록 (바꾸고 싶으면 여기만 고치면 됩니다)
   var CLASSES = ["초6 S반", "중1 S반", "중2 일등급반", "중2 사관반", "중3 일등급반"];
   var PASS_COVERAGE = 0.8;   // 이만큼 보면 '다 봤다'로 봄
-  var MAX_LECTURE_Q = 5;     // 강의 속 문제 중 최대 몇 개를 낼지
+  var QUIZ_TOTAL = 10;       // 확인 문제 총 문항 수 (강의 속 문제 + 부족하면 AI 출제)
+  var MAX_ARRANGE = 3;       // 그중 '어구 배열(터치)' 문제 최대 개수
   var API = "/api/report";
   var LS_ME = "cm-learn-me";
   var LS_CODE = "cm-chat-code"; // AI 조교와 같은 입장 코드를 함께 씀
@@ -143,8 +144,13 @@
         if (okIdx < 0) return;
         item.type = "mc"; item.opts = list; item.ans = okIdx; item.answer = list[okIdx];
       } else {
-        if (!answer || /[가-힣]/.test(answer) || answer.length > 140) return; // 우리말 답(채점 어려움)은 제외
-        item.type = "text";
+        // 타자 입력 문제는 내지 않음 → 영어 문장이 정답이면 '어구 터치 배열' 문제로 바꿈
+        if (!answer || /[가-힣]/.test(answer) || answer.length > 140) return;
+        var one = answer.split(/\s+\/\s+|\s*\|\s*|\s+또는\s+/)[0];
+        var words = one.trim().split(/\s+/);
+        if (words.length < 3 || words.length > 14) return; // 단어·짧은 빈칸 답은 제외(객관식으로 AI가 보충)
+        item.type = "arrange"; item.answer = one.trim(); item.words = words;
+        if (/오류|틀린|고쳐/.test(item.kind + item.q)) item.fix = 1;
       }
       qs.push(item);
     });
@@ -271,6 +277,10 @@
     ".opt:hover{background:#F0F8F8}.opt.on{border-color:#0E8A8C;background:#DDF2F1;font-weight:600}" +
     ".opt.ok{border-color:#2E9E5B;background:#E5F6EC}.opt.ng{border-color:#D9534F;background:#FBE9E8}" +
     ".res{margin-top:8px;font-size:13.5px;line-height:1.5;padding:8px 10px;border-radius:8px}.res.ok{background:#E5F6EC;color:#1F6E40}.res.ng{background:#FBE9E8;color:#9B2C28}" +
+    ".arr-ans{min-height:48px;margin-top:8px;padding:8px;border:2px dashed #BFD9D8;border-radius:10px;background:#F9FDFD;display:flex;flex-wrap:wrap;gap:6px;align-items:center}.arr-ph{color:#8FA3A8;font-size:13.5px}" +
+    ".arr-pool{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}" +
+    ".chip{border:1px solid #BFD9D8;background:#fff;border-radius:10px;padding:10px 13px;min-height:44px;font-size:16px;color:#1B2733;cursor:pointer;touch-action:manipulation}.chip.in{background:#DDF2F1;border-color:#0E8A8C;font-weight:600}.chip.used{opacity:.25;pointer-events:none}" +
+    ".arr-bar{display:flex;gap:8px;margin-top:8px}.arr-bar button{border:0;background:#EEF4F4;border-radius:8px;padding:8px 12px;font-size:13px;color:#4A5B66;cursor:pointer}" +
     ".rate{display:flex;gap:6px}.rate button{flex:1;border:1px solid #D6E4E4;background:#fff;border-radius:10px;padding:8px 2px;font-size:12px;cursor:pointer;color:#1B2733;line-height:1.3}" +
     ".rate button b{display:block;font-size:18px}.rate button.on{border-color:#0E8A8C;background:#DDF2F1}" +
     ".ft{padding:12px 16px;border-top:1px solid #E6ECEF;background:#fff;display:flex;gap:8px;align-items:center}" +
@@ -345,14 +355,14 @@
     if (QUIZ) return Promise.resolve(QUIZ);
     readLecture();
     var lq = LECTURE_Q.slice();
-    // 객관식/주관식이 섞이도록 고르고, 보기 순서를 섞음
     var mc = shuffle(lq.filter(function (q) { return q.type === "mc"; }));
-    var tx = shuffle(lq.filter(function (q) { return q.type === "text"; }));
-    var pick = [];
-    while (pick.length < MAX_LECTURE_Q && (mc.length || tx.length)) {
-      if (mc.length) pick.push(mc.shift());
-      if (pick.length < MAX_LECTURE_Q && tx.length) pick.push(tx.shift());
-    }
+    var ar = shuffle(lq.filter(function (q) { return q.type === "arrange"; }));
+    ar.sort(function (a, b) { return (b.fix || 0) - (a.fix || 0); }); // 오류 수정형을 먼저
+    var pick = ar.slice(0, MAX_ARRANGE);
+    while (pick.length < QUIZ_TOTAL && mc.length) pick.push(mc.shift());
+    // 객관식이 모자라면 남은 배열 문제로 채움
+    var rest = ar.slice(MAX_ARRANGE);
+    while (pick.length < QUIZ_TOTAL && rest.length) pick.push(rest.shift());
     pick.forEach(function (q) {
       if (q.type !== "mc") return;
       var order = shuffle(q.opts.map(function (_, i) { return i; }));
@@ -360,27 +370,38 @@
       q.opts = order.map(function (i) { return q.opts[i]; });
       q.ans = q.opts.indexOf(right);
     });
+    // 객관식을 앞, 배열(터치) 문제를 뒤로
+    pick = pick.filter(function (q) { return q.type === "mc"; }).concat(pick.filter(function (q) { return q.type !== "mc"; }));
     QUIZ = pick;
-    if (pick.length >= 3) return Promise.resolve(QUIZ);
-    // 강의 속 문제가 3개 미만이면 AI가 부족한 만큼 출제 (같은 강의는 한 번만 만들어 저장)
+    var need = QUIZ_TOTAL - pick.length;
+    if (need <= 0) return Promise.resolve(QUIZ);
+    // 강의 속 문제가 모자라면 AI가 부족한 만큼 객관식 출제 (같은 강의는 한 번만 만들어 저장)
     return loadServer().then(function (sv) {
       if (!sv.ai) return QUIZ;
-      var cached = jGet(LS_PROG + ":aiq");
-      var get = cached && cached.items ? Promise.resolve(cached) :
+      var cached = jGet(LS_PROG + ":aiq10");
+      var get = cached && cached.items && cached.items.length >= need ? Promise.resolve(cached) :
         fetch(API, { method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "quiz", code: lsGet(LS_CODE), ctx: { title: pageInfo().title, text: LECTURE_TEXT } }) })
+          body: JSON.stringify({ action: "quiz", n: need, code: lsGet(LS_CODE), ctx: { title: pageInfo().title, text: LECTURE_TEXT } }) })
           .then(function (r) { return r.ok ? r.json() : { items: [] }; })
-          .then(function (j) { if (j.items && j.items.length) jSet(LS_PROG + ":aiq", j); return j; })
+          .then(function (j) { if (j.items && j.items.length) jSet(LS_PROG + ":aiq10", j); return j; })
           .catch(function () { return { items: [] }; });
       return get.then(function (j) {
-        (j.items || []).slice(0, 3 - QUIZ.length).forEach(function (x) {
-          QUIZ.push({ type: "mc", src: "ai", kind: "AI 확인 문제", q: x.q, sub: "", opts: x.opts.slice(), ans: x.ans, answer: x.opts[x.ans], exp: x.exp || "" });
+        var add = (j.items || []).slice(0, need).map(function (x) {
+          return { type: "mc", src: "ai", kind: "확인 문제", q: x.q, sub: "", opts: x.opts.slice(), ans: x.ans, answer: x.opts[x.ans], exp: x.exp || "" };
         });
+        // AI 문제는 보기 순서도 섞음
+        add.forEach(function (q) {
+          var order = shuffle(q.opts.map(function (_, i) { return i; })), right = q.opts[q.ans];
+          q.opts = order.map(function (i) { return q.opts[i]; }); q.ans = q.opts.indexOf(right);
+        });
+        var mcs = QUIZ.filter(function (q) { return q.type === "mc"; }).concat(add);
+        QUIZ = mcs.concat(QUIZ.filter(function (q) { return q.type !== "mc"; }));
         return QUIZ;
       });
     });
   }
 
+  function isPassage() { return pageInfo().area === "독해"; }
   function pageInfo() {
     var segs = PATH.split("/").filter(Boolean).map(function (x) { try { return decodeURIComponent(x); } catch (e) { return x; } });
     var area = segs[0] || "기타";
@@ -458,9 +479,9 @@
     bd.innerHTML = '<div class="card me">🙋 <b>' + esc(me.name) + "</b> · " + esc(me.cls) + '<a class="chg">바꾸기</a></div>' +
       statsHtml() +
       '<div class="card qbox"><h4>📝 확인 문제</h4><div class="hint"><span class="spin"></span>문제를 준비하고 있어요…</div></div>' +
-      '<div class="card"><h4>✍️ 오늘 배운 내용 한 줄 요약 <small style="color:#C0392B;font-weight:400">(필수)</small></h4>' +
-      '<textarea class="sum" maxlength="400" placeholder="예: 주어가 I면 am, he/she/it이면 is, 여럿이면 are를 쓴다."></textarea>' +
-      '<div class="hint">강의를 안 본 친구에게 설명하듯 내 말로 적어 보세요. AI가 읽고 한마디 해 줘요.</div></div>' +
+      '<div class="card"><h4>✍️ ' + (isPassage() ? "본문의 내용을 한 줄로 요약" : "오늘 배운 내용 한 줄 요약") + ' <small style="color:#C0392B;font-weight:400">(필수)</small></h4>' +
+      '<textarea class="sum" maxlength="400" placeholder="' + (isPassage() ? "예: 본문의 중심 내용을 우리말로 한 문장으로 적어요." : "예: 주어가 I면 am, he/she/it이면 is, 여럿이면 are를 쓴다.") + '"></textarea>' +
+      '<div class="hint">' + (isPassage() ? "글쓴이가 말하고 싶은 핵심을 한 문장으로 적어 보세요. 점수에는 포함되지 않고, AI가 읽고 한마디 해 줘요." : "강의를 안 본 친구에게 설명하듯 내 말로 적어 보세요. 점수에는 포함되지 않고, AI가 읽고 한마디 해 줘요.") + "</div></div>" +
       '<div class="card"><h4>🤔 얼마나 이해했나요?</h4><div class="rate">' +
       [["5", "완벽해요", "😎"], ["4", "거의 이해", "🙂"], ["3", "보통", "😐"], ["2", "헷갈려요", "😕"], ["1", "모르겠어요", "😵"]].map(function (r) {
         return '<button type="button" data-v="' + r[0] + " " + r[1] + '"><b>' + r[2] + "</b>" + r[1] + "</button>";
@@ -492,7 +513,7 @@
     if (!box) return;
     answers = {};
     if (!qs.length) {
-      box.innerHTML = '<h4>📝 확인 문제</h4><div class="hint">이 강의는 확인 문제가 없어요. 아래 한줄요약을 정성껏 적어 주세요!</div>';
+      box.innerHTML = '<h4>📝 확인 문제</h4><div class="hint">이 강의는 확인 문제가 없어요. 아래 요약을 정성껏 적어 주세요!</div>';
       return;
     }
     var h = '<h4>📝 확인 문제 <small style="color:#7A8896;font-weight:400">' + qs.length + "문항 · 강의에서 배운 그대로 풀어 보세요</small></h4>";
@@ -504,7 +525,8 @@
           return '<button type="button" class="opt" data-k="' + k + '">' + "①②③④⑤⑥"[k] + " " + esc(o) + "</button>";
         }).join("") + "</div>";
       } else {
-        h += '<input type="text" class="ta" maxlength="200" placeholder="답을 영어로 쓰세요" autocomplete="off" autocapitalize="off" spellcheck="false">';
+        h += '<div class="hint" style="margin-top:4px">👆 어구를 터치해서 알맞은 순서로 문장을 완성하세요</div><div class="arr-ans" aria-label="내가 만든 문장"></div><div class="arr-pool"></div>' +
+          '<div class="arr-bar"><button type="button" class="arr-undo">↩ 마지막 취소</button><button type="button" class="arr-reset">처음부터</button></div>';
       }
       h += "</div>";
     });
@@ -517,14 +539,40 @@
           b.classList.add("on"); answers[i] = +b.getAttribute("data-k");
         };
       });
-      var ta = qEl.querySelector(".ta");
-      if (ta) ta.oninput = function () { answers[i] = ta.value; };
+      if (qEl.querySelector(".arr-pool")) initArrange(qEl, i);
     });
+  }
+
+  // 어구를 터치해서 순서대로 쌓는 문제
+  function initArrange(qEl, i) {
+    var q = QUIZ[i], ansBox = qEl.querySelector(".arr-ans"), pool = qEl.querySelector(".arr-pool");
+    var chips = shuffle(q.words.map(function (w, k) { return { w: w, id: k }; }));
+    if (chips.length > 1 && chips.every(function (c, k) { return c.id === k; })) chips.reverse(); // 처음부터 정답 순서면 뒤집기
+    var chosen = [];
+    function paint() {
+      ansBox.innerHTML = chosen.length ? "" : '<span class="arr-ph">아래 어구를 순서대로 터치하세요</span>';
+      chosen.forEach(function (c) {
+        var b = document.createElement("button"); b.type = "button"; b.className = "chip in"; b.textContent = c.w;
+        b.onclick = function () { chosen.splice(chosen.indexOf(c), 1); paint(); };
+        ansBox.appendChild(b);
+      });
+      pool.innerHTML = "";
+      chips.forEach(function (c) {
+        var b = document.createElement("button"); b.type = "button"; b.className = "chip" + (chosen.indexOf(c) >= 0 ? " used" : ""); b.textContent = c.w;
+        b.onclick = function () { if (chosen.indexOf(c) < 0) { chosen.push(c); paint(); } };
+        pool.appendChild(b);
+      });
+      answers[i] = chosen.length === chips.length ? chosen.map(function (c) { return c.w; }).join(" ") : "";
+    }
+    qEl.querySelector(".arr-undo").onclick = function () { chosen.pop(); paint(); };
+    qEl.querySelector(".arr-reset").onclick = function () { chosen = []; paint(); };
+    paint();
   }
 
   function grade(q, a) {
     if (q.type === "mc") return { given: a == null ? "" : q.opts[a], ok: a === q.ans };
     var given = clean(a);
+    if (q.type === "arrange") return { given: given, ok: !!given && normAns(given) === normAns(q.answer) };
     var alts = String(q.answer).split(/\s+\/\s+|\s*\|\s*|\s+또는\s+/).map(normAns);
     return { given: given, ok: !!given && alts.indexOf(normAns(given)) >= 0 };
   }
@@ -538,7 +586,7 @@
     for (var i = 0; i < qs.length; i++) {
       if (answers[i] == null || answers[i] === "") return showErr("Q" + (i + 1) + "번을 아직 안 풀었어요.");
     }
-    if (sum.length < 10) { bd.querySelector(".sum").focus(); return showErr("한줄요약을 10자 이상 적어 주세요."); }
+    if (sum.length < 10) { bd.querySelector(".sum").focus(); return showErr((isPassage() ? "본문 요약을" : "한줄요약을") + " 10자 이상 적어 주세요."); }
     if (!rate) return showErr("이해도를 골라 주세요.");
     var codeIn = bd.querySelector(".code");
     if (codeIn && codeIn.value.trim()) lsSet(LS_CODE, codeIn.value.trim());
@@ -563,7 +611,7 @@
           page: { title: info.title, area: info.area, book: book || info.book, url: info.url },
           stats: { coverage: coverage(), activeSec: S.active, away: S.away, maxRate: S.maxRate, slidesSeen: Object.keys(S.seen).length, slidesTotal: S.total },
           quiz: { items: items },
-          summary: sum, understanding: rate, message: msg,
+          summary: sum, summaryKind: isPassage() ? "passage" : "lecture", understanding: rate, message: msg,
           lectureText: LECTURE_TEXT.slice(0, 5000),
         }),
       });
@@ -592,7 +640,7 @@
       j.verdict && j.verdict.indexOf("재수강") >= 0 ? "틀린 부분을 다시 보고, 강의를 한 번 더 들어 보면 좋겠어요." : "잘했어요! 틀린 문제만 다시 확인해 봐요.";
     var h = '<div class="card big"><div class="v">' + (pct == null ? "✓" : pct + "점") + '</div><div class="t">' + esc(j.verdict || "") + "</div>" +
       '<div class="hint">' + esc(msg) + "<br>기록이 선생님께 전달되었어요. 📬</div></div>";
-    if (j.aiFeedback) h += '<div class="card ai"><h4>🤖 한줄요약 AI 피드백 · ' + esc(j.aiGrade) + "</h4><div style=\"font-size:14.5px;line-height:1.6\">" + esc(j.aiFeedback) + "</div></div>";
+    if (j.aiFeedback) h += '<div class="card ai"><h4>🤖 요약 AI 피드백 (참고용) · ' + esc(j.aiGrade) + "</h4><div style=\"font-size:14.5px;line-height:1.6\">" + esc(j.aiFeedback) + "</div></div>";
     if (qs.length) {
       h += '<div class="card"><h4>📝 채점 결과</h4>';
       qs.forEach(function (q, i) {
