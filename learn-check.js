@@ -111,6 +111,36 @@
       .replace(/\s+([,.!?;:])/g, "$1").replace(/[.!?。]+\s*$/, "")
       .replace(/\s+/g, " ").trim();
   }
+  // 긴 문장을 의미 덩어리(chunk)로 나눔: 쉼표 뒤, 전치사·접속사·관계사 앞에서 끊고, 너무 짧은 덩어리는 이웃과 합침
+  var BREAK_BEFORE = /^(in|on|at|of|to|with|without|by|for|from|as|into|onto|about|over|under|between|through|during|after|before|among|against|within|upon|toward|towards|that|which|who|whom|whose|when|where|while|because|since|if|although|though|unless|until|whether|and|but|or|than|so|yet)$/i;
+  function chunkSentence(words) {
+    var ch = [], cur = [];
+    words.forEach(function (w, i) {
+      var bare = w.replace(/[^A-Za-z']/g, "");
+      if (cur.length && (BREAK_BEFORE.test(bare) || /[,;:]$/.test(words[i - 1]))) { ch.push(cur); cur = []; }
+      cur.push(w);
+    });
+    if (cur.length) ch.push(cur);
+    // 1단어 덩어리(to, When 등)는 뒤 덩어리와 합침 (마지막이면 앞과 합침)
+    for (var i = 0; i < ch.length; i++) {
+      if (ch[i].length === 1 && ch.length > 1) {
+        if (i < ch.length - 1) { ch[i + 1] = ch[i].concat(ch[i + 1]); ch.splice(i, 1); i--; }
+        else { ch[i - 1] = ch[i - 1].concat(ch[i]); ch.pop(); }
+      }
+    }
+    // 덩어리가 너무 많으면(10개 초과) 가장 짧은 이웃끼리 합침, 너무 긴 덩어리(6단어 초과)는 절반으로
+    while (ch.length > 10) {
+      var best = 0, bl = 99;
+      for (var j = 0; j < ch.length - 1; j++) { var l = ch[j].length + ch[j + 1].length; if (l < bl) { bl = l; best = j; } }
+      ch.splice(best, 2, ch[best].concat(ch[best + 1]));
+    }
+    var out = [];
+    ch.forEach(function (c) {
+      if (c.length > 6) { var h = Math.ceil(c.length / 2); out.push(c.slice(0, h).join(" ")); out.push(c.slice(h).join(" ")); }
+      else out.push(c.join(" "));
+    });
+    return out;
+  }
   function extractQuestions(htmls) {
     if (!parser) return [];
     var qs = [];
@@ -147,10 +177,11 @@
         // 타자 입력 문제는 내지 않음 → 영어 문장이 정답이면 '어구 터치 배열' 문제로 바꿈
         // 오류 수정·배열 유형만 터치 배열로 바꿈 (영작·빈칸 등 다른 타자 문제는 내지 않음 → AI 객관식이 대신 채움)
         if (!/오류|배열|순서/.test(item.kind + " " + item.q)) return;
-        if (!answer || /[가-힣]/.test(answer) || answer.length > 140) return;
+        if (!answer || /[가-힣]/.test(answer) || answer.length > 300) return;
         var one = answer.split(/\s+\/\s+|\s*\|\s*|\s+또는\s+/)[0];
         var words = one.trim().split(/\s+/);
-        if (words.length < 3 || words.length > 14) return; // 단어·짧은 빈칸 답은 제외(객관식으로 AI가 보충)
+        if (words.length < 3 || words.length > 45) return; // 단어·짧은 빈칸 답은 제외(객관식으로 AI가 보충)
+        if (words.length >= 9) words = chunkSentence(words); // 긴 문장은 의미 덩어리(chunk) 단위로
         item.type = "arrange"; item.answer = one.trim(); item.words = words;
         item.sub = ""; // 틀린 문장·조각을 보여 주면 어순이 드러나므로 화면에 내지 않음
         if (/오류/.test(item.kind + item.q)) {
