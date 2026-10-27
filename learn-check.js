@@ -152,9 +152,10 @@
         var words = one.trim().split(/\s+/);
         if (words.length < 3 || words.length > 14) return; // 단어·짧은 빈칸 답은 제외(객관식으로 AI가 보충)
         item.type = "arrange"; item.answer = one.trim(); item.words = words;
+        item.sub = ""; // 틀린 문장·조각을 보여 주면 어순이 드러나므로 화면에 내지 않음
         if (/오류/.test(item.kind + item.q)) {
           item.fix = 1;
-          item.q = "다음 문장에서 틀린 부분을 찾아, 어구를 터치해 바르게 고친 문장을 완성하세요.";
+          item.q = "어구를 알맞은 순서로 터치하여 올바른 문장을 완성하세요.";
         } else {
           item.q = item.q.replace(/(영어로\s*)?(바르게\s*|알맞게\s*)?(다시\s*)?(쓰|써|배열하|나열하)(시오|세요|라)\.?/g, "완성하세요.");
         }
