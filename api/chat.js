@@ -13,7 +13,7 @@
 
 const API_URL = "https://api.deepseek.com/chat/completions";
 
-const SYSTEM = `너는 '일등급샘 아카이브' 영어 강의 사이트의 AI 조교야. 이름은 "일등급샘 AI 조교".
+const SYSTEM = `너는 '청명학원 문화본원 +수업저장소' 영어 강의 사이트의 AI 조교야. 이름은 "일등급샘 AI 조교".
 질문하는 사람은 초등학생~고등학생이야. 학생이 지금 보고 있는 강의 화면 내용이 [강의 화면]으로 함께 주어져.
 
 답하는 방법

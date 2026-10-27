@@ -445,7 +445,7 @@
     var segs = PATH.split("/").filter(Boolean).map(function (x) { try { return decodeURIComponent(x); } catch (e) { return x; } });
     var area = segs[0] || "기타";
     if (["문법", "독해", "구문", "교과서"].indexOf(area) < 0) area = "기타";
-    var title = (document.title || "").replace(/\s*[—-]\s*(AI ?강의|일등급샘).*$/, "").trim();
+    var title = (document.title || "").replace(/\s*[—-]\s*(AI ?강의|청명학원 문화본원).*$/, "").trim();
     var t2 = title.split(/\s+—\s+/);
     if (t2.length === 2) title = t2[1] + " · " + t2[0];
     return { area: area, book: segs.slice(1, -1).join(" › "), title: title || segs[segs.length - 1] || "강의", url: location.href.split("#")[0] };
@@ -458,7 +458,7 @@
     if (info.area === "교과서") return Promise.resolve(bookName); // 교과서는 경로(학년›출판사›과)가 더 알아보기 쉬움
     return fetch("./index.html", { cache: "force-cache" }).then(function (r) { return r.ok ? r.text() : ""; }).then(function (h) {
       var m = h.match(/<title>([^<]+)<\/title>/i);
-      if (m) { var t = m[1].replace(/\s*[-—|]\s*일등급샘.*$/, "").trim(); if (t) bookName = t; }
+      if (m) { var t = m[1].replace(/\s*[-—|]\s*청명학원 문화본원.*$/, "").trim(); if (t) bookName = t; }
       return bookName;
     }).catch(function () { return bookName; });
   }
