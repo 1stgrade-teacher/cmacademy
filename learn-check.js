@@ -145,12 +145,19 @@
         item.type = "mc"; item.opts = list; item.ans = okIdx; item.answer = list[okIdx];
       } else {
         // 타자 입력 문제는 내지 않음 → 영어 문장이 정답이면 '어구 터치 배열' 문제로 바꿈
+        // 오류 수정·배열 유형만 터치 배열로 바꿈 (영작·빈칸 등 다른 타자 문제는 내지 않음 → AI 객관식이 대신 채움)
+        if (!/오류|배열|순서/.test(item.kind + " " + item.q)) return;
         if (!answer || /[가-힣]/.test(answer) || answer.length > 140) return;
         var one = answer.split(/\s+\/\s+|\s*\|\s*|\s+또는\s+/)[0];
         var words = one.trim().split(/\s+/);
         if (words.length < 3 || words.length > 14) return; // 단어·짧은 빈칸 답은 제외(객관식으로 AI가 보충)
         item.type = "arrange"; item.answer = one.trim(); item.words = words;
-        if (/오류|틀린|고쳐/.test(item.kind + item.q)) item.fix = 1;
+        if (/오류/.test(item.kind + item.q)) {
+          item.fix = 1;
+          item.q = "다음 문장에서 틀린 부분을 찾아, 어구를 터치해 바르게 고친 문장을 완성하세요.";
+        } else {
+          item.q = item.q.replace(/(영어로\s*)?(바르게\s*|알맞게\s*)?(다시\s*)?(쓰|써|배열하|나열하)(시오|세요|라)\.?/g, "완성하세요.");
+        }
       }
       qs.push(item);
     });
