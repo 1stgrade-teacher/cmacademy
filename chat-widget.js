@@ -11,6 +11,14 @@
   if (window.__cmChat) return;
   window.__cmChat = true;
 
+  // 학습 완료 인증(learn-check.js)도 함께 불러옴 — 강의 HTML은 고칠 필요 없음
+  if (!window.__cmLearnLoad) {
+    window.__cmLearnLoad = true;
+    var lc = document.createElement("script");
+    lc.src = "/learn-check.js"; lc.defer = true;
+    (document.head || document.documentElement).appendChild(lc);
+  }
+
   var API = "/api/chat";
   var LS_CODE = "cm-chat-code";
   var SS_KEY = "cm-chat:" + location.pathname;
