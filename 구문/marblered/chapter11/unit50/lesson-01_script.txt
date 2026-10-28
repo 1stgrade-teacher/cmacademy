@@ -1,0 +1,304 @@
+[강의 녹음 대본] 어순을 뒤집어 강조하는 도치와 전치 구문
+
+음성 파일 폴더 이름: 구문_도치와_강조_어순_audio
+강의 HTML 파일과 같은 위치에 이 폴더를 만들고, 아래 번호대로 음성 파일을 넣어 주세요.
+
+────────────────────────
+1.mp3   (슬라이드 1)
+안녕하세요, 여러분. 오늘은 영어 문장에서 어순이 뒤집히는 도치 구문과 목적어가 앞으로 나오는 전치 구문을 함께 배워 볼 거예요. 이런 구문은 시험에서 문장 구조를 묻는 문제로 자주 나오기 때문에 앞부분의 신호어를 빨리 알아차리는 것이 중요해요. 오늘 예문은 모두 같은 원리로 어순이 바뀐 문장들이니 차근차근 끊어 읽으며 익혀 봅시다.
+
+────────────────────────
+2.mp3   (슬라이드 2)
+먼저 핵심 규칙부터 볼게요. 부정어나 neither, nor, so, such 같은 표현이 문장 앞에 오면 조동사나 be동사가 주어 앞으로 이동하는 도치가 일어나요. 또 목적어를 강조하려고 문장 앞으로 보내는 경우에는 앞에 나온 덩어리를 목적어로 잡고 뒤에서 주어와 동사를 찾아야 해요. 그래서 이런 문장은 첫 단어를 보는 순간 어순이 바뀌었다는 신호를 알아차리는 것이 가장 중요합니다.
+
+────────────────────────
+3.mp3   (슬라이드 3)
+The present moment, 현재의 순간은. does not exist, 존재하지 않는다. in the equations of physics, 물리학의 방정식 안에. and therefore, 그러므로. neither does the flow of time, 시간의 흐름도 그렇지 않다.
+
+────────────────────────
+4.mp3   (슬라이드 3)
+첫 번째 문장을 볼게요. 앞 절에서 현재의 순간이 물리학 방정식에 존재하지 않는다고 말하고 therefore 뒤에서 neither does the flow of time으로 이어 줍니다. 여기서 neither가 앞에 나오면서 does가 주어 the flow of time 앞으로 이동한 도치가 일어난 거예요. 해석할 때는 시간의 흐름도 역시 존재하지 않는다고 자연스럽게 연결해 주면 됩니다.
+
+────────────────────────
+5.mp3   (슬라이드 4)
+이 문장은 물리학 공식 안에는 현재라는 순간도 없고 시간이 흐른다는 개념도 없다는 뜻이에요. 조금 어렵게 들리지만 쉽게 말하면 물리 방정식만으로는 시간의 흐름을 설명하기 어렵다는 이야기죠. 그래서 neither 이하를 시간의 흐름도 마찬가지로 존재하지 않는다고 받아들이면 됩니다.
+
+────────────────────────
+6.mp3   (슬라이드 4)
+표현을 바꿔 볼까요. neither does the flow of time은 the flow of time does not exist there either로 풀어 쓸 수 있어요. 이렇게 바꾸면 도치를 풀어 일반 어순으로 만들 수 있고 뜻은 그대로 유지됩니다.
+
+────────────────────────
+7.mp3   (슬라이드 4)
+어구도 정리해 볼게요. the present moment는 the here and now로 바꿀 수 있고 does not exist는 is absent로 바꿀 수 있어요. the flow of time은 the passage of time과 같은 뜻으로 기억해 두면 좋습니다.
+
+────────────────────────
+8.mp3   (슬라이드 4)
+이제 같은 뜻의 문장을 들어 볼게요. Physics equations contain no present moment, so they also contain no passage of time. 물리학 방정식에는 현재의 순간이 없고 따라서 시간의 흐름도 없다는 뜻으로 원문과 같은 내용입니다.
+
+────────────────────────
+9.mp3   (슬라이드 5)
+What the caterpillar calls the end of the world, 애벌레가 세상의 종말이라고 부르는 것은. the world calls, 세상은 부른다. a butterfly, 나비라고.
+
+────────────────────────
+10.mp3   (슬라이드 5)
+두 번째 문장을 볼게요. 앞부분의 What the caterpillar calls the end of the world는 애벌레가 세상의 종말이라고 부르는 것이라는 목적어 덩어리예요. 이 목적어가 문장 앞으로 전치되었고 뒤에서 the world calls a butterfly가 세상은 그것을 나비라고 부른다는 뜻을 완성합니다. 그래서 앞의 what절을 먼저 목적어로 잡고 뒤의 주어와 동사를 찾는 것이 핵심입니다.
+
+────────────────────────
+11.mp3   (슬라이드 6)
+이 문장은 같은 대상도 보는 관점에 따라 다르게 불린다는 뜻이에요. 애벌레에게는 세상의 끝이지만 사람이 사는 세상에서는 나비가 되는 것이죠. 쉽게 말해 끝이라고 생각한 것이 다른 관점에서는 새로운 시작이나 아름다운 것으로 보일 수 있다는 메시지입니다.
+
+────────────────────────
+12.mp3   (슬라이드 6)
+표현을 바꿔 볼까요. 원문은 목적어를 앞에 두었지만 The world calls a butterfly what the caterpillar calls the end of the world라고 하면 일반 어순이 됩니다. 뜻은 세상은 애벌레가 종말이라고 부르는 것을 나비라고 부른다는 그대로예요.
+
+────────────────────────
+13.mp3   (슬라이드 6)
+어구도 정리해 볼게요. calls the end of the world는 regards as the end of the world로 바꿀 수 있고 the end of the world는 the end of everything으로 풀어 쓸 수 있어요. the world calls는 others see it as라는 표현으로 바꾸어 이해할 수 있습니다.
+
+────────────────────────
+14.mp3   (슬라이드 6)
+같은 뜻의 문장을 들어 볼게요. The world calls a butterfly what the caterpillar calls the end of the world. 애벌레가 세상의 종말이라고 부르는 것을 세상은 나비라고 부른다는 뜻입니다.
+
+────────────────────────
+15.mp3   (슬라이드 7)
+Such was the power of his voice, 그의 목소리의 힘은 너무나 대단해서. that even those at the back of the room, 방 뒤쪽에 있는 사람들조차도. gazed at the speaker in awe, 그 연사를 경탄하며 응시했다.
+
+────────────────────────
+16.mp3   (슬라이드 7)
+세 번째 문장을 볼게요. Such was the power of his voice에서 Such가 보어로 앞에 나오고 was가 주어 the power of his voice 앞으로 이동했어요. 뒤의 that절은 너무 대단해서 어떤 결과가 일어났는지를 설명합니다. 그래서 Such를 너무나 대단한 정도로 해석하고 that절을 결과로 연결하면 됩니다.
+
+────────────────────────
+17.mp3   (슬라이드 8)
+이 문장은 그의 목소리에 엄청난 힘이 있어서 방 뒤쪽 사람들까지도 연사를 경탄하며 바라보았다는 뜻이에요. 단순히 목소리가 컸다는 것이 아니라 사람들을 끌어당길 만큼 설득력과 존재감이 있었다는 뉘앙스입니다.
+
+────────────────────────
+18.mp3   (슬라이드 8)
+표현을 바꿔 볼까요. Such was the power of his voice that은 His voice was so powerful that으로 바꿀 수 있어요. 이렇게 하면 도치를 풀어 일반 어순으로 만들고 결과의 의미도 그대로 살릴 수 있습니다.
+
+────────────────────────
+19.mp3   (슬라이드 8)
+어구도 정리해 볼게요. gazed at은 stared at으로 바꿀 수 있고 in awe는 with admiration으로 바꿀 수 있어요. at the back of the room은 in the rear of the room과 같은 뜻으로 기억해 두면 좋습니다.
+
+────────────────────────
+20.mp3   (슬라이드 8)
+같은 뜻의 문장을 들어 볼게요. His voice was so powerful that even people at the back of the room stared at the speaker with admiration. 그의 목소리가 너무 대단해서 방 뒤쪽 사람들조차 연사를 경탄하며 바라보았다는 뜻입니다.
+
+────────────────────────
+21.mp3   (슬라이드 9)
+Philosophy, 철학은. which is understood to be the desire to acquire wisdom, 지혜를 얻으려는 욕망으로 이해되는. is a fundamental part of the human being, 인간의 근원적인 부분이고. and so is science, 과학도 역시 그러하다.
+
+────────────────────────
+22.mp3   (슬라이드 9)
+네 번째 문장을 볼게요. 앞에서 철학이 인간의 근원적인 부분이라고 말한 뒤 and so is science로 이어 줍니다. 여기서 so가 앞의 긍정 내용을 받아 과학도 그러하다는 뜻을 만들고 is가 주어 science 앞으로 이동한 도치가 일어나요. 그래서 과학도 인간의 근원적인 부분이라는 뜻으로 연결하면 됩니다.
+
+────────────────────────
+23.mp3   (슬라이드 10)
+이 문장은 철학과 과학이 모두 인간에게 근원적인 부분이라는 뜻이에요. 철학은 지혜를 얻으려는 욕망으로 이해되고, 과학도 그에 못지않게 중요하다는 것이죠. 두 학문이 서로 반대가 아니라 함께 인간을 이해하는 중요한 요소라는 뉘앙스입니다.
+
+────────────────────────
+24.mp3   (슬라이드 10)
+표현을 바꿔 볼까요. and so is science는 and science is a fundamental part of the human being as well로 풀어 쓸 수 있어요. 이렇게 바꾸면 도치를 풀면서 과학도 역시 그렇다는 뜻을 분명히 살릴 수 있습니다.
+
+────────────────────────
+25.mp3   (슬라이드 10)
+어구도 정리해 볼게요. is understood to be는 is regarded as로 바꿀 수 있고 acquire wisdom은 gain wisdom으로 바꿀 수 있어요. a fundamental part of는 an essential part of와 같은 뜻으로 익혀 두세요.
+
+────────────────────────
+26.mp3   (슬라이드 10)
+같은 뜻의 문장을 들어 볼게요. Philosophy, regarded as the desire to gain wisdom, is an essential part of humans, and science is too. 철학은 지혜를 얻으려는 욕망으로 여겨지며 인간의 필수적인 부분이고 과학도 그렇다는 뜻입니다.
+
+────────────────────────
+27.mp3   (슬라이드 11)
+The release of atomic energy, 원자 에너지의 방출은. has not created a new problem, 새로운 문제를 만들어 내지 않았다.. It has merely made more urgent, 그것은 단지 더 긴급하게 만들었을 뿐이다. the necessity of solving an existing one, 기존의 문제를 해결해야 할 필요성을.
+
+────────────────────────
+28.mp3   (슬라이드 11)
+다섯 번째 문장을 볼게요. made more urgent the necessity of solving an existing one에서 목적격 보어 more urgent가 목적어보다 먼저 나왔어요. 목적어가 길어서 뒤로 보낸 목적어 후치 표현이고, 원래는 made the necessity more urgent의 어순입니다. 해석할 때는 기존 문제를 해결해야 할 필요성을 더 긴급하게 만들었다고 잡으면 됩니다.
+
+────────────────────────
+29.mp3   (슬라이드 12)
+이 문장은 원자 에너지가 완전히 새로운 문제를 만든 것이 아니라는 뜻이에요. 이미 있던 문제를 해결해야 할 필요성을 더욱 긴급하게 만들었을 뿐이라는 것이죠. 그래서 원자 에너지의 등장을 새로운 문제 발생보다 기존 문제의 시급성 증가로 보는 표현입니다.
+
+────────────────────────
+30.mp3   (슬라이드 12)
+표현을 바꿔 볼까요. 원문은 목적어를 뒤로 보냈지만 It has merely made the necessity of solving an existing problem more urgent라고 하면 일반 어순이 됩니다. one을 problem으로 풀어 쓰면 의미도 더 분명해집니다.
+
+────────────────────────
+31.mp3   (슬라이드 12)
+어구도 정리해 볼게요. the release of atomic energy는 the unleashing of atomic energy로 바꿀 수 있고 made more urgent는 heightened the urgency of로 바꿀 수 있어요. an existing one은 a problem that already exists로 풀어 쓸 수 있습니다.
+
+────────────────────────
+32.mp3   (슬라이드 12)
+같은 뜻의 문장을 들어 볼게요. Atomic energy has not introduced a new problem; it has only made it more urgent to solve one that already exists. 원자 에너지는 새로운 문제를 만든 것이 아니라 이미 존재하는 문제를 해결하는 일을 더 긴급하게 만들었을 뿐이라는 뜻입니다.
+
+────────────────────────
+33.mp3   (슬라이드 13)
+So closely is sniffing tied, 코를 킁킁거리는 것은 매우 밀접하게 연관되어 있다. to odor perception, 냄새 지각과. that people routinely sniff, 그래서 사람들은 일상적으로 코를 킁킁거린다. when they are asked to imagine a smell, 어떤 냄새를 상상해 보라는 요청을 받을 때.
+
+────────────────────────
+34.mp3   (슬라이드 13)
+여섯 번째 문장을 볼게요. So closely is sniffing tied to odor perception that에서 So와 closely가 앞에 나오고 is가 주어 sniffing 앞으로 이동했어요. that절은 코를 킁킁거리는 것이 얼마나 밀접하게 연결되어 있는지 그 결과를 설명합니다. 그래서 너무 밀접하게 연결되어 있어서 사람들이 어떤 행동을 한다고 해석하면 됩니다.
+
+────────────────────────
+35.mp3   (슬라이드 14)
+이 문장은 냄새를 맡는 행동과 냄새를 지각하는 일이 아주 밀접하게 연결되어 있다는 뜻이에요. 그래서 사람들은 실제 냄새가 없어도 냄새를 상상하라고 하면 습관적으로 코를 킁킁거린다는 것이죠. 몸의 반응이 냄새에 대한 생각만으로도 자연스럽게 나타난다는 뉘앙스입니다.
+
+────────────────────────
+36.mp3   (슬라이드 14)
+표현을 바꿔 볼까요. 원문의 도치를 풀면 Sniffing is so closely tied to odor perception that이 됩니다. 이렇게 하면 주어 sniffing이 앞에 나오고 뜻은 코를 킁킁거리는 것이 냄새 지각과 너무 밀접하게 연결되어 있다는 그대로입니다.
+
+────────────────────────
+37.mp3   (슬라이드 14)
+어구도 정리해 볼게요. is tied to는 is linked to로 바꿀 수 있고 odor perception은 the perception of smells로 풀어 쓸 수 있어요. routinely은 habitually와 같은 뜻으로 기억해 두면 좋습니다.
+
+────────────────────────
+38.mp3   (슬라이드 14)
+같은 뜻의 문장을 들어 볼게요. Sniffing is so strongly connected with perceiving smells that people usually sniff when asked to imagine one. 코를 킁킁거리는 일이 냄새 지각과 너무 강하게 연결되어 있어서 사람들이 냄새를 상상하라고 하면 보통 코를 킁킁거린다는 뜻입니다.
+
+────────────────────────
+39.mp3   (슬라이드 15)
+People often say, 사람들은 종종 말한다. that motivation doesn't last, 동기 부여는 오래가지 않는다고.. Well, 음. neither does bathing—, 목욕하는 것도 역시 그렇지 않다—. that's why we recommend it daily, 그것이 우리가 그것을 매일 권장하는 이유이다.
+
+────────────────────────
+40.mp3   (슬라이드 15)
+일곱 번째 문장을 볼게요. 앞 문장에서 동기 부여는 오래가지 않는다고 말한 뒤 Well, neither does bathing이라고 이어 줍니다. 여기서 neither가 앞의 부정 내용을 받고 does가 주어 bathing 앞으로 이동한 도치가 일어나요. 그래서 목욕하는 것도 오래가지 않는다는 뜻으로 연결하면 됩니다.
+
+────────────────────────
+41.mp3   (슬라이드 16)
+이 문장은 동기 부여가 오래가지 않는다는 말을 목욕에 빗대어 재치 있게 받아친 표현이에요. 목욕도 한 번 한다고 계속 깨끗한 것이 아니므로 매일 해야 하듯이 동기 부여도 꾸준히 새로 채워야 한다는 뜻이죠. 그래서 우리는 목욕을 매일 권한다는 말로 웃음을 주고 있습니다.
+
+────────────────────────
+42.mp3   (슬라이드 16)
+표현을 바꿔 볼까요. neither does bathing은 bathing does not last either로 풀어 쓸 수 있어요. 이렇게 하면 도치를 풀어 일반 어순으로 바꾸면서도 목욕도 역시 오래가지 않는다는 뜻을 그대로 살릴 수 있습니다.
+
+────────────────────────
+43.mp3   (슬라이드 16)
+어구도 정리해 볼게요. does not last는 does not endure로 바꿀 수 있고 motivation은 drive라는 말로 이해할 수 있어요. recommend it daily는 suggest doing it every day로 바꾸어 쓸 수 있습니다.
+
+────────────────────────
+44.mp3   (슬라이드 16)
+같은 뜻의 문장을 들어 볼게요. People often say motivation does not last long. Well, bathing does not last either, which is why we suggest doing it every day. 동기 부여도 목욕처럼 매일 새로 해야 한다는 뜻입니다.
+
+────────────────────────
+45.mp3   (슬라이드 17)
+We carry home, 우리는 집으로 가져간다. what we have bought, 우리가 구매한 것을. in some vessel, 어떤 용기 안에. but learning, 그러나 배운 것은. we cannot put, 우리는 둘 수 없다. in any other vessel but our minds, 우리의 정신 이외의 다른 어떤 용기 속에도.
+
+────────────────────────
+46.mp3   (슬라이드 17)
+여덟 번째 문장을 볼게요. but learning we cannot put in any other vessel but our minds에서 learning이 put의 목적어인데 강조를 위해 앞으로 전치되었어요. 원래는 we cannot put learning in any other vessel but our minds의 어순입니다. 그래서 learning을 목적어로 잡고 우리는 배운 것을 다른 용기에 둘 수 없다고 해석하면 됩니다.
+
+────────────────────────
+47.mp3   (슬라이드 18)
+이 문장은 물건은 용기에 담아 집으로 가져올 수 있지만 배운 것은 우리의 정신 말고는 다른 어떤 용기에도 담을 수 없다는 뜻이에요. 지식은 물건처럼 옮기거나 보관할 수 없고 오직 마음속에만 남는다는 것이죠. 배움의 가치와 마음의 역할을 강조하는 표현입니다.
+
+────────────────────────
+48.mp3   (슬라이드 18)
+표현을 바꿔 볼까요. learning을 앞에 둔 원문은 but we cannot put learning in any other vessel but our minds로 일반 어순을 만들 수 있어요. 이렇게 하면 목적어가 동사 뒤로 가서 문장 구조가 더 분명해집니다.
+
+────────────────────────
+49.mp3   (슬라이드 18)
+어구도 정리해 볼게요. carry home은 bring home으로 바꿀 수 있고 in some vessel은 in a container로 바꿀 수 있어요. any other vessel but our minds는 no vessel other than our minds로 풀어 쓸 수 있습니다.
+
+────────────────────────
+50.mp3   (슬라이드 18)
+같은 뜻의 문장을 들어 볼게요. We bring home what we have bought in a container, but we can store learning only in our minds, not in any other container. 우리가 산 물건은 용기에 담아 집으로 가져오지만 배움은 오직 우리의 정신에만 담을 수 있다는 뜻입니다.
+
+────────────────────────
+51.mp3   (슬라이드 19)
+How on earth, 도대체 어떻게. are you ever going to explain, 당신은 설명할 것인가. in terms of chemistry and physics, 화학과 물리학의 관점에서. so important a biological phenomenon, 너무나 중요한 생물학적 현상을. as first love?, 첫사랑처럼?
+
+────────────────────────
+52.mp3   (슬라이드 19)
+아홉 번째 문장을 볼게요. so important a biological phenomenon as first love는 so와 형용사 important와 a와 명사 biological phenomenon과 as가 결합한 표현이에요. 첫사랑처럼 중요한 생물학적 현상이라는 뜻을 만들죠. 앞의 How on earth는 도대체 어떻게라는 강한 의문을 더합니다.
+
+────────────────────────
+53.mp3   (슬라이드 20)
+이 문장은 첫사랑처럼 중요한 생물학적 현상을 화학과 물리학만으로 설명할 수 있겠느냐는 수사적 질문이에요. 사랑은 단순한 화학 반응이나 물리 법칙만으로 설명하기 어렵다는 뉘앙스를 담고 있습니다. 그래서 강한 의문과 함께 사랑의 복잡함을 강조하는 문장입니다.
+
+────────────────────────
+54.mp3   (슬라이드 20)
+표현을 바꿔 볼까요. so important a biological phenomenon as first love는 a biological phenomenon as important as first love로 바꿀 수 있어요. 이렇게 하면 so 형용사 a 명사 as 구문을 as 형용사 as 구문으로 바꾸어 더 익숙한 어순으로 만들 수 있습니다.
+
+────────────────────────
+55.mp3   (슬라이드 20)
+어구도 정리해 볼게요. on earth는 in the world로 바꿀 수 있고 in terms of는 from the perspective of로 바꿀 수 있어요. so important a phenomenon as는 a phenomenon as important as와 같은 뜻으로 기억해 두세요.
+
+────────────────────────
+56.mp3   (슬라이드 20)
+같은 뜻의 문장을 들어 볼게요. How could you ever explain something as biologically important as first love using only chemistry and physics? 첫사랑처럼 생물학적으로 중요한 것을 화학과 물리학만으로 어떻게 설명할 수 있겠느냐는 뜻입니다.
+
+────────────────────────
+57.mp3   (슬라이드 21)
+So quickly, 너무나 빠르게. did he rush out of the office, 그는 사무실 밖으로 달려나갔다. that he forgot to lock up, 그래서 그는 잠그는 것을 잊었다. and set the alarm, 그리고 경보 장치를 설정하는 것을.
+
+────────────────────────
+58.mp3   (슬라이드 21)
+열 번째 문장을 볼게요. So quickly did he rush out of the office that에서 So와 quickly가 앞에 나오고 did가 주어 he 앞으로 이동했어요. that절은 너무 빨리 달려나간 결과로 어떤 일이 일어났는지 설명합니다. 그래서 너무 빨리 나간 나머지 잠그고 경보 장치를 설정하는 것을 잊었다고 해석하면 됩니다.
+
+────────────────────────
+59.mp3   (슬라이드 22)
+이 문장은 그가 사무실에서 너무 빨리 달려나간 나머지 문을 잠그고 경보 장치를 설정하는 일을 잊어버렸다는 뜻이에요. 급하게 움직이다 보니 중요한 마무리 행동을 놓쳤다는 뉘앙스입니다. quickly 앞의 so가 정도를 강하게 만들어 주고 있습니다.
+
+────────────────────────
+60.mp3   (슬라이드 22)
+표현을 바꿔 볼까요. 원문의 도치를 풀면 He rushed out of the office so quickly that이 됩니다. 이렇게 하면 주어와 동사의 순서가 일반적이 되고 너무 빨리 나가서 잊어버렸다는 뜻은 그대로 유지됩니다.
+
+────────────────────────
+61.mp3   (슬라이드 22)
+어구도 정리해 볼게요. rush out of는 hurry out of로 바꿀 수 있고 lock up은 secure with a lock으로 풀어 쓸 수 있어요. set the alarm은 arm the alarm과 같은 뜻으로 익혀 두면 좋습니다.
+
+────────────────────────
+62.mp3   (슬라이드 22)
+같은 뜻의 문장을 들어 볼게요. He hurried out of the office so fast that he forgot to lock the door and arm the alarm. 그는 너무 빨리 사무실을 나가서 문을 잠그고 경보 장치를 작동하는 것을 잊었다는 뜻입니다.
+
+────────────────────────
+63.mp3   (슬라이드 23)
+Unlike animals, 동물과 달리. plants cannot pick up their roots, 식물은 자신의 뿌리를 집어 들 수 없고. and race for safety, 안전을 위해 질주할 수 없다.. Nor have many plants taken the offensive, 많은 식물이 공격 태세를 취한 것도 아니다. and become predators, 그리고 포식자가 된.
+
+────────────────────────
+64.mp3   (슬라이드 23)
+열한 번째 문장을 볼게요. Nor have many plants taken the offensive and become predators에서 Nor가 앞 문장의 부정 내용을 이어 줍니다. have가 주어 many plants 앞으로 이동한 도치가 일어났고 뒤에는 have taken과 have become이 현재완료로 이어져요. 그래서 많은 식물이 공격 태세를 취하고 포식자가 된 것도 아니라고 해석합니다.
+
+────────────────────────
+65.mp3   (슬라이드 24)
+이 문장은 동물과 달리 식물은 스스로 뿌리를 뽑고 안전한 곳으로 달려갈 수 없다는 뜻이에요. 또한 많은 식물이 공격적으로 변해 포식자가 된 것도 아니라는 뜻을 더합니다. 식물이 움직이지 못하고 대체로 수동적인 방식으로 살아간다는 점을 강조하는 표현입니다.
+
+────────────────────────
+66.mp3   (슬라이드 24)
+표현을 바꿔 볼까요. Nor have many plants taken the offensive and become predators는 Many plants have not taken the offensive and become predators either로 풀어 쓸 수 있어요. 이렇게 하면 도치를 풀고 either로 앞 문장과의 부정 연결도 분명히 할 수 있습니다.
+
+────────────────────────
+67.mp3   (슬라이드 24)
+어구도 정리해 볼게요. pick up their roots는 uproot themselves로 바꿀 수 있고 race for safety는 run to safety로 바꿀 수 있어요. taken the offensive는 gone on the attack과 같은 뜻으로 기억해 두세요.
+
+────────────────────────
+68.mp3   (슬라이드 24)
+같은 뜻의 문장을 들어 볼게요. Plants, unlike animals, cannot uproot themselves and run to safety, and many plants have not gone on the attack and become predators either. 식물은 동물과 달리 스스로 뿌리째 뽑혀 안전한 곳으로 달려갈 수 없고 많은 식물이 공격적으로 변해 포식자가 된 것도 아니라는 뜻입니다.
+
+────────────────────────
+69.mp3   (슬라이드 25)
+The large part of our thoughts and feelings, 우리의 생각과 감정의 커다란 부분을. that we do not know and cannot control, 우리가 알지 못하고 통제할 수 없는. Sigmund Freud called, 지그문트 프로이트는 불렀다. the unconscious, 무의식이라고.
+
+────────────────────────
+70.mp3   (슬라이드 25)
+열두 번째 문장을 볼게요. The large part of our thoughts and feelings that we do not know and cannot control이 called의 목적어인데 문장 앞으로 전치되었어요. 그래서 주어 Sigmund Freud와 동사 called가 뒤에 나오는 구조입니다. 해석할 때는 우리가 알지 못하고 통제할 수 없는 생각과 감정의 큰 부분을 프로이트가 무의식이라고 불렀다고 잡으면 됩니다.
+
+────────────────────────
+71.mp3   (슬라이드 26)
+이 문장은 우리가 알지 못하고 통제할 수 없는 생각과 감정의 큰 부분을 프로이트가 무의식이라고 이름 붙였다는 뜻이에요. 인간의 마음에는 스스로 인식하지 못하는 거대한 영역이 있다는 뉘앙스입니다. 그래서 무의식은 단순히 모르는 마음이 아니라 우리 행동에 영향을 주는 큰 부분이라는 것이죠.
+
+────────────────────────
+72.mp3   (슬라이드 26)
+표현을 바꿔 볼까요. 원문은 목적어를 앞에 두었지만 Sigmund Freud called the large part of our thoughts and feelings that we do not know and cannot control the unconscious라고 하면 일반 어순이 됩니다. 이렇게 하면 프로이트가 무엇을 무의식이라고 불렀는지 더 분명하게 보입니다.
+
+────────────────────────
+73.mp3   (슬라이드 26)
+어구도 정리해 볼게요. the large part of는 the greater part of로 바꿀 수 있고 cannot control은 cannot govern으로 바꿀 수 있어요. called the unconscious는 named the unconscious와 같은 뜻으로 기억해 두세요.
+
+────────────────────────
+74.mp3   (슬라이드 26)
+같은 뜻의 문장을 들어 볼게요. Sigmund Freud called the unconscious the large part of our thoughts and feelings that we neither know nor control. 프로이트가 우리가 알지도 통제하지도 못하는 생각과 감정의 큰 부분을 무의식이라고 불렀다는 뜻입니다.
+
+────────────────────────
+75.mp3   (슬라이드 27)
+오늘은 부정어와 neither, nor, so, such가 앞에 나올 때 조동사나 be동사가 주어 앞으로 이동하는 도치를 배웠어요. 또한 목적어가 강조를 위해 문장 앞으로 전치되는 경우와 긴 목적어가 뒤로 가는 경우도 확인했습니다. 이런 문장은 앞의 신호어를 먼저 잡고 뒤에서 주어와 동사를 찾는 습관이 중요해요. 오늘 배운 어순 규칙을 다른 지문에서도 꼭 찾아보세요. 수고했습니다.
