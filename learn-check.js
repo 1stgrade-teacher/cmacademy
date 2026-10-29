@@ -23,7 +23,10 @@
   var QUIZ_TOTAL = 10;       // 확인 문제 총 문항 수 (강의 속 문제 + 부족하면 AI 출제)
   var MAX_ARRANGE = 3;       // 그중 '어구 배열(터치)' 문제 최대 개수
   var API = "/api/report";
-  var LS_ME = "cm-learn-me";
+  var LS_ME = "cm-learn-me";           // (예전 방식: 이름을 기기에 저장 → 공용 태블릿 문제로 더는 쓰지 않고 지움)
+  var SS_SESS = "cm-learn-sess";       // 이번 접속 동안만 기억(탭을 닫으면 사라짐)
+  var IDLE_MS = 10 * 60 * 1000;        // 이 시간 동안 손대지 않으면 자동으로 로그아웃
+  var PROG_FRESH_MS = 60 * 60 * 1000;  // 시청 기록은 마지막 활동 후 이 시간이 지나면 새로 시작
   var LS_CODE = "cm-chat-code"; // AI 조교와 같은 입장 코드를 함께 씀
   var PATH = location.pathname;
   var LS_PROG = "cm-learn:" + PATH;
@@ -32,6 +35,16 @@
   function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   function jGet(k) { try { return JSON.parse(lsGet(k) || "null"); } catch (e) { return null; } }
   function jSet(k, v) { lsSet(k, JSON.stringify(v)); }
+  try { localStorage.removeItem(LS_ME); } catch (e) {}
+  function sess() {
+    try {
+      var o = JSON.parse(sessionStorage.getItem(SS_SESS) || "null");
+      if (!o || !o.token || Date.now() - (o.at || 0) > 3 * 3600 * 1000) return null;
+      return o;
+    } catch (e) { return null; }
+  }
+  function setSess(o) { try { o.at = Date.now(); sessionStorage.setItem(SS_SESS, JSON.stringify(o)); } catch (e) {} }
+  function clearSess() { try { sessionStorage.removeItem(SS_SESS); } catch (e) {} }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function clean(s) { return String(s || "").replace(/\s+/g, " ").trim(); }
   function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
@@ -199,14 +212,20 @@
   // ================================================================
   // 2. 시청 기록
   // ================================================================
-  var S = { seen: {}, total: 0, active: 0, away: 0, maxRate: 1, started: Date.now(), last: -1 };
+  var lastSlide = Date.now();
+  var S = { seen: {}, total: 0, active: 0, away: 0, maxRate: 1, started: Date.now(), last: -1, owner: "" };
   (function restore() {
     var p = jGet(LS_PROG);
-    if (p && Date.now() - (p.t || 0) < 12 * 3600 * 1000) {
-      S.seen = p.seen || {}; S.total = p.total || 0; S.active = p.active || 0; S.away = p.away || 0; S.maxRate = p.maxRate || 1;
+    if (p && Date.now() - (p.t || 0) < PROG_FRESH_MS) {
+      S.seen = p.seen || {}; S.total = p.total || 0; S.active = p.active || 0; S.away = p.away || 0; S.maxRate = p.maxRate || 1; S.owner = p.owner || "";
     }
   })();
-  function save() { jSet(LS_PROG, { seen: S.seen, total: S.total, active: S.active, away: S.away, maxRate: S.maxRate, t: Date.now() }); }
+  function save() { jSet(LS_PROG, { seen: S.seen, total: S.total, active: S.active, away: S.away, maxRate: S.maxRate, owner: S.owner, t: Date.now() }); }
+  // 다른 학생의 시청 기록이 이어지지 않도록 처음부터 다시 기록
+  function resetProgress() {
+    S.seen = {}; S.active = 0; S.away = 0; S.maxRate = 1; S.last = -1; S.owner = ""; lastSlide = Date.now();
+    try { localStorage.removeItem(LS_PROG); localStorage.removeItem(LS_PROG + ":done"); } catch (e) {}
+  }
   function coverage() {
     if (!S.total) return null;
     var n = 0; for (var k in S.seen) if (S.seen[k] && +k <= S.total) n++;
@@ -230,7 +249,8 @@
   };
   function mediaPlaying() { return playingMedia.some(function (m) { return !m.paused && !m.ended; }); }
 
-  var lastAct = Date.now(), lastSlide = Date.now();
+  var lastAct = Date.now();
+  lastSlide = Date.now();
   ["pointerdown", "keydown", "wheel", "touchstart"].forEach(function (ev) {
     document.addEventListener(ev, function () { lastAct = Date.now(); }, { passive: true, capture: true });
   });
@@ -320,6 +340,8 @@
     ".arr-pool{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}" +
     ".chip{border:1px solid #BFD9D8;background:#fff;border-radius:10px;padding:10px 13px;min-height:44px;font-size:16px;color:#1B2733;cursor:pointer;touch-action:manipulation}.chip.in{background:#DDF2F1;border-color:#0E8A8C;font-weight:600}.chip.used{opacity:.25;pointer-events:none}" +
     ".arr-bar{display:flex;gap:8px;margin-top:8px}.arr-bar button{border:0;background:#EEF4F4;border-radius:8px;padding:8px 12px;font-size:13px;color:#4A5B66;cursor:pointer}" +
+    ".pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}.pk{border:1px solid #BFD9D8;background:#fff;border-radius:12px;padding:14px 8px;font-size:16px;font-weight:600;color:#1B2733;cursor:pointer;min-height:52px;touch-action:manipulation}.pk:active{background:#DDF2F1;border-color:#0E8A8C}" +
+    ".go.sub{background:#EAF3F3;color:#0A5F61}" +
     ".rate{display:flex;gap:6px}.rate button{flex:1;border:1px solid #D6E4E4;background:#fff;border-radius:10px;padding:8px 2px;font-size:12px;cursor:pointer;color:#1B2733;line-height:1.3}" +
     ".rate button b{display:block;font-size:18px}.rate button.on{border-color:#0E8A8C;background:#DDF2F1}" +
     ".ft{padding:12px 16px;border-top:1px solid #E6ECEF;background:#fff;display:flex;gap:8px;align-items:center}" +
@@ -352,7 +374,9 @@
   $(".x").onclick = close;
   fab.onclick = open;
 
-  var submitted = jGet(LS_PROG + ":done");
+  var submitted = null;
+  function refreshDone() { var d = jGet(LS_PROG + ":done"), c = sess(); submitted = d && c && d.sid === c.sid ? d : null; }
+  refreshDone();
   function paintFab() {
     var c = coverage(), pct = c == null ? null : Math.round(c * 100);
     var ring = fab.querySelector(".ring");
@@ -361,6 +385,7 @@
       fab.querySelector(".lbl").textContent = "인증 완료";
       return;
     }
+    fab.classList.remove("done"); fab.querySelector(".lbl").textContent = "학습 인증";
     var p = pct == null ? 0 : pct;
     ring.textContent = pct == null || pct >= 100 ? "✓" : pct + "%";
     ring.style.background = "conic-gradient(#0E8A8C " + p * 3.6 + "deg, #DDF2F1 0)";
@@ -469,35 +494,97 @@
     dim.classList.add("on"); fab.classList.add("hide");
     host.style.zIndex = "2147483001"; // 열려 있는 동안은 '질문하기' 버튼보다 위에
     $(".sub").textContent = pageInfo().title;
-    var me = jGet(LS_ME);
-    if (!me || !me.name) return renderMe(true);
+    if (Date.now() - lastAct > IDLE_MS) clearSess();
+    if (!sess()) return renderLogin();
     renderMain();
   }
-  function close() { dim.classList.remove("on"); fab.classList.remove("hide"); host.style.zIndex = "2147482999"; }
-
-  function renderMe(first) {
-    var me = jGet(LS_ME) || {};
-    var known = CLASSES.indexOf(me.cls) >= 0;
-    bd.innerHTML =
-      '<div class="card"><h4>👋 ' + (first ? "처음 한 번만 적어 주세요" : "내 정보 바꾸기") + '</h4>' +
-      '<label>이름</label><input type="text" class="nm" maxlength="20" placeholder="예: 김일등" value="' + esc(me.name || "") + '">' +
-      '<div style="height:10px"></div><label>반</label><select class="cl"><option value="">반을 고르세요</option>' +
-      CLASSES.map(function (c) { return '<option' + (me.cls === c ? " selected" : "") + ">" + esc(c) + "</option>"; }).join("") +
-      '<option value="__etc"' + (me.cls && !known ? " selected" : "") + '>기타 (직접 입력)</option></select>' +
-      '<input type="text" class="etc" maxlength="20" placeholder="반 이름" style="margin-top:8px;display:' + (me.cls && !known ? "block" : "none") + '" value="' + esc(known ? "" : me.cls || "") + '">' +
-      '<div class="hint">선생님 기록에 이 이름으로 남아요. 정확하게 적어 주세요.</div></div>';
-    var cl = bd.querySelector(".cl"), etc = bd.querySelector(".etc");
-    cl.onchange = function () { etc.style.display = cl.value === "__etc" ? "block" : "none"; };
-    ft.innerHTML = '<span class="err"></span><button class="go" type="button" style="flex:0 0 140px">저장</button>';
-    ft.querySelector(".go").onclick = function () {
-      var name = clean(bd.querySelector(".nm").value), cls = cl.value === "__etc" ? clean(etc.value) : cl.value;
-      if (!name) return showErr("이름을 적어 주세요.");
-      if (!cls) return showErr("반을 골라 주세요.");
-      jSet(LS_ME, { name: name, cls: cls });
-      renderMain();
-    };
-    setTimeout(function () { var n = bd.querySelector(".nm"); if (n && !n.value) n.focus(); }, 50);
+  function close() {
+    dim.classList.remove("on"); fab.classList.remove("hide"); host.style.zIndex = "2147482999";
+    if (showingResult) logout(true); // 제출을 마치고 닫으면 이 학생의 정보·시청 기록을 지움
   }
+  // 손대지 않고 오래 두면 자동 로그아웃 (공용 태블릿 보호)
+  setInterval(function () {
+    if (!sess() || Date.now() - lastAct < IDLE_MS) return;
+    if (dim.classList.contains("on")) { var wasResult = showingResult; close(); if (!wasResult) logout(false); }
+    else logout(false);
+  }, 20000);
+
+  // ---------- 로그인: 반 → 이름(명단에서 터치) → 본인번호 ----------
+  var showingResult = false;
+  function post(body) {
+    body.code = lsGet(LS_CODE);
+    return fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { j._s = r.status; return j; }); })
+      .catch(function () { return { _s: 0, msg: "인터넷 연결을 확인해 주세요." }; });
+  }
+  function logout(clearProgress) {
+    clearSess(); showingResult = false;
+    if (clearProgress) resetProgress();
+    refreshDone(); paintFab();
+  }
+  function renderLogin(note) {
+    var L = { cls: "", stu: null };
+    ft.innerHTML = '<span class="err"></span>';
+    function head(t) { return '<div class="card"><h4>👋 ' + t + "</h4>"; }
+    function stepCls() {
+      bd.innerHTML = head("먼저, 내 반을 골라요") + '<div class="hint"><span class="spin"></span>불러오는 중…</div></div>';
+      if (note) showErr(note);
+      post({ action: "classes" }).then(function (j) {
+        if (!j.ok) { bd.innerHTML = head("반을 불러오지 못했어요") + '<div class="hint">' + esc(j.msg || "잠시 뒤 다시 해 주세요.") + '</div><button class="go" type="button" style="margin-top:10px;width:100%">다시 시도</button></div>'; bd.querySelector(".go").onclick = stepCls; return; }
+        var list = (j.classes || []).filter(function (c) { return c !== "기타"; });
+        bd.innerHTML = head("먼저, 내 반을 골라요") + '<div class="pick">' + list.map(function (c, i) { return '<button type="button" class="pk" data-i="' + i + '">' + esc(c) + "</button>"; }).join("") + "</div></div>";
+        Array.prototype.forEach.call(bd.querySelectorAll(".pk"), function (b) { b.onclick = function () { L.cls = list[+b.getAttribute("data-i")]; stepName(); }; });
+      });
+    }
+    function stepName() {
+      bd.innerHTML = head(esc(L.cls) + " · 내 이름을 눌러요") + '<div class="hint"><span class="spin"></span>불러오는 중…</div></div>';
+      showErr("");
+      post({ action: "roster", cls: L.cls }).then(function (j) {
+        if (!j.ok) { bd.innerHTML = head("명단을 불러오지 못했어요") + '<div class="hint">' + esc(j.msg || "") + '</div></div>'; return backBtn(stepCls); }
+        var st = j.students || [];
+        if (!st.length) { bd.innerHTML = head("이 반 명단이 비어 있어요") + '<div class="hint">선생님께 이름을 등록해 달라고 말씀드려 주세요.</div></div>'; return backBtn(stepCls); }
+        bd.innerHTML = head(esc(L.cls) + " · 내 이름을 눌러요") + (st.length > 14 ? '<input type="text" class="flt" placeholder="이름 찾기" style="margin-bottom:10px">' : "") +
+          '<div class="pick names">' + st.map(function (x, i) { return '<button type="button" class="pk" data-i="' + i + '">' + esc(x.name) + "</button>"; }).join("") + "</div></div>";
+        Array.prototype.forEach.call(bd.querySelectorAll(".pk"), function (b) { b.onclick = function () { L.stu = st[+b.getAttribute("data-i")]; stepPin(); }; });
+        var f = bd.querySelector(".flt");
+        if (f) f.oninput = function () { var v = f.value.trim(); Array.prototype.forEach.call(bd.querySelectorAll(".pk"), function (b) { b.style.display = !v || b.textContent.indexOf(v) >= 0 ? "" : "none"; }); };
+        backBtn(stepCls);
+      });
+    }
+    function backBtn(fn) { ft.innerHTML = '<span class="err"></span><button class="go sub" type="button" style="flex:0 0 120px">← 뒤로</button>'; ft.querySelector(".go").onclick = fn; }
+    function stepPin() {
+      var first = !L.stu.hasPin;
+      bd.innerHTML = head(esc(L.stu.name) + (first ? " 학생, 처음이에요!" : " 학생이 맞나요?")) +
+        (first ? '<div class="hint" style="margin:0 0 10px">나만 아는 <b>숫자 4자리</b>를 정해요. 다음부터 이 번호로 내 기록을 지켜요. (생일·전화번호처럼 친구가 아는 번호는 피해요)</div>' : '<div class="hint" style="margin:0 0 10px">내가 정한 숫자 4자리 번호를 넣어요.</div>') +
+        '<input type="password" class="pin" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="숫자 4자리" style="text-align:center;font-size:22px;letter-spacing:8px">' +
+        (first ? '<input type="password" class="pin2" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="한 번 더" style="text-align:center;font-size:22px;letter-spacing:8px;margin-top:8px">' : "") +
+        '<div class="hint">번호를 잊으면 선생님께 말씀드리면 다시 정할 수 있어요.</div></div>';
+      ft.innerHTML = '<span class="err"></span><button class="go sub" type="button" style="flex:0 0 100px">← 뒤로</button><button class="go ok" type="button" style="flex:1">' + (first ? "번호 정하고 시작" : "시작하기") + "</button>";
+      var pin = bd.querySelector(".pin"), pin2 = bd.querySelector(".pin2"), go = ft.querySelector(".go.ok");
+      Array.prototype.forEach.call(bd.querySelectorAll("input"), function (el) { el.oninput = function () { el.value = el.value.replace(/\D/g, "").slice(0, 4); }; });
+      ft.querySelector(".go.sub").onclick = stepName;
+      function doLogin() {
+        showErr("");
+        if (!/^\d{4}$/.test(pin.value)) return showErr("숫자 4자리를 넣어 주세요.");
+        if (first && pin.value !== pin2.value) return showErr("두 번호가 달라요. 다시 확인해 주세요.");
+        go.disabled = true; go.innerHTML = '<span class="spin"></span>확인 중…';
+        post({ action: "login", id: L.stu.id, pin: pin.value, setPin: first }).then(function (j) {
+          go.disabled = false; go.textContent = first ? "번호 정하고 시작" : "시작하기";
+          if (!j.ok) { if (j.needSet) { L.stu.hasPin = false; return stepPin(); } pin.value = ""; if (pin2) pin2.value = ""; return showErr(j.msg || "로그인하지 못했어요."); }
+          var prev = S.owner, sid = j.token && readSid(j.token);
+          if (prev && sid && prev !== sid) resetProgress(); // 앞 학생의 시청 기록은 이어받지 않음
+          S.owner = sid || S.owner; save();
+          setSess({ token: j.token, name: j.name, cls: j.cls, sid: sid });
+          refreshDone(); paintFab(); renderMain();
+        });
+      }
+      go.onclick = doLogin;
+      [pin, pin2].forEach(function (el) { if (el) el.onkeydown = function (e) { if (e.key === "Enter") doLogin(); }; });
+      setTimeout(function () { pin.focus(); }, 50);
+    }
+    stepCls();
+  }
+  function readSid(tok) { try { return JSON.parse(atob(String(tok).split(".")[0].replace(/-/g, "+").replace(/_/g, "/"))).sid || ""; } catch (e) { return ""; } }
   function showErr(t) { var e = ft.querySelector(".err"); if (e) e.textContent = t; }
 
   function statsHtml() {
@@ -514,8 +601,9 @@
   }
 
   function renderMain() {
-    var me = jGet(LS_ME) || {};
-    bd.innerHTML = '<div class="card me">🙋 <b>' + esc(me.name) + "</b> · " + esc(me.cls) + '<a class="chg">바꾸기</a></div>' +
+    var me = sess();
+    if (!me) return renderLogin();
+    bd.innerHTML = '<div class="card me">🙋 <b>' + esc(me.name) + "</b> · " + esc(me.cls) + '<a class="chg">내가 아니에요</a></div>' +
       statsHtml() +
       '<div class="card qbox"><h4>📝 확인 문제</h4><div class="hint"><span class="spin"></span>문제를 준비하고 있어요…</div></div>' +
       '<div class="card"><h4>✍️ ' + (isPassage() ? "본문의 내용을 한 줄로 요약" : "오늘 배운 내용 한 줄 요약") + ' <small style="color:#C0392B;font-weight:400">(필수)</small></h4>' +
@@ -528,7 +616,7 @@
       '<div class="card"><h4>💬 선생님께 한마디 / 질문 <small style="color:#7A8896;font-weight:400">(선택)</small></h4>' +
       '<textarea class="msg" maxlength="1000" placeholder="헷갈린 부분, 궁금한 점, 하고 싶은 말을 자유롭게 적어요."></textarea></div>' +
       '<div class="card codecard" style="display:none"><h4>🔑 입장 코드</h4><input type="password" class="code" placeholder="선생님께 받은 입장 코드" autocomplete="off"></div>';
-    bd.querySelector(".chg").onclick = function () { renderMe(false); };
+    bd.querySelector(".chg").onclick = function () { logout(true); renderLogin(); };
     var rate = "";
     Array.prototype.forEach.call(bd.querySelectorAll(".rate button"), function (b) {
       b.onclick = function () {
@@ -619,7 +707,8 @@
   var busy = false;
   function submit(rate) {
     if (busy) return;
-    var me = jGet(LS_ME) || {};
+    var me = sess();
+    if (!me) return renderLogin("로그인이 풀렸어요. 다시 이름을 골라 주세요.");
     var sum = clean(bd.querySelector(".sum").value), msg = (bd.querySelector(".msg").value || "").trim();
     var qs = QUIZ || [];
     for (var i = 0; i < qs.length; i++) {
@@ -646,7 +735,7 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           code: lsGet(LS_CODE),
-          student: { name: me.name, cls: me.cls },
+          token: me.token,
           page: { title: info.title, area: info.area, book: book || info.book, url: info.url },
           stats: { coverage: coverage(), activeSec: S.active, away: S.away, maxRate: S.maxRate, slidesSeen: Object.keys(S.seen).length, slidesTotal: S.total },
           quiz: { items: items },
@@ -658,14 +747,16 @@
       return r.json().catch(function () { return {}; }).then(function (j) { return { status: r.status, j: j }; });
     }).then(function (x) {
       busy = false;
+      if (x.status === 401 && x.j && x.j.relogin) { clearSess(); return renderLogin("로그인이 풀렸어요. 다시 이름을 골라 주세요."); }
       if (x.status === 401) { lsSet(LS_CODE, ""); var cc = bd.querySelector(".codecard"); if (cc) cc.style.display = ""; }
       if (x.status !== 200 || !x.j.ok) {
         go.disabled = false; go.textContent = "다시 제출";
         return showErr((x.j && x.j.msg) || "제출하지 못했어요. 잠시 뒤 다시 해 주세요.");
       }
-      submitted = { at: Date.now(), verdict: x.j.verdict };
+      submitted = { at: Date.now(), verdict: x.j.verdict, sid: me.sid };
       jSet(LS_PROG + ":done", submitted);
       paintFab();
+      showingResult = true;
       renderResult(x.j, qs, items);
     }).catch(function () {
       busy = false; go.disabled = false; go.textContent = "다시 제출";
