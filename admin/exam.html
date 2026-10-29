@@ -59,6 +59,11 @@ td input,td select{padding:8px 6px;font-size:15px}td input[type=checkbox]{width:
     <textarea id="newNames" rows="3" placeholder="김일등&#10;이지우"></textarea>
     <div class="row" style="margin-top:8px"><button class="sub" id="addBtn">선택한 반에 추가</button></div>
   </div>
+  <div class="card">
+    <label>학생 본인번호 초기화 (학생이 번호를 잊었을 때)</label>
+    <div class="row"><select id="pinStu" style="max-width:240px"></select><button class="sub" id="pinBtn">번호 초기화</button></div>
+    <div class="hint">위에서 '명단 불러오기'를 한 반의 학생이 목록에 나와요. 초기화하면 그 학생이 다음 접속 때 번호를 새로 정해요.</div>
+  </div>
   <div class="msg" id="msg"></div>
 </div>
 
@@ -133,6 +138,7 @@ $("loadBtn").onclick=function(){
     if(!j.ok){$("rcount").textContent="";$("msg").innerHTML='<span class="er">'+esc(j.msg||"명단을 불러오지 못했어요.")+"</span>";return}
     students=j.students||[];$("rcount").textContent=students.length?students.length+"명":"이 반에 등록된 학생이 없어요. 아래에서 추가해 주세요.";
     $("msg").textContent="";render();
+    $("pinStu").innerHTML=students.map(function(s,i){return'<option value="'+i+'">'+esc(s.name)+'</option>'}).join("");
   });
 };
 $("addBtn").onclick=function(){
@@ -145,6 +151,11 @@ $("addBtn").onclick=function(){
     $("msg").innerHTML='<span class="ok">'+j.added+"명 추가, "+j.skipped+"명은 이미 있어서 건너뛰었어요.</span>";
     $("newNames").value="";$("loadBtn").click();
   });
+};
+$("pinBtn").onclick=function(){
+  var s=students[parseInt($("pinStu").value)];if(!s){$("msg").innerHTML='<span class="er">먼저 명단을 불러와 주세요.</span>';return}
+  if(!confirm(s.name+" 학생의 본인번호를 초기화할까요?"))return;
+  api({action:"resetPin",studentId:s.id}).then(function(j){$("msg").innerHTML=j.ok?'<span class="ok">'+esc(s.name)+" 학생 번호를 초기화했어요.</span>":'<span class="er">'+esc(j.msg||"초기화하지 못했어요.")+"</span>"});
 };
 function titleVal(){
   var t=$("title").value.trim();if(t)return t;

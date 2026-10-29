@@ -153,6 +153,12 @@ module.exports = async function handler(req, res) {
     if (!list) return send(502, { error: "notion", msg: "명단을 불러오지 못했어요.", debug: lastErr });
     return send(200, { ok: true, students: list });
   }
+  if (act === "resetPin") {
+    const id = clip(b.studentId, 60);
+    if (!id) return send(400, { error: "input" });
+    const r = await notion("pages/" + id, "PATCH", { properties: { "본인번호": { rich_text: [] } } });
+    return r ? send(200, { ok: true }) : send(502, { error: "notion", msg: "초기화하지 못했어요.", debug: lastErr });
+  }
   if (act === "addStudents") {
     const cls = clip(b.cls, 40);
     const names = (Array.isArray(b.names) ? b.names : []).map((x) => clip(x, 30)).filter(Boolean);

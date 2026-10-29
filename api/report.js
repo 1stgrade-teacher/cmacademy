@@ -15,6 +15,7 @@
 //   REPORT_OFF          (선택) "1"이면 학습 인증 잠시 끄기
 // ------------------------------------------------------------------
 
+const crypto = require("crypto");
 const NOTION_VER = "2022-06-28";
 const AI_URL = "https://api.deepseek.com/chat/completions";
 
@@ -151,6 +152,7 @@ async function notionCall(path, method, body) {
 
 // 학생별 페이지 ('인강 학생별 기록' DB) — 이름+반이 같으면 같은 학생
 const STUDENT_REL = "학생 페이지";
+const PIN_PROP = "본인번호";
 let studentDb = null;            // { id, titleProp } 또는 false(없음)
 const studentCache = new Map();  // "이름|반" -> page id
 async function getStudentDb(recordDb) {
@@ -167,7 +169,8 @@ async function getStudentDb(recordDb) {
   if (!sdb) return null;
   const titleProp = Object.keys(sdb.properties || {}).find((k) => sdb.properties[k].type === "title") || "이름";
   const hasCls = sdb.properties && sdb.properties["반"] && sdb.properties["반"].type === "select";
-  studentDb = { id, titleProp, hasCls };
+  const hasPin = !!(sdb.properties && sdb.properties[PIN_PROP] && sdb.properties[PIN_PROP].type === "rich_text");
+  studentDb = { id, titleProp, hasCls, hasPin };
   return studentDb;
 }
 function normName(n) {
@@ -251,7 +254,7 @@ async function toNotion(rec) {
   // 학생 페이지에 연결 (실패해도 기록 저장은 계속)
   let studentLinked = false;
   try {
-    const sid = await findOrCreateStudent(db, rec.name, rec.cls);
+    const sid = rec.studentId || await findOrCreateStudent(db, rec.name, rec.cls);
     if (sid) { props[STUDENT_REL] = { relation: [{ id: sid }] }; studentLinked = true; }
   } catch (e) { console.error("student", e && e.message); }
 
@@ -294,6 +297,82 @@ async function toSheet(rec) {
   }
 }
 
+// ---------- 본인 확인 (사이트 입장 쿠키 · 학생 번호 · 로그인 토큰) ----------
+function secret() { return process.env.REPORT_SECRET || process.env.NOTION_TOKEN || "cm"; }
+function b64u(buf) { return Buffer.from(buf).toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
+function signToken(obj) {
+  const body = b64u(JSON.stringify(obj));
+  return body + "." + b64u(crypto.createHmac("sha256", secret()).update(body).digest());
+}
+function readToken(t) {
+  const [body, sig] = String(t || "").split(".");
+  if (!body || !sig) return null;
+  const ok = b64u(crypto.createHmac("sha256", secret()).update(body).digest());
+  if (ok.length !== sig.length || !crypto.timingSafeEqual(Buffer.from(ok), Buffer.from(sig))) return null;
+  try { const o = JSON.parse(Buffer.from(body.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8")); return o.exp > Date.now() ? o : null; } catch (e) { return null; }
+}
+function pinHash(pin, sid) { return crypto.createHash("sha256").update("cm-pin|" + String(sid).replace(/-/g, "") + "|" + pin + "|" + secret()).digest("hex"); }
+function siteOk(req) {
+  const site = String(process.env.SITE_CODE || "").trim();
+  if (!site) return true;
+  const m = String(req.headers.cookie || "").match(/(?:^|;\s*)cm_site=([0-9a-f]{64})/);
+  return !!m && m[1] === crypto.createHmac("sha256", site).update("cmacademy-site-v1").digest("hex");
+}
+const pinFails = new Map();
+function pinLocked(id) { const e = pinFails.get(id); return !!e && Date.now() - e.t < 10 * 60 * 1000 && e.n >= 5; }
+function pinFail(id) { const e = pinFails.get(id); if (!e || Date.now() - e.t >= 10 * 60 * 1000) pinFails.set(id, { n: 1, t: Date.now() }); else e.n++; if (pinFails.size > 3000) pinFails.clear(); }
+const normId = (x) => String(x || "").replace(/-/g, "").toLowerCase();
+
+async function studentClasses(db) {
+  const sdb = await getStudentDb(db);
+  if (!sdb) return null;
+  const info = await notionCall("databases/" + sdb.id, "GET");
+  const opts = info && info.properties && info.properties["반"] && info.properties["반"].select && info.properties["반"].select.options;
+  return (opts || []).map((o) => o.name);
+}
+async function studentRoster(db, cls) {
+  const sdb = await getStudentDb(db);
+  if (!sdb || !sdb.hasCls) return null;
+  const out = [];
+  let cursor;
+  for (let i = 0; i < 6; i++) {
+    const q = await notionCall("databases/" + sdb.id + "/query", "POST", { filter: { property: "반", select: { equals: cls } }, page_size: 100, start_cursor: cursor, sorts: [{ property: sdb.titleProp, direction: "ascending" }] });
+    if (!q) return null;
+    (q.results || []).forEach((p) => {
+      const t = p.properties[sdb.titleProp] && p.properties[sdb.titleProp].title;
+      const pin = p.properties[PIN_PROP] && p.properties[PIN_PROP].rich_text;
+      out.push({ id: p.id, name: (t || []).map((x) => x.plain_text).join(""), hasPin: !!(pin && pin.length) });
+    });
+    if (!q.has_more) break;
+    cursor = q.next_cursor;
+  }
+  return out;
+}
+async function studentLogin(db, id, pin, setPin) {
+  const sdb = await getStudentDb(db);
+  if (!sdb) return { status: 502, msg: "학생 명단을 불러오지 못했어요." };
+  if (!sdb.hasPin) return { status: 503, msg: "선생님이 아직 본인번호 칸을 준비하지 않았어요." };
+  if (pinLocked(id)) return { status: 429, msg: "번호를 여러 번 틀려서 잠시 잠겼어요. 10분 뒤에 다시 해 주세요." };
+  const pg = await notionCall("pages/" + id, "GET");
+  const par = pg && pg.parent && pg.parent.database_id;
+  if (!pg || normId(par) !== normId(sdb.id)) return { status: 404, msg: "학생을 찾지 못했어요." };
+  const t = pg.properties[sdb.titleProp] && pg.properties[sdb.titleProp].title;
+  const name = (t || []).map((x) => x.plain_text).join("");
+  const cls = (pg.properties["반"] && pg.properties["반"].select && pg.properties["반"].select.name) || "기타";
+  const stored = ((pg.properties[PIN_PROP] && pg.properties[PIN_PROP].rich_text) || []).map((x) => x.plain_text).join("");
+  if (!/^\d{4}$/.test(pin)) return { status: 400, msg: "번호는 숫자 4자리예요." };
+  if (!stored) {
+    if (!setPin) return { status: 409, msg: "처음이에요. 번호를 새로 정해 주세요.", needSet: true };
+    const up = await notionCall("pages/" + id, "PATCH", { properties: { [PIN_PROP]: { rich_text: [{ type: "text", text: { content: pinHash(pin, id) } }] } } });
+    if (!up) return { status: 502, msg: "번호를 저장하지 못했어요. 다시 해 주세요." };
+  } else if (stored !== pinHash(pin, id)) {
+    pinFail(id);
+    return { status: 401, msg: "번호가 달라요. 다시 확인해 주세요." };
+  }
+  pinFails.delete(id);
+  return { status: 200, name, cls, token: signToken({ sid: normId(id), name, cls, exp: Date.now() + 3 * 3600 * 1000 }) };
+}
+
 // 판정은 확인문제 점수와 시청률로만 정함 (한줄요약 AI 평가는 참고용이라 판정·총점에 반영하지 않음)
 function verdictOf(score, coverage) {
   const cov = coverage == null ? 1 : coverage;
@@ -331,12 +410,32 @@ module.exports = async function handler(req, res) {
   }
   if (process.env.REPORT_OFF === "1") return sendJson(res, 503, { error: "off", msg: "학습 인증이 잠시 꺼져 있어요." });
 
+  if (!siteOk(req)) return sendJson(res, 401, { error: "site", msg: "입장 코드가 필요해요. 페이지를 새로고침해 주세요." });
   const b = await readBody(req);
   const code = process.env.CHAT_CODE;
   if (code && String(b.code || "").trim() !== code) return sendJson(res, 401, { error: "code", msg: "입장 코드가 맞지 않아요. 선생님께 받은 코드를 넣어 주세요." });
 
   const ip = clientIp(req);
   const limit = parseInt(process.env.REPORT_DAILY_LIMIT || "40", 10) || 40;
+
+  // ---------- 학생 선택·본인 확인 ----------
+  const recDb = (process.env.NOTION_DB_ID || "").replace(/-/g, "").trim();
+  if (b.action === "classes" || b.action === "roster" || b.action === "login") {
+    if (!process.env.NOTION_TOKEN || !recDb) return sendJson(res, 503, { error: "unset", msg: "학습 인증이 아직 준비되지 않았어요." });
+    if (!checkRate(ip, "l", 300)) return sendJson(res, 429, { error: "day", msg: "오늘은 더 할 수 없어요." });
+    lastNotionErr = null;
+    if (b.action === "classes") {
+      const list = await studentClasses(recDb);
+      return list ? sendJson(res, 200, { ok: true, classes: list }) : sendJson(res, 502, { error: "notion", msg: "반 목록을 불러오지 못했어요." });
+    }
+    if (b.action === "roster") {
+      const list = await studentRoster(recDb, clip(b.cls, 40));
+      return list ? sendJson(res, 200, { ok: true, students: list }) : sendJson(res, 502, { error: "notion", msg: "명단을 불러오지 못했어요." });
+    }
+    const r = await studentLogin(recDb, clip(b.id, 60), clip(b.pin, 10), !!b.setPin);
+    if (r.status !== 200) return sendJson(res, r.status, { ok: false, msg: r.msg, needSet: r.needSet });
+    return sendJson(res, 200, { ok: true, token: r.token, name: r.name, cls: r.cls });
+  }
 
   // ---------- AI 확인문제 만들기 (강의에 확인 문제가 없을 때) ----------
   if (b.action === "quiz") {
@@ -357,7 +456,9 @@ module.exports = async function handler(req, res) {
   // ---------- 학습 인증 제출 ----------
   if (!checkRate(ip, "n", limit)) return sendJson(res, 429, { error: "day", msg: "오늘 제출 횟수를 모두 사용했어요." });
 
-  const st = b.student || {}, pg = b.page || {}, s = b.stats || {}, qz = b.quiz || {};
+  const who = readToken(b.token);
+  if (!who) return sendJson(res, 401, { error: "login", msg: "로그인이 끝났어요. 이름과 번호를 다시 확인해 주세요.", relogin: true });
+  const st = { name: who.name, cls: who.cls }, pg = b.page || {}, s = b.stats || {}, qz = b.quiz || {};
   const name = normName(st.name);
   if (!name) return sendJson(res, 400, { error: "name", msg: "이름을 입력해 주세요." });
   const summary = clip(b.summary, 400);
@@ -379,7 +480,7 @@ module.exports = async function handler(req, res) {
   }
 
   const rec = {
-    name, cls: clip(st.cls, 30) || "기타",
+    name, cls: clip(st.cls, 30) || "기타", studentId: who.sid,
     title: clip(pg.title, 200), area: clip(pg.area, 20) || "기타", book: clip(pg.book, 100),
     url: /^https?:\/\//.test(pg.url || "") ? clip(pg.url, 500) : "",
     score, correctText: total ? right + " / " + total : "문제 없음",
