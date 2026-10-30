@@ -1,0 +1,336 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>관계사절과 수일치: 관계절 동사는 선행사에 맞춘다 — Unit 79 관계사절과 수일치</title><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@500;600;700&display=swap" rel="stylesheet"><style>html,body{margin:0;height:100%;background:#F3F3F5}#app{width:min(1040px,94vw);height:92vh;margin:4vh auto}@media (max-width:700px){#app{width:100vw;height:auto;margin:0}}
+.v-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.v-chips span{background:#fff;border:1px solid #D9D2F5;color:#5A3FC0;font-weight:700;border-radius:999px;padding:2px 11px;font-size:14.5px}
+.v-card{display:flex;flex-direction:column;gap:12px}
+.v-w{font-family:"Noto Serif KR",Georgia,serif;font-size:46px;font-weight:700;color:#1B2733;letter-spacing:-.01em;line-height:1.15}
+.v-hide{visibility:hidden}.v-hide.rv{visibility:visible}
+.v-m{font-size:22px;font-weight:800;color:#0A5F61;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline}
+.v-m2{font-size:15.5px;font-weight:600;color:#4A5866}
+.v-lb{font-size:12.5px;font-weight:800;color:#fff;background:#0E8A8C;border-radius:5px;padding:1px 9px;vertical-align:3px}
+.v-root{font-size:16px;line-height:1.7;color:#333;background:#F6F3FF;border-radius:10px;padding:8px 14px}
+.v-root .v-lb{background:#6B4FC8;margin-right:8px}
+.v-ex{border-left:4px solid #0E8A8C;background:#F3FAFA;border-radius:8px;padding:10px 14px}
+.v-en{font-family:"Noto Serif KR",Georgia,serif;font-size:19px;line-height:1.7}
+.v-ko{font-size:15px;color:#4A5866;margin-top:2px}
+.v-more{display:grid;gap:6px;font-size:15.5px}
+.v-more>div{display:flex;flex-wrap:wrap;gap:6px;align-items:baseline}
+.v-t{font-size:12.5px;font-weight:800;border-radius:4px;padding:1px 8px;background:#EEF1F4;color:#4A5866}
+.v-t.s{background:#E9EEFB;color:#3A4FA3}.v-t.a{background:#FFF3DC;color:#8A5A00}.v-t.c{background:#FDE8E8;color:#B42318}
+.v-c{border:1px solid #E3E9EE;border-radius:6px;padding:0 8px;font-weight:600}
+.v-c.s{border-color:#AEBBE6;color:#3A4FA3}.v-c.a{border-color:#F0D9A5;color:#8A5A00}
+.v-c i{font-style:normal;font-size:11.5px;color:#8493A1}
+.v-cf b{font-family:"Noto Serif KR",Georgia,serif;color:#B42318}
+.v-cf small{flex-basis:100%;color:#4A5866;font-size:14.5px;padding-left:2px}
+.v-rev{display:grid;grid-template-columns:repeat(2,1fr);gap:4px 26px;margin-top:6px}
+.v-rev>div{display:flex;gap:12px;align-items:baseline;padding:6px 6px;border-bottom:1px solid #F1F1F1;font-size:17px;border-radius:6px}
+.v-rev b{font-family:"Noto Serif KR",Georgia,serif;min-width:40%}
+.v-rev span{color:#0A5F61;font-weight:700}
+.v-rev.sm{grid-template-columns:repeat(3,1fr);gap:2px 18px}.v-rev.sm>div{font-size:14.5px;padding:4px}
+
+.p-ins{font-size:15.5px;font-weight:700;color:#4A5866;margin:4px 0 10px;display:flex;gap:8px;align-items:baseline}
+.p-no{flex:0 0 auto;font-size:15px;font-weight:800;color:#fff;background:#3A4FA3;border-radius:6px;padding:1px 9px}
+.p-q{font-size:21px;line-height:1.9;color:#1B2733}
+.p-q.sm{font-size:16.5px;line-height:1.75}
+.p-psg{border:1.5px solid #CFD6E4;border-radius:10px;padding:12px 16px;font-size:17px;line-height:1.95;background:#FBFCFE;font-family:"Noto Serif KR",Georgia,serif}
+.p-psg.sm{font-size:14.5px;line-height:1.75;padding:8px 12px}
+.p-box{display:inline-flex;align-items:center;gap:6px;border:2px solid #3A4FA3;border-radius:6px;padding:0 8px;margin:0 3px;background:#fff;line-height:1.5}
+.p-box i{font-style:normal;color:#9AA3B5}
+.p-box span.ok{background:#FFE7A3;color:#B43C0C;font-weight:800;border-radius:4px;padding:0 4px}
+.p-u{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px}
+.p-blank{display:inline-block;min-width:5em;border-bottom:2px solid #8493A1;margin:0 4px;vertical-align:-2px}
+.p-words{margin-top:8px;font-size:16px;color:#4A5866;background:#F6F8FB;border-radius:8px;padding:8px 12px;line-height:1.7}
+.p-opts{display:grid;gap:6px;margin-top:10px;font-size:18px;line-height:1.6}
+.p-opts.sm{font-size:15px;gap:3px}
+.p-op{padding:2px 4px}
+.p-mini{border:1px dashed #CFD6E4;border-radius:10px;padding:8px 12px;margin-bottom:10px;max-height:46%;overflow:auto}
+.p-steps{display:grid;gap:8px}
+.p-st{border-left:4px solid #0E8A8C;background:#F3FAFA;border-radius:6px;padding:8px 12px;font-size:16px;line-height:1.7}
+.p-st b.l{display:inline-block;color:#0A5F61;font-size:13px;font-weight:800;background:#DDF2F1;border-radius:4px;padding:0 7px;margin-right:8px}
+.p-fin{margin-top:10px;font-size:16px;line-height:1.7}
+.p-ab{display:inline-block;background:#B43C0C;color:#fff;font-weight:800;border-radius:6px;padding:2px 12px;margin-right:8px}
+.p-full{margin-top:6px;font-size:17px;font-weight:700}
+.p-ko{color:#4A5866;font-size:15px}
+.p-trap{margin-top:10px;background:#FFF3DC;border:1px solid #F0D9A5;border-radius:8px;padding:8px 12px;font-size:15.5px;line-height:1.7}
+.p-trap b{color:#8A5A00;margin-right:8px}
+.p-pts{margin:10px 0 0;padding-left:20px;font-size:16.5px;line-height:1.8}
+.g-kind.p-sol{background:#0E8A8C;color:#fff}
+
+.lp{--pk:#0E8A8C;--pk-t:#0A5F61;--pk-l:#DDF2F1;--pk-ll:#F3FAFA;--bl-l:#E9EEFB;--bl-t:#3A4FA3;height:100%;min-height:540px;background:#fff;color:#1B2733;border-radius:16px;display:flex;flex-direction:column;overflow:hidden;font-family:"IBM Plex Sans KR","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;box-shadow:0 2px 6px rgba(0,0,0,.06),0 14px 40px rgba(0,0,0,.08);outline:none}
+.lp *{box-sizing:border-box}
+.lp{word-break:keep-all;overflow-wrap:break-word}
+.lp-top{display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid #F1F1F1;position:relative}
+.lp-top::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,var(--pk),#7CCBC8)}
+.lp-brand{font-size:12.5px;font-weight:800;color:#fff;background:var(--pk);border-radius:999px;padding:3px 12px}
+.lp-name{flex:1;min-width:0;font-weight:800;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lp-slide{flex:1;min-height:0;overflow:auto;padding:30px 44px;display:flex;flex-direction:column}
+.lp-cap{flex-shrink:0;padding:10px 22px;background:#F3FAFA;border-top:1px solid #DDF2F1;font-size:15px;line-height:1.55;color:#4A5866;max-height:30%;overflow:auto}
+.lp-bar{flex-shrink:0;display:flex;align-items:center;gap:8px;padding:11px 18px;border-top:1px solid #F1F1F1;background:#FAFAFA;flex-wrap:wrap}
+.lp-tl{flex:1;min-width:120px;height:7px;background:#E3E9EE;border-radius:6px;overflow:hidden;cursor:pointer}
+.lp-tl>i{display:block;height:100%;width:0;background:var(--pk)}
+.lp-cnt{font-size:12.5px;color:#8493A1;font-variant-numeric:tabular-nums;min-width:50px;text-align:center}
+.lp select{width:auto}
+.lp button,.lp select{background:#fff;color:#1B2733;border:1px solid #DCDCDC;border-radius:8px;padding:7px 12px;font-weight:700;font-size:13.5px;cursor:pointer;font-family:inherit}
+.lp button.on{background:var(--pk-l);border-color:var(--pk-l);color:var(--pk-t)}
+.lp button.lp-play{background:var(--pk);border-color:var(--pk);color:#fff;min-width:96px}
+.lp-warn{padding:7px 20px;font-size:12.5px;color:var(--pk-t);background:var(--pk-ll)}
+.lp-tag{display:inline-block;align-self:flex-start;font-size:12.5px;font-weight:800;color:var(--pk-t);background:var(--pk-l);border-radius:999px;padding:3px 12px;margin-bottom:14px}
+.lp-cover{margin:auto 0;display:flex;gap:22px;align-items:stretch}
+.lp-qn{flex:0 0 110px;background:var(--pk);color:#fff;font-weight:800;font-size:28px;border-radius:14px;display:grid;place-items:center}
+.lp-cv{flex:1;min-width:0}
+.lp-cv .src{color:#8493A1;font-weight:700;font-size:14px}
+.lp-cv h1{margin:4px 0 2px;font-size:30px;line-height:1.25;font-weight:800}
+.lp-cv h2{margin:0 0 14px;font-size:17px;color:#4A5866;font-weight:700}
+.lp-row{display:flex;gap:10px;align-items:baseline;margin-top:6px;font-size:15.5px;padding:4px 8px;border-radius:8px}
+.lp-lb{flex:0 0 auto;font-size:12px;font-weight:800;color:var(--pk-t);background:var(--pk-l);border-radius:4px;padding:1px 8px}
+.lp-box{background:var(--pk-ll);border-radius:12px;padding:16px 20px;font-size:16.5px;line-height:1.75;color:#333}
+.lp b.key{color:var(--pk-t);background:linear-gradient(transparent 60%,#BFE8E5 60%)}
+.lp-st{border:1px solid #D6EAE9;border-radius:12px;padding:11px 16px;margin-bottom:9px}
+.lp-st h4{margin:0 0 3px;font-size:16px;color:var(--pk-t);display:flex;gap:8px;align-items:center}
+.lp-st h4 i{font-style:normal;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--pk);color:#fff;font-size:12px}
+.lp-st h4 small{color:#8493A1;font-size:12.5px}
+.lp-st p{margin:0;font-size:15px;line-height:1.65;color:#444}
+.lp-big{font-size:28px;font-weight:800}
+.lp-pill{display:inline-block;font-size:13px;font-weight:800;color:var(--pk-t);background:var(--pk-l);border-radius:999px;padding:3px 12px;margin-left:8px;vertical-align:5px}
+.lp-sig{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:15px;margin-top:8px}
+.lp-sig b{color:var(--pk-t)}
+.lp-chain{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px;font-size:15px}
+.lp-chain span.c{background:var(--bl-l);color:var(--bl-t);font-weight:700;border-radius:6px;padding:2px 10px}
+.lp-chain span.a{color:#999}
+.lp-ct{width:100%;border-collapse:collapse;margin-top:10px;font-size:14.5px}
+.lp-ct th,.lp-ct td{border:1px solid #CFE5E4;padding:6px 10px;text-align:left}
+.lp-ct th{background:var(--pk-ll);color:var(--pk-t)}
+.lp-vg{display:grid;grid-template-columns:repeat(3,1fr);gap:2px 22px}
+.lp-vg div{display:flex;gap:10px;padding:6px 2px;border-bottom:1px solid #F4F4F4;font-size:15.5px;align-items:baseline}
+.lp-vg b{font-weight:800}
+.lp-vg em{font-style:normal;font-size:11px;font-weight:700;color:var(--pk-t);background:var(--pk-l);border-radius:4px;padding:0 5px}
+.lp-vg span{color:#555;margin-left:auto;text-align:right}
+.lp-sa{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 18px}
+.lp-sa>div{border:1px solid #F1F1F1;border-radius:10px;padding:10px 14px}
+.lp-sa b.w{font-size:17px}
+.lp-sa .m{color:#666;margin-left:6px;font-size:14px}
+.lp-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;align-items:center}
+.lp-chips span{font-size:13.5px;font-weight:700;border-radius:5px;padding:1px 9px}
+.lp-chips .s{background:var(--bl-l);color:var(--bl-t)}
+.lp-chips .a{background:#FFF1D8;color:#8A5A00}
+.lp-chips .x{background:none;color:#999;padding:0}
+.lp-sno{font-size:13px;color:#8493A1;font-weight:700;margin-bottom:8px}
+.lp-sno .es{color:#fff;background:#E0952B;border-radius:4px;padding:1px 8px;font-size:11.5px;margin-left:8px}
+.lp-chunks{display:flex;flex-wrap:wrap;gap:16px 10px;margin-bottom:12px;align-items:flex-end}
+.lp-chunk{display:flex;flex-direction:column}
+.lp-chunk .ko{font-size:13px;color:var(--pk-t);font-weight:700;line-height:1.3;margin-bottom:2px}
+.lp-chunk .en{font-size:24px;font-weight:700;line-height:1.4}
+.lp-chunk+.lp-chunk{padding-left:10px;border-left:2px solid #D6EAE9}
+.lp .tgt{background:#FFF0C7;border-bottom:2.5px solid var(--pk);padding:0}
+.lp .mk{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--pk);color:#fff;font-size:11.5px;font-weight:800;margin:0 3px;vertical-align:4px;line-height:1}
+.lp-ko{font-size:16px;font-weight:700;background:var(--pk-ll);border-radius:10px;padding:9px 14px;margin-bottom:8px}
+.lp-mn{font-size:15px;line-height:1.65;background:#FFF8E8;border:1px solid #F0D9A5;border-radius:10px;padding:9px 14px;margin-bottom:8px;color:#444}
+.lp-ap{font-size:14.5px;line-height:1.6;border:1px solid #BFE8E5;border-radius:10px;padding:9px 14px}
+.lp-ap h5{margin:0 0 4px;display:inline-block;background:var(--pk);color:#fff;font-size:12px;border-radius:4px;padding:1px 9px}
+.lp-ap .gi{margin:3px 0}
+.lp-ap .gn{color:var(--pk-t);font-weight:800}
+.lp-fin ul{margin:0 0 12px;padding-left:20px;font-size:16px;line-height:1.75}
+.lp-hl{box-shadow:0 0 0 3px #7CCBC8,0 0 22px 4px rgba(14,138,140,.28)!important;border-radius:12px;transition:box-shadow .2s}
+@media (max-width:700px){.lp{min-height:0;height:100vh;height:100dvh;border-radius:0}.lp-slide{padding:18px 16px}.lp-cover{flex-direction:column}.lp-qn{flex:0 0 64px}.lp-cv h1{font-size:21px}.lp-chunk .en{font-size:18px}.lp-vg,.lp-sa{grid-template-columns:1fr}.lp-box{font-size:15px}.lp-big{font-size:21px}}
+
+.lp-box b.h{color:var(--pk-t);margin-right:8px}
+.lp{--g-ok:#1F8A57;--g-ok-l:#E9F7EF;--g-err:#D43A3A;--g-err-l:#FDECEC}
+.g-cover{margin:auto 0;text-align:left}
+.g-cover .g-unit{display:inline-block;font-size:14px;font-weight:800;color:var(--bl-t);background:var(--bl-l);border-radius:999px;padding:3px 14px;margin-bottom:10px}
+.g-cover h1{margin:0 0 18px;font-size:34px;line-height:1.25;font-weight:800}
+.g-h{margin:0 0 12px;font-size:24px;font-weight:800;line-height:1.3}
+.g-rule{background:var(--pk-ll);border-radius:12px;padding:14px 18px;font-size:17px;line-height:1.7;margin-bottom:12px}
+.g-formula{display:inline-block;margin-top:8px;background:#fff;border:1.5px solid var(--bl-l);color:var(--bl-t);font-weight:800;border-radius:8px;padding:4px 12px;font-size:16px}
+.g-exs{display:grid;gap:8px;margin-bottom:12px}
+.g-ex{border:1px solid #F1F1F1;border-radius:12px;padding:10px 16px;position:relative}
+.g-en{font-size:21px;font-weight:700;line-height:1.45}
+.g-en .fx{background:#FFF0C7;border-bottom:2.5px solid var(--pk)}
+.g-ko{font-size:15px;color:var(--pk-t);font-weight:700;margin-top:2px}
+.g-note{font-size:14px;color:#555;margin-top:3px}
+.g-add{position:absolute;top:8px;right:10px;font-size:11px;font-weight:700;color:#8493A1;background:#F4F4F4;border-radius:4px;padding:1px 6px}
+.g-tip{background:#FFF8E8;border:1px solid #F0D9A5;border-radius:12px;padding:10px 16px;font-size:15.5px;line-height:1.65}
+.g-tip>b{color:#8A6D00;margin-right:6px}
+.g-mk{border:1px solid #F1F1F1;border-radius:12px;padding:10px 16px;margin-bottom:9px}
+.g-wrong{font-size:19px;font-weight:700;color:var(--g-err)}
+.g-wrong s{text-decoration-thickness:2px}
+.g-right{font-size:19px;font-weight:700;color:var(--g-ok);margin-top:2px}
+.g-why{font-size:14.5px;color:#555;margin-top:4px}
+.g-tags{display:flex;gap:8px;align-items:flex-start}
+.g-kind{display:inline-block;font-size:12.5px;font-weight:800;color:var(--bl-t);background:var(--bl-l);border-radius:999px;padding:3px 11px}
+.g-q{font-size:18px;font-weight:700;margin-bottom:10px;line-height:1.55}
+.g-qs{font-size:22px;font-weight:700;line-height:1.5;background:#FAFAFA;border-radius:12px;padding:12px 16px;margin-bottom:10px}
+.g-opts{display:grid;gap:6px;margin-bottom:10px}
+.g-opt{display:block;width:100%;text-align:left;background:#fff!important;border:1.5px solid #E6E6E6!important;border-radius:10px!important;padding:9px 14px!important;font-size:17px!important;font-weight:600!important;cursor:pointer;color:#1B2733!important}
+.g-opt b{color:var(--pk-t);margin-right:6px}
+.g-opt.picked{border-color:var(--pk)!important;background:var(--pk-ll)!important}
+.g-opts.rv .g-opt[data-ok="1"]{border-color:var(--g-ok)!important;background:var(--g-ok-l)!important}
+.g-opts.rv .g-opt.picked:not([data-ok="1"]){border-color:var(--g-err)!important;background:var(--g-err-l)!important}
+.g-ans{display:none;background:var(--g-ok-l);border-radius:12px;padding:12px 16px;font-size:16px;line-height:1.65}
+.g-ans.rv{display:block}
+.g-ans>b{color:var(--g-ok);margin-right:6px}
+.g-ans .a{font-weight:800;font-size:18px}
+.g-exp{margin-top:4px;color:#333}
+.lp button.g-show{margin-top:4px;background:#fff;color:var(--g-ok);border-color:#C6EBD5}
+.g-sum{margin:0;padding-left:22px;font-size:18px;line-height:1.8}
+.lp-think{position:absolute;right:22px;bottom:16px;background:#1B2733;color:#fff;font-weight:800;font-size:15px;border-radius:999px;padding:8px 16px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.lp-slide{position:relative}
+@media (max-width:700px){.g-cover h1{font-size:23px}.g-h{font-size:19px}.g-en,.g-qs{font-size:17px}.g-rule{font-size:15px}.g-opt{font-size:15px!important}}
+.d-chat{display:flex;flex-direction:column;gap:8px}
+.d-bub{max-width:78%;border-radius:16px;padding:9px 15px;position:relative}
+.d-bub.d-l{align-self:flex-start;background:#F4F6F8;border-top-left-radius:4px}
+.d-bub.d-r{align-self:flex-end;background:var(--pk-ll);border-top-right-radius:4px}
+.d-bub .d-sp{font-size:12px;font-weight:800;color:#8493A1;display:block;margin-bottom:1px}
+.d-en{font-size:18px;font-weight:600;line-height:1.45}
+.d-key{background:var(--pk-ll);border-radius:14px;padding:14px 18px;margin-bottom:12px}
+.d-keyexp{font-size:24px;font-weight:800;line-height:1.35}
+.d-mean{font-size:16px;color:var(--pk-t);font-weight:700;margin-top:3px}
+.d-from{font-size:14px;color:#666;margin-top:6px}
+.d-exp{font-size:15px;line-height:1.65;margin-top:8px;color:#333}
+.d-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.d-box{border:1px solid #E9EEFB;border-radius:12px;padding:10px 14px}
+.d-box>b{display:inline-block;font-size:13px;color:var(--bl-t);background:var(--bl-l);border-radius:999px;padding:2px 10px;margin-bottom:6px}
+.d-box.a>b{color:#1F8A57;background:#E9F7EF}
+.d-box ul{margin:0;padding-left:18px;font-size:16.5px;line-height:1.75;font-weight:600}
+.d-line{border:1px solid #F1F1F1;border-radius:12px;padding:10px 16px;margin-bottom:10px}
+.d-lh{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.d-lh .d-sp{font-size:12.5px;font-weight:800;border-radius:6px;padding:1px 9px;background:#F4F6F8;color:#555}
+.d-lh .d-sp.d-r{background:var(--pk-l);color:var(--pk-t)}
+.d-ln{font-size:12px;color:#999}
+.d-en2{font-size:20px;font-weight:700;line-height:1.55}
+.d-ko{font-size:15px;color:var(--pk-t);font-weight:700;margin-top:2px}
+.d-notes{margin-top:7px;display:grid;gap:4px}
+.d-note{display:flex;gap:6px;font-size:14.5px;line-height:1.6;color:#333;align-items:baseline}
+.d-alt{margin-top:7px;background:#FFF8E8;border:1px solid #F0D9A5;border-radius:10px;padding:7px 12px;font-size:15px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.d-alt>b{color:#8A6D00;font-size:13px}
+.d-alt span{font-weight:600}
+.d-alt span+span::before{content:"/";color:#C9B95A;margin-right:10px}
+@media (max-width:700px){.d-cols{grid-template-columns:1fr}.d-en2{font-size:16px}.d-keyexp{font-size:19px}}
+
+.lp{--pk-b:#B5DEDC;--am:#E0952B;--am-l:#FFF3DC;--am-b:#F0D9A5;--am-d:#8A5A00}
+.lp-top{border-bottom:1.5px solid var(--pk)}
+.lp-top::before{height:5px;background:linear-gradient(90deg,var(--pk) 0,var(--pk) 80%,var(--am) 80%,var(--am) 100%)}
+.lp-brand{background:#fff;color:var(--pk-t);border:1px solid var(--pk);border-radius:3px;font-weight:700;letter-spacing:.02em;padding:2px 11px}
+.lp-name{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700;color:var(--pk-t)}
+.lp-tag{background:#fff;border:1px solid var(--pk-b);border-radius:3px;font-weight:700;padding:2px 12px}
+.lp-qn{flex:0 0 112px;height:112px;align-self:center;background:#fff;color:var(--pk);border:3px solid var(--pk);border-radius:50%;font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700;font-size:26px}
+.lp-cv h1,.lp-big{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700}
+.lp-lb{background:none;border:0;border-bottom:2px solid var(--am);border-radius:0;padding:0 2px;color:var(--pk-t);font-weight:700}
+.lp-box{border-radius:4px;border-left:4px solid var(--pk)}
+.lp-st{border-radius:4px;border-left:4px solid var(--pk-b)}
+.lp-st h4{color:var(--ink,#1B2733)}
+.lp-st h4 i{border-radius:4px;width:auto;min-width:24px;padding:0 4px}
+.lp-pill{background:#fff;border:1px solid var(--pk-b);border-radius:3px;font-weight:700}
+.lp-chain span.c{background:#fff;border:1px solid #AEBBE6;border-radius:3px;font-weight:600}
+.lp-ct th{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif}
+.lp-vg em{background:#fff;border:1px solid var(--pk-b);border-radius:3px}
+.lp-sa>div{border-radius:4px;border-color:var(--pk-b)}
+.lp-chips span{border-radius:3px;background:#fff}
+.lp-chips .s{border:1px solid #AEBBE6;color:#3A4FA3}
+.lp-chips .a{border:1px solid var(--am-b);color:var(--am-d);background:#FFFBF2}
+.lp-sno .es{background:var(--am);border-radius:2px;font-weight:700}
+.lp-chunk .en{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:600}
+.lp-chunk+.lp-chunk{border-left:1px solid var(--pk-b)}
+.lp .tgt{background:var(--am-l);border-bottom:2.5px dotted var(--am)}
+.lp .mk{border-radius:4px;width:auto;min-width:20px;padding:0 3px;background:var(--pk-t)}
+.lp-ko{border-radius:0;border-left:4px solid var(--pk);background:none;padding:4px 0 4px 12px}
+.lp-mn{border-radius:4px;background:var(--am-l);border-color:var(--am-b);color:#5C4510}
+.lp-ap{border-radius:4px;border:1px solid var(--pk-b);border-top:3px solid var(--pk);background:var(--pk-ll)}
+.lp-ap h5{background:none;color:var(--pk-t);padding:0;font-size:12.5px;font-weight:700}
+.lp-hl{border-radius:6px}
+.lp button.lp-play,.lp button,.lp select{border-radius:4px}
+@media (max-width:700px){.lp-qn{flex:0 0 72px;height:72px;font-size:18px}}
+
+.g-rule{border-radius:3px;border-left:4px solid var(--pk)}
+.g-formula{border-radius:2px;background:#fff;border:1px solid #AEBBE6;color:#3A4FA3}
+.g-ex{border-radius:3px}
+.g-en{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:600}
+.g-en .fx{background:var(--am-l);border-bottom:2.5px dotted var(--am)}
+.g-tip{border-radius:3px;background:var(--am-l);border-color:var(--am-b)}
+.g-mk{border-radius:3px}
+.g-kind{border-radius:2px;background:#fff;border:1px solid #AEBBE6;color:#3A4FA3}
+.g-qs{border-radius:3px}
+.g-opt{border-radius:3px!important}
+.g-ans{border-radius:3px}
+.g-add{border-radius:2px}
+.d-bub{border-radius:6px}
+.d-key{border-radius:3px;border-left:4px solid var(--pk)}
+.d-box{border-radius:3px}
+.d-box>b{border-radius:2px;background:#fff;border:1px solid #AEBBE6;color:#3A4FA3}
+.d-line{border-radius:3px}
+.d-en2,.d-keyexp{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:700}
+.d-alt{border-radius:3px;background:var(--am-l);border-color:var(--am-b)}
+
+.y-sen{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-size:23px;font-weight:700;line-height:1.55;margin:4px 0 14px;color:#1B2733}
+.y-sen.sm{font-size:17px;margin-bottom:10px;color:#4A5866}
+.y-sen .fx,.y-li .fx{background:var(--am-l,#FFF3DC);border-bottom:2.5px dotted var(--am,#E0952B)}
+.y-chunks{display:grid;grid-template-columns:minmax(40%,auto) 1fr;border:1px solid var(--pk-b,#B5DEDC);border-radius:4px;margin-bottom:12px;overflow:hidden}
+.y-chunks>div{padding:7px 14px;border-bottom:1px solid #EEF3F3}
+.y-chunks .e{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:600;font-size:17px;border-right:1px solid #EEF3F3;background:#FBFEFE}
+.y-chunks .k{color:var(--pk-t);font-size:15px;font-weight:600}
+.y-box{border-radius:4px;padding:10px 14px;margin-bottom:10px;font-size:15.5px;line-height:1.7}
+.y-lb{display:inline-block;font-size:12.5px;font-weight:800;color:var(--pk-t);background:#fff;border:1px solid var(--pk-b,#B5DEDC);border-radius:3px;padding:0 8px;margin-right:8px;vertical-align:1px}
+.y-st{background:var(--pk-ll);border-left:4px solid var(--pk)}
+.y-mn{background:var(--am-l,#FFF3DC);border:1px solid var(--am-b,#F0D9A5)}
+.y-mn .y-lb{color:var(--am-d,#8A5A00);border-color:var(--am-b,#F0D9A5)}
+.y-cg{border:1px solid var(--pk-b,#B5DEDC)}
+.y-pair{padding:6px 0 4px;border-top:1px dashed #E3E9EE}
+.y-pair:first-of-type{border-top:0}
+.y-pair .f{font-family:"Noto Serif KR",Georgia,serif;font-weight:600;color:#4A5866}
+.y-pair .ar{color:var(--pk);margin:0 8px;font-weight:800}
+.y-pair .t{font-family:"Noto Serif KR",Georgia,serif;font-weight:700;color:#1B2733;background:var(--pk-ll);padding:0 4px}
+.y-pair .w{font-size:14px;color:#4A5866;margin-top:2px}
+.y-eq{display:inline-block;margin-left:10px;font-size:12.5px;font-weight:700;color:#3A4FA3;border:1px solid #AEBBE6;border-radius:3px;padding:0 7px}
+.y-pp{background:#F6F8FA;border-left:4px solid #3A4FA3}
+.y-pp .y-lb{color:#3A4FA3;border-color:#AEBBE6}
+.y-pp .p{font-family:"Noto Serif KR",Georgia,serif;font-size:18px;font-weight:700;margin-top:6px;line-height:1.55}
+.y-list{display:grid;gap:6px;margin-top:4px}
+.y-li{font-family:"Noto Serif KR",Georgia,serif;font-size:16px;line-height:1.6;display:block;padding-left:32px;text-indent:-32px}
+.y-no{display:inline-block;text-indent:0;min-width:22px;height:20px;line-height:20px;text-align:center;border-radius:3px;background:var(--pk);color:#fff;font-family:sans-serif;font-size:12px;font-weight:800;margin-right:10px;vertical-align:1px}
+@media (max-width:700px){.y-sen{font-size:18px}.y-chunks{grid-template-columns:1fr}.y-chunks .e{border-right:0}}
+</style></head><body><div id="app"></div><script>function lecturePlayer(root,D){
+  root.innerHTML='<div class="lp" tabindex="0"><div class="lp-top"><span class="lp-brand"></span><span class="lp-name"></span></div><div class="lp-warn" hidden></div><div class="lp-slide"></div><div class="lp-cap" hidden></div><div class="lp-bar"><div class="lp-tl" title="슬라이드 이동"><i></i></div><span class="lp-cnt"></span><button class="lp-cc">자막</button><select class="lp-rate" title="재생 속도"><option value="0.8">0.8x</option><option value="1" selected>1.0x</option><option value="1.2">1.2x</option><option value="1.4">1.4x</option><option value="1.6">1.6x</option><option value="2">2.0x</option></select><button class="lp-prev" aria-label="이전 슬라이드">◀</button><button class="lp-play">▶ 재생</button><button class="lp-next" aria-label="다음 슬라이드">▶</button></div></div>';
+  var q=function(s){return root.querySelector(s);},box=q(".lp"),sl=q(".lp-slide"),cap=q(".lp-cap"),cnt=q(".lp-cnt"),fill=q(".lp-tl>i"),tl=q(".lp-tl"),pp=q(".lp-play"),cc=q(".lp-cc"),warn=q(".lp-warn");
+  q(".lp-brand").textContent=D.brand;q(".lp-name").textContent=D.title;
+  var i=0,j=0,playing=false,rate=1,timer=null,tick=null,capOn=!!D.preview,noAudio=!!D.preview,a=new Audio(),think=null;
+  if(D.preview){cc.classList.add("on");}
+  function segs(){return D.slides[i].segs||[];}
+  function setFill(f){var s=segs(),n=D.slides.length,sf=s.length?(j+(f||0))/s.length:0;fill.style.width=Math.min(100,(i+sf)/n*100)+"%";}
+  function showCap(){var s=segs()[j];cap.textContent=s?s.text:"";cap.hidden=!(capOn&&s&&s.text&&s.text.trim());cc.classList.toggle("on",capOn);}
+  function clearHl(){var e=sl.querySelectorAll(".lp-hl");for(var x=0;x<e.length;x++)e[x].classList.remove("lp-hl");}
+  function hl(k){clearHl();if(!k)return;var e=sl.querySelector('[data-hl="'+k+'"]');if(e){e.classList.add("lp-hl");try{e.scrollIntoView({block:"nearest",behavior:"smooth"});}catch(_){}}}
+  function reveal(k){var e=sl.querySelectorAll('[data-rv="'+k+'"]');for(var x=0;x<e.length;x++)e[x].classList.add("rv");var b=sl.querySelector('[data-act="show"]');if(b)b.hidden=true;}
+  function stopAll(){if(timer){clearTimeout(timer);timer=null;}if(tick){clearInterval(tick);tick=null;}if(think){think.remove();think=null;}try{a.pause();}catch(_){}}
+  function silent(s){var dur=Math.max(1800,s.text.length*130/rate+700),t0=Date.now();if(!capOn){capOn=true;showCap();}
+    tick=setInterval(function(){setFill(Math.min(1,(Date.now()-t0)/dur));},200);timer=setTimeout(function(){stopAll();segEnd();},dur);}
+  function pause(sec){var left=sec,t0=Date.now();think=document.createElement("div");think.className="lp-think";think.textContent="생각할 시간 "+left+"초";sl.appendChild(think);
+    tick=setInterval(function(){left=Math.max(0,sec-Math.floor((Date.now()-t0)/1000));if(think)think.textContent="생각할 시간 "+left+"초";setFill(Math.min(1,(Date.now()-t0)/(sec*1000)));},250);
+    timer=setTimeout(function(){stopAll();segEnd();},sec*1000/Math.max(.5,rate));}
+  var bases=null,bi=0,okBase=false,att=0;
+  function cands(){if(bases)return bases;var out=[];function add(x){x=String(x||"").replace(/\/+$/,"");if(x&&out.indexOf(x)<0)out.push(x);}
+    add(D.audioDir);try{var f=decodeURIComponent(location.pathname.split("/").pop()||""),nm=f.replace(/\.html?$/i,"");if(nm){add(nm+"_audio");add(nm.replace(/_AI강의$/,"")+"_audio");}}catch(_){}
+    add("audio");bases=out;return out;}
+  function playAudio(s){a.src=encodeURI(cands()[bi])+"/"+s.n+".mp3";a.playbackRate=rate;a.play().catch(function(){});}
+  function runSeg(){stopAll();var s=segs()[j];clearHl();setFill(0);showCap();if(!s)return;hl(s.hl);if(s.reveal)reveal(s.reveal);if(!playing)return;
+    if(s.pause){pause(s.pause);return;}
+    if(noAudio){silent(s);return;}
+    att=0;playAudio(s);}
+  a.onloadeddata=function(){okBase=true;};
+  a.onerror=function(){if(!playing)return;var s=segs()[j];if(!s||s.pause)return;var L=cands().length;if(!okBase&&att<L-1){att++;bi=(bi+1)%L;playAudio(s);return;}if(!okBase)bi=(bi+1)%L;warn.hidden=false;warn.textContent="음성 파일("+cands()[bi]+"/"+s.n+".mp3)을 찾지 못해 자막으로 진행합니다.";silent(s);};
+  a.ontimeupdate=function(){if(a.duration)setFill(a.currentTime/a.duration);};
+  a.onended=function(){segEnd();};
+  function segEnd(){if(!playing)return;if(j<segs().length-1){j++;runSeg();}else if(i<D.slides.length-1){i++;show();}else{playing=false;pp.textContent="▶ 재생";clearHl();fill.style.width="100%";}}
+  function show(){stopAll();sl.innerHTML=D.slides[i].html;sl.scrollTop=0;cnt.textContent=(i+1)+" / "+D.slides.length;j=0;runSeg();}
+  function go(d){i=Math.max(0,Math.min(D.slides.length-1,i+d));show();}
+  function toggle(){playing=!playing;pp.textContent=playing?"⏸ 일시정지":"▶ 재생";if(playing){var s=segs()[j];if(!noAudio&&s&&!s.pause&&a.src&&a.currentTime>0&&!a.ended&&a.paused&&!timer){a.play().catch(function(){});}else runSeg();}else stopAll();}
+  sl.addEventListener("click",function(e){var t=e.target.closest?e.target.closest(".g-opt,[data-act]"):null;if(!t)return;
+    if(t.getAttribute("data-act")==="show"){reveal("ans");return;}
+    var g=t.parentNode;if(g&&g.classList.contains("rv"))return;[].forEach.call(g.querySelectorAll(".g-opt"),function(o){if(o!==t)o.classList.remove("picked");});t.classList.toggle("picked");});
+  q(".lp-prev").onclick=function(){go(-1);};q(".lp-next").onclick=function(){go(1);};pp.onclick=toggle;
+  cc.onclick=function(){capOn=!capOn;showCap();};
+  q(".lp-rate").onchange=function(e){rate=parseFloat(e.target.value)||1;a.playbackRate=rate;};
+  tl.onclick=function(e){var r=tl.getBoundingClientRect();i=Math.max(0,Math.min(D.slides.length-1,Math.floor((e.clientX-r.left)/r.width*D.slides.length)));show();};
+  box.addEventListener("keydown",function(e){if(e.target.tagName==="SELECT")return;if(e.key===" "){e.preventDefault();toggle();}else if(e.key==="ArrowRight")go(1);else if(e.key==="ArrowLeft")go(-1);});
+  show();
+  return {stop:function(){playing=false;pp.textContent="▶ 재생";stopAll();}};
+}
+lecturePlayer(document.getElementById("app"),{"brand":"Unit 79 관계사절과 수일치","title":"관계사절과 수일치: 관계절 동사는 선행사에 맞춘다","audioDir":"unit79_audio","preview":false,"count":35,"slides":[{"html":"\u003cdiv class=\"g-cover\">\u003cdiv class=\"g-unit\">관계사절과 수일치\u003c/div>\u003ch1>관계사절과 수일치: 관계절 동사는 선행사에 맞춘다\u003c/h1>\u003cdiv class=\"lp-box\" data-hl=\"goal\">\u003cb class=\"h\">오늘의 목표\u003c/b>관계절 동사를 선행사의 수에 맞추고, one of the와 the only one, and로 연결된 복수 선행사를 정확히 구별할 수 있다.\u003c/div>\u003c/div>","segs":[{"n":1,"text":"안녕하세요, 여러분. 오늘은 관계사절과 수일치를 함께 공부해 볼 거예요. 관계절 안의 동사가 어떤 명사에 맞춰지는지 예문으로 차근차근 익혀 보죠. 소녀들 중 한 명, 답을 아는 유일한 학생처럼 헷갈리기 쉬운 표현도 정확히 구분해 봅시다.","hl":"goal"}]},{"html":"\u003cspan class=\"lp-tag\">개념 1 / 3\u003c/span>\u003ch2 class=\"g-h\">관계절 동사와 선행사의 수 일치\u003c/h2>\u003cdiv class=\"g-rule\" data-hl=\"rule\">관계절의 동사는 관계사가 가리키는 \u003cb class=\"key\">선행사\u003c/b>의 수에 일치시켜요. 선행사가 복수이면 관계절 동사에 \u003cb class=\"key\">복수동사\u003c/b>를 쓰고, 선행사가 단수이면 단수동사를 써요.\u003cdiv>\u003cspan class=\"g-formula\">선행사(단수/복수) + who/that + 단수동사/복수동사\u003c/span>\u003c/div>\u003c/div>\u003cdiv class=\"g-exs\">\u003cdiv class=\"g-ex\" data-hl=\"ex-0\">\u003cdiv class=\"g-en\">The books \u003cspan class=\"fx\">that are on the desk\u003c/span> are mine.\u003c/div>\u003cdiv class=\"g-ko\">책상 위의 책들은 내 것이다.\u003c/div>\u003cdiv class=\"g-note\">선행사 The books가 복수라서 관계절 동사 are를 써요.\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-1\">\u003cspan class=\"g-add\">보충 예문\u003c/span>\u003cdiv class=\"g-en\">The boy \u003cspan class=\"fx\">who is wearing a cap\u003c/span> is my brother.\u003c/div>\u003cdiv class=\"g-ko\">모자를 쓰고 있는 소년은 내 동생이다.\u003c/div>\u003cdiv class=\"g-note\">선행사 The boy가 단수라서 관계절 동사 is를 써요.\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"g-tip\" data-hl=\"tip\">\u003cb>주의\u003c/b>관계절 동사를 고를 때는 관계사 바로 앞 명사만 보지 말고, 관계사가 가리키는 \u003cb class=\"key\">선행사\u003c/b>를 먼저 확인해요.\u003c/div>","segs":[{"n":2,"text":"관계절의 동사는 관계사가 가리키는 선행사의 수에 맞춰 줍니다. 선행사가 복수면 관계절 동사도 복수동사를 쓰고, 선행사가 단수면 단수동사를 씁니다. 그래서 관계절 동사를 보기 전에 선행사가 무엇인지 먼저 확인하는 것이 중요해요.","hl":"rule"},{"n":3,"text":"The books that are on the desk are mine. 이 문장은 책상 위의 책들은 내 것이라는 뜻이에요. 선행사 The books가 복수라서 관계절 동사도 are로 맞춰 줍니다.","hl":"ex-0"},{"n":4,"text":"The boy who is wearing a cap is my brother. 이 문장은 모자를 쓰고 있는 소년은 내 동생이라는 뜻이에요. 선행사 The boy가 단수라서 관계절 동사 is를 써요.","hl":"ex-1"},{"n":5,"text":"관계절 동사를 고를 때 관계사 바로 앞 명사만 보면 실수하기 쉬워요. 관계사가 가리키는 선행사가 무엇인지 먼저 확인하는 습관을 들이세요.","hl":"tip"}]},{"html":"\u003cspan class=\"lp-tag\">개념 2 / 3\u003c/span>\u003ch2 class=\"g-h\">one of the와 the only one의 수일치\u003c/h2>\u003cdiv class=\"g-rule\" data-hl=\"rule\">\u003cb class=\"key\">one of the + 복수명사\u003c/b> 뒤의 who/that 절은 \u003cb class=\"key\">복수동사\u003c/b>로 받아요. 반대로 \u003cb class=\"key\">the only one\u003c/b> who 절은 단수동사로 받아요.\u003cdiv>\u003cspan class=\"g-formula\">one of the + 복수명사 + who/that + 복수동사 / the only one + who + 단수동사\u003c/span>\u003c/div>\u003c/div>\u003cdiv class=\"g-exs\">\u003cdiv class=\"g-ex\" data-hl=\"ex-0\">\u003cdiv class=\"g-en\">She is one of the girls \u003cspan class=\"fx\">who like jazz\u003c/span>.\u003c/div>\u003cdiv class=\"g-ko\">그녀는 재즈를 좋아하는 소녀들 중 한 명이다.\u003c/div>\u003cdiv class=\"g-note\">one of the girls 뒤의 who는 girls를 받아 복수동사 like를 써요.\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-1\">\u003cdiv class=\"g-en\">He is the only student \u003cspan class=\"fx\">who knows the answer\u003c/span>.\u003c/div>\u003cdiv class=\"g-ko\">그는 답을 아는 유일한 학생이다.\u003c/div>\u003cdiv class=\"g-note\">the only student는 단수라 who절 동사 knows를 써요.\u003c/div>\u003c/div>\u003cdiv class=\"g-ex\" data-hl=\"ex-2\">\u003cspan class=\"g-add\">보충 예문\u003c/span>\u003cdiv class=\"g-en\">She is \u003cspan class=\"fx\">the only one who knows the answer\u003c/span>.\u003c/div>\u003cdiv class=\"g-ko\">그녀는 답을 아는 유일한 사람이다.\u003c/div>\u003cdiv class=\"g-note\">the only one은 단수로 보아 who절 동사 knows를 써요.\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"g-tip\" data-hl=\"tip\">\u003cb>주의\u003c/b>\u003cb class=\"key\">the only one\u003c/b>이 나오면 유일한 하나라서 단수동사를 쓴다는 점을 놓치지 마세요.\u003c/div>","segs":[{"n":6,"text":"one of the 뒤에 복수명사가 오면 관계절 동사는 복수로 맞춰요. 예를 들어 소녀들 중 한 명이라는 표현에서는 girls를 who절의 복수 선행사로 봅니다. 반면에 유일한 학생이라는 표현처럼 the only one이 나오면 단수동사를 써요.","hl":"rule"},{"n":7,"text":"She is one of the girls who like jazz. 이 문장은 그녀는 재즈를 좋아하는 소녀들 중 한 명이라는 뜻이에요. one of the girls 뒤의 who는 복수명사 girls를 받기 때문에 복수동사 like를 써요.","hl":"ex-0"},{"n":8,"text":"He is the only student who knows the answer. 이 문장은 그는 답을 아는 유일한 학생이라는 뜻이에요. the only student는 단수 선행사라서 who절 동사에 knows를 써요.","hl":"ex-1"},{"n":9,"text":"She is the only one who knows the answer. 이 문장은 그녀는 답을 아는 유일한 사람이라는 뜻이에요. the only one은 단수로 보기 때문에 who절 동사에 knows를 써요.","hl":"ex-2"},{"n":10,"text":"the only one이 나오면 유일한 하나라는 뜻이라서 단수동사를 쓴다는 점을 놓치지 마세요. one of the 뒤에서는 복수동사를 쓴다는 것과 꼭 구별해요.","hl":"tip"}]},{"html":"\u003cspan class=\"lp-tag\">개념 3 / 3\u003c/span>\u003ch2 class=\"g-h\">and로 연결된 복수 선행사\u003c/h2>\u003cdiv class=\"g-rule\" data-hl=\"rule\">선행사가 and로 연결되면 \u003cb class=\"key\">복수 선행사\u003c/b>로 보고 관계절 동사를 \u003cb class=\"key\">복수동사\u003c/b>로 맞춰요. and 앞뒤의 명사를 함께 선행사로 판단해야 해요.\u003cdiv>\u003cspan class=\"g-formula\">A and B + who/that + 복수동사\u003c/span>\u003c/div>\u003c/div>\u003cdiv class=\"g-exs\">\u003cdiv class=\"g-ex\" data-hl=\"ex-0\">\u003cspan class=\"g-add\">보충 예문\u003c/span>\u003cdiv class=\"g-en\">The singer and the dancer \u003cspan class=\"fx\">who are on stage\u003c/span> are famous.\u003c/div>\u003cdiv class=\"g-ko\">무대 위에 있는 가수와 댄서는 유명하다.\u003c/div>\u003cdiv class=\"g-note\">선행사가 The singer and the dancer로 복수라 who절 동사 are를 써요.\u003c/div>\u003c/div>\u003c/div>\u003cdiv class=\"g-tip\" data-hl=\"tip\">\u003cb>주의\u003c/b>and로 연결된 선행사는 하나의 명사처럼 보여도 \u003cb class=\"key\">복수\u003c/b>로 판단할 수 있어요.\u003c/div>","segs":[{"n":11,"text":"선행사가 and로 연결되면 두 명사가 함께 선행사가 됩니다. 그래서 관계절 동사는 복수동사로 맞춰 줍니다. and 앞뒤의 명사를 함께 묶어서 복수 선행사로 판단하는 연습이 필요해요.","hl":"rule"},{"n":12,"text":"The singer and the dancer who are on stage are famous. 이 문장은 무대 위에 있는 가수와 댄서는 유명하다는 뜻이에요. 선행사가 The singer and the dancer로 and로 연결된 복수라서 who절 동사에 are를 써요.","hl":"ex-0"},{"n":13,"text":"and로 연결된 선행사는 하나의 명사처럼 보여도 복수로 판단할 수 있어요. 관계절 동사를 쓰기 전에 and 앞뒤 명사를 꼭 확인하세요.","hl":"tip"}]},{"html":"\u003cspan class=\"lp-tag\">자주 하는 실수\u003c/span>\u003ch2 class=\"g-h\">이렇게 쓰면 틀려요\u003c/h2>\u003cdiv class=\"g-mk\" data-hl=\"mk-0\">\u003cdiv class=\"g-wrong\">✗ \u003cs>She is one of the girls who likes jazz.\u003c/s>\u003c/div>\u003cdiv class=\"g-right\">✓ She is one of the girls who like jazz.\u003c/div>\u003cdiv class=\"g-why\">one of the girls 뒤의 who는 복수명사 girls를 받으므로 복수동사 like를 써야 해요.\u003c/div>\u003c/div>\u003cdiv class=\"g-mk\" data-hl=\"mk-1\">\u003cdiv class=\"g-wrong\">✗ \u003cs>He is the only student who know the answer.\u003c/s>\u003c/div>\u003cdiv class=\"g-right\">✓ He is the only student who knows the answer.\u003c/div>\u003cdiv class=\"g-why\">the only student는 단수 선행사라서 관계절 동사 knows를 써야 해요.\u003c/div>\u003c/div>\u003cdiv class=\"g-mk\" data-hl=\"mk-2\">\u003cdiv class=\"g-wrong\">✗ \u003cs>The singer and the dancer who is on stage are famous.\u003c/s>\u003c/div>\u003cdiv class=\"g-right\">✓ The singer and the dancer who are on stage are famous.\u003c/div>\u003cdiv class=\"g-why\">선행사가 and로 연결된 복수라서 관계절 동사 are를 써야 해요.\u003c/div>\u003c/div>","segs":[{"n":14,"text":"She is one of the girls who likes jazz는 그녀는 재즈를 좋아하는 소녀들 중 한 명이라는 뜻인데, 여기서 likes를 쓰면 틀려요. one of the girls 뒤의 who는 복수명사 girls를 받기 때문에 복수동사 like를 써야 합니다. 그래서 She is one of the girls who like jazz가 맞아요.","hl":"mk-0"},{"n":15,"text":"He is the only student who know the answer는 그는 답을 아는 유일한 학생이라는 뜻인데, 여기서 know를 쓰면 틀려요. the only student는 단수 선행사라서 관계절 동사에 knows를 써야 합니다. 그래서 He is the only student who knows the answer가 맞아요.","hl":"mk-1"},{"n":16,"text":"The singer and the dancer who is on stage are famous는 무대 위에 있는 가수와 댄서는 유명하다는 뜻인데, 여기서 is를 쓰면 틀려요. 선행사가 The singer and the dancer로 and로 연결된 복수라서 관계절 동사는 are가 되어야 합니다. 그래서 The singer and the dancer who are on stage are famous가 맞아요.","hl":"mk-2"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">확인 문제 1 / 6\u003c/span>\u003cspan class=\"g-kind\">객관식\u003c/span>\u003c/div>\u003cdiv data-hl=\"q\">\u003cdiv class=\"g-q\">관계사절의 동사 수일치가 올바른 문장을 고르세요.\u003c/div>\u003cdiv class=\"g-opts\" data-rv=\"ans\">\u003cbutton class=\"g-opt\">\u003cb>①\u003c/b>She is one of the girls who likes jazz.\u003c/button>\u003cbutton class=\"g-opt\" data-ok=\"1\">\u003cb>②\u003c/b>She is one of the girls who like jazz.\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>③\u003c/b>He is the only student who know the answer.\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>④\u003c/b>The books that is on the desk are mine.\u003c/button>\u003c/div>\u003c/div>\u003cdiv class=\"g-ans\" data-rv=\"ans\" data-hl=\"ans\">\u003cb>정답\u003c/b>\u003cspan class=\"a\">She is one of the girls who like jazz.\u003c/span>\u003cdiv class=\"g-exp\">one of the girls 뒤의 who는 복수명사 girls를 받으므로 복수동사 like가 와야 합니다. the only student에는 knows, The books에는 are가 맞습니다.\u003c/div>\u003c/div>\u003cbutton class=\"g-show\" data-act=\"show\">정답 보기\u003c/button>","segs":[{"n":17,"text":"관계사절의 동사 수일치가 올바른 문장을 고르세요. 첫 번째 보기는 She is one of the girls who likes jazz, 그녀는 재즈를 좋아하는 소녀들 중 한 명이라는 뜻이에요. 두 번째 보기는 She is one of the girls who like jazz, 같은 뜻이지만 동사 형태가 다르죠. 세 번째 보기는 He is the only student who know the answer, 그는 답을 아는 유일한 학생이라는 뜻이에요. 네 번째 보기는 The books that is on the desk are mine, 책상 위의 책들은 내 것이라는 뜻이에요. 잠시 멈추고 직접 풀어 보세요.","hl":"q"},{"n":18,"text":"","hl":"q","pause":6},{"n":19,"text":"정답은 두 번째 보기예요. one of the girls 뒤의 who는 복수명사 girls를 받으므로 복수동사 like가 와야 합니다. 그래서 She is one of the girls who like jazz가 맞아요.","hl":"ans","reveal":"ans"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">확인 문제 2 / 6\u003c/span>\u003cspan class=\"g-kind\">빈칸\u003c/span>\u003c/div>\u003cdiv data-hl=\"q\">\u003cdiv class=\"g-q\">빈칸에 알맞은 동사를 쓰세요.\u003c/div>\u003cdiv class=\"g-qs\">He is the only student who ____ the answer.\u003c/div>\u003c/div>\u003cdiv class=\"g-ans\" data-rv=\"ans\" data-hl=\"ans\">\u003cb>정답\u003c/b>\u003cspan class=\"a\">knows\u003c/span>\u003cdiv class=\"g-exp\">the only student는 단수 선행사라서 관계절 동사에 단수형 knows를 씁니다.\u003c/div>\u003c/div>\u003cbutton class=\"g-show\" data-act=\"show\">정답 보기\u003c/button>","segs":[{"n":20,"text":"문장을 듣고 빈칸에 알맞은 동사를 말해 보세요. He is the only student who 빈칸 the answer, 그는 답을 아는 유일한 학생이라는 뜻이에요. 잠시 멈추고 직접 풀어 보세요.","hl":"q"},{"n":21,"text":"","hl":"q","pause":6},{"n":22,"text":"정답은 knows예요. the only student는 단수 선행사라서 관계절 동사에 단수형 knows를 씁니다. He is the only student who knows the answer가 완성됩니다.","hl":"ans","reveal":"ans"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">확인 문제 3 / 6\u003c/span>\u003cspan class=\"g-kind\">객관식\u003c/span>\u003c/div>\u003cdiv data-hl=\"q\">\u003cdiv class=\"g-q\">밑줄 친 부분에 들어갈 말로 알맞은 것을 고르세요.\u003c/div>\u003cdiv class=\"g-qs\">The books that ____ on the desk are mine.\u003c/div>\u003cdiv class=\"g-opts\" data-rv=\"ans\">\u003cbutton class=\"g-opt\">\u003cb>①\u003c/b>is\u003c/button>\u003cbutton class=\"g-opt\" data-ok=\"1\">\u003cb>②\u003c/b>are\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>③\u003c/b>was\u003c/button>\u003cbutton class=\"g-opt\">\u003cb>④\u003c/b>be\u003c/button>\u003c/div>\u003c/div>\u003cdiv class=\"g-ans\" data-rv=\"ans\" data-hl=\"ans\">\u003cb>정답\u003c/b>\u003cspan class=\"a\">are\u003c/span>\u003cdiv class=\"g-exp\">선행사 The books가 복수라서 관계절 동사도 are로 맞춰야 합니다.\u003c/div>\u003c/div>\u003cbutton class=\"g-show\" data-act=\"show\">정답 보기\u003c/button>","segs":[{"n":23,"text":"밑줄 친 부분에 들어갈 말로 알맞은 것을 고르세요. The books that 빈칸 on the desk are mine, 책상 위의 책들은 내 것이라는 뜻이에요. 보기는 is, are, was, be입니다. 잠시 멈추고 직접 풀어 보세요.","hl":"q"},{"n":24,"text":"","hl":"q","pause":6},{"n":25,"text":"정답은 두 번째 보기인 are예요. 선행사 The books가 복수라서 관계절 동사도 are로 맞춰 줍니다.","hl":"ans","reveal":"ans"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">확인 문제 4 / 6\u003c/span>\u003cspan class=\"g-kind\">오류 수정\u003c/span>\u003c/div>\u003cdiv data-hl=\"q\">\u003cdiv class=\"g-q\">문장에서 틀린 부분을 찾아 바르게 고치세요.\u003c/div>\u003cdiv class=\"g-qs\">The singer and the dancer who is on stage are famous.\u003c/div>\u003c/div>\u003cdiv class=\"g-ans\" data-rv=\"ans\" data-hl=\"ans\">\u003cb>정답\u003c/b>\u003cspan class=\"a\">The singer and the dancer who are on stage are famous.\u003c/span>\u003cdiv class=\"g-exp\">선행사가 The singer and the dancer로 and로 연결된 복수라서 관계절 동사는 are가 되어야 합니다.\u003c/div>\u003c/div>\u003cbutton class=\"g-show\" data-act=\"show\">정답 보기\u003c/button>","segs":[{"n":26,"text":"문장을 듣고 틀린 부분을 바르게 고쳐 보세요. The singer and the dancer who is on stage are famous, 무대 위에 있는 가수와 댄서는 유명하다는 뜻이에요. 잠시 멈추고 직접 풀어 보세요.","hl":"q"},{"n":27,"text":"","hl":"q","pause":6},{"n":28,"text":"선행사가 The singer and the dancer로 and로 연결된 복수예요. 그래서 관계절 동사는 is가 아니라 are가 되어야 합니다. 정답은 The singer and the dancer who are on stage are famous예요.","hl":"ans","reveal":"ans"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">확인 문제 5 / 6\u003c/span>\u003cspan class=\"g-kind\">배열\u003c/span>\u003c/div>\u003cdiv data-hl=\"q\">\u003cdiv class=\"g-q\">주어진 단어를 알맞게 배열하여 문장을 완성하세요.\u003c/div>\u003cdiv class=\"g-qs\">one / is / of / She / the / girls / who / like / jazz\u003c/div>\u003c/div>\u003cdiv class=\"g-ans\" data-rv=\"ans\" data-hl=\"ans\">\u003cb>정답\u003c/b>\u003cspan class=\"a\">She is one of the girls who like jazz.\u003c/span>\u003cdiv class=\"g-exp\">one of the girls 뒤의 who는 복수명사 girls를 받으므로 복수동사 like를 씁니다.\u003c/div>\u003c/div>\u003cbutton class=\"g-show\" data-act=\"show\">정답 보기\u003c/button>","segs":[{"n":29,"text":"주어진 단어를 알맞게 배열해 보세요. 단어는 one, is, of, She, the, girls, who, like, jazz 입니다. 잠시 멈추고 직접 풀어 보세요.","hl":"q"},{"n":30,"text":"","hl":"q","pause":6},{"n":31,"text":"정답은 She is one of the girls who like jazz예요. 이 문장은 그녀는 재즈를 좋아하는 소녀들 중 한 명이라는 뜻이에요. one of the girls 뒤의 who는 복수명사 girls를 받으므로 복수동사 like를 씁니다.","hl":"ans","reveal":"ans"}]},{"html":"\u003cdiv class=\"g-tags\">\u003cspan class=\"lp-tag\">확인 문제 6 / 6\u003c/span>\u003cspan class=\"g-kind\">영작\u003c/span>\u003c/div>\u003cdiv data-hl=\"q\">\u003cdiv class=\"g-q\">우리말을 영어로 바르게 영작하세요.\u003c/div>\u003cdiv class=\"g-qs\">그는 답을 아는 유일한 학생이다.\u003c/div>\u003c/div>\u003cdiv class=\"g-ans\" data-rv=\"ans\" data-hl=\"ans\">\u003cb>정답\u003c/b>\u003cspan class=\"a\">He is the only student who knows the answer.\u003c/span>\u003cdiv class=\"g-exp\">the only student는 단수 선행사라서 관계절 동사에 knows를 씁니다.\u003c/div>\u003c/div>\u003cbutton class=\"g-show\" data-act=\"show\">정답 보기\u003c/button>","segs":[{"n":32,"text":"우리말을 영어로 영작해 보세요. 그는 답을 아는 유일한 학생이다. 잠시 멈추고 직접 풀어 보세요.","hl":"q"},{"n":33,"text":"","hl":"q","pause":6},{"n":34,"text":"the only student는 단수 선행사라서 관계절 동사에 knows를 씁니다. 정답은 He is the only student who knows the answer예요. 그는 답을 아는 유일한 학생이라는 뜻이 됩니다.","hl":"ans","reveal":"ans"}]},{"html":"\u003cspan class=\"lp-tag\">오늘의 정리\u003c/span>\u003ch2 class=\"g-h\">관계사절과 수일치\u003c/h2>\u003cul class=\"g-sum\" data-hl=\"sum\">\u003cli>관계절 동사는 \u003cb class=\"key\">선행사\u003c/b>의 수에 일치시켜요.\u003c/li>\u003cli>\u003cb class=\"key\">one of the + 복수명사\u003c/b> 뒤의 who/that 절은 \u003cb class=\"key\">복수동사\u003c/b>로 받아요.\u003c/li>\u003cli>\u003cb class=\"key\">the only one\u003c/b> who 절은 \u003cb class=\"key\">단수동사\u003c/b>로 받아요.\u003c/li>\u003cli>선행사가 and로 연결된 \u003cb class=\"key\">복수 선행사\u003c/b>이면 관계절 동사도 \u003cb class=\"key\">복수동사\u003c/b>를 써요.\u003c/li>\u003c/ul>","segs":[{"n":35,"text":"오늘은 관계사절과 수일치를 배웠어요. 관계절 동사는 선행사의 수에 맞춰야 하고, one of the girls who like jazz, 재즈를 좋아하는 소녀들 중 한 명이라는 표현에서는 복수동사 like를 쓴다는 점을 기억하세요. 반대로 the only student who knows the answer, 답을 아는 유일한 학생이라는 표현에서는 단수동사 knows를 쓰고, and로 연결된 복수 선행사일 때도 관계절 동사를 복수로 맞춰요. 헷갈리기 쉬운 부분이니 예문을 다시 소리 내어 읽으며 복습해 보세요.","hl":"sum"}]}]});</script><script src="/chat-widget.js" defer></script>
+</body></html>
