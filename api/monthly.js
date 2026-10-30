@@ -140,7 +140,7 @@ function loadBook(bid) {
   bookCache.set(bid, j);
   return j;
 }
-function unitData(uid) { loadCatalog(); const u = unitIndex && unitIndex.get(uid); if (!u) return null; const b = loadBook(u.bid); return b && b.units[uid] ? Object.assign({ id: uid }, u, { text: b.units[uid].text, qs: b.units[uid].qs }) : null; }
+function unitData(uid) { loadCatalog(); const u = unitIndex && unitIndex.get(uid); if (!u) return null; const b = loadBook(u.bid); return b && b.units[uid] ? Object.assign({ id: uid }, u, { text: b.units[uid].text, qs: b.units[uid].qs, file: b.units[uid].file }) : null; }
 function rangeText(uids) { // "천일문 그래머 2권 Ch02 시제(5과), …" 처럼 사람이 읽는 범위
   loadCatalog(); const byBook = new Map();
   uids.forEach((id) => { const u = unitIndex.get(id); if (!u) return; if (!byBook.has(u.book)) byBook.set(u.book, new Map()); const m = byBook.get(u.book); m.set(u.chapter, (m.get(u.chapter) || 0) + 1); });
@@ -385,6 +385,12 @@ function tableBlock(rows, header) {
 const H = (t) => ({ object: "block", type: "heading_3", heading_3: { rich_text: rt(t) } });
 const Pg = (t) => ({ object: "block", type: "paragraph", paragraph: { rich_text: rt(t) } });
 
+let _rep = null;
+function reporter() {
+  if (!_rep) _rep = require("./_report.js")({ notion, queryAll, P, clip, normId, id32, unitIndex, unitData, askAI, EXAM_DB, STUDENT_DB, getPaper });
+  return _rep;
+}
+
 module.exports = async function handler(req, res) {
   const send = (code, obj) => sendTo(res, code, obj);
   const tcode = String(process.env.TEACHER_CODE || "").trim();
@@ -465,7 +471,7 @@ module.exports = async function handler(req, res) {
       if (!rows) return send(502, { error: "notion", msg: "결과를 불러오지 못했어요.", debug: lastErr });
       const done = new Map(rows.map((p) => [P.rel(p, "학생")[0], p]));
       const list = (ros || []).map((s) => ({ name: s.name, sid: s.id })).concat([...done.keys()].filter((k) => !(ros || []).some((s) => s.id === k)).map((k) => ({ name: "(다른 반 학생)", sid: k })));
-      const out = list.map((s) => { const p = done.get(s.sid); return p ? Object.assign({ name: s.name, url: p.url, mins: P.num(p, "소요시간(분)"), away: P.num(p, "자리비움"), units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }, attemptSummary(p)) : { name: s.name, missing: true }; });
+      const out = list.map((s) => { const p = done.get(s.sid); return p ? Object.assign({ name: s.name, url: p.url, rec: normId(p.id), report: (p.properties["분석 리포트"] || {}).url || "", mins: P.num(p, "소요시간(분)"), away: P.num(p, "자리비움"), units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }, attemptSummary(p)) : { name: s.name, missing: true }; });
       return send(200, { ok: true, paper: pub(pp), rows: out });
     }
     if (act === "t_report") { // 분기(또는 기간) 리포트: 반의 월간·분기 평가를 학생별로 모음
@@ -475,9 +481,19 @@ module.exports = async function handler(req, res) {
         { or: [{ property: "종류", select: { equals: "월간평가" } }, { property: "종류", select: { equals: "분기평가" } }] }] }, sorts: [{ property: "시험일", direction: "ascending" }] }, 5), roster(cls)]);
       if (!rows) return send(502, { error: "notion", msg: "기록을 불러오지 못했어요.", debug: lastErr });
       const names = new Map((ros || []).map((s) => [s.id, s.name]));
-      const recs = rows.map((p) => ({ sid: P.rel(p, "학생")[0] || "", title: P.title(p, "시험명"), kind: P.sel(p, "종류"), date: (P.date(p, "시험일") || {}).start || "", pct: P.formula(p, "환산점수"), score: P.num(p, "점수"), total: P.num(p, "만점"), grade: P.sel(p, "종합 평가"), comment: P.text(p, "코멘트"), url: p.url,
+      const recs = rows.map((p) => ({ sid: P.rel(p, "학생")[0] || "", title: P.title(p, "시험명"), kind: P.sel(p, "종류"), date: (P.date(p, "시험일") || {}).start || "", pct: P.formula(p, "환산점수"), score: P.num(p, "점수"), total: P.num(p, "만점"), grade: P.sel(p, "종합 평가"), comment: P.text(p, "코멘트"), url: p.url, rec: normId(p.id), report: (p.properties["분석 리포트"] || {}).url || "",
         units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }));
       return send(200, { ok: true, cls, from, to, students: (ros || []).map((s) => ({ sid: s.id, name: s.name })), records: recs.map((r) => Object.assign(r, { name: names.get(r.sid) || "" })) });
+    }
+    if (act === "t_rep") { // 학생 1명 · 시험 1회 분석 리포트를 노션에 작성
+      const r = await reporter().buildTestReport({ recId: clip(b.rec, 60), contact: clip(b.contact, 600), host, force: !!b.force });
+      return r.error ? send(200, { ok: false, msg: r.error, debug: lastErr }) : send(200, Object.assign({ ok: true }, r));
+    }
+    if (act === "t_qrep") { // 학생 1명 · 분기 종합 리포트
+      const from = /^\d{4}-\d{2}-\d{2}$/.test(b.from || "") ? b.from : null, to = /^\d{4}-\d{2}-\d{2}$/.test(b.to || "") ? b.to : null;
+      if (!from || !to) return send(400, { error: "input", msg: "기간을 골라 주세요." });
+      const r = await reporter().buildQuarterReport({ sid: clip(b.sid, 60), from, to, label: clip(b.label, 40) || from + "~" + to, contact: clip(b.contact, 600), host });
+      return r.error ? send(200, { ok: false, msg: r.error, debug: lastErr }) : send(200, Object.assign({ ok: true }, r));
     }
     return send(400, { error: "action" });
   }
@@ -561,6 +577,11 @@ module.exports = async function handler(req, res) {
       "시험일": { date: { start: today() } }, "시험 범위": { rich_text: rt(range) }, "점수": { number: right }, "만점": { number: total }, "오답 수": { number: total - right },
       "종합 평가": sel(gradeOf(pct)), "코멘트": { rich_text: rt(comment) }, "응시 방식": sel("온라인"), "소요시간(분)": { number: mins }, "자리비움": { number: away },
       "단원 분석": { rich_text: rtLong(JSON.stringify(units)) },
+      // 분석 리포트용: 문항마다 영역·단원·학생 답·정답 (짧게)
+      "문항 기록": { rich_text: rtLong(JSON.stringify(key.items.map((k, i) => {
+        const ui = unitIndex.get(k.u) || {};
+        return { n: i + 1, u: k.u, a: ui.area || "", c: k.ch, un: k.unit, t: k.t, q: clip(k.q, 160), s: clip(k.sub, 160), o: k.opts ? k.opts.map((o) => clip(o, 60)) : undefined, g: clip(res1[i].given, 100), r: clip(k.answer, 120), ok: res1[i].ok, x: clip(k.exp, 160) };
+      }))) },
     };
     const wrongs = key.items.map((k, i) => ({ k, r: res1[i], i })).filter((x) => !x.r.ok);
     const children = [

@@ -66,6 +66,9 @@ tr.miss td{color:#A0AAB2}
 .copy{font-size:12.5px;color:var(--ac-ink);background:var(--ac-soft);border:1px dashed #9BD3D0;border-radius:8px;padding:6px 9px;word-break:break-all;margin-top:6px}
 /* 학부모 리포트 (인쇄) */
 #printArea{display:none}
+.repbox{background:var(--ac-soft);border:1px solid #CDE9E7;border-radius:12px;padding:12px;margin-top:12px}
+.prog{margin-top:10px;font-size:13.5px;line-height:1.9}.prog a{color:var(--ac-ink);font-weight:700}
+.pbar{height:8px;background:#DCE9E9;border-radius:6px;overflow:hidden;margin:8px 0}.pbar i{display:block;height:100%;background:var(--ac);width:0;transition:width .3s}
 .rep{background:#fff;padding:28px 30px;max-width:780px;margin:0 auto 20px;border-radius:14px;box-shadow:0 2px 10px rgba(10,60,62,.08);page-break-after:always}
 .rep .hd{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid var(--ac);padding-bottom:10px}
 .rep .hd h2{font-size:22px;margin:0}.rep .hd .s{color:var(--muted);font-size:13px}
@@ -95,6 +98,10 @@ tr.miss td{color:#A0AAB2}
     <button class="tab" data-tab="report">📈 분기 리포트</button>
   </div>
 
+  <div class="card" id="contactCard" style="display:none">
+    <label class="l">리포트 맨 아래 '학부모 상담 안내' 문구 (이 기기에 저장돼요)</label>
+    <textarea id="contact" rows="2" placeholder="예: 더 자세한 상담은 평일 오전 10시 ~ 오후 2시, 주말 오후에 가능합니다. 일등급샘 010-0000-0000"></textarea>
+  </div>
   <!-- 목록 -->
   <section id="v-list">
     <div class="card">
@@ -150,7 +157,13 @@ tr.miss td{color:#A0AAB2}
 
   <!-- 결과 -->
   <section id="v-results" style="display:none">
-    <div class="card"><div class="row"><select id="rPaper" style="max-width:520px"></select><button class="sub" id="rLoad">불러오기</button><button class="sub" id="rPrint" style="display:none">🖨 학부모 리포트 인쇄</button></div><div id="rBox"></div></div>
+    <div class="card"><div class="row"><select id="rPaper" style="max-width:520px"></select><button class="sub" id="rLoad">불러오기</button><button class="sub" id="rPrint" style="display:none">🖨 간단 성적표 인쇄</button></div>
+      <div class="repbox" id="rRep" style="display:none">
+        <div class="row"><button id="rMake">📄 학생별 분석 리포트 만들기 (노션)</button><label><input type="checkbox" id="rForce"> 이미 만든 학생도 다시 만들기</label></div>
+        <div class="hint">선생님의 「○월 월례고사 분석레포트」 양식 그대로, 학생마다 <b>평가 개요 → 총평 → 영역별 성적 → 문항별 오답 원인 → 학습 대책 → 복습 강의 링크 → 성적 추이</b>를 AI가 써서 노션 <b>📔 학습리포트 › 학생 학습레포트</b> 아래에 만들어요. 학생 1명에 20~40초 걸려요. 보내기 전에 노션에서 한 번 읽고 고쳐 주세요.</div>
+        <div id="rProg"></div>
+      </div>
+      <div id="rBox"></div></div>
   </section>
 
   <!-- 분기 리포트 -->
@@ -162,7 +175,8 @@ tr.miss td{color:#A0AAB2}
         <div><label class="l">시작</label><input type="date" id="qFrom"></div>
         <div><label class="l">끝</label><input type="date" id="qTo"></div>
       </div>
-      <div class="row" style="margin-top:10px"><button id="qLoad">리포트 만들기</button><button class="sub" id="qPrint" style="display:none">🖨 학부모 리포트 인쇄 (학생별 한 장)</button></div>
+      <div class="row" style="margin-top:10px"><button id="qLoad">리포트 보기</button><button id="qNotion" style="display:none">📄 노션에 분기 종합 리포트 만들기</button><button class="sub" id="qPrint" style="display:none">🖨 간단 성적표 인쇄</button></div>
+      <div id="qProg"></div>
       <div class="hint">기간 안의 <b>월간평가·분기평가</b> 기록(온라인 + 점수 직접 입력 모두)을 학생별로 모아요.</div>
       <div id="qBox"></div>
     </div>
@@ -249,7 +263,11 @@ tr.miss td{color:#A0AAB2}
         var id = b.getAttribute("data-id"), st = b.getAttribute("data-st");
         if (st === "마감" && !confirm("마감하면 학생들이 더 이상 응시할 수 없어요. 마감할까요?")) return;
         b.disabled = true;
-        post({ action: "t_status", id: id, status: st }).then(function (j) { if (!j.ok) { alert(j.msg || "바꾸지 못했어요."); b.disabled = false; return; } paperById(id).status = st; renderList(); });
+        post({ action: "t_status", id: id, status: st }).then(function (j) {
+          if (!j.ok) { alert(j.msg || "바꾸지 못했어요."); b.disabled = false; return; }
+          paperById(id).status = st; renderList();
+          if (st === "마감" && confirm("마감했어요. 지금 학생별 분석 리포트를 노션에 만들까요?")) { fillResultSelect(); $("rPaper").value = id; tab("results"); loadResults(function () { $("rMake").click(); }); }
+        });
       };
     });
     Array.prototype.forEach.call(box.querySelectorAll("[data-edit]"), function (b) { b.onclick = function () { editPaper(paperById(b.getAttribute("data-edit"))); }; });
@@ -440,6 +458,26 @@ tr.miss td{color:#A0AAB2}
     });
   };
 
+  // ---------- 상담 안내 문구 ----------
+  $("contact").value = lsGet("cm-report-contact");
+  $("contact").onchange = function () { lsSet("cm-report-contact", $("contact").value.trim()); };
+  // 학생 여러 명 리포트를 차례로 만들기 (한 번에 한 명씩 → 시간 초과 없음)
+  function runReports(jobs, box, done) {
+    var total = jobs.length, ok = 0, fail = 0, lines = [];
+    if (!total) { box.innerHTML = '<p class="hint">만들 리포트가 없어요.</p>'; return; }
+    function paint(cur) { box.innerHTML = '<div class="pbar"><i style="width:' + ((ok + fail) / total * 100) + '%"></i></div><div class="prog">' + lines.join("<br>") + (cur ? "<br>⏳ " + esc(cur) + " 리포트 쓰는 중…" : "") + "</div>"; }
+    (function next() {
+      var j = jobs.shift();
+      if (!j) { lines.push("<b>끝! 완료 " + ok + "명" + (fail ? " · 실패 " + fail + "명" : "") + "</b>"); paint(); if (done) done(); return; }
+      paint(j.name);
+      post(Object.assign({ contact: $("contact").value.trim() }, j.body)).then(function (r) {
+        if (r.ok && r.url) { ok++; lines.push((r.skipped ? "⏭ " : "✅ ") + esc(j.name) + ' — <a href="' + esc(r.url) + '" target="_blank">' + (r.skipped ? "이미 있음" : "노션에서 보기") + "</a>" + (r.found === false ? ' <span class="er">(학생 학습레포트 페이지를 못 찾아 🤖 자동 분석 리포트에 저장)</span>' : "") + (r.ai === false && !r.skipped ? ' <span class="hint">(AI 없이 기본 문장)</span>' : "")); }
+        else { fail++; lines.push("❌ " + esc(j.name) + " — " + esc(r.msg || "실패")); }
+        next();
+      });
+    })();
+  }
+
   // ---------- 응시 결과 ----------
   var LAST_RES = null;
   function fillResultSelect() {
@@ -447,13 +485,13 @@ tr.miss td{color:#A0AAB2}
     $("rPaper").innerHTML = DATA.papers.map(function (p) { return '<option value="' + p.id + '">' + esc(p.cls + " · " + p.title + " (" + p.status + ")") + "</option>"; }).join("");
     if (cur) $("rPaper").value = cur;
   }
-  $("rLoad").onclick = loadResults;
-  function loadResults() {
+  $("rLoad").onclick = function () { loadResults(); };
+  function loadResults(after) {
     var id = $("rPaper").value; if (!id) return;
     $("rBox").innerHTML = '<p class="hint">불러오는 중…</p>'; $("rPrint").style.display = "none";
     post({ action: "t_results", id: id }).then(function (j) {
       if (!j.ok) { $("rBox").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; }
-      LAST_RES = j;
+      LAST_RES = j; $("rRep").style.display = j.rows.some(function (r) { return !r.missing; }) ? "" : "none"; $("rProg").innerHTML = ""; $("contactCard").style.display = "";
       var done = j.rows.filter(function (r) { return !r.missing; }), ps = done.map(function (r) { return r.pct || 0; });
       var avg = ps.length ? ps.reduce(function (a, b) { return a + b; }, 0) / ps.length : null;
       var sorted = done.slice().sort(function (a, b) { return (b.pct || 0) - (a.pct || 0); });
@@ -462,14 +500,25 @@ tr.miss td{color:#A0AAB2}
       var ul = Object.keys(um).map(function (k) { return um[k]; }).sort(function (a, b) { return a.r / a.t - b.r / b.t; });
       $("rBox").innerHTML = '<h3>' + esc(j.paper.title) + "</h3>" +
         '<div class="stat"><div><b>응시</b><span>' + done.length + " / " + j.rows.length + '</span></div><div><b>반 평균</b><span>' + round1(avg) + '</span></div><div><b>최고</b><span>' + (ps.length ? Math.max.apply(null, ps) : "-") + '</span></div><div><b>최저</b><span>' + (ps.length ? Math.min.apply(null, ps) : "-") + "</span></div></div>" +
-        '<div class="tw"><table><thead><tr><th>순위</th><th>이름</th><th>점수</th><th>환산</th><th>평가</th><th>소요</th><th>자리비움</th><th>코멘트</th><th></th></tr></thead><tbody>' +
-        sorted.map(function (r, i) { return "<tr><td class=num>" + (i + 1) + "</td><td><b>" + esc(r.name) + "</b></td><td class=num>" + r.score + "/" + r.total + "</td><td class=num>" + round1(r.pct) + "</td><td>" + esc(r.grade) + "</td><td class=num>" + (r.mins || "-") + "분</td><td class=num>" + (r.away || 0) + "</td><td>" + esc(r.comment) + '</td><td><a href="' + esc(r.url) + '" target="_blank">노션</a></td></tr>'; }).join("") +
-        j.rows.filter(function (r) { return r.missing; }).map(function (r) { return '<tr class="miss"><td>-</td><td>' + esc(r.name) + '</td><td colspan="7">미응시</td></tr>'; }).join("") +
+        '<div class="tw"><table><thead><tr><th>순위</th><th>이름</th><th>점수</th><th>환산</th><th>평가</th><th>소요</th><th>자리비움</th><th>코멘트</th><th>분석 리포트</th><th></th></tr></thead><tbody>' +
+        sorted.map(function (r, i) { return "<tr><td class=num>" + (i + 1) + "</td><td><b>" + esc(r.name) + "</b></td><td class=num>" + r.score + "/" + r.total + "</td><td class=num>" + round1(r.pct) + "</td><td>" + esc(r.grade) + "</td><td class=num>" + (r.mins || "-") + "분</td><td class=num>" + (r.away || 0) + "</td><td>" + esc(r.comment) + "</td><td>" + (r.report ? '<a href="' + esc(r.report) + '" target="_blank">📄 보기</a>' : '<span class="hint">-</span>') + '</td><td><a href="' + esc(r.url) + '" target="_blank">기록</a></td></tr>'; }).join("") +
+        j.rows.filter(function (r) { return r.missing; }).map(function (r) { return '<tr class="miss"><td>-</td><td>' + esc(r.name) + '</td><td colspan="8">미응시</td></tr>'; }).join("") +
         "</tbody></table></div>" +
         (ul.length ? "<h3>반 전체 단원별 정답률 (낮은 순)</h3>" + ul.map(function (u) { var p = pct(u.r, u.t); return '<div class="ub"><span>' + esc(u.k) + '</span><span class="bar"><i class="' + (p < 60 ? "low" : "") + '" style="width:' + p + '%"></i></span><b class="num">' + p + "%</b></div>"; }).join("") : "");
       $("rPrint").style.display = done.length ? "" : "none";
+      if (typeof after === "function") after();
     });
   }
+  $("rMake").onclick = function () {
+    if (!LAST_RES) return;
+    var force = $("rForce").checked;
+    var jobs = LAST_RES.rows.filter(function (r) { return !r.missing && (force || !r.report); }).map(function (r) { return { name: r.name, body: { action: "t_rep", rec: r.rec, force: force } }; });
+    if (!jobs.length) { $("rProg").innerHTML = '<p class="hint">모든 학생의 리포트가 이미 있어요. 다시 만들려면 체크박스를 켜세요.</p>'; return; }
+    if (!confirm(jobs.length + "명의 분석 리포트를 노션에 만들까요? (약 " + Math.ceil(jobs.length * 0.5) + "분)")) return;
+    $("rMake").disabled = true;
+    runReports(jobs, $("rProg"), function () { $("rMake").disabled = false; loadResultsKeep(); });
+  };
+  function loadResultsKeep() { var prog = $("rProg").innerHTML; loadResults(function () { $("rProg").innerHTML = prog; }); }
   $("rPrint").onclick = function () {
     if (!LAST_RES) return;
     var j = LAST_RES, done = j.rows.filter(function (r) { return !r.missing; }), avg = done.reduce(function (a, r) { return a + (r.pct || 0); }, 0) / (done.length || 1);
@@ -505,6 +554,13 @@ tr.miss td{color:#A0AAB2}
         "<tr><td><b>반 평균</b></td>" + colAvg.map(function (c) { return "<td class=num><b>" + round1(c) + "</b></td>"; }).join("") + "<td></td><td></td><td></td></tr></tbody></table></div>"
         : '<p class="hint">이 기간에 월간·분기 평가 기록이 없어요.</p>';
       $("qPrint").style.display = exams.length ? "" : "none";
+      $("qNotion").style.display = exams.length ? "" : "none"; $("qProg").innerHTML = ""; $("contactCard").style.display = "";
+      $("qNotion").onclick = function () {
+        var label = $("qQ").selectedOptions[0].textContent.replace(/\s*\(.*\)$/, "");
+        var jobs = rows.filter(function (r) { return r.rs.length; }).map(function (r) { return { name: r.s.name, body: { action: "t_qrep", sid: r.s.sid, from: j.from, to: j.to, label: label } }; });
+        if (!confirm(jobs.length + "명의 " + label + " 종합 리포트를 노션에 만들까요?")) return;
+        $("qNotion").disabled = true; runReports(jobs, $("qProg"), function () { $("qNotion").disabled = false; });
+      };
       $("qPrint").onclick = function () {
         printReports(rows.filter(function (r) { return r.rs.length; }).map(function (r) {
           return { name: r.s.name, cls: j.cls, period: $("qQ").selectedOptions[0].textContent, recs: r.rs, classAvg: colAvg.filter(function (c) { return c != null; }).reduce(function (a, b, i, arr) { return a + b / arr.length; }, 0), colAvg: colAvg, exams: exams };
