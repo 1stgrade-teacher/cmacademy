@@ -1,0 +1,38 @@
+# 강의(HTML)를 올리면 월간·분기 평가 문제은행(exam-bank/)을 자동으로 다시 만들어 저장합니다.
+name: 문제은행 자동 갱신
+on:
+  push:
+    branches: [main]
+    paths:
+      - "문법/**.html"
+      - "구문/**.html"
+      - "독해/**.html"
+      - "교과서/**.html"
+      - "tools/build-exam-bank.mjs"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: exam-bank
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install --no-audit --no-fund
+        working-directory: tools
+      - run: node build-exam-bank.mjs
+        working-directory: tools
+      - name: 바뀐 게 있으면 저장
+        run: |
+          git config user.name "exam-bank-bot"
+          git config user.email "exam-bank-bot@users.noreply.github.com"
+          git add exam-bank
+          if git diff --cached --quiet; then echo "변경 없음"; exit 0; fi
+          git commit -m "문제은행 자동 갱신"
+          git pull --rebase origin main
+          git push

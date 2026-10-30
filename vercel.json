@@ -5,6 +5,10 @@
     },
     "api/exam.js": {
       "maxDuration": 60
+    },
+    "api/monthly.js": {
+      "maxDuration": 60,
+      "includeFiles": "exam-bank/**"
     }
   }
 }

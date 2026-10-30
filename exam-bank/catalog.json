@@ -1,0 +1,7923 @@
+{
+ "built": "2026-10-30T17:29:35.953Z",
+ "books": [
+  {
+   "id": "bb391852c",
+   "area": "문법",
+   "grade": "초등",
+   "name": "초등문법",
+   "path": "문법/초등문법",
+   "n": 147,
+   "chapters": [
+    {
+     "key": "grammar-inside-4",
+     "name": "Chapter 01 진행시제",
+     "units": [
+      {
+       "id": "u30df5184",
+       "name": "Unit 01 현재진행시제",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "ud7f9c75e",
+       "name": "Unit 02 현재진행시제의 부정문과 의문문",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "u43c6cf3c",
+       "name": "Unit 03 과거진행시제",
+       "n": 3,
+       "lv": 1.3
+      },
+      {
+       "id": "u35f2debd",
+       "name": "Unit 04 과거진행시제의 부정문과 의문문",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "ud0e9101b",
+       "name": "Unit 01 will, be going to",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "uec5f4e07",
+       "name": "Unit 02 미래시제의 부정문과 의문문",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "ub51b9c73",
+       "name": "Unit 01 의문사 의문문 (1)",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "u6915a708",
+       "name": "Unit 02 의문사 의문문 (2)",
+       "n": 5,
+       "lv": 1
+      },
+      {
+       "id": "u9c705dd2",
+       "name": "Unit 01 형용사의 종류",
+       "n": 6,
+       "lv": 1.3
+      },
+      {
+       "id": "ud92f7be3",
+       "name": "Unit 02 형용사의 역할",
+       "n": 4,
+       "lv": 1.3
+      },
+      {
+       "id": "u15dc6b71",
+       "name": "Unit 03 부사의 형태와 기능",
+       "n": 3,
+       "lv": 1
+      },
+      {
+       "id": "ubd7248e8",
+       "name": "Unit 04 주의해야 할 부사, 빈도부사",
+       "n": 4,
+       "lv": 1.5
+      }
+     ]
+    },
+    {
+     "key": "grammar-inside-5",
+     "name": "Chapter 01 지시형용사와 수량형용사",
+     "units": [
+      {
+       "id": "ue80baa9b",
+       "name": "Unit 01 지시형용사",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "u084d88c1",
+       "name": "Unit 02 수량형용사",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "u5fa88397",
+       "name": "Unit 01 감탄문 (1)",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "uf006b30e",
+       "name": "Unit 02 감탄문 (2)",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "u82d20e5b",
+       "name": "Unit 01 비교급 (1)",
+       "n": 3,
+       "lv": 1.3
+      },
+      {
+       "id": "u9f0a373b",
+       "name": "Unit 02 비교급 (2)",
+       "n": 5,
+       "lv": 2
+      },
+      {
+       "id": "u34212a7a",
+       "name": "Unit 03 최상급 (1)",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "ua6d7275d",
+       "name": "Unit 04 최상급 (2)",
+       "n": 5,
+       "lv": 2.2
+      },
+      {
+       "id": "u47abec9a",
+       "name": "Unit 01 등위접속사",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "ubb5652fb",
+       "name": "Unit 02 접속사와 명령문",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u42559890",
+       "name": "Unit 03 부사절 접속사 (1)",
+       "n": 5,
+       "lv": 2.2
+      },
+      {
+       "id": "udc1b280d",
+       "name": "Unit 04 부사절 접속사 (2)",
+       "n": 4,
+       "lv": 1.5
+      }
+     ]
+    },
+    {
+     "key": "grammar-inside-6",
+     "name": "Chapter 01 to부정사",
+     "units": [
+      {
+       "id": "u8b94ac03",
+       "name": "Unit 01 명사처럼 쓰이는 to부정사",
+       "n": 3,
+       "lv": 1.3
+      },
+      {
+       "id": "u1be538ea",
+       "name": "Unit 02 형용사와 부사처럼 쓰이는 to부정사",
+       "n": 4,
+       "lv": 2.5
+      },
+      {
+       "id": "u4c93514a",
+       "name": "Unit 01 동명사의 형태와 역할",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "ua3d36391",
+       "name": "Unit 02 목적어로 쓰이는 동명사와 to부정사",
+       "n": 4,
+       "lv": 1.3
+      },
+      {
+       "id": "u511f65c1",
+       "name": "Unit 01 시간의 전치사",
+       "n": 6,
+       "lv": 1
+      },
+      {
+       "id": "u459eeed3",
+       "name": "Unit 02 장소의 전치사",
+       "n": 4,
+       "lv": 1.3
+      },
+      {
+       "id": "ud892007b",
+       "name": "Unit 03 방향의 전치사",
+       "n": 3,
+       "lv": 1
+      },
+      {
+       "id": "u6d87fc61",
+       "name": "Unit 04 기타 전치사",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "u077d037b",
+       "name": "Unit 01 주어 + 동사 (+ 주격보어)",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "u7cafd8bb",
+       "name": "Unit 02 주어 + 동사 + 목적어",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "u7302735f",
+       "name": "Unit 03 주어 + 동사 + 목적어 + 목적어",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "u1ab8f2c0",
+       "name": "Unit 04 주어 + 동사 + 목적어 + 목적격 보어",
+       "n": 6,
+       "lv": 1.3
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b3f6961d3",
+   "area": "문법",
+   "grade": "중등",
+   "name": "천일문 그래머 2권",
+   "path": "문법/chunilmun-grammar-lv2",
+   "n": 60,
+   "chapters": [
+    {
+     "key": "_",
+     "name": "단원",
+     "units": [
+      {
+       "id": "ue2f0b025",
+       "name": "중3 비상 8과 문법2 with분사구문",
+       "n": 2,
+       "lv": 2.5
+      }
+     ]
+    },
+    {
+     "key": "chapter01",
+     "name": "Chapter 01 문장의 주요 형식",
+     "units": [
+      {
+       "id": "uf4eb2659",
+       "name": "Point 1 SVC = 주어 + 감각동사 + 형용사 보어",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u31ba3a15",
+       "name": "Point 2 SVOO = 주어 + 수여동사 + A + B",
+       "n": 3,
+       "lv": 2.7
+      },
+      {
+       "id": "u06da81a4",
+       "name": "Point 3 목적격보어가 명사",
+       "n": 3,
+       "lv": 2.7
+      },
+      {
+       "id": "u8723ba4b",
+       "name": "Point 4 목적격보어가 형용사",
+       "n": 3,
+       "lv": 2
+      },
+      {
+       "id": "u8f88dc91",
+       "name": "Point 5 목적격보어가 to부정사",
+       "n": 1,
+       "lv": 3
+      },
+      {
+       "id": "u0e901b64",
+       "name": "Point 6 목적격보어가 동사원형",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "uff75ee2c",
+       "name": "Point 7 see/hear/feel + 목적어 + 동사원형[-ing형]",
+       "n": 5,
+       "lv": 1
+      }
+     ]
+    },
+    {
+     "key": "chapter02",
+     "name": "Chapter 02 시제",
+     "units": [
+      {
+       "id": "ua4e8ea8c",
+       "name": "Point 1 현재시제: 현재의 상태, 습관, 진리",
+       "n": 3,
+       "lv": 2.3
+      },
+      {
+       "id": "u155b2ee1",
+       "name": "Point 2 과거시제 / 미래 표현",
+       "n": 6,
+       "lv": 1.8
+      },
+      {
+       "id": "u2a667855",
+       "name": "Point 3 현재진행형: am/are/is + -ing",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "ue50e284d",
+       "name": "Point 4 과거진행형: was/were + -ing",
+       "n": 3,
+       "lv": 1.3
+      },
+      {
+       "id": "uddc1a12d",
+       "name": "Point 5 현재완료: have + p.p.",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf92d52fc",
+       "name": "Point 6 현재완료 부정문·의문문",
+       "n": 6,
+       "lv": 2
+      },
+      {
+       "id": "udede6105",
+       "name": "Point 7 현재완료 (계속): 쭉 ~해 오다",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "u3aa21b4d",
+       "name": "Point 8 현재완료 (경험): ~한 적이 있다",
+       "n": 3,
+       "lv": 2.7
+      },
+      {
+       "id": "udff2821f",
+       "name": "Point 9 현재완료 (완료): 막 ~했다",
+       "n": 3,
+       "lv": 2.3
+      },
+      {
+       "id": "udc7b4524",
+       "name": "Point 10 현재완료 (결과): ~했다(그래서 지금 ~)",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "u91993f58",
+       "name": "Point 11 현재완료와 과거 부사는 같이 쓸 수 없다",
+       "n": 3,
+       "lv": 2.3
+      }
+     ]
+    },
+    {
+     "key": "chapter03",
+     "name": "Chapter 03 조동사",
+     "units": [
+      {
+       "id": "ub36a6ae9",
+       "name": "Point 1 can: 능력·가능, 허가, 요청",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u79617798",
+       "name": "Point 2 can = be able to + 동사원형",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u008da6fd",
+       "name": "Point 3 may: 허가, 추측",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u3b3e4449",
+       "name": "Point 4 will: 미래의 일·의지, 요청",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc00a31a6",
+       "name": "Point 5 must: 의무, 강한 추측",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1138d6b1",
+       "name": "Point 6 don't[doesn't] have to: ~할 필요가 없다",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ufa83918c",
+       "name": "Point 7 should: 의무·충고",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8dffb910",
+       "name": "Point 8 had better: 충고·권고",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u91e009d9",
+       "name": "Point 9 would like to: 희망, 권유·제안",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8977f71e",
+       "name": "Point 10 used to: 과거의 습관이나 상태",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8f34789d",
+       "name": "Chapter Test 조동사 Chapter Test 1~8번",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u08208f8c",
+       "name": "Chapter Test 조동사 Chapter Test 9~15번",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter04",
+     "name": "Chapter 04",
+     "units": [
+      {
+       "id": "u9bfaecda",
+       "name": "수동태 완전 정복 — be동사와 과거분사 문제풀이 — Actual Test 1~6번",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uaeaae05f",
+       "name": "천일문그래마 레벨2 챕터4 Actual TEST — Actual Test 1~15번",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b1a0c3ede",
+   "area": "문법",
+   "grade": "고등",
+   "name": "천일문 고등 Grammar",
+   "path": "문법/chunilmun-high-grammar",
+   "n": 395,
+   "chapters": [
+    {
+     "key": "chapter01",
+     "name": "Chapter 01 문장의 기본 구조",
+     "units": [
+      {
+       "id": "u2f2e78a7",
+       "name": "Unit 1 주어+동사 (SV)",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u962fae99",
+       "name": "Unit 2 주어+동사+보어 (SVC)",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "ua040f015",
+       "name": "Unit 3 주어+동사+목적어 (SVO)",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "u9af1d3e1",
+       "name": "Unit 4 주의해야 할 SV, SVO 문형 동사",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "u5f8359fb",
+       "name": "Unit 5 주어+동사+간접목적어+직접목적어 (SVOO)",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "ubd969dc5",
+       "name": "Unit 6 주어+동사+목적어+보어 (SVOC) 1",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "u15370318",
+       "name": "Unit 7 주어+동사+목적어+보어 (SVOC) 2",
+       "n": 4,
+       "lv": 1.5
+      }
+     ]
+    },
+    {
+     "key": "chapter02",
+     "name": "Chapter 02 동사의 시제",
+     "units": [
+      {
+       "id": "u089e87ca",
+       "name": "Unit 8 현재시제, 과거시제",
+       "n": 4,
+       "lv": 2.5
+      },
+      {
+       "id": "u7ef99d14",
+       "name": "Unit 9 미래를 나타내는 표현",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u77eec88d",
+       "name": "Unit 10 현재완료",
+       "n": 3,
+       "lv": 2.3
+      },
+      {
+       "id": "uda1c6da4",
+       "name": "Unit 11 과거완료, 미래완료",
+       "n": 3,
+       "lv": 2.3
+      },
+      {
+       "id": "uaef43cea",
+       "name": "Unit 12 진행을 나타내는 표현",
+       "n": 4,
+       "lv": 2
+      }
+     ]
+    },
+    {
+     "key": "chapter03",
+     "name": "Chapter 03 동사의 태",
+     "units": [
+      {
+       "id": "u241057a8",
+       "name": "Unit 13 수동태의 이해",
+       "n": 4,
+       "lv": 2.8
+      },
+      {
+       "id": "udcefc67d",
+       "name": "Unit 14 진행형 수동태 & 완료형 수동태",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "uda37b053",
+       "name": "Unit 15 SVOO 문형의 수동태",
+       "n": 4,
+       "lv": 2.5
+      },
+      {
+       "id": "u47ea931f",
+       "name": "Unit 16 SVOC 문형의 수동태",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "uf25e1dff",
+       "name": "Unit 17 that절이 목적어인 문장의 수동태",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "ub4d8d010",
+       "name": "Unit 18 구동사 수동태 & 수동태의 관용적 표현",
+       "n": 4,
+       "lv": 2
+      }
+     ]
+    },
+    {
+     "key": "chapter04",
+     "name": "Chapter 04 조동사",
+     "units": [
+      {
+       "id": "u50834589",
+       "name": "Unit 19 조동사의 다양한 의미 1",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "u7cebf46d",
+       "name": "Unit 20 조동사의 다양한 의미 2: 가능성, 추측",
+       "n": 4,
+       "lv": 1.3
+      },
+      {
+       "id": "u9ea2cd13",
+       "name": "Unit 21 조동사+have p.p.",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "u02a51d0c",
+       "name": "Unit 22 should의 특별한 쓰임",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "ufa0ded40",
+       "name": "Unit 23 대동사 do",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u46c3feba",
+       "name": "Unit 24 used to & 조동사 관용 표현",
+       "n": 5,
+       "lv": 1.8
+      }
+     ]
+    },
+    {
+     "key": "chapter05",
+     "name": "Chapter 05 가정법",
+     "units": [
+      {
+       "id": "u8eb581b8",
+       "name": "Unit 25 if 가정법 과거",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u74a985e9",
+       "name": "Unit 26 if 가정법 과거완료",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "u0357d11e",
+       "name": "Unit 27 혼합가정법",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "u2bcd4259",
+       "name": "Unit 28 if가 생략된 가정법",
+       "n": 4,
+       "lv": 2.5
+      },
+      {
+       "id": "u028ed887",
+       "name": "Unit 29 I wish 가정법",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "uecbfa2e1",
+       "name": "Unit 30 as if 가정법",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "u7554671e",
+       "name": "Unit 31 가정법을 이끄는 표현",
+       "n": 4,
+       "lv": 2
+      }
+     ]
+    },
+    {
+     "key": "chapter06",
+     "name": "Chapter 06 부정사",
+     "units": [
+      {
+       "id": "u4da055af",
+       "name": "Unit 32 명사적 역할 1: 주어, 목적어, 보어",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "ua57d0e72",
+       "name": "Unit 33 명사적 역할 2: 의문사+to부정사",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "ua9468a96",
+       "name": "Unit 34 명사적 역할 3: 진주어, 진목적어",
+       "n": 4,
+       "lv": 2.8
+      },
+      {
+       "id": "u98fb2231",
+       "name": "Unit 35 형용사적 역할 1: 명사 수식",
+       "n": 4,
+       "lv": 2.5
+      },
+      {
+       "id": "ubf9f4882",
+       "name": "Unit 36 형용사적 역할 2: 주격보어 의미",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u89ab622a",
+       "name": "Unit 37 부사적 역할 1: 목적, 감정의 원인, 판단 근거",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "udb0e901f",
+       "name": "Unit 38 부사적 역할 2: 결과, 조건, 형용사 수식",
+       "n": 5,
+       "lv": 2
+      },
+      {
+       "id": "ue19e3c31",
+       "name": "Unit 39 부사적 역할 3: 주요 구문",
+       "n": 4,
+       "lv": 1.8
+      }
+     ]
+    },
+    {
+     "key": "chapter07",
+     "name": "Chapter 07 동명사",
+     "units": [
+      {
+       "id": "u2abd5940",
+       "name": "Unit 40 동명사의 역할 1: 주어, 보어",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "u06d9df96",
+       "name": "Unit 41 동명사의 역할 2: 동사의 목적어",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "ua49bcd92",
+       "name": "Unit 42 동명사와 to부정사를 목적어로 쓰는 동사",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u560f81f1",
+       "name": "Unit 43 동명사의 역할 3: 전치사의 목적어",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u93966686",
+       "name": "Unit 44 동명사를 포함한 주요 구문",
+       "n": 4,
+       "lv": 2
+      }
+     ]
+    },
+    {
+     "key": "chapter08",
+     "name": "Chapter 08 분사와 분사구문",
+     "units": [
+      {
+       "id": "u0ca59506",
+       "name": "Unit 45 분사의 쓰임 1: 명사 수식",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "ucf77ca51",
+       "name": "Unit 46 분사의 쓰임 2: 보어 역할",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "u868559f0",
+       "name": "Unit 47 감정을 나타내는 분사",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "u0e93f193",
+       "name": "Unit 48 분사구문의 기본 형태와 의미",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u69a3c487",
+       "name": "Unit 49 완료 분사구문, 수동 분사구문",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "u55861616",
+       "name": "Unit 50 접속사나 주어를 남긴 분사구문",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "u71d59e55",
+       "name": "Unit 51 with+명사+분사",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u4305f577",
+       "name": "Unit 52 분사구문의 관용 표현",
+       "n": 4,
+       "lv": 2.5
+      }
+     ]
+    },
+    {
+     "key": "chapter09",
+     "name": "Chapter 09 준동사",
+     "units": [
+      {
+       "id": "u7737ca6f",
+       "name": "Unit 53 준동사의 동사적 성질",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "u8ba5f2b9",
+       "name": "Unit 54 준동사의 의미상 주어",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u9c6cbcf4",
+       "name": "Unit 55 동사 vs. 준동사",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u852e6c2f",
+       "name": "Unit 56 수식받는 주어-동사 수일치",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u39f8d0af",
+       "name": "Unit 57 준동사의 완료형",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u149fce1b",
+       "name": "Unit 58 준동사의 수동형",
+       "n": 3,
+       "lv": 1.3
+      }
+     ]
+    },
+    {
+     "key": "chapter10",
+     "name": "Chapter 10 접속사",
+     "units": [
+      {
+       "id": "ude77ac57",
+       "name": "Unit 59 등위접속사",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "ue6c5a7dc",
+       "name": "Unit 60 상관접속사",
+       "n": 3,
+       "lv": 2.3
+      },
+      {
+       "id": "uf97cb9fa",
+       "name": "Unit 61 명사절 1 (that)",
+       "n": 5,
+       "lv": 1.8
+      },
+      {
+       "id": "u15a70f2d",
+       "name": "Unit 62 명사절 2 (whether, if)",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "u2f34e27b",
+       "name": "Unit 63 명사절 3 (의문사)",
+       "n": 4,
+       "lv": 3
+      },
+      {
+       "id": "u3c0d3879",
+       "name": "Unit 64 화법 전환 1 (평서문)",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "u7b9f17c0",
+       "name": "Unit 65 화법 전환 2 (의문문, 명령문)",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "u0f84dac9",
+       "name": "Unit 66 시간의 부사절",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "u6876c75b",
+       "name": "Unit 67 조건의 부사절",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "uf8270a00",
+       "name": "Unit 68 시간, 조건을 나타내는 부사절의 시제",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "udc582228",
+       "name": "Unit 69 이유, 양보의 부사절",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u0334edee",
+       "name": "Unit 70 목적, 결과의 부사절",
+       "n": 4,
+       "lv": 2
+      }
+     ]
+    },
+    {
+     "key": "chapter11",
+     "name": "Chapter 11 관계사",
+     "units": [
+      {
+       "id": "u3fcf11c4",
+       "name": "Unit 71 주격 관계대명사",
+       "n": 4,
+       "lv": 2.5
+      },
+      {
+       "id": "uf03b16ff",
+       "name": "Unit 72 목적격 관계대명사",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "ue3c0bc61",
+       "name": "Unit 73 소유격 관계대명사",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "u6f34bba2",
+       "name": "Unit 74 관계대명사 what",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "u47e9c1d5",
+       "name": "Unit 75 전치사+목적격 관계대명사",
+       "n": 4,
+       "lv": 2.5
+      },
+      {
+       "id": "u0b93a144",
+       "name": "Unit 76 관계부사",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u5af6ad71",
+       "name": "Unit 77 콤마(,)+관계사절",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "u476f0d3a",
+       "name": "Unit 78 복합관계사",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "uc84fe69d",
+       "name": "Unit 79 관계사절과 수일치",
+       "n": 4,
+       "lv": 2.3
+      }
+     ]
+    },
+    {
+     "key": "chapter12",
+     "name": "Chapter 12 비교",
+     "units": [
+      {
+       "id": "uff7f9927",
+       "name": "Unit 80 원급",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u04561535",
+       "name": "Unit 81 원급을 이용한 표현",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "u7fd2ac13",
+       "name": "Unit 82 비교급",
+       "n": 3,
+       "lv": 2.3
+      },
+      {
+       "id": "u81716d14",
+       "name": "Unit 83 비교급을 이용한 표현",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "uc3f588e3",
+       "name": "Unit 84 최상급",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "ufec23f1b",
+       "name": "Unit 85 최상급을 나타내는 원급, 비교급 표현",
+       "n": 4,
+       "lv": 2.8
+      }
+     ]
+    },
+    {
+     "key": "chapter13",
+     "name": "Chapter 13 품사",
+     "units": [
+      {
+       "id": "u0dc93313",
+       "name": "Unit 86 명사, 관사",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u628323d1",
+       "name": "Unit 87 인칭대명사, 지시대명사",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "ue3f7630a",
+       "name": "Unit 88 재귀대명사",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "u97d52233",
+       "name": "Unit 89 부정대명사 1 (one, another, other)",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u84501791",
+       "name": "Unit 90 부정대명사 2 (each, all, both 등)",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u53ececdb",
+       "name": "Unit 91 주의해야 할 명사 주어-동사 수일치",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "u5fb26ebb",
+       "name": "Unit 92 전치사",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u4119c11a",
+       "name": "Unit 93 형용사의 역할",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "u758359b2",
+       "name": "Unit 94 부사의 역할",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "u44b47478",
+       "name": "Unit 95 주의해야 할 주요 부사",
+       "n": 4,
+       "lv": 2
+      }
+     ]
+    },
+    {
+     "key": "chapter14",
+     "name": "Chapter 14 특수구문",
+     "units": [
+      {
+       "id": "u825c57c4",
+       "name": "Unit 96 강조",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "ud2eda615",
+       "name": "Unit 97 도치 1 (부정어구)",
+       "n": 3,
+       "lv": 3
+      },
+      {
+       "id": "u58df13fd",
+       "name": "Unit 98 도치 2 (장소, 방향 부사구 / 보어 / so, neither[nor])",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u0d433057",
+       "name": "Unit 99 생략",
+       "n": 4,
+       "lv": 2.5
+      },
+      {
+       "id": "udc7becb8",
+       "name": "Unit 100 동격 / 삽입",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "u16828fc7",
+       "name": "Unit 101 부정",
+       "n": 4,
+       "lv": 1.3
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b67b17b21",
+   "area": "문법",
+   "grade": "초등",
+   "name": "Grammar for Starters 1",
+   "path": "문법/grammar-for-starters1",
+   "n": 25,
+   "chapters": [
+    {
+     "key": "_",
+     "name": "단원",
+     "units": [
+      {
+       "id": "u2dd7dce7",
+       "name": "be동사, 나와 세상을 설명하는 마법의 동사 — Unit 1 be동사의 현재형",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u919ea95f",
+       "name": "be동사 부정문, not 하나면 충분해요 — Unit 2 be동사의 부정문",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u86af3f36",
+       "name": "be동사 의문문, 순서만 바꾸면 끝! — Unit 3 be동사의 Yes/No 의문문",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u189928d6",
+       "name": "주어가 3인칭 단수일 때 동사 변화 완전 정복 — Unit 4 일반동사의 현재형",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u448ab963",
+       "name": "일반동사 부정문 완전 정복: don't와 doesn't — Unit 5 일반동사의 부정문",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "uf61088cf",
+       "name": "Do와 Does로 묻는 일반동사 의문문 — Unit 6 일반동사의 Yes/No 의문문",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u47a6c699",
+       "name": "비동사의 과거를 알아보자 — Unit 7-1 be동사의 과거형",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u8365bbeb",
+       "name": "일반동사의 과거형 정복하기 — Unit 7-2 일반동사의 과거형",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "ua9cc154f",
+       "name": "과거에 안 했다고 말하기, 과거 부정문 마스터하기 — Unit 8 과거형의 부정문",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "ufb51932b",
+       "name": "과거 의문문 마스터하기 — Unit 9 과거형의 Yes/No 의문문",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u17cc29cf",
+       "name": "구체적인 사실을 묻는 who, what, when 질문 — Unit 10 의문사 who, what, when",
+       "n": 2,
+       "lv": 1
+      },
+      {
+       "id": "u4fa931a9",
+       "name": "Unit 11. 장소, 이유, 방법을 묻는 의문부사 where, why, how — Unit 11 의문사 where, why, how",
+       "n": 2,
+       "lv": 1
+      },
+      {
+       "id": "u5a8504b6",
+       "name": "선택의문문 완벽 정복 — Unit 12-1 선택의문문",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u31458e50",
+       "name": "부가의문문 완벽 정복하기 — Unit 12-2 부가의문문",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "uccd7db03",
+       "name": "셀 수 있는 명사의 기본 이해 — Unit 13 셀 수 있는 명사",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "uc64e75ed",
+       "name": "셀 수 없는 명사의 수량 단위 표현 — Unit 14 셀 수 없는 명사",
+       "n": 2,
+       "lv": 2
+      },
+      {
+       "id": "u48d7a46c",
+       "name": "대명사의 격 변화 마스터하기 — Unit 15 대명사",
+       "n": 2,
+       "lv": 1.5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b6d009e42",
+   "area": "문법",
+   "grade": "초등",
+   "name": "Grammar for Starters 2",
+   "path": "문법/grammar-for-starters2",
+   "n": 27,
+   "chapters": [
+    {
+     "key": "_",
+     "name": "단원",
+     "units": [
+      {
+       "id": "u8301d6cb",
+       "name": "명사를 빛내 주는 마법, 형용사 정복하기 — Unit 1 형용사",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u4ba1b89b",
+       "name": "부사의 모든 것 — Unit 2 부사",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u4d4da7ef",
+       "name": "형용사와 부사의 비교급 기초 — Unit 3-1 비교급",
+       "n": 2,
+       "lv": 2
+      },
+      {
+       "id": "u18866ecc",
+       "name": "가장 ~한 것을 찾아라! 최상급 마스터하기 — Unit 3-2 최상급",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u2a42721c",
+       "name": "현재와 현재진행 완벽 정복하기 — Unit 4 현재와 현재진행",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "ub6fd5f72",
+       "name": "과거와 과거진행 마스터하기 — Unit 5 과거와 과거진행",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "udb36a546",
+       "name": "미래를 나타내는 표현 — Unit 6 미래",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u6315877c",
+       "name": "캔과 메이로 능력과 추측 표현하기 — Unit 7 조동사 can, may",
+       "n": 2,
+       "lv": 1
+      },
+      {
+       "id": "u7f56f813",
+       "name": "must와 have to로 의무, 금지, 불필요 정복하기 — Unit 8 조동사 must, have to",
+       "n": 2,
+       "lv": 1
+      },
+      {
+       "id": "uab7279e4",
+       "name": "동명사의 기본 개념과 역할 — Unit 9 동명사",
+       "n": 2,
+       "lv": 1
+      },
+      {
+       "id": "ubd92f447",
+       "name": "명사처럼 쓰이는 to부정사 마스터하기 — Unit 10 to부정사 - 명사 역할",
+       "n": 2,
+       "lv": 1
+      },
+      {
+       "id": "u310ce900",
+       "name": "형용사처럼 명사를 꾸며 주는 to부정사 — Unit 11 to부정사 - 형용사 역할",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u161a49ad",
+       "name": "부사의 역할을 하는 to부정사 정복하기 — Unit 12 to부정사 - 부사 역할",
+       "n": 2,
+       "lv": 1
+      },
+      {
+       "id": "ub16b9aef",
+       "name": "전치사 마스터하기 — Unit 13 전치사",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "ua04428e8",
+       "name": "등위접속사 and, but, or 완벽 정복하기 — Unit 14 등위접속사",
+       "n": 2,
+       "lv": 1
+      },
+      {
+       "id": "u1e071033",
+       "name": "종속접속사의 이해 — Unit 15 종속접속사",
+       "n": 1,
+       "lv": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bd3bc3535",
+   "area": "문법",
+   "grade": "중등",
+   "name": "Grammar Inside Level 1",
+   "path": "문법/grammar-inside-lv1",
+   "n": 16,
+   "chapters": [
+    {
+     "key": "chapter01",
+     "name": "Chapter 01 be동사",
+     "units": [
+      {
+       "id": "u41d16eac",
+       "name": "Unit 01 be동사의 현재형과 과거형",
+       "n": 3,
+       "lv": 1
+      },
+      {
+       "id": "ub79a258b",
+       "name": "Unit 02 be동사의 부정문과 의문문",
+       "n": 4,
+       "lv": 1.3
+      }
+     ]
+    },
+    {
+     "key": "chapter02",
+     "name": "Chapter 02 일반동사",
+     "units": [
+      {
+       "id": "u3652cba0",
+       "name": "Unit 01 일반동사의 현재형",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u025a155c",
+       "name": "Unit 02 일반동사의 과거형",
+       "n": 5,
+       "lv": 1.4
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bc1054f15",
+   "area": "문법",
+   "grade": "중등",
+   "name": "그래머마스터 3권",
+   "path": "문법/grammarmaster-lv3",
+   "n": 56,
+   "chapters": [
+    {
+     "key": "part1",
+     "name": "Chapter 01 시제",
+     "units": [
+      {
+       "id": "u0cdd2f20",
+       "name": "CU1 P1 확인문제 · Grammar Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ucddce720",
+       "name": "P1 현재완료",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u064d259d",
+       "name": "P2 과거완료, 미래완료",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "ue70b57e5",
+       "name": "CU1 P1 확인문제 · Grammar Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub02011e5",
+       "name": "P1 can, may, must, should",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "uc71e243b",
+       "name": "CU2 P2 확인문제 · Grammar Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2dd97d51",
+       "name": "P2 조동사 관련 표현",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "u653ac13a",
+       "name": "CU1 P1 확인문제 · Grammar Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u7308b5f6",
+       "name": "P1 4형식·5형식 문장의 수동태",
+       "n": 4,
+       "lv": 2.5
+      },
+      {
+       "id": "udd855e92",
+       "name": "CU2 P2 확인문제 · Grammar Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc061549e",
+       "name": "P2 주의해야 할 수동태",
+       "n": 3,
+       "lv": 2.7
+      }
+     ]
+    },
+    {
+     "key": "part2",
+     "name": "Chapter 04 to부정사",
+     "units": [
+      {
+       "id": "u7eb2218f",
+       "name": "P1 명사적 용법",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u0ed0302d",
+       "name": "P2 형용사적 용법, 부사적 용법",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "udc116bcc",
+       "name": "P3 목적격 보어로 쓰이는 부정사",
+       "n": 3,
+       "lv": 2.3
+      },
+      {
+       "id": "u17c5e2ee",
+       "name": "P4 의미상 주어, 시제, 태",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u01755abe",
+       "name": "P5 to부정사 구문, 독립부정사",
+       "n": 3,
+       "lv": 2.7
+      },
+      {
+       "id": "ubb3adc98",
+       "name": "P2 목적어로 쓰이는 동명사와 to부정사, 동명사 관용 표현",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u6de30e2c",
+       "name": "P1 현재분사, 과거분사",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "u81829e4b",
+       "name": "P2 분사구문",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "ufcd681e8",
+       "name": "P3 독립분사구문, 비인칭분사구문",
+       "n": 4,
+       "lv": 2.3
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b7b671ca1",
+   "area": "문법",
+   "grade": "고등",
+   "name": "솔리드 어법 실력",
+   "path": "문법/solid-advanced",
+   "n": 43,
+   "chapters": [
+    {
+     "key": "_",
+     "name": "Chapter 1 동사",
+     "units": [
+      {
+       "id": "ua6c2d1f5",
+       "name": "P1 동사 자리",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue626e30d",
+       "name": "P2 대동사",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "udce05283",
+       "name": "P3 자동사 vs. 타동사",
+       "n": 1,
+       "lv": 2
+      },
+      {
+       "id": "u74caaa9b",
+       "name": "P4 주어-동사의 수 일치",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u48e95e87",
+       "name": "P5 시제",
+       "n": 1,
+       "lv": 3
+      },
+      {
+       "id": "ufef75386",
+       "name": "P6 태",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u88badbe6",
+       "name": "P7 주어 자리 / 보어 자리",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u76d80896",
+       "name": "P8 목적어 자리",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u8c451ce8",
+       "name": "P9 목적격보어 자리 1 (to부정사)",
+       "n": 1,
+       "lv": 2
+      },
+      {
+       "id": "u146795ed",
+       "name": "P10 목적격보어 자리 2 (원형부정사)",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u606150a7",
+       "name": "P11 의미상 주어",
+       "n": 1,
+       "lv": 2
+      },
+      {
+       "id": "u1bace4a3",
+       "name": "P12 태 / 시제",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "ue783ec57",
+       "name": "P13 분사의 의미, 기능",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u6a670b86",
+       "name": "P14 목적격보어 자리 (지각동사·사역동사)",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6f57fab0",
+       "name": "P15 감정을 나타내는 분사",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2556e328",
+       "name": "P16 분사구",
+       "n": 1,
+       "lv": 3
+      },
+      {
+       "id": "u9794d514",
+       "name": "P17 분사구문",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "ud6edcd77",
+       "name": "P18 독립분사구문",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ubf8b36f9",
+       "name": "P19 조동사+동사원형 vs. 조동사+have p.p.",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "ua180a3b1",
+       "name": "P20 used를 이용한 표현",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "uba85656a",
+       "name": "P21 조동사 관용 표현",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "ucfe7e3b6",
+       "name": "P22 가정법 과거 vs. 가정법 과거완료 vs. 혼합 가정법",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "ude78b3bf",
+       "name": "P23 that절의 should 생략",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "ue4e3c284",
+       "name": "P24 as if + 가정법 / I wish + 가정법",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u4f831382",
+       "name": "P25 접속사 vs. 전치사",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u570ffd72",
+       "name": "P26 등위접속사 / 상관접속사",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "uf1ce8184",
+       "name": "P27 접속사 whether/if vs. 접속사 that",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "ua8b74f02",
+       "name": "P28 to부정사의 to vs. 전치사 to",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u64af7616",
+       "name": "P29 관계대명사의 역할 및 쓰임",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "ud6bbd50e",
+       "name": "P30 전치사+관계대명사 / 계속적 용법",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u2137a4b7",
+       "name": "P31 관계부사의 역할 및 쓰임",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u09ec1af0",
+       "name": "P32 관계대명사 vs. 관계부사 / 생략",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u34b547e3",
+       "name": "P33 복합관계대명사 vs. 복합관계부사",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u2c4c0a41",
+       "name": "P34 관계대명사 what vs. 관계대명사 which[that]",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u276662a8",
+       "name": "P35 대명사의 일치",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u36a4e879",
+       "name": "P36 대명사 it",
+       "n": 1,
+       "lv": 2
+      },
+      {
+       "id": "u3327db5c",
+       "name": "P37 that vs. those / it vs. one",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "ue14b6a98",
+       "name": "P38 인칭대명사 vs. 재귀대명사",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u12ed8334",
+       "name": "P39 부정대명사",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "ub4fa6107",
+       "name": "P40 셀 수 있는 명사 vs. 셀 수 없는 명사",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u8fef7db9",
+       "name": "P41 형용사 자리 vs. 부사 자리",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "ua38b5774",
+       "name": "P42 한정 용법 형용사 vs. 서술 용법 형용사",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u3503e044",
+       "name": "P43 혼동하기 쉬운 형용사/부사",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u1564274e",
+       "name": "P44 원급 vs. 비교급 vs. 최상급",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "uef043573",
+       "name": "P45 비교급/최상급 강조",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u169c62e5",
+       "name": "P46 비교 구문을 이용한 관용 표현",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u5ba52a3a",
+       "name": "P47 병렬 구조",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u2e6b5957",
+       "name": "P48 도치",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u1d39a35a",
+       "name": "P49 강조 구문",
+       "n": 1,
+       "lv": 2
+      },
+      {
+       "id": "u97a6d5d9",
+       "name": "P50 어순",
+       "n": 1,
+       "lv": 3
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b7819f2e0",
+   "area": "문법",
+   "grade": "중등",
+   "name": "솔리드 어법 기본",
+   "path": "문법/solid-basic",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "unit05",
+     "name": "Chapter 3 준동사",
+     "units": [
+      {
+       "id": "uf184ca59",
+       "name": "P1 동사의 목적어로 쓰이는 to부정사와 동명사",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uda9f0c12",
+       "name": "P2 가목적어, 진목적어",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u593e9ea6",
+       "name": "P3 to부정사와 동명사의 의미상 주어",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u956cf86f",
+       "name": "P4 to부정사와 동명사의 시제·태",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u202bd4f8",
+       "name": "P5 목적격보어로 쓰이는 to부정사",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc24d41c6",
+       "name": "P6 to부정사의 to vs. 전치사 to",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit06",
+     "name": "Chapter 3 준동사",
+     "units": [
+      {
+       "id": "uc1565acc",
+       "name": "P1 현재분사 vs. 과거분사",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1f499732",
+       "name": "P2 감정을 나타내는 분사",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud3de02f1",
+       "name": "P3 분사구문의 현재분사 vs. 과거분사",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5cc60092",
+       "name": "P4 with + (대)명사 + 분사",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u723f04d1",
+       "name": "P5 분사구문의 시제·태",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8ec933f0",
+       "name": "P6 목적격보어 역할을 하는 분사",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit07",
+     "name": "Chapter 4 조동사 / 가정법",
+     "units": [
+      {
+       "id": "u1588a5bb",
+       "name": "P1 조동사 + 동사원형",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud20c6114",
+       "name": "P2 조동사 + have p.p.",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u24a96bea",
+       "name": "P3 유의해야 할 조동사",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u006e0b68",
+       "name": "P4 조동사 관용 표현",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit08",
+     "name": "Chapter 4 조동사 / 가정법",
+     "units": [
+      {
+       "id": "u4791bef4",
+       "name": "P1 가정법 과거 vs. 가정법 과거완료 vs. 혼합 가정법",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2840ea89",
+       "name": "P2 I wish + 가정법 / as if + 가정법",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uac20010e",
+       "name": "P3 if의 생략과 도치",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u28243e82",
+       "name": "P4 that절의 should 생략",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit09",
+     "name": "Chapter 5 관계사 / 접속사",
+     "units": [
+      {
+       "id": "u2c31f8e9",
+       "name": "P1 관계대명사의 역할 및 쓰임",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u379fe99e",
+       "name": "P2 관계대명사 what vs. 관계대명사 that [which]",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2ea84442",
+       "name": "P3 관계부사의 역할 및 쓰임",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ucbbaa2e9",
+       "name": "P4 복합관계대명사 vs. 복합관계부사",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit10",
+     "name": "Unit 10",
+     "units": [
+      {
+       "id": "uad415aa6",
+       "name": "접속사 vs. 전치사: 절(Clause)과 구(Phrase)의 구별 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u06b305af",
+       "name": "접속사 that vs. 관계대명사 what 완벽 비교 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u3de30ef7",
+       "name": "명사절 접속사 that vs. if/whether 비교 총정리 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u629de7a1",
+       "name": "접속사와 대등한 연결: 병렬 구조의 이해 — AI강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b0a86175a",
+   "area": "구문",
+   "grade": "고등",
+   "name": "마법같은 블록구문 레드",
+   "path": "구문/marblered",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "chapter01",
+     "name": "Chapter 01",
+     "units": [
+      {
+       "id": "ud946f24f",
+       "name": "강의 Chapter 1 Review 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2595f7f7",
+       "name": "강의 Unit 01 · 명사구 주어 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uead1e720",
+       "name": "강의 Unit 02 · 명사절 주어 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf00aadc8",
+       "name": "강의 Unit 03 · 가주어 it 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u82c6eeff",
+       "name": "강의 Unit 04 · 주어+형용사구 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u440a9ed6",
+       "name": "강의 Unit 05 · 주어+형용사절 1 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1cb3d03f",
+       "name": "강의 Unit 06 · 주어+형용사절 2 통합 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter02",
+     "name": "Chapter 02",
+     "units": [
+      {
+       "id": "u0b3679f6",
+       "name": "복습 Chapter 2 Review · 01",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8714e7b1",
+       "name": "복습 Chapter 2 Review · 02",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u3fc522bc",
+       "name": "복습 Chapter 2 Review · 03",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5f208b45",
+       "name": "복습 Chapter 2 Review · 04",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5203bc00",
+       "name": "복습 Chapter 2 Review · 05",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u7a25e88f",
+       "name": "복습 Chapter 2 Review · 06",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc1bef9a3",
+       "name": "복습 Chapter 2 Review · 07",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5665e29a",
+       "name": "복습 Chapter 2 Review · 08",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4eef13a4",
+       "name": "복습 Chapter 2 Review · 09",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ua8bfc89a",
+       "name": "복습 Chapter 2 Review · 10",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uaed9ac5b",
+       "name": "복습 Chapter 2 Review · 11",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uda1d7066",
+       "name": "복습 Chapter 2 Review · 12",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ua1a48f77",
+       "name": "강의 Unit 07 · 전치사구와 짝을 이루는 동사 구문 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u9648ea51",
+       "name": "강의 Unit 08 · 조동사 구문 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u9146281e",
+       "name": "강의 Unit 09 · 수동태 구문 통합 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter03",
+     "name": "Chapter 03",
+     "units": [
+      {
+       "id": "u894a5aa2",
+       "name": "강의 Chapter 3 Review 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u933e6a04",
+       "name": "강의 Unit 10 · 명사구 목적어 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue0fc67b6",
+       "name": "강의 Unit 11 · 명사절 목적어 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1bb44455",
+       "name": "강의 Unit 12 · 가목적어 it 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u22225295",
+       "name": "강의 Unit 13 · 목적어+형용사구 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ua0d7122a",
+       "name": "강의 Unit 14 · 목적어+형용사절 통합 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter04",
+     "name": "Chapter 04",
+     "units": [
+      {
+       "id": "u65b52a02",
+       "name": "복습 Chapter 4 Review · 01",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u07d3600e",
+       "name": "복습 Chapter 4 Review · 02",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub0342fb9",
+       "name": "복습 Chapter 4 Review · 03",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "udd5e512b",
+       "name": "복습 Chapter 4 Review · 04",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u29cd1ae3",
+       "name": "복습 Chapter 4 Review · 05",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u9d95e0d4",
+       "name": "복습 Chapter 4 Review · 06",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6747e904",
+       "name": "복습 Chapter 4 Review · 07",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8ce734fb",
+       "name": "복습 Chapter 4 Review · 08",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue321a512",
+       "name": "복습 Chapter 4 Review · 09",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "udcde94a4",
+       "name": "복습 Chapter 4 Review · 10",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u75aaef91",
+       "name": "복습 Chapter 4 Review · 11",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5eefc67a",
+       "name": "복습 Chapter 4 Review · 12",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u087624ba",
+       "name": "복습 Chapter 4 Review · 13",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uacb8dd6c",
+       "name": "강의 Unit 15 · 주격보어 : 구 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ueac96211",
+       "name": "강의 Unit 16 · 주격보어 : 절 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uee9dd4e5",
+       "name": "강의 Unit 17 · 목적격보어 1 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uacfea9a6",
+       "name": "강의 Unit 18 · 목적격보어 2 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub839d868",
+       "name": "강의 Unit 19 · 보어+형용사구 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ua7f8ad2c",
+       "name": "강의 Unit 20 · 보어+형용사절 통합 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter05",
+     "name": "Chapter 05",
+     "units": [
+      {
+       "id": "u39c44adc",
+       "name": "강의 Unit 21 · 명사+(형용사 +) 전치사구 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc03c30c7",
+       "name": "강의 Unit 22 · 명사+to-v[v-ing / v-ed] 통합 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter06",
+     "name": "Chapter 06",
+     "units": [
+      {
+       "id": "u8215621f",
+       "name": "강의 Chapter 6 Review 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1332f8e3",
+       "name": "unit23 · 중 능률(김) 6과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uec418a59",
+       "name": "unit23 · 중 능률(김) 6과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u954c3b96",
+       "name": "unit23 · 중 능률(김) 6과 본문3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u49ba27b9",
+       "name": "unit23 · 중 능률(김) 6과 본문4",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2b480a3f",
+       "name": "강의 Unit 23 · 명사+관계대명사절 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u92569766",
+       "name": "강의 Unit 24 · 명사+전치사+관계대명사 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "udb9fa1de",
+       "name": "강의 Unit 25 · 명사+관계부사절 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u32e0254d",
+       "name": "강의 Unit 26 · 명사+관계사 생략된 수식절 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uab70c413",
+       "name": "강의 Unit 27 · 명사와 관계사절의 분리 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1a87fb64",
+       "name": "강의 Unit 28 · 명사, 관계사절 통합 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter07",
+     "name": "Chapter 07",
+     "units": [
+      {
+       "id": "u5ea3199a",
+       "name": "강의 Unit 29 · 부사 역할을 하는 전치사구 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u840d7eed",
+       "name": "강의 Unit 30 · 부사 역할을 하는 to-v의 의미 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue9d79d5e",
+       "name": "강의 Unit 31 · 부사적 to-v의 관용 구문 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u9c5a3889",
+       "name": "강의 Unit 32 · 부사 역할을 하는 분사구문의 의미 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0367f87a",
+       "name": "강의 Unit 33 · 분사구문의 다양한 형태 1 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6564957e",
+       "name": "강의 Unit 34 · 분사구문의 다양한 형태 2 통합 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter08",
+     "name": "Chapter 08",
+     "units": [
+      {
+       "id": "ua976b054",
+       "name": "강의 Unit 35 · 시간의 부사절 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8fbcea49",
+       "name": "강의 Unit 36 · 이유의 부사절 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ucbb58c87",
+       "name": "강의 Unit 37 · 조건의 부사절 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u049f9264",
+       "name": "강의 Unit 38 · 목적ㆍ결과의 부사절 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2401325a",
+       "name": "강의 Unit 39 · 반전ㆍ대조의 부사절 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6e8ff997",
+       "name": "강의 Unit 40 · 양태의 부사절 통합 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter09",
+     "name": "Chapter 09",
+     "units": [
+      {
+       "id": "uad274278",
+       "name": "강의 Unit 41 · if 가정법 과거 구문 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1f0700cf",
+       "name": "강의 Unit 42 · If 가정법 과거완료 구문 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u9287b882",
+       "name": "강의 Unit 43 · wish ㆍ as if 가정법 구문 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8ab4c8d6",
+       "name": "강의 Unit 44 · if가 없는 가정법 구문 통합 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter10",
+     "name": "Chapter 10",
+     "units": [
+      {
+       "id": "u5a3c1e51",
+       "name": "강의 Unit 45 · 원급 구문 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u77610aa6",
+       "name": "강의 Unit 46 · 비교급 구문 1 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u690fef05",
+       "name": "강의 Unit 47 · 비교급 구문 2 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub546e0b6",
+       "name": "강의 Unit 48 · 최상급 구문 통합 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter11",
+     "name": "Chapter 11",
+     "units": [
+      {
+       "id": "u3568f0a0",
+       "name": "강의 Unit 49 · 도치 구문 1 통합 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2b7d38d7",
+       "name": "강의 Unit 50 · 도치 구문 2 통합 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bca843d24",
+   "area": "구문",
+   "grade": "중등",
+   "name": "SO Level 1",
+   "path": "구문/solv1",
+   "n": 37,
+   "chapters": [
+    {
+     "key": "_",
+     "name": "단원",
+     "units": [
+      {
+       "id": "ud3b56180",
+       "name": "1 적용독해 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "udd82c0c5",
+       "name": "2 적용독해 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud3629bfa",
+       "name": "3 적용독해 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2755333a",
+       "name": "1 적용독해 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8a2f34b7",
+       "name": "2 적용독해 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u40eb16fe",
+       "name": "3 적용독해 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u294fa4ce",
+       "name": "1 적용독해 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf781a947",
+       "name": "2 적용독해 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u166451af",
+       "name": "3 적용독해 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u10771f5f",
+       "name": "1 적용독해 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8f8e3264",
+       "name": "2 적용독해 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2440f9da",
+       "name": "3 적용독해 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0ce38144",
+       "name": "1 적용독해 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u79baeb13",
+       "name": "2 적용독해 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u521cef4b",
+       "name": "1 적용독해 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5bf265b1",
+       "name": "2 적용독해 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud9bcf2ec",
+       "name": "1 적용독해 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uccf39051",
+       "name": "2 적용독해 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u7d729ad7",
+       "name": "3 적용독해 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u949e6634",
+       "name": "1 적용독해 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4b765821",
+       "name": "2 적용독해 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u57885abd",
+       "name": "3 적용독해 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u68e8d7f9",
+       "name": "1 적용독해 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4813e761",
+       "name": "2 적용독해 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u7c53d170",
+       "name": "3 적용독해 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uab9f0f0b",
+       "name": "1 적용독해 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue02ffaec",
+       "name": "2 적용독해 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4dde2cdb",
+       "name": "3 적용독해 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4511cc26",
+       "name": "1 적용독해 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud512fa9a",
+       "name": "2 적용독해 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uffc49309",
+       "name": "3 적용독해 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud1d4f155",
+       "name": "1 적용독해 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4f61af31",
+       "name": "2 적용독해 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u28dc1009",
+       "name": "3 적용독해 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uaac3a50c",
+       "name": "1 적용독해 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u07f8ab66",
+       "name": "2 적용독해 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue8d5be43",
+       "name": "3 적용독해 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u27d5c1ef",
+       "name": "1 적용독해 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf14c1c75",
+       "name": "2 적용독해 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u46e7a910",
+       "name": "1 적용독해 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub20c9b88",
+       "name": "2 적용독해 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u058afce9",
+       "name": "3 적용독해 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u891928df",
+       "name": "1 적용독해 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uaf9d1717",
+       "name": "2 적용독해 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u14988785",
+       "name": "3 적용독해 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue5bfc1ea",
+       "name": "1 적용독해 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ufc69cb8b",
+       "name": "2 적용독해 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue09b4a60",
+       "name": "3 적용독해 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u215b966d",
+       "name": "1 적용독해 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u03a575f3",
+       "name": "2 적용독해 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ua07e2e2e",
+       "name": "3 적용독해 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5d778a4e",
+       "name": "1 적용독해 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u693992fd",
+       "name": "2 적용독해 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u37436e1d",
+       "name": "3 적용독해 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0e685baa",
+       "name": "1 적용독해 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u93470481",
+       "name": "2 적용독해 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uad117be7",
+       "name": "3 적용독해 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u57545222",
+       "name": "문장의 뼈대: 목적어와 보어 — AI강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit01",
+     "name": "Unit 01",
+     "units": [
+      {
+       "id": "ub4e32f07",
+       "name": "강의 01강 개념강의",
+       "n": 2,
+       "lv": 2
+      },
+      {
+       "id": "u61dd731d",
+       "name": "강의 02강 개념강의",
+       "n": 2,
+       "lv": 1
+      },
+      {
+       "id": "ub87caa72",
+       "name": "review · 구사력기본 unit01 reveiw01 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u9d1348a6",
+       "name": "review · 구사력기본 unit01 reveiw02 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u74071eb4",
+       "name": "review · 구사력기본 unit01 reveiw03 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1282fd4a",
+       "name": "review · 구사력기본 unit01 reveiw04 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit02",
+     "name": "Unit 02",
+     "units": [
+      {
+       "id": "u0b44194d",
+       "name": "강의 03강 개념강의",
+       "n": 2,
+       "lv": 2
+      },
+      {
+       "id": "ubc3e1b8b",
+       "name": "강의 04강 개념강의",
+       "n": 2,
+       "lv": 2
+      },
+      {
+       "id": "u95ef67b2",
+       "name": "review · 구문사고력 기본 Unit02 review reading01 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ua6c2650b",
+       "name": "review · 구문사고력 기본 Unit02 review reading02 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u24b42ade",
+       "name": "review · 구문사고력 기본 Unit02 review reading03 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u49dfc1e4",
+       "name": "review · 구문사고력 기본 Unit02 review reading04 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit03",
+     "name": "Unit 03",
+     "units": [
+      {
+       "id": "ubdff2512",
+       "name": "강의 05강 개념강의",
+       "n": 2,
+       "lv": 2
+      },
+      {
+       "id": "u84ffd967",
+       "name": "강의 06강 개념강의",
+       "n": 2,
+       "lv": 2
+      },
+      {
+       "id": "u120502e6",
+       "name": "review · 구문사고력 기본 Unit03 review reading01 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "udfb6e348",
+       "name": "review · 구문사고력 기본 Unit03 review reading02 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf8ae1687",
+       "name": "review · 구문사고력 기본 Unit03 review reading03 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf40910c7",
+       "name": "review · 구문사고력 기본 Unit03 review reading04 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit04",
+     "name": "Unit 04",
+     "units": [
+      {
+       "id": "u282240a6",
+       "name": "강의 07강 개념강의",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "ued0aa81b",
+       "name": "강의 08강 개념강의",
+       "n": 2,
+       "lv": 2
+      },
+      {
+       "id": "u0d935566",
+       "name": "강의 09강 개념강의",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u417f4b69",
+       "name": "강의 10강 개념강의",
+       "n": 2,
+       "lv": 2
+      },
+      {
+       "id": "uadbe0147",
+       "name": "강의 11강 개념강의",
+       "n": 2,
+       "lv": 1
+      },
+      {
+       "id": "u11f33c89",
+       "name": "review-tov · to-v Review 적용독해 1번 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u9df9cd30",
+       "name": "review-tov · to-v Review 적용독해 2번 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "udc62b488",
+       "name": "review-tov · to-v Review 적용독해 3번 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf0a3db84",
+       "name": "review-tov · to-v Review 적용독해 4번 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit05",
+     "name": "Unit 05",
+     "units": [
+      {
+       "id": "u6b493baa",
+       "name": "강의 12강 개념강의",
+       "n": 1,
+       "lv": 2
+      },
+      {
+       "id": "u2550ee41",
+       "name": "강의 13강 개념강의",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u94cee53b",
+       "name": "강의 14강 개념강의",
+       "n": 2,
+       "lv": 2
+      },
+      {
+       "id": "ua85ab4c9",
+       "name": "강의 15강 개념강의",
+       "n": 1,
+       "lv": 1
+      }
+     ]
+    },
+    {
+     "key": "unit06",
+     "name": "Unit 06",
+     "units": [
+      {
+       "id": "ub5a68631",
+       "name": "강의 16강 개념강의",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u03bef736",
+       "name": "강의 17강 개념강의",
+       "n": 2,
+       "lv": 1
+      },
+      {
+       "id": "uab4bc1d1",
+       "name": "강의 18강 개념강의",
+       "n": 2,
+       "lv": 1
+      }
+     ]
+    },
+    {
+     "key": "unit07",
+     "name": "Unit 07",
+     "units": [
+      {
+       "id": "u3d65878d",
+       "name": "강의 19강 개념강의",
+       "n": 2,
+       "lv": 2
+      },
+      {
+       "id": "ubf2d2c2d",
+       "name": "강의 20강 개념강의",
+       "n": 2,
+       "lv": 2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b4633bd93",
+   "area": "구문",
+   "grade": "중등",
+   "name": "SO Level 2",
+   "path": "구문/solv2",
+   "n": 118,
+   "chapters": [
+    {
+     "key": "_",
+     "name": "단원",
+     "units": [
+      {
+       "id": "ubc229e92",
+       "name": "구문사고력 v-ing v-ed review reading01",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub4e30ab8",
+       "name": "구문사고력 v-ing v-ed review reading02",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u57c557aa",
+       "name": "구문사고력 v-ing v-ed review reading03",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u82fbfa02",
+       "name": "구문사고력 v-ing v-ed review reading04",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u030cf92d",
+       "name": "be동사 완전 정복 — ~이다, ~다, ~에 있다 — Unit 1 be동사의 현재형",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "ua3beabe4",
+       "name": "be동사 부정문은 not 하나면 충분해요 — Unit 2 be동사의 부정문",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "uf1f472f5",
+       "name": "be동사 Yes/No 의문문, 어순만 바꾸면 끝! — Unit 3 be동사의 Yes/No 의문문",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "ucd7a7f63",
+       "name": "주어가 주인공! 3인칭 단수 일반동사 완전 정복 — Unit 4 일반동사의 현재형",
+       "n": 2,
+       "lv": 2
+      },
+      {
+       "id": "u10131e38",
+       "name": "일반동사 부정문, don't와 doesn't로 말하기 — Unit 5 일반동사의 부정문",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "ud8089417",
+       "name": "Unit 6. Do와 Does로 질문 만들기 — Unit 6 일반동사의 Yes/No 의문문",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u43e97d86",
+       "name": "be동사의 과거형, was와 were 완벽 정리 — Unit 7-1 be동사의 과거형",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u8eeb44a7",
+       "name": "일반동사 과거형: 규칙 변화와 불규칙 변화 — Unit 7-2 일반동사의 과거형",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "uce68125a",
+       "name": "Unit 8. 과거 부정문 — was not과 didn't, 두 가지 공식 — Unit 8 과거형의 부정문",
+       "n": 1,
+       "lv": 2
+      },
+      {
+       "id": "u1c7016c3",
+       "name": "과거 의문문, 이렇게 물어봐요! — Unit 9 과거형의 Yes/No 의문문",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "uda01f167",
+       "name": "Who, What, When — 궁금한 것을 콕 집어 묻기 — Unit 10 의문사 who, what, when",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "uc80fcc3b",
+       "name": "장소·이유·방법을 묻는 where, why, how — Unit 11 의문사 where, why, how",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u6997202d",
+       "name": "둘 중 하나를 고르게 하는 선택의문문 — Unit 12-1 선택의문문",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "u8daa9e66",
+       "name": "부가의문문: 문장 끝에 살짝 붙여 확인하기 — Unit 12-2 부가의문문",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "ue37dbcb3",
+       "name": "셀 수 있는 명사의 단수와 복수, 이렇게 만들어요 — Unit 13 셀 수 있는 명사",
+       "n": 2,
+       "lv": 2
+      },
+      {
+       "id": "uec7e475c",
+       "name": "셀 수 없는 명사, 단수와 수량 단위 표현으로 정복하기 — Unit 14 셀 수 없는 명사",
+       "n": 1,
+       "lv": 1
+      },
+      {
+       "id": "ucd101cf1",
+       "name": "대명사 완전 정복 — 주격·소유격·목적격·소유대명사 — Unit 15 대명사",
+       "n": 2,
+       "lv": 1.5
+      }
+     ]
+    },
+    {
+     "key": "unit01",
+     "name": "Unit 1 준동사",
+     "units": [
+      {
+       "id": "u016de0ef",
+       "name": "개념 개념강의",
+       "n": 6,
+       "lv": 1.8
+      },
+      {
+       "id": "udc168021",
+       "name": "지문1 지문 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u68126de5",
+       "name": "지문2 지문 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "udd91eff7",
+       "name": "지문3 지문 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2144aa3a",
+       "name": "개념 개념강의",
+       "n": 5,
+       "lv": 2.2
+      },
+      {
+       "id": "u812056e9",
+       "name": "지문1 지문 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u36594a20",
+       "name": "지문2 지문 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1b522fda",
+       "name": "지문3 지문 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub11436c8",
+       "name": "개념 개념강의",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u928da01f",
+       "name": "지문1 지문 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u9e7dd9b8",
+       "name": "지문2 지문 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u14b998f6",
+       "name": "지문3 지문 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6b313de8",
+       "name": "개념 개념강의",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "ua1d8ce56",
+       "name": "지문1 지문 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u790dab0b",
+       "name": "지문2 지문 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u29acdd28",
+       "name": "지문3 지문 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ubbbd81cc",
+       "name": "개념 개념강의",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "uc949d1b5",
+       "name": "지문1 지문 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf81039f0",
+       "name": "지문2 지문 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u216b1910",
+       "name": "지문3 지문 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u94b57dd3",
+       "name": "지문1 지문 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6d28af22",
+       "name": "지문2 지문 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u340a9060",
+       "name": "지문3 지문 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0f47b199",
+       "name": "지문4 지문 4",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uedc262f9",
+       "name": "review-tov · AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u69ca7d2c",
+       "name": "review-tov · AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u167f8fd8",
+       "name": "review-tov · AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u33bed847",
+       "name": "review-tov · AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u579c7c44",
+       "name": "지문1 지문 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub23b8873",
+       "name": "지문2 지문 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf18220fb",
+       "name": "지문3 지문 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc5f2aae2",
+       "name": "지문4 지문 4",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit02",
+     "name": "Unit 2 관계사",
+     "units": [
+      {
+       "id": "u9d354980",
+       "name": "개념 개념강의",
+       "n": 5,
+       "lv": 1.4
+      },
+      {
+       "id": "ub14b274e",
+       "name": "지문1 지문 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u91b8be2a",
+       "name": "지문2 지문 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u83180efd",
+       "name": "지문3 지문 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0ce175aa",
+       "name": "개념 개념강의",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "u7147bc19",
+       "name": "지문1 지문 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue43b8d08",
+       "name": "지문2 지문 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u83b644fb",
+       "name": "지문3 지문 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6c3b13f3",
+       "name": "개념 개념강의",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "u6c719541",
+       "name": "지문1 지문 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub19eb25a",
+       "name": "지문2 지문 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u063c64fd",
+       "name": "지문3 지문 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5085a27d",
+       "name": "지문1 지문 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uee92c899",
+       "name": "지문2 지문 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf708d7b8",
+       "name": "지문3 지문 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u878b4ea4",
+       "name": "지문4 지문 4",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit03",
+     "name": "Unit 3 문장의 주요소 판단",
+     "units": [
+      {
+       "id": "ud89c0c82",
+       "name": "개념 개념강의",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "ue8dd0e9a",
+       "name": "개념 개념강의",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "ud4f4f2d4",
+       "name": "개념 개념강의",
+       "n": 6,
+       "lv": 1.3
+      }
+     ]
+    },
+    {
+     "key": "unit04",
+     "name": "Unit 4 동사, 준동사의 주의할 형태 (동사, 준동사의 수동태, 완료형/가정법)",
+     "units": [
+      {
+       "id": "u8a077e30",
+       "name": "개념 개념강의",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "ue5e833f3",
+       "name": "지문1 지문 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u64a92b5b",
+       "name": "지문2 지문 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u04a2cffa",
+       "name": "지문3 지문 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0111811f",
+       "name": "문장 Noticing in Sentences",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u95e432dc",
+       "name": "개념 개념강의",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "u0a2de57f",
+       "name": "지문1 지문 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u018c2d6d",
+       "name": "지문2 지문 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u734b14b3",
+       "name": "지문3 지문 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ueebc32dc",
+       "name": "문장 Noticing in Sentences",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub569f6f2",
+       "name": "개념 개념강의",
+       "n": 6,
+       "lv": 1.5
+      },
+      {
+       "id": "uc7eeb089",
+       "name": "지문1 지문 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uab56ff9c",
+       "name": "지문2 지문 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u790dd4f9",
+       "name": "지문3 지문 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u459eda50",
+       "name": "개념 개념강의",
+       "n": 4,
+       "lv": 1.3
+      },
+      {
+       "id": "udfe6d5b0",
+       "name": "개념 개념강의",
+       "n": 5,
+       "lv": 1.4
+      }
+     ]
+    },
+    {
+     "key": "unit05",
+     "name": "Unit 5 전치사",
+     "units": [
+      {
+       "id": "u9cd7cece",
+       "name": "개념 개념강의",
+       "n": 5,
+       "lv": 1
+      },
+      {
+       "id": "u51d659e2",
+       "name": "개념 개념강의",
+       "n": 5,
+       "lv": 2.2
+      }
+     ]
+    },
+    {
+     "key": "unit06",
+     "name": "Unit 6 연결고리와 끊어 읽기 (접속사, 관계사)",
+     "units": [
+      {
+       "id": "u23606eeb",
+       "name": "개념 개념강의",
+       "n": 3,
+       "lv": 2
+      },
+      {
+       "id": "ubd89ec21",
+       "name": "개념 개념강의",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "u86a574ef",
+       "name": "개념 개념강의",
+       "n": 5,
+       "lv": 1.6
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bd4239fdb",
+   "area": "독해",
+   "grade": "중등",
+   "name": "Go Level 1",
+   "path": "독해/golv1",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "part1",
+     "name": "Part 01",
+     "units": [
+      {
+       "id": "ud3f9a5f2",
+       "name": "R1 Reading 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ufb404115",
+       "name": "R2 Reading 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf1f3c214",
+       "name": "R3 Reading 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub874d618",
+       "name": "R4 Reading 4",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u60cc23d8",
+       "name": "R1 Reading 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5fdbddaa",
+       "name": "R2 Reading 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u29d7805f",
+       "name": "R3 Reading 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6848d62e",
+       "name": "R4 Reading 4",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8aba4434",
+       "name": "R1 Reading 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u9dfa520c",
+       "name": "R2 Reading 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u384d4813",
+       "name": "R3 Reading 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uea7b9143",
+       "name": "R4 Reading 4",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "part2",
+     "name": "Part 02",
+     "units": [
+      {
+       "id": "u499ba8ff",
+       "name": "R1 Reading 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u796423ce",
+       "name": "R2 Reading 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u30e01a89",
+       "name": "R3 Reading 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc2750c52",
+       "name": "R4 Reading 4",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u66ba913d",
+       "name": "R1 Reading 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc419b5d7",
+       "name": "R2 Reading 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub9dc529e",
+       "name": "R3 Reading 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ua599f2a5",
+       "name": "R4 Reading 4",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u06aa1f70",
+       "name": "R1 Reading 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6bfc312d",
+       "name": "R2 Reading 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2aee5e87",
+       "name": "R3 Reading 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ucff08ce6",
+       "name": "R4 Reading 4",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf36309ce",
+       "name": "R1 Reading 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u161ab651",
+       "name": "R2 Reading 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6101e152",
+       "name": "R3 Reading 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4c11c017",
+       "name": "R4 Reading 4",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf342e417",
+       "name": "R1 Reading 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uebc2052c",
+       "name": "R2 Reading 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6f933059",
+       "name": "R3 Reading 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uccfae1f3",
+       "name": "R4 Reading 4",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6d12baaf",
+       "name": "R1 Reading 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "udcd55c23",
+       "name": "R2 Reading 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0f590d0c",
+       "name": "R3 Reading 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u75df0be6",
+       "name": "R4 Reading 4",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ucc28de15",
+       "name": "R1 Reading 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue0235217",
+       "name": "R2 Reading 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u61686249",
+       "name": "R3 Reading 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ua7349d75",
+       "name": "R4 Reading 4",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u713dc7a7",
+       "name": "R1 Reading 1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0acf6cd0",
+       "name": "R2 Reading 2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u604b69aa",
+       "name": "R3 Reading 3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ucfdc0b5c",
+       "name": "R4 Reading 4",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b12ebfdde",
+   "area": "독해",
+   "grade": "중등",
+   "name": "Junior Reading Expert 3",
+   "path": "독해/jre-lv3",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "unit01-reading1",
+     "name": "Plogging",
+     "units": [
+      {
+       "id": "ud73b2f9b",
+       "name": "쥬니어리딩엑스퍼트3 Unit1_Reading01",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit01-reading2",
+     "name": "Fun Ways to Help Save the Environment",
+     "units": [
+      {
+       "id": "u2cafe533",
+       "name": "쥬니어리딩엑스퍼트3 Unit1_Reading02",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit02-reading1",
+     "name": "Burnout Syndrome",
+     "units": [
+      {
+       "id": "u884a6350",
+       "name": "쥬니어리딩엑스퍼트3 Unit2_Reading01",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit02-reading2",
+     "name": "Burnout Syndrome for Students",
+     "units": [
+      {
+       "id": "u477c6208",
+       "name": "쥬니어리딩엑스퍼트3 Unit2_Reading02",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit03-reading1",
+     "name": "Ferris Wheels",
+     "units": [
+      {
+       "id": "u7ae31a85",
+       "name": "쥬니어리딩엑스퍼트3 Unit3_Reading01",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit03-reading2",
+     "name": "The First Amusement Park",
+     "units": [
+      {
+       "id": "uc559a93e",
+       "name": "쥬니어리딩엑스퍼트3 Unit3_Reading02",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit04-reading1",
+     "name": "An Interview with a Referee",
+     "units": [
+      {
+       "id": "uf4caf231",
+       "name": "쥬니어리딩엑스퍼트3 Unit4_Reading01",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit04-reading2",
+     "name": "A Referee’s Tools",
+     "units": [
+      {
+       "id": "uc1a690c9",
+       "name": "쥬니어리딩엑스퍼트3 Unit4_Reading02",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit05-reading1",
+     "name": "Burping",
+     "units": [
+      {
+       "id": "u7b34f21d",
+       "name": "쥬니어리딩엑스퍼트3 Unit5_Reading01",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit05-reading2",
+     "name": "Cow Burps",
+     "units": [
+      {
+       "id": "u1069aaee",
+       "name": "쥬니어리딩엑스퍼트3 Unit5_Reading02",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b83b12282",
+   "area": "독해",
+   "grade": "중등",
+   "name": "mnt",
+   "path": "독해/mnt",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "user-data",
+     "name": "user-data",
+     "units": [
+      {
+       "id": "u001efee6",
+       "name": "outputs dalgomhan-literacy-lv6 · 달곰한 lv6 reading01 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u9548e6a5",
+       "name": "outputs dalgomhan-literacy-lv6 · 달곰한 lv6 reading02 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b8ae35727",
+   "area": "독해",
+   "grade": "중등",
+   "name": "리딩그라피 Level 2",
+   "path": "독해/readinggraphy-lv2",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "unit01",
+     "name": "UNIT 01",
+     "units": [
+      {
+       "id": "u2a157984",
+       "name": "01 귀엽지만 위험한 야생 동물 · Animals",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub9a9f3bf",
+       "name": "02 순무로 맞는 영광 · Culture",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u9ad76554",
+       "name": "03 눈동자만으로 가능하다고요? · Technology",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit02",
+     "name": "UNIT 02",
+     "units": [
+      {
+       "id": "u05d5e861",
+       "name": "04 아침 식사에서 시작되었어요 · Inventions",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u56e57db0",
+       "name": "05 기업의 새빨간 거짓말 · Environment",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u562a35a9",
+       "name": "06 도로 보수에 사용된 놀라운 재료 · Fun Facts",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit03",
+     "name": "UNIT 03",
+     "units": [
+      {
+       "id": "u08398d6d",
+       "name": "07 이집트 조각상에 없는 것 · Art",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u89197ae7",
+       "name": "08 가족 여행에서 만난 뜻밖의 모습 · Story",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ubef2ff27",
+       "name": "09 박치는 유전인가요? · Science",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit04",
+     "name": "UNIT 04",
+     "units": [
+      {
+       "id": "u9e960945",
+       "name": "10 제 눈이 되어주세요 · IT",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud550dba8",
+       "name": "11 냄새만 맡아도 위험해요! · Places",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ueebf8d55",
+       "name": "12 편지 한 통으로 변화를 만든 소녀 · People",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit05",
+     "name": "UNIT 05",
+     "units": [
+      {
+       "id": "u9c00e2c0",
+       "name": "13 행복을 되찾은 퍼핀 새 · Nature",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue1cf6976",
+       "name": "14 지구와 충돌할 수 있을까요? · Universe",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uaa490858",
+       "name": "15 미끄러워도 함께라면 할 수 있어요 · Culture",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "unit06",
+     "name": "UNIT 06",
+     "units": [
+      {
+       "id": "ud58b70e7",
+       "name": "16 축구 게임의 새로운 변화 · Sports",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc13781f3",
+       "name": "17 고대 중국에서 시작된 예술 · Art",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ucddbf28b",
+       "name": "18 식물도 말을 할 수 있을까요? · Plants",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bdc5bd2bd",
+   "area": "독해",
+   "grade": "중등",
+   "name": "리딩마스터 Level 1",
+   "path": "독해/readingmaster-lv1",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "_",
+     "name": "단원",
+     "units": [
+      {
+       "id": "uedeedf95",
+       "name": "현재완료와 현재완료진행 문제풀이 — writing exercise",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6c0b4a4b",
+       "name": "수동태 완전 정복 — be동사와 과거분사 문제풀이 — Actual Test 1~6번",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter01",
+     "name": "Chapter 01 중심 내용 파악하기",
+     "units": [
+      {
+       "id": "ud979cf9b",
+       "name": "R01 Reading 01",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub00fe446",
+       "name": "R02 Reading 02",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u79e4cb51",
+       "name": "R03 Reading 03",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "udb75233c",
+       "name": "R04 Reading 04",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u10927fe7",
+       "name": "R05 Reading 05",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u83161b19",
+       "name": "R06 Reading 06",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ude846496",
+       "name": "R07 Reading 07",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8d0c3c67",
+       "name": "R08 Reading 08",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u84a96eb3",
+       "name": "R09 Reading 09",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u65513a8f",
+       "name": "R10 Reading 10",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ufa5591e9",
+       "name": "R11 Reading 11",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2cfe9691",
+       "name": "R12 Reading 12",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uaba78279",
+       "name": "R13 Reading 13",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter02",
+     "name": "Chapter 02 정보 파악하기",
+     "units": [
+      {
+       "id": "ue66714fc",
+       "name": "R14 Reading 14",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6150c66c",
+       "name": "R15 Reading 15",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u15a16df2",
+       "name": "R16 Reading 16",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u24142870",
+       "name": "R17 Reading 17",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ufcd37869",
+       "name": "R18 Reading 18",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u7348c18c",
+       "name": "R19 Reading 19",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter03",
+     "name": "Chapter 03 묘사된 분위기나 심경 파악하기",
+     "units": [
+      {
+       "id": "ub8fdbe3c",
+       "name": "R20 Reading 20",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue1440ece",
+       "name": "R21 Reading 21",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u7e4453fa",
+       "name": "R22 Reading 22",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter04",
+     "name": "Chapter 04 글의 흐름 파악하기",
+     "units": [
+      {
+       "id": "u2e4eeaac",
+       "name": "R23 Reading 23",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u171403c5",
+       "name": "R24 Reading 24",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u7b1a1fe8",
+       "name": "R25 Reading 25",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u9c8bad68",
+       "name": "R26 Reading 26",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue49106e9",
+       "name": "R27 Reading 27",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u88c3e860",
+       "name": "R28 Reading 28",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc7f1d7f4",
+       "name": "R29 Reading 29",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ued1a06a4",
+       "name": "R30 Reading 30",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter05",
+     "name": "Chapter 05 내용 추론하기",
+     "units": [
+      {
+       "id": "u78848a66",
+       "name": "R31 Reading 31",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u460ebc71",
+       "name": "R32 Reading 32",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u880fbed9",
+       "name": "R33 Reading 33",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0a3c95d0",
+       "name": "R34 Reading 34",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1aa4ca42",
+       "name": "R35 Reading 35",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u468927d4",
+       "name": "R36 Reading 36",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter06",
+     "name": "Chapter 06 긴 글 독해하기",
+     "units": [
+      {
+       "id": "ua5bf4d69",
+       "name": "R37 Reading 37",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4adf0140",
+       "name": "R38 Reading 38",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0da3a279",
+       "name": "R39 Reading 39",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u09200a92",
+       "name": "R40 Reading 40",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bcd90460e",
+   "area": "독해",
+   "grade": "중등",
+   "name": "리딩마스터 Level 2",
+   "path": "독해/readingmaster-lv2",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "chapter01",
+     "name": "Chapter 01 중심 내용 파악하기",
+     "units": [
+      {
+       "id": "ud077f4a5",
+       "name": "R01 Reading 01",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud2293da7",
+       "name": "R02 Reading 02",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1d29c04f",
+       "name": "R03 Reading 03",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue5ed68c5",
+       "name": "R04 Reading 04",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u32f5211f",
+       "name": "R05 Reading 05",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1c348831",
+       "name": "R06 Reading 06",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uad23c2b0",
+       "name": "R07 Reading 07",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ua68e1cb1",
+       "name": "R08 Reading 08",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0b2cfb66",
+       "name": "R09 Reading 09",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1047ca9a",
+       "name": "R10 Reading 10",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub037aa59",
+       "name": "R11 Reading 11",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2e260f52",
+       "name": "R12 Reading 12",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u00969878",
+       "name": "R13 Reading 13",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter02",
+     "name": "Chapter 02 정보 파악하기",
+     "units": [
+      {
+       "id": "uf52bcbb6",
+       "name": "R14 Reading 14",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue7182298",
+       "name": "R15 Reading 15",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u472fae04",
+       "name": "R16 Reading 16",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u7dab1437",
+       "name": "R17 Reading 17",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf215c59c",
+       "name": "R18 Reading 18",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u75412c37",
+       "name": "R19 Reading 19",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter03",
+     "name": "Chapter 03 묘사된 분위기나 심경 파악하기",
+     "units": [
+      {
+       "id": "u554a49c3",
+       "name": "R20 Reading 20",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue0ad2cd8",
+       "name": "R21 Reading 21",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u36dcb2aa",
+       "name": "R22 Reading 22",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter04",
+     "name": "Chapter 04 글의 흐름 파악하기",
+     "units": [
+      {
+       "id": "uc11e6546",
+       "name": "R23 Reading 23",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud32e9593",
+       "name": "R24 Reading 24",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue7e327f0",
+       "name": "R25 Reading 25",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue9926cda",
+       "name": "R26 Reading 26",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u10be55c3",
+       "name": "R27 Reading 27",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u00238391",
+       "name": "R28 Reading 28",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc43e08de",
+       "name": "R29 Reading 29",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u43213f31",
+       "name": "R30 Reading 30",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter05",
+     "name": "Chapter 05 내용 추론하기",
+     "units": [
+      {
+       "id": "uf57d95ac",
+       "name": "R31 Reading 31",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf1c97f86",
+       "name": "R32 Reading 32",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4dd6e18d",
+       "name": "R33 Reading 33",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc5c373a0",
+       "name": "R34 Reading 34",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud6755850",
+       "name": "R35 Reading 35",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue859540b",
+       "name": "R36 Reading 36",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter06",
+     "name": "Chapter 06 긴 글 독해하기",
+     "units": [
+      {
+       "id": "uc68d7a95",
+       "name": "R37 Reading 37",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0a88f428",
+       "name": "R38 Reading 38",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ufeab1850",
+       "name": "R39 Reading 39",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4835d3a8",
+       "name": "R40 Reading 40",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bd72d860f",
+   "area": "교과서",
+   "grade": "중1",
+   "name": "중1 능률 교과서",
+   "path": "교과서/중1/능률",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "5과",
+     "name": "Lesson 5",
+     "units": [
+      {
+       "id": "ua28cb4a7",
+       "name": "문법 · 중1 능률(김) 5과 문법1 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u66b0234e",
+       "name": "문법 · 중1 능률(김) 5과 문법2 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u643212bb",
+       "name": "본문 · 중1 능률 5과 본문 전체 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "6과",
+     "name": "Lesson 6",
+     "units": [
+      {
+       "id": "u879a8e42",
+       "name": "문법 · 중1 능률(김) 6과 문법1 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u39b9c061",
+       "name": "문법 · 중1 능률(김) 6과 문법2 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud80e03c2",
+       "name": "본문 · 중1 능률 6과 본문 전체 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "7과",
+     "name": "Lesson 7",
+     "units": [
+      {
+       "id": "ubf892100",
+       "name": "문법 · 중1 능률 7과 문법1 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u9cc78ef2",
+       "name": "문법 · 중1 능률 7과 문법2 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u452f29c6",
+       "name": "본문 · 중1 능률 7과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u622a4ba0",
+       "name": "본문 · 중1 능률 7과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue4b1b277",
+       "name": "본문 · 중1 능률 7과 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6762c2d9",
+       "name": "본문 · 중1 능률 7과 본문 전체 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "8과",
+     "name": "Lesson 8",
+     "units": [
+      {
+       "id": "u5ba25257",
+       "name": "본문 · 중1 능률 8과 본문 전체 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b8b001a59",
+   "area": "교과서",
+   "grade": "중1",
+   "name": "중1 동아윤 교과서",
+   "path": "교과서/중1/동아윤",
+   "n": 54,
+   "chapters": [
+    {
+     "key": "5과",
+     "name": "Lesson 5",
+     "units": [
+      {
+       "id": "u7e5723b2",
+       "name": "문법 · 비교급과 최상급 완전 정복 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue50effec",
+       "name": "문법 · There be 구문 완전 정복 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u490b428b",
+       "name": "본문 · 중1 동아(윤) Lesson 5. Think like Sherlock Holmes! — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "6과",
+     "name": "Lesson 6",
+     "units": [
+      {
+       "id": "uf2599075",
+       "name": "문법 · to부정사의 명사적 용법 - '~하는 것'으로 명사처럼 쓰기 — 문법1",
+       "n": 6,
+       "lv": 2.3
+      },
+      {
+       "id": "u30232a2d",
+       "name": "문법 · 중1 동아(윤) 6과 - 접속사 that 완전 정복 — 문법2",
+       "n": 12,
+       "lv": 1.8
+      },
+      {
+       "id": "u4f14b8f9",
+       "name": "본문 · 중1 동아윤 6과 Join the Zero-Waste Challenge 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u271c8df7",
+       "name": "본문 · 중1 동아윤 6과 Join the Zero-Waste Challenge 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uda910fca",
+       "name": "본문 · 중1 동아윤 6과 Join the Zero-Waste Challenge 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub0eddb28",
+       "name": "본문 · 중1 동아윤 6과 Join the Zero-Waste Challenge 본문4 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u42b1b866",
+       "name": "본문 · 중1 2학기 기말대비 중1 동아(윤) 6과 본문",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "7과",
+     "name": "Lesson 7",
+     "units": [
+      {
+       "id": "ud294cee6",
+       "name": "1 Watch and Talk A-1",
+       "n": 5,
+       "lv": 1.4
+      },
+      {
+       "id": "u0e8d9451",
+       "name": "2 Watch and Talk A-2",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "ua9a73f27",
+       "name": "3 Watch and Talk A-3",
+       "n": 3,
+       "lv": 1
+      },
+      {
+       "id": "u2edd902d",
+       "name": "4 Watch and Talk A-4",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u7f37d600",
+       "name": "5 Watch and Talk C",
+       "n": 3,
+       "lv": 1.3
+      },
+      {
+       "id": "u7ed011e7",
+       "name": "문법 · to부정사의 부사적 용법 — '~하기 위해'를 말하는 to부정사 — 문법1",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u3e24f1a5",
+       "name": "문법 · 시간의 접속사 when, after, before 완전 정복 — 문법2",
+       "n": 6,
+       "lv": 1.2
+      },
+      {
+       "id": "u9d31db1f",
+       "name": "본문 · 중1 2학기 기말대비 중1 동아(윤) 7과 본문",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "8과",
+     "name": "Lesson 8",
+     "units": [
+      {
+       "id": "uccc5bc9f",
+       "name": "문법 · 4형식 문장 완전 정복! 수여동사와 목적어 순서 — 문법1",
+       "n": 6,
+       "lv": 1.8
+      },
+      {
+       "id": "ufa518483",
+       "name": "문법 · 비인칭 주어 it, '그것'이 아닐 때가 있어요! — 문법2",
+       "n": 3,
+       "lv": 1
+      },
+      {
+       "id": "u7c3edf42",
+       "name": "본문 · 중1 2학기 기말대비 중1 동아(윤) 8과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6db62329",
+       "name": "본문 · 중1 2학기 기말대비 중1 동아(윤) 8과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf3215e42",
+       "name": "본문 · 중1 2학기 기말대비 중1 동아(윤) 8과 본문3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5b88fd36",
+       "name": "본문 · 중1 2학기 기말대비 중1 동아(윤) 8과 본문4",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bb3cbe995",
+   "area": "교과서",
+   "grade": "중1",
+   "name": "중1 동아이 교과서",
+   "path": "교과서/중1/동아이",
+   "n": 5,
+   "chapters": [
+    {
+     "key": "_",
+     "name": "단원",
+     "units": [
+      {
+       "id": "uf288ef06",
+       "name": "중1 동아(이) 5과 현재완료 문제풀이 — 문법1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u34b77cbd",
+       "name": "리딩그라피2 Reading16 — 화이트 카드가 생겨난 이야기",
+       "n": 5,
+       "lv": 1
+      }
+     ]
+    },
+    {
+     "key": "5과",
+     "name": "Lesson 5",
+     "units": [
+      {
+       "id": "u8036dc50",
+       "name": "문법 · to부정사의 명사적 용법과 목적어 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ua6146aa1",
+       "name": "문법 · 비인칭 주어 it의 이해 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8c2a4d8f",
+       "name": "본문 · 중1 동아이 5과 Fun in Sokcho! 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u637d7945",
+       "name": "본문 · 중1 동아이 5과 Fun in Sokcho! 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u31edf825",
+       "name": "본문 · 중1 동아이 5과 본문전체 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "6과",
+     "name": "Lesson 6",
+     "units": [
+      {
+       "id": "ud965417a",
+       "name": "문법 · 감각동사의 이해와 활용 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u915ce5a6",
+       "name": "문법 · 한 번에 끝내는 동명사 기초 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u63393cb5",
+       "name": "본문 · 중1 동아이 6과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ucf6220d9",
+       "name": "본문 · 중1 동아이 6과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub40b1610",
+       "name": "본문 · 중1 동아이 6과 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uda6791a9",
+       "name": "본문 · 중1 동아이 6과 본문 전체 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "7과",
+     "name": "Lesson 7",
+     "units": [
+      {
+       "id": "u70758cc6",
+       "name": "본문 · 중1 2학기 기말대비 중1 동아(이) 7과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u3bd92dc8",
+       "name": "본문 · 중1 2학기 기말대비 중1 동아(이) 7과 본문2",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "8과",
+     "name": "Lesson 8",
+     "units": [
+      {
+       "id": "uc6beda99",
+       "name": "본문 · 중1 2학기 기말대비 중1 동아(이) 8과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1808cd7b",
+       "name": "본문 · 중1 2학기 기말대비 중1 동아(이) 8과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub2d5defb",
+       "name": "본문 · 중1 2학기 기말대비 중1 동아(이) 8과 본문3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ubcf81666",
+       "name": "본문 · 중1 2학기 기말대비 중1 동아(이) 8과 본문4",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bae91dc47",
+   "area": "교과서",
+   "grade": "중1",
+   "name": "중1 비상김 교과서",
+   "path": "교과서/중1/비상김",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "5과",
+     "name": "Lesson 5",
+     "units": [
+      {
+       "id": "u2b4d8f96",
+       "name": "문법 · 동명사(Gerund)의 개념과 역할 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u44493699",
+       "name": "문법 · 감각동사와 형용사 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1ab14054",
+       "name": "본문 · 중1 비상 5과 본문 전체 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "6과",
+     "name": "Lesson 6",
+     "units": [
+      {
+       "id": "u54087f8b",
+       "name": "문법 · 접속사의 개념과 시간의 부사절 when — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u72322bfc",
+       "name": "문법 · 비교구문의 기초와 활용 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ufd3ea801",
+       "name": "본문 · 중1 비상 6과 본문 전체 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "7과",
+     "name": "Lesson 7",
+     "units": [
+      {
+       "id": "u1177e110",
+       "name": "문법 · to부정사의 명사적 용법 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u96393d97",
+       "name": "문법 · 감정을 표현하는 감탄문 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0c66b0f1",
+       "name": "본문 · 중1 2학기 기말대비 중1 비상(황) 7과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub709394d",
+       "name": "본문 · 중1 2학기 기말대비 중1 비상(황) 7과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uecfef31e",
+       "name": "본문 · 중1 2학기 기말대비 중1 비상(황) 7과 본문3",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "8과",
+     "name": "Lesson 8",
+     "units": [
+      {
+       "id": "u63070533",
+       "name": "문법 · to부정사의 부사적 용법 핵심 정리 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u64fbbea4",
+       "name": "문법 · 명사절을 이끄는 접속사 that — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1a3cddfd",
+       "name": "본문 · 중1 2학기 기말대비 중1 비상(황) 8과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u37e7a43b",
+       "name": "본문 · 중1 2학기 기말대비 중1 비상(황) 8과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5802544f",
+       "name": "본문 · 중1 비상 8과 본문 전체 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b8a77008f",
+   "area": "교과서",
+   "grade": "중1",
+   "name": "중1 천재소 교과서",
+   "path": "교과서/중1/천재소",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "4과",
+     "name": "Lesson 4",
+     "units": [
+      {
+       "id": "u78f466a8",
+       "name": "본문 · 중1 천재(소영순) 4과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u91a36deb",
+       "name": "본문 · 중1 천재(소영순) 4과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u11b76fbb",
+       "name": "본문 · 중1 천재(소영순) 4과 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "5과",
+     "name": "Lesson 5",
+     "units": [
+      {
+       "id": "u2e2bae81",
+       "name": "본문 · 중1 천재(소영순) 5과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u3573195e",
+       "name": "본문 · 중1 천재(소영순) 5과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u3349648e",
+       "name": "본문 · 중1 천재(소영순) 5과 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "6과",
+     "name": "Lesson 6",
+     "units": [
+      {
+       "id": "ue4cbc00d",
+       "name": "본문 · 중1 천재(소영순) 6과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u66327082",
+       "name": "본문 · 중1 천재(소영순) 6과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ucc11d525",
+       "name": "본문 · 중1 천재(소영순) 6과 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "7과",
+     "name": "Lesson 7",
+     "units": [
+      {
+       "id": "u69e43d55",
+       "name": "본문 · 중1 천재(소영순) 7과 본문 전체 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b1345f4d6",
+   "area": "교과서",
+   "grade": "중1",
+   "name": "중1 천재이 교과서",
+   "path": "교과서/중1/천재이",
+   "n": 12,
+   "chapters": [
+    {
+     "key": "1과",
+     "name": "Lesson 1",
+     "units": [
+      {
+       "id": "ue7fb8ca9",
+       "name": "문법 · be동사의 쓰임과 부정문 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u04c721f9",
+       "name": "문법 · 일반동사의 현재형과 부정문 — AI강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "2과",
+     "name": "Lesson 2",
+     "units": [
+      {
+       "id": "ua6e73fdf",
+       "name": "문법 · 현재진행형 완벽 정리 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ua9f5ff39",
+       "name": "문법 · 중학 영문법: 의문문 총정리 — AI강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "3과",
+     "name": "Lesson 3",
+     "units": [
+      {
+       "id": "u75d9c289",
+       "name": "문법 · 명령문 핵심 정리 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u056340fe",
+       "name": "문법 · 중학 영문법: 조동사의 기초 — AI강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "4과",
+     "name": "Lesson 4",
+     "units": [
+      {
+       "id": "u4fbf0ea4",
+       "name": "문법 · 기초 탄탄! be동사와 일반동사의 과거형 정복 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ua41d4301",
+       "name": "문법 · 중등 기초 영문법: 감탄문(Exclamatory Sentences) 정리 — AI강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "5과",
+     "name": "Lesson 5",
+     "units": [
+      {
+       "id": "u5d5f1cb3",
+       "name": "문법 · There is / There are 구문 완벽 정리 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2d6729f4",
+       "name": "문법 · 동명사 완벽 정리 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc09f0140",
+       "name": "본문 · 중1 천재이 5과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue818b619",
+       "name": "본문 · 중1 천재이 5과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5e5469f0",
+       "name": "본문 · 중1 천재이 5과 본문 전체 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "6과",
+     "name": "Lesson 6",
+     "units": [
+      {
+       "id": "u3d343261",
+       "name": "문법 · 접속사 that 정리 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u85f662af",
+       "name": "문법 · to부정사의 명사적 용법 정리 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ufb5c2b11",
+       "name": "본문 · 중1 천재이 6과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8e5f0e2a",
+       "name": "본문 · 중1 천재이 6과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u03120160",
+       "name": "본문 · 중1 천재이 6과 본문 전체 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "7과",
+     "name": "Lesson 7",
+     "units": [
+      {
+       "id": "u8db37fa6",
+       "name": "본문 · 중1 2학기 기말대비 중1 천재(이) 7과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u83be28cd",
+       "name": "본문 · 중1 2학기 기말대비 중1 천재(이) 7과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u56042739",
+       "name": "본문 · 중1 2학기 기말대비 중1 천재(이) 7과 본문3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud5557cfc",
+       "name": "본문 · 중1 천재이 7과 본문 전체 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "8과",
+     "name": "Lesson 8",
+     "units": [
+      {
+       "id": "u3626bb65",
+       "name": "본문 · 중1 2학기 기말대비 중1 천재(이) 8과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u3b483294",
+       "name": "본문 · 중1 2학기 기말대비 중1 천재(이) 8과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc54f553b",
+       "name": "본문 · 중1 2학기 기말대비 중1 천재(이) 8과 본문3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf5721a30",
+       "name": "본문 · 중3 시사(박) 9과 문법1 I wish 가정법 — 문법2",
+       "n": 3,
+       "lv": 3
+      },
+      {
+       "id": "ua3901b34",
+       "name": "본문 · 중3 시사(박) 8과 문법2 be worth ~ing — 문법2",
+       "n": 3,
+       "lv": 2.7
+      },
+      {
+       "id": "u768ed416",
+       "name": "본문 · 중3 시사(박) 8과 문법1 분사구문 — 문법1",
+       "n": 6,
+       "lv": 2.5
+      },
+      {
+       "id": "ua4ba7ce5",
+       "name": "본문 · 중1 천재이 8과 본문 전체 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b63a61561",
+   "area": "교과서",
+   "grade": "중2",
+   "name": "중2 능률 교과서",
+   "path": "교과서/중2/능률",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "5과",
+     "name": "Lesson 5",
+     "units": [
+      {
+       "id": "ub8dd14b5",
+       "name": "문법 · 동사 + 목적어 + to부정사 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5b8f48b4",
+       "name": "문법 · 목적격 관계대명사 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ufe4340e2",
+       "name": "본문 · AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u794cb5e1",
+       "name": "본문 · AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf7661bf8",
+       "name": "본문 · AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "6과",
+     "name": "Lesson 6",
+     "units": [
+      {
+       "id": "uafb04acc",
+       "name": "문법 · 「지각동사 + 목적어 + -ing/동사원형」 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue1fad4ce",
+       "name": "문법 · 간접의문문 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ua54e0b51",
+       "name": "본문 · AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1134a6a8",
+       "name": "본문 · AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ufc129f5f",
+       "name": "본문 · AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "7과",
+     "name": "Lesson 7",
+     "units": [
+      {
+       "id": "u7c164496",
+       "name": "본문 · 중2 2학기 기말고사 중2 능률(김) 7과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u3f3f5340",
+       "name": "본문 · 중2 2학기 기말고사 중2 능률(김) 7과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u63000fb8",
+       "name": "본문 · 중2 2학기 기말고사 중2 능률(김) 7과 본문3",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "8과",
+     "name": "Lesson 8",
+     "units": [
+      {
+       "id": "u8ac4a191",
+       "name": "본문 · 중2 2학기 기말고사 중2 능률(김) 8과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u82d64afa",
+       "name": "본문 · 중2 2학기 기말고사 중2 능률(김) 8과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0d39d739",
+       "name": "본문 · 중2 2학기 기말고사 중2 능률(김) 8과 본문3",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bc92bac81",
+   "area": "교과서",
+   "grade": "중2",
+   "name": "중2 동아윤 교과서",
+   "path": "교과서/중2/동아윤",
+   "n": 30,
+   "chapters": [
+    {
+     "key": "5과",
+     "name": "Lesson 5",
+     "units": [
+      {
+       "id": "u93f3d2cb",
+       "name": "듣기 · 중2 동아 윤 5과 Watch and Talk C 대화문 완벽 분석 — Watch and Talk C",
+       "n": 5,
+       "lv": 1.4
+      },
+      {
+       "id": "uad30ddc6",
+       "name": "문법 · 목적격 관계대명사 완벽 마스터하기 — grammar1",
+       "n": 5,
+       "lv": 2
+      },
+      {
+       "id": "u5fe1f032",
+       "name": "문법 · 중2 영어 조동사 used to 마스터하기 — grammar2",
+       "n": 6,
+       "lv": 1.8
+      },
+      {
+       "id": "uec5f4731",
+       "name": "본문 · 중2 동아(윤) 중2 동아(윤) 5과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u216c2c6f",
+       "name": "본문 · 중2 동아(윤) 중2 동아(윤) 5과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u092a2206",
+       "name": "본문 · 중2 동아(윤) 중2 동아(윤) 5과 본문3",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "6과",
+     "name": "Lesson 6",
+     "units": [
+      {
+       "id": "u1a2d27b5",
+       "name": "듣기 · Lesson6 watch & talk 대화문 해설 강의",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "u53e2b085",
+       "name": "문법 · 지각동사와 목적격 보어의 비밀 — grammar1",
+       "n": 6,
+       "lv": 1.5
+      },
+      {
+       "id": "ubfce59a7",
+       "name": "문법 · 너무 ~해서 ~하다와 목적을 나타내는 so that 구문 정복하기 — grammar2",
+       "n": 3,
+       "lv": 2
+      },
+      {
+       "id": "ucc2311c8",
+       "name": "본문 · 중2 동아(윤) 6과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud7ce22bd",
+       "name": "본문 · 중2 동아(윤) 6과 본문2",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "7과",
+     "name": "Lesson 7",
+     "units": [
+      {
+       "id": "u0ea00495",
+       "name": "본문 · 중2 동아(윤) 7과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf4c169fd",
+       "name": "본문 · 중2 동아(윤) 7과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u505eb7d0",
+       "name": "본문 · 중2 동아(윤) 7과 본문3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u9a474531",
+       "name": "본문 · 중2 동아(윤) 7과 본문4",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "8과",
+     "name": "Lesson 8",
+     "units": [
+      {
+       "id": "u5c9c6188",
+       "name": "본문 · 중2 2학기 기말고사 중2 동아(윤) 8과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub29f9b25",
+       "name": "본문 · 중2 2학기 기말고사 중2 동아(윤) 8과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4e5e7d1f",
+       "name": "본문 · 중2 2학기 기말고사 중2 동아(윤) 8과 본문4",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5f079a7d",
+       "name": "본문 · 중2 2학기 기말고사 중2 동아(윤) 8과 본문3",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bb43b1ef6",
+   "area": "교과서",
+   "grade": "중2",
+   "name": "중2 동아이 교과서",
+   "path": "교과서/중2/동아이",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "1과",
+     "name": "Lesson 1",
+     "units": [
+      {
+       "id": "u78ec130d",
+       "name": "본문 · 중2 동아(이) 1과 본문 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "2과",
+     "name": "Lesson 2",
+     "units": [
+      {
+       "id": "u14d3b5a5",
+       "name": "본문 · 중2 동아(이) 2과 본문 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "3과",
+     "name": "Lesson 3",
+     "units": [
+      {
+       "id": "ube2f07e4",
+       "name": "본문 · 중2 동아(이) 3과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4c284493",
+       "name": "본문 · 중2 동아(이) 3과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ufeaef34c",
+       "name": "본문 · 중2 동아(이) 3과 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "4과",
+     "name": "Lesson 4",
+     "units": [
+      {
+       "id": "u7e176d18",
+       "name": "본문 · 중2 동아(이) 4과 본문4 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u813670bd",
+       "name": "본문 · 중2 동아(이) 4과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5476312d",
+       "name": "본문 · 중2 동아(이) 4과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u69316631",
+       "name": "본문 · 중2 동아(이) 4과 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "5과",
+     "name": "Lesson 5",
+     "units": [
+      {
+       "id": "u1d7e4eea",
+       "name": "문법 · 가주어 it 완전 정복 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u270bef6a",
+       "name": "문법 · 비례 관계를 나타내는 'The + 비교급' 구문 정복하기 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u28c496a0",
+       "name": "본문 · 중2 동아(이) 5과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u332d03db",
+       "name": "본문 · 중2 동아(이) 5과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uac1afcd4",
+       "name": "본문 · 중2 동아(이) 5과 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "6과",
+     "name": "Lesson 6",
+     "units": [
+      {
+       "id": "u6f0afd0d",
+       "name": "문법 · 중2 동아이 6과 문법2 지각동사 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8519db8a",
+       "name": "문법 · 중2 동아이 6과 문법2 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u78d19a12",
+       "name": "본문 · 중2 동아(이) 6과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u3db2ce87",
+       "name": "본문 · 중2 동아(이) 6과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc66f9da6",
+       "name": "본문 · 중2 동아(이) 6과 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "7과",
+     "name": "Lesson 7",
+     "units": [
+      {
+       "id": "u6785890a",
+       "name": "본문 · 중2 2학기 기말고사 중2 동아(이) 7과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u14e8ae3f",
+       "name": "본문 · 중2 2학기 기말고사 중2 동아(이) 7과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8265c1c6",
+       "name": "본문 · 중2 2학기 기말고사 중2 동아(이) 7과 본문3",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "8과",
+     "name": "Lesson 8",
+     "units": [
+      {
+       "id": "u00bae10b",
+       "name": "본문 · 중2 2학기 기말고사 중2 동아(이) 8과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u570563b0",
+       "name": "본문 · 중2 2학기 기말고사 중2 동아(이) 8과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud7466ddd",
+       "name": "본문 · 중2 2학기 기말고사 중2 동아(이) 8과 본문3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf8a81c9b",
+       "name": "본문 · 중2 2학기 기말고사 중2 동아(이) 8과 본문4",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6ff0e749",
+       "name": "본문 · 중2 2학기 기말고사 중2 동아(이) 8과 본문5",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ba5cbc710",
+   "area": "교과서",
+   "grade": "중2",
+   "name": "중2 비상김 교과서",
+   "path": "교과서/중2/비상김",
+   "n": 40,
+   "chapters": [
+    {
+     "key": "5과",
+     "name": "Lesson 5",
+     "units": [
+      {
+       "id": "u52422d9d",
+       "name": "문법 · 중2 비상 5과 문법1 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u09be976a",
+       "name": "문법 · 중2 비상 5과 문법2 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u154b203b",
+       "name": "본문 · 중2 비상(황) 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf6e546d4",
+       "name": "본문 · 중2 비상(황) 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1bda263a",
+       "name": "본문 · 중2 비상(황) 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1b312ce3",
+       "name": "본문 · 중2 비상(황) 본문4 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u308a3c76",
+       "name": "본문 · 중2 비상(황) 본문5 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u495b1205",
+       "name": "본문 · 중2 비상(황) 5과 본문전체 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "6과",
+     "name": "Lesson 6",
+     "units": [
+      {
+       "id": "u31d7a9d6",
+       "name": "문법 · 중2 비상 6과 문법1 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ueffca54f",
+       "name": "문법 · 중2 비상 6과 문법1 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u104282e9",
+       "name": "본문 · 중2 비상(황) 6과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2f4c64aa",
+       "name": "본문 · 중2 비상(황) 6과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u3e0445c2",
+       "name": "본문 · 중2 비상(황) 6과 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud9fc1d5c",
+       "name": "본문 · 중2 비상(황) 6과 본문4 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "7과",
+     "name": "Lesson 7",
+     "units": [
+      {
+       "id": "ueb3fc410",
+       "name": "문법 · so ~ that ... : 원인과 결과를 한 문장에 담는 표현 — 중2 비상(황) 7과 문법1",
+       "n": 7,
+       "lv": 2.4
+      },
+      {
+       "id": "u74f717cf",
+       "name": "문법 · 가주어 it 완벽 정복 — 중2 비상(황) 7과 문법2",
+       "n": 16,
+       "lv": 1.9
+      },
+      {
+       "id": "u0370a1ec",
+       "name": "본문 · 중2 2학기 기말고사 중2 비상(황) 7과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ucc8204f7",
+       "name": "본문 · 중2 2학기 기말고사 중2 비상(황) 7과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8348ef2d",
+       "name": "본문 · 중2 2학기 기말고사 중2 비상(황) 7과 본문3",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "8과",
+     "name": "Lesson 8",
+     "units": [
+      {
+       "id": "ubbfb3d98",
+       "name": "문법 · not only A but also B 완벽 정복 — 문법2",
+       "n": 13,
+       "lv": 2.1
+      },
+      {
+       "id": "u57809052",
+       "name": "문법 · 간접의문문 완전 정복 — 문법2",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "ufd72e207",
+       "name": "본문 · 중2 2학기 기말고사 중2 비상(황) 8과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5e315327",
+       "name": "본문 · 중2 2학기 기말고사 중2 비상(황) 8과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf2ac2c20",
+       "name": "본문 · 중2 2학기 기말고사 중2 비상(황) 8과 본문3",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b43f45460",
+   "area": "교과서",
+   "grade": "중2",
+   "name": "중2 시사김 교과서",
+   "path": "교과서/중2/시사김",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "5과",
+     "name": "Lesson 5",
+     "units": [
+      {
+       "id": "u62128350",
+       "name": "문법 · 중2 시사김 5과 문법1 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6f663aac",
+       "name": "문법 · 중2 시사김 5과 문법2 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2ce42525",
+       "name": "본문 · 중2 시사(김) 5과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uee100823",
+       "name": "본문 · 중2 시사(김) 5과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub70a9d11",
+       "name": "본문 · 중2 시사(김) 5과 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u32c4f10a",
+       "name": "본문 · 중2 시사(김) 5과 본문4 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uabe455c8",
+       "name": "본문 · 중2 시사(김) 5과 본문5 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u22fda2ff",
+       "name": "본문 · 중2 시사(김) 5과 본문 전체 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "6과",
+     "name": "Lesson 6",
+     "units": [
+      {
+       "id": "u75aabf39",
+       "name": "문법 · 중2 시사김 6과 문법1 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1037921a",
+       "name": "문법 · 중2 시사김 6과 문법2 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf62115a9",
+       "name": "본문 · 중2 시사김 6과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u7260cc36",
+       "name": "본문 · 중2 시사김 6과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u38df4ac8",
+       "name": "본문 · 중2 시사김 6과 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8003605c",
+       "name": "본문 · 중2 시사김 6과 본문4 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub4e0edc4",
+       "name": "본문 · 중2 시사김 6과 본문5 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u15aed449",
+       "name": "본문 · 중2 시사김 6과 본문 전체 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "7과",
+     "name": "Lesson 7",
+     "units": [
+      {
+       "id": "u2136d97e",
+       "name": "본문 · 중2 2학기 기말고사 중2 시사(김) 7과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uddbf7030",
+       "name": "본문 · 중2 2학기 기말고사 중2 시사(김) 7과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub0c64809",
+       "name": "본문 · 중2 2학기 기말고사 중2 시사(김) 7과 본문3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u7610c4e5",
+       "name": "본문 · 중2 2학기 기말고사 중2 시사(김) 7과 본문4",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "8과",
+     "name": "Lesson 8",
+     "units": [
+      {
+       "id": "ufd721bf7",
+       "name": "본문 · 중2 2학기 기말고사 중2 시사(김) 8과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0cddbfa0",
+       "name": "본문 · 중2 2학기 기말고사 중2 시사(김) 8과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ucf0ffe6e",
+       "name": "본문 · 중2 2학기 기말고사 중2 시사(김) 8과 본문3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0f504706",
+       "name": "본문 · 중2 2학기 기말고사 중2 시사(김) 8과 본문4",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8fca762f",
+       "name": "본문 · 중2 2학기 기말고사 중2 시사(김) 8과 본문5",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b9111b9bc",
+   "area": "교과서",
+   "grade": "중2",
+   "name": "중2 천재이 교과서",
+   "path": "교과서/중2/천재이",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "1과",
+     "name": "Lesson 1",
+     "units": [
+      {
+       "id": "u45ffa317",
+       "name": "본문 · 중2 천재(이) 1과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u612d579f",
+       "name": "본문 · 중2 천재(이) 1과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u7062dda7",
+       "name": "본문 · 중2 천재(이) 1과 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "2과",
+     "name": "Lesson 2",
+     "units": [
+      {
+       "id": "u1b59d656",
+       "name": "본문 · 중2 천재(이) 2과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u3e029add",
+       "name": "본문 · 중2 천재(이) 2과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ubb01ecdc",
+       "name": "본문 · 중2 천재(이) 2과 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf6ef118e",
+       "name": "본문 · 중2 천재(이) 2과 본문4 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "3과",
+     "name": "Lesson 3",
+     "units": [
+      {
+       "id": "ubb72298b",
+       "name": "본문 · 중2 천재(이) 3과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u726b852c",
+       "name": "본문 · 중2 천재(이) 3과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub63738e8",
+       "name": "본문 · 중2 천재(이) 3과 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "4과",
+     "name": "Lesson 4",
+     "units": [
+      {
+       "id": "u77ec7142",
+       "name": "본문 · 중2 천재(이) 4과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6dc1e26d",
+       "name": "본문 · 중2 천재(이) 4과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u94815dca",
+       "name": "본문 · 중2 천재(이) 4과 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "5과",
+     "name": "Lesson 5",
+     "units": [
+      {
+       "id": "uc05f0d28",
+       "name": "문법 · [고등 영문법 핵심] 주격 관계대명사의 역할과 수 일치 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u718c89f9",
+       "name": "문법 · 고등 핵심 문법: 지각동사의 문장 구조와 활용 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8e9ba9b8",
+       "name": "본문 · 중2 천재(이) 5과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4bb22a22",
+       "name": "본문 · 중2 천재(이) 5과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub9aec6d9",
+       "name": "본문 · 중2 천재(이) 5과 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2ecd6555",
+       "name": "본문 · 중2 천재(이) 5과 본문4 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uaaac8310",
+       "name": "본문 · 중2 천재(이) 5과 본문5 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u3b66edf8",
+       "name": "본문 · 중2 천재(이) 5과 본문 전체 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "6과",
+     "name": "Lesson 6",
+     "units": [
+      {
+       "id": "uac14b2fa",
+       "name": "문법 · [고등 영문법] 수동태(Passive Voice)의 핵심 정리 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u715e9ba4",
+       "name": "문법 · 결과의 부사절: so ~ that 구문 핵심 정리 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ucb7cc714",
+       "name": "본문 · 중2 천재(이) 6과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6f322dfc",
+       "name": "본문 · 중2 천재(이) 6과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6d56ecf3",
+       "name": "본문 · 중2 천재(이) 6과 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u36da2d39",
+       "name": "본문 · 중2 천재(이) 6과 본문4 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u387930ef",
+       "name": "본문 · 중2 천재(이) 6과 본문 전체 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "7과",
+     "name": "Lesson 7",
+     "units": [
+      {
+       "id": "u896178f2",
+       "name": "본문 · 중2 2학기 기말고사 중2 천재(이) 7과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6f1d36aa",
+       "name": "본문 · 중2 2학기 기말고사 중2 천재(이) 7과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud641832f",
+       "name": "본문 · 중2 2학기 기말고사 중2 천재(이) 7과 본문3",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "8과",
+     "name": "Lesson 8",
+     "units": [
+      {
+       "id": "u00f74c75",
+       "name": "본문 · 중2 2학기 기말고사 중2 천재(이) 8과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u868f79c8",
+       "name": "본문 · 중2 2학기 기말고사 중2 천재(이) 8과 본문2",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bf2bbff5c",
+   "area": "교과서",
+   "grade": "중3",
+   "name": "중3 능률 교과서",
+   "path": "교과서/중3/능률",
+   "n": 47,
+   "chapters": [
+    {
+     "key": "5과",
+     "name": "Lesson 5",
+     "units": [
+      {
+       "id": "u6b5d889c",
+       "name": "문법 · to부정사의 의미상 주어 완벽 정리 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2ee83a6a",
+       "name": "문법 · 한 번에 끝내는 관계부사 핵심 정리 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uac121054",
+       "name": "본문 · 중3 능률 5과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u95013b26",
+       "name": "본문 · 중3 능률 5과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2a292fad",
+       "name": "본문 · 중3 능률 5과 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud98190e3",
+       "name": "본문 · 중3 능률 5과 본문4 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "6과",
+     "name": "Lesson 6",
+     "units": [
+      {
+       "id": "u8b42164b",
+       "name": "듣기 · 중3 능률(김) 6과 대화문 — 벼룩시장 계획 묻고 잊지 말라고 상기시키기 — B. Listen and Check2",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "u8a86578e",
+       "name": "듣기 · 중3 능률(김) 6과 대화문 — 리뷰 계획 묻기와 잊지 말라고 상기시키기 — C. Listen and Speak2",
+       "n": 5,
+       "lv": 1.4
+      },
+      {
+       "id": "ub94fd858",
+       "name": "문법 · 중3 능률(김) 6과 문법1 the 비교급 — 문법1",
+       "n": 4,
+       "lv": 2.5
+      },
+      {
+       "id": "ua70c5589",
+       "name": "문법 · 중3 능률(김) 6과 문법2 분사구문 — 문법2",
+       "n": 6,
+       "lv": 1.8
+      },
+      {
+       "id": "ueee8c975",
+       "name": "본문 · 중 능률(김) 6과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ued086bd8",
+       "name": "본문 · 중 능률(김) 6과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud70efd28",
+       "name": "본문 · 중 능률(김) 6과 본문3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u9a6088d9",
+       "name": "본문 · 중 능률(김) 6과 본문4",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "7과",
+     "name": "Lesson 7",
+     "units": [
+      {
+       "id": "u8a5e0d84",
+       "name": "듣기 · 대화에서 판단 — 무엇을 하는지 묻고 관심 표현하기 — B. Listen & Circle",
+       "n": 6,
+       "lv": 2
+      },
+      {
+       "id": "uddf9b2d4",
+       "name": "듣기 · 중3 능률(김) 7과 대화문 해설 강의 — C. Listen & Speak",
+       "n": 5,
+       "lv": 2
+      },
+      {
+       "id": "u3281588e",
+       "name": "듣기 · 중3 능률(김) 7과 Listen & Talk 2 — 미래의 식량, 가능성 표현과 설명 요청하기 — B. Listen and Choose",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u81018015",
+       "name": "듣기 · 중3 능률(김) 7과 Listen & Talk 2 — 미래의 식량, 가능성 표현과 설명 요청하기 — C. Listen and Speak",
+       "n": 5,
+       "lv": 2
+      },
+      {
+       "id": "u007b12eb",
+       "name": "문법 · 중3 능률(김) 7과 문법1 가정법 과거 — 문법1",
+       "n": 3,
+       "lv": 1.3
+      },
+      {
+       "id": "ua3780841",
+       "name": "문법 · 중3 능률(김) 7과 문법2 so that — 문법2",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "uf37029b6",
+       "name": "본문 · 중3 기말 중3 능률 7과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "udd6101f0",
+       "name": "본문 · 중3 기말 중3 능률 7과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud20a1b8d",
+       "name": "본문 · 중3 기말 중3 능률 7과 본문3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u45dabd07",
+       "name": "본문 · 중3 능률(김) 7과 본문4",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "8과",
+     "name": "Lesson 8",
+     "units": [
+      {
+       "id": "u217c4bbf",
+       "name": "본문 · 중3 기말 중3 능률 8과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ua81f28c1",
+       "name": "본문 · 중3 기말 중3 능률 8과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ua860c65d",
+       "name": "본문 · 중3 기말 중3 능률 8과 본문3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf947c007",
+       "name": "본문 · 중3 기말 중3 능률 8과 본문4",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b0eba610d",
+   "area": "교과서",
+   "grade": "중3",
+   "name": "중3 동아윤 교과서",
+   "path": "교과서/중3/동아윤",
+   "n": 76,
+   "chapters": [
+    {
+     "key": "5과",
+     "name": "Lesson 5",
+     "units": [
+      {
+       "id": "u152f823f",
+       "name": "문법 · 중3 동아(윤) 5과 문법1 현재분사 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8fa9bed3",
+       "name": "문법 · 중3 동아(윤) 5과 문법2 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue155821a",
+       "name": "본문 · 중3 동아(윤) 5과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u68e12c05",
+       "name": "본문 · 중3 동아(윤) 5과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1de9aea1",
+       "name": "본문 · 중3 동아(윤) 5과 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "6과",
+     "name": "Lesson 6",
+     "units": [
+      {
+       "id": "u0685398e",
+       "name": "듣기 · 중3 동아(윤) 6과 대화문 — 선호를 묻고 답하는 표현 익히기 — B. Listen and Check",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "uee5d91e9",
+       "name": "듣기 · 중3 동아(윤) 6과 대화문 해설 강의 — C. Listen and Check",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "u84677b99",
+       "name": "문법 · 중3 동아(윤) 6과 문법1 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uafb9539b",
+       "name": "문법 · 중3 동아(윤) 6과 문법2 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0589faa1",
+       "name": "본문 · 중3 동아(윤) 6과 본문 전체 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "7과",
+     "name": "Lesson 7",
+     "units": [
+      {
+       "id": "ua27e5959",
+       "name": "1 In Conversation — 용도 묻고 답하기 · 도서관 로봇",
+       "n": 5,
+       "lv": 1.2
+      },
+      {
+       "id": "u531e56c1",
+       "name": "2 Listen and Order 1 — 방법·절차 묻고 답하기 · 교통카드 충전",
+       "n": 3,
+       "lv": 1.3
+      },
+      {
+       "id": "u4eee14ad",
+       "name": "3 Listen and Order 2 — 방법·절차 묻고 답하기 · 간식 자판기",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "ufccd1951",
+       "name": "4 Listen and Order 3 — 방법·절차 묻고 설명하기 · 자전거 대여 앱",
+       "n": 5,
+       "lv": 1.8
+      },
+      {
+       "id": "u2c117c60",
+       "name": "5 Talk and Play — 방법·절차 묻고 답하기 · 차 만드는 법",
+       "n": 5,
+       "lv": 1.2
+      },
+      {
+       "id": "u466a047a",
+       "name": "듣기 · as 하나로 끝내기: 시간·비례·이유·양태 — 7과 문법1",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "u0120e328",
+       "name": "듣기 · as 하나로 끝내기: 시간·비례·이유·양태 — 8과 문법1",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "uba0db581",
+       "name": "문법 · 중3 동아(윤) 7과 문법1 분사구문 — 7과 문법1 분사구문",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "u7609156e",
+       "name": "문법 · 중3 동아(윤) 7과 문법2 접속사 as — 7과 문법2 접속사 as",
+       "n": 6,
+       "lv": 1.8
+      },
+      {
+       "id": "uf22cc065",
+       "name": "본문 · 중3 기말 중3 동아(윤) 7과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue18372f2",
+       "name": "본문 · 중3 기말 중3 동아(윤) 7과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u78de0f31",
+       "name": "본문 · 중3 기말 중3 동아(윤) 7과 본문3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u891a4ac3",
+       "name": "본문 · 중3 기말 중3 동아(윤) 7과 본문4",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6ce73114",
+       "name": "본문 · 중3 동아(윤) 7과 본문5 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "8과",
+     "name": "Lesson 8",
+     "units": [
+      {
+       "id": "u44f0788c",
+       "name": "듣기 · 중3 동아(윤) 8과 대화문 A Listen and Talk 해설 — A. Listen and Order 1",
+       "n": 5,
+       "lv": 2
+      },
+      {
+       "id": "ufb974e50",
+       "name": "듣기 · 중3 동아(윤) 8과 대화문 A. Listen and Talk 완전 해설 — A. Listen and Order 1",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "uac67ebc0",
+       "name": "듣기 · 중3 동아(윤) 8과 대화문 A. Listen and Talk — 선호 묻고 답하기 & 의견 말하기 — A. Listen and check 3",
+       "n": 5,
+       "lv": 1.8
+      },
+      {
+       "id": "ubb093e5e",
+       "name": "듣기 · 중3 동아(윤) 8과 대화문 A. Listen and Talk — 선호 묻고 답하기 & 의견 말하기 — C. In Conversation",
+       "n": 5,
+       "lv": 2
+      },
+      {
+       "id": "uea2b469e",
+       "name": "문법 · 중3 동아(윤) 8과 문법1 to부정사의 의미상 주어 — 8과 문법1 to부정사의 의미상 주어",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u90837695",
+       "name": "문법 · 중3 동아(윤) 8과 문법2 가정법과거 — 8과 문법2 가정법과거",
+       "n": 4,
+       "lv": 1
+      },
+      {
+       "id": "u5fa35f47",
+       "name": "본문 · 중3 기말 중3 동아(윤) 8과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u60a5c53d",
+       "name": "본문 · 중3 기말 중3 동아(윤) 8과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ua4509ed7",
+       "name": "본문 · 중3 기말 중3 동아(윤) 8과 본문3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5200afbe",
+       "name": "본문 · 중3 기말 중3 동아(윤) 8과 본문4",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b041cf423",
+   "area": "교과서",
+   "grade": "중3",
+   "name": "중3 비상 교과서",
+   "path": "교과서/중3/비상",
+   "n": 18,
+   "chapters": [
+    {
+     "key": "5과",
+     "name": "Lesson 5",
+     "units": [
+      {
+       "id": "u54fa4965",
+       "name": "문법 · 분사구문 핵심 정리 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "udcd18c5c",
+       "name": "문법 · 목적을 나타내는 so that ~ can — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6c2e78ef",
+       "name": "본문 · 중3 비상 5과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u57f050a5",
+       "name": "본문 · 중3 비상 5과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6bde1808",
+       "name": "본문 · 중3 비상 5과 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uee654e7a",
+       "name": "본문 · 중3 비상 5과 본문4 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "6과",
+     "name": "Lesson 6",
+     "units": [
+      {
+       "id": "ua62710fd",
+       "name": "문법 · It ~ that 강조구문 정리 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uaed0ddc9",
+       "name": "문법 · have+목적어+과거분사 정리 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uec025fdd",
+       "name": "본문 · 중3 비상 6과 본문전체 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "7과",
+     "name": "Lesson 7",
+     "units": [
+      {
+       "id": "u98855437",
+       "name": "문법 · 중3 비상 7과 문법1 접속사 as — 7과 문법1",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "uaee5b39a",
+       "name": "문법 · 중3 비상 7과 문법2 수의 일치 — 8과 문법1",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "u77018ae6",
+       "name": "본문 · 중3 기말 중3 비상 7과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u382e4035",
+       "name": "본문 · 중3 기말 중3 비상 7과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u568f8d87",
+       "name": "본문 · 중3 기말 중3 비상 7과 본문3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc2c72e42",
+       "name": "본문 · 중3 기말 중3 비상 7과 본문4",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uee328d4f",
+       "name": "본문 · 중3 기말 중3 비상 7과 본문5",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "8과",
+     "name": "Lesson 8",
+     "units": [
+      {
+       "id": "u44a779b9",
+       "name": "문법 · 중3 비상 8과 문법1 가정법과거 — 8과 문법1",
+       "n": 4,
+       "lv": 2.5
+      },
+      {
+       "id": "ua2b3648a",
+       "name": "문법 · 중3 비상 8과 문법2 with분사구문 — 8과 문법2",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "ufeb1239d",
+       "name": "본문 · 중3 기말 중3 비상 8과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud8b87654",
+       "name": "본문 · 중3 기말 중3 비상 8과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ufd8cfd89",
+       "name": "본문 · 중3 기말 중3 비상 8과 본문3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4b1c0fbd",
+       "name": "본문 · 중3 기말 중3 비상 8과 본문4",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u500fb3b6",
+       "name": "본문 · 중3 기말 중3 비상 8과 본문5",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bd89e0697",
+   "area": "교과서",
+   "grade": "중3",
+   "name": "중3 시사박 교과서",
+   "path": "교과서/중3/시사박",
+   "n": 15,
+   "chapters": [
+    {
+     "key": "6과",
+     "name": "Lesson 6",
+     "units": [
+      {
+       "id": "u7da6965d",
+       "name": "문법 · 중등 핵심 문법: 관계대명사의 계속적 용법 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uac46e32d",
+       "name": "문법 · to부정사의 부사적 용법: 감정의 원인과 형용사 수식 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u55df1d57",
+       "name": "본문 · 중3 시사박 6과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ua7ced310",
+       "name": "본문 · 중3 시사박 6과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u41c4c6ae",
+       "name": "본문 · 중3 시사박 6과 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "7과",
+     "name": "Lesson 7",
+     "units": [
+      {
+       "id": "u858ce9a6",
+       "name": "문법 · 핵심 영문법: 관계부사와 전치사+관계대명사 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uad8725cb",
+       "name": "문법 · 「the + 비교급, the + 비교급」 구문 완벽 정리 — AI강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "udbc29ebf",
+       "name": "본문 · 중3 시사박 7과 본문1 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4c05631e",
+       "name": "본문 · 중3 시사박 7과 본문2 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uff1ecdf6",
+       "name": "본문 · 중3 시사박 7과 본문3 — AI 강의",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u93e0c52e",
+       "name": "본문 · 중3 시사박 7과 전체 — AI 강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "8과",
+     "name": "Lesson 8",
+     "units": [
+      {
+       "id": "uab485b73",
+       "name": "문법 · 중3 시사(박) 8과 문법1 분사구문 — 8과 문법1 분사구문",
+       "n": 6,
+       "lv": 2.5
+      },
+      {
+       "id": "uf7d3cb3c",
+       "name": "문법 · 중3 시사(박) 8과 문법2 be worth ~ing — 8과 문법2 be worth ~ing",
+       "n": 3,
+       "lv": 2.7
+      },
+      {
+       "id": "u914590c7",
+       "name": "본문 · 중3 기말 중3 시사(박) 8과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub4d5579b",
+       "name": "본문 · 중3 기말 중3 시사(박) 8과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u43bdbd03",
+       "name": "본문 · 중3 기말 중3 시사(박) 8과 본문3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud31d39a8",
+       "name": "본문 · 중3 기말 중3 시사(박) 8과 본문4",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "9과",
+     "name": "Lesson 9",
+     "units": [
+      {
+       "id": "u7b4eb4f0",
+       "name": "문법 · 중3 시사(박) 9과 문법1 I wish 가정법 — 문법1 I wish 가정법",
+       "n": 3,
+       "lv": 2
+      },
+      {
+       "id": "u01e68e72",
+       "name": "문법 · 중3 시사(박) 9과 문법2 간접의문문 — 문법2",
+       "n": 3,
+       "lv": 3
+      },
+      {
+       "id": "u2e99eaea",
+       "name": "본문 · 중3 기말 중3 시사(박) 9과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2f15d681",
+       "name": "본문 · 중3 기말 중3 시사(박) 9과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0d06daf8",
+       "name": "본문 · 중3 기말 중3 시사(박) 9과 본문3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4c177009",
+       "name": "본문 · 중3 기말 중3 시사(박) 9과 본문4",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
