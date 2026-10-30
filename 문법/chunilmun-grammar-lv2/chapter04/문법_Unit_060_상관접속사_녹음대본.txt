@@ -1,0 +1,136 @@
+[강의 녹음 대본] 상관접속사 완전 정복: 짝 표현과 동사 수 일치
+
+음성 파일 폴더 이름: 문법_Unit_060_상관접속사_audio
+강의 HTML 파일과 같은 위치에 이 폴더를 만들고, 아래 번호대로 음성 파일을 넣어 주세요.
+
+────────────────────────
+1.mp3   (슬라이드 1)
+안녕하세요, 오늘은 상관접속사를 배워 볼게요. both A and B, either A or B, neither A nor B, not only A but also B처럼 짝을 이루어 쓰는 표현이에요. 이 표현들은 동사를 어디에 맞추는지가 정말 중요하죠. 오늘 예문을 통해 동사 수 일치와 병렬 구조를 확실히 익혀 봅시다.
+
+────────────────────────
+2.mp3   (슬라이드 2)
+첫 번째 개념은 both A and B예요. 이 표현은 A와 B 둘 다라는 뜻이죠. 두 사람이나 두 사물을 함께 묶기 때문에 복수로 취급해요. 그래서 be동사는 are를 쓰고 일반동사는 복수형을 써야 해요.
+
+────────────────────────
+3.mp3   (슬라이드 2)
+Both Tom and Ann are teachers. 이 문장은 Tom과 Ann은 둘 다 교사이다라는 뜻이에요. both A and B가 들어 있으므로 동사는 복수형 are를 써야 하죠. 여기서 are에 꼭 주목해 주세요.
+
+────────────────────────
+4.mp3   (슬라이드 2)
+both A and B는 항상 복수로 생각해 주세요. 그래서 동사 자리에 is나 was를 쓰면 안 되고 are나 were를 써야 해요.
+
+────────────────────────
+5.mp3   (슬라이드 3)
+두 번째 개념은 either A or B와 neither A nor B예요. either A or B는 둘 중 하나, neither A nor B는 둘 다 아니라는 뜻이죠. 중요한 건 동사를 B에 맞춘다는 거예요. B가 I이면 am, B가 he이면 is를 쓰는 식으로 가까운 쪽을 봐 주세요.
+
+────────────────────────
+6.mp3   (슬라이드 3)
+Neither he nor I am ready. 이 문장은 그도 나도 준비가 되지 않았다라는 뜻이에요. neither A nor B에서 동사는 B인 I에 맞춰 am이 되죠. 그래서 is가 아니라 am을 써야 해요.
+
+────────────────────────
+7.mp3   (슬라이드 3)
+Either you or he is right. 이 문장은 너 또는 그가 맞다라는 뜻이에요. either A or B에서 동사는 B인 he에 맞춰 is가 됩니다. 가까운 B를 기준으로 동사를 고르는 점을 기억해 주세요.
+
+────────────────────────
+8.mp3   (슬라이드 3)
+동사는 항상 B를 따라가요. B가 복수명사이면 동사도 복수형, B가 단수명사이면 동사도 단수형이 되는 거죠.
+
+────────────────────────
+9.mp3   (슬라이드 4)
+세 번째 개념은 not only A but also B와 B as well as A예요. 둘 다 A뿐만 아니라 B도, 또는 B뿐만 아니라 A도라는 뜻을 만들어 주죠. 이때도 동사는 B에 맞춰요. 그리고 not A but B는 A가 아니라 B라는 뜻으로 B를 강조하는 표현이에요.
+
+────────────────────────
+10.mp3   (슬라이드 4)
+Not only the students but also the teacher was late. 이 문장은 학생들뿐 아니라 선생님도 늦었다라는 뜻이에요. not only A but also B에서 동사는 B인 the teacher에 맞춰 was가 됩니다. 그래서 were가 아니라 was를 써야 해요.
+
+────────────────────────
+11.mp3   (슬라이드 4)
+The teacher as well as the students is late. 이 문장은 학생들뿐만 아니라 선생님도 늦다라는 뜻이에요. B as well as A에서 동사는 B인 the teacher에 맞춰 is가 됩니다. 앞에 있는 B를 기준으로 동사를 고르는 점을 기억해 주세요.
+
+────────────────────────
+12.mp3   (슬라이드 4)
+Not the students but the teacher was late. 이 문장은 학생들이 아니라 선생님이 늦었다라는 뜻이에요. not A but B는 B를 강조하고 동사도 B인 the teacher에 맞춰 was가 됩니다. 그래서 were가 아니라 was를 써야 해요.
+
+────────────────────────
+13.mp3   (슬라이드 4)
+이 표현들은 동사가 B를 따라가요. 그래서 동사를 쓰기 전에 B가 단수인지 복수인지 먼저 확인하는 습관이 중요해요.
+
+────────────────────────
+14.mp3   (슬라이드 5)
+네 번째 개념은 병렬 구조예요. 상관접속사에서 A와 B에는 같은 형태를 써야 하죠. 명사와 명사, 형용사와 형용사, 동사와 동사처럼 짝을 맞추는 거예요. 이렇게 같은 형태로 맞추는 것을 병렬 구조라고 해요.
+
+────────────────────────
+15.mp3   (슬라이드 5)
+She is both smart and kind. 이 문장은 그녀는 둘 다 영리하고 친절하다라는 뜻이에요. both 뒤의 smart와 and 뒤의 kind가 모두 형용사로 같은 형태를 이루고 있죠. 이렇게 같은 품사를 맞춰 주는 것이 병렬 구조예요.
+
+────────────────────────
+16.mp3   (슬라이드 5)
+He not only sings but also dances. 이 문장은 그는 노래할 뿐만 아니라 춤도 춘다라는 뜻이에요. not only 뒤의 sings와 but also 뒤의 dances가 모두 동사로 같은 형태를 이루고 있죠. 이렇게 짝을 맞추면 문장이 훨씬 자연스러워져요.
+
+────────────────────────
+17.mp3   (슬라이드 5)
+병렬 구조를 맞출 때는 뒤쪽에 오는 말의 품사를 앞쪽과 비교해 보세요. 명사로 시작했으면 뒤도 명사, 형용사로 시작했으면 뒤도 형용사로 맞춰 주면 됩니다.
+
+────────────────────────
+18.mp3   (슬라이드 6)
+Both Tom and Ann is teachers라고 쓰면 틀려요. both A and B는 두 사람을 함께 묶어 복수로 취급하니까 Both Tom and Ann are teachers라고 해야 합니다. 동사는 are가 되어야 하죠.
+
+────────────────────────
+19.mp3   (슬라이드 6)
+Neither he nor I is ready라고 하면 어색해요. neither A nor B에서는 동사가 B인 I에 맞춰야 하니까 Neither he nor I am ready라고 해야 합니다. 가까운 B를 기준으로 am을 고른 거예요.
+
+────────────────────────
+20.mp3   (슬라이드 6)
+Not only the students but also the teacher were late라고 쓰면 틀려요. not only A but also B에서는 동사가 B인 the teacher에 맞춰야 하니까 was를 써야 합니다. 그래서 Not only the students but also the teacher was late가 맞아요.
+
+────────────────────────
+21.mp3   (슬라이드 7)
+첫 번째 문제는 객관식이에요. Both Tom and Ann 빈칸 teachers. 보기는 첫 번째 is, 두 번째 are, 세 번째 was, 네 번째 be예요. 잠시 멈추고 직접 풀어 보세요.
+
+────────────────────────
+23.mp3   (슬라이드 7)
+정답은 두 번째 보기인 are예요. both A and B는 둘 다라는 뜻으로 복수 취급하니까 동사는 are가 되어야 해요. is나 was를 쓰면 틀리고요, be는 동사원형이라 여기서는 맞지 않아요.
+
+────────────────────────
+24.mp3   (슬라이드 8)
+두 번째 문제는 빈칸이에요. Neither he nor I 빈칸 ready. 잠시 멈추고 직접 풀어 보세요.
+
+────────────────────────
+26.mp3   (슬라이드 8)
+정답은 am이에요. neither A nor B에서는 동사가 B에 맞춰야 하죠. 여기서 B는 I이므로 am을 쓰는 거예요.
+
+────────────────────────
+27.mp3   (슬라이드 9)
+세 번째 문제는 오류 수정이에요. Not only the students but also the teacher were late. 잠시 멈추고 틀린 부분을 바르게 고쳐 보세요.
+
+────────────────────────
+29.mp3   (슬라이드 9)
+정답은 were를 was로 고치는 거예요. not only A but also B에서는 동사가 B인 the teacher에 맞춰야 하죠. 그래서 단수인 was를 써야 합니다.
+
+────────────────────────
+30.mp3   (슬라이드 10)
+네 번째 문제는 배열이에요. 단어 카드는 both, smart, she, is, and, kind예요. 잠시 멈추고 알맞게 배열해 보세요.
+
+────────────────────────
+32.mp3   (슬라이드 10)
+정답은 She is both smart and kind예요. both 뒤에는 smart, and 뒤에는 kind가 와서 형용사끼리 같은 형태를 이루죠. 이렇게 병렬 구조를 맞춰 주면 됩니다.
+
+────────────────────────
+33.mp3   (슬라이드 11)
+다섯 번째 문제는 영작이에요. 그도 나도 준비가 되지 않았다를 neither A nor B를 사용해 영어로 써 보세요. 잠시 멈추고 직접 풀어 보세요.
+
+────────────────────────
+35.mp3   (슬라이드 11)
+정답은 Neither he nor I am ready예요. neither A nor B에서는 동사가 B인 I에 맞춰야 하므로 am을 씁니다. 뜻은 그도 나도 준비가 되지 않았다가 되죠.
+
+────────────────────────
+36.mp3   (슬라이드 12)
+여섯 번째 문제는 객관식이에요. 어법상 올바른 문장을 골라 보세요. 첫 번째 Both Tom and Ann is teachers. 두 번째 Neither he nor I am ready. 세 번째 Not only the students but also the teacher were late. 네 번째 Either you or he are right. 다섯 번째 The teacher as well as the students are late. 잠시 멈추고 직접 풀어 보세요.
+
+────────────────────────
+38.mp3   (슬라이드 12)
+정답은 두 번째 문장인 Neither he nor I am ready예요. neither A nor B는 동사를 B인 I에 맞춰 am을 쓰죠. 첫 번째는 복수 취급이라 are, 세 번째는 B인 the teacher에 맞춰 was, 네 번째는 B인 he에 맞춰 is, 다섯 번째는 B인 the teacher에 맞춰 is가 되어야 해요.
+
+────────────────────────
+39.mp3   (슬라이드 13)
+오늘은 상관접속사를 배웠어요. both A and B는 복수 취급하고, either A or B와 neither A nor B는 동사를 B에 맞춘다는 점이 중요하죠. not only A but also B와 B as well as A도 동사를 B에 일치시키고, A와 B는 꼭 같은 형태로 맞춰야 해요. 이 규칙들을 기억하고 예문을 다시 읽어 보면 훨씬 익숙해질 거예요.
