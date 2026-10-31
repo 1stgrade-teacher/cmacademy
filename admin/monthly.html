@@ -94,7 +94,8 @@ tr.miss td{color:#A0AAB2}
   .rep textarea.cmi{border:1px solid #ccc}
 }
 </style></head><body><div class="wrap">
-<h1>🗓 월간·분기 평가 관리 <a href="./exam.html">📝 점수 직접 입력 →</a> <a href="../월간고사/index.html" target="_blank">👀 학생 화면 →</a><span id="meBox" style="margin-left:auto;display:none;font-size:13.5px;font-weight:600;color:#1B2733">👤 <b id="meName"></b> <button class="sm sub" id="logout" style="margin-left:6px">로그아웃</button></span></h1>
+<h1>🗓 월간·분기 평가 관리 <a href="./exam.html">📝 점수 직접 입력 →</a> <a href="../월간고사/index.html" target="_blank">👀 학생 화면 →</a><span id="meBox" style="margin-left:auto;display:none;font-size:13.5px;font-weight:600;color:#1B2733">👤 <b id="meName"></b> <span id="aiBox" style="display:none;margin-left:10px" title="해설·문항 나누기·AI 보충·리포트에 먼저 쓸 AI">🤖 <select id="aiSel" style="width:auto;padding:4px 6px;font-size:13px"></select> <button class="sm sub" id="aiTest">연결 확인</button></span> <button class="sm sub" id="logout" style="margin-left:6px">로그아웃</button></span></h1>
+<div class="hint" id="aiMsg" style="text-align:right;margin:-6px 0 8px"></div>
 
 <div class="card" id="login">
   <label class="l">선생님 코드</label>
@@ -244,7 +245,7 @@ tr.miss td{color:#A0AAB2}
   function lsGet(k) { try { return localStorage.getItem(k) || ""; } catch (e) { return ""; } }
   function lsSet(k, v) { try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); } catch (e) {} }
   function post(b) {
-    b.code = CODE;
+    b.code = CODE; if (!b.ai) b.ai = lsGet("cm-ai");
     return fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b) })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { j._s = r.status; return j; }); })
       .catch(function () { return { _s: 0, msg: "인터넷 연결을 확인해 주세요." }; });
@@ -252,6 +253,22 @@ tr.miss td{color:#A0AAB2}
   var kst = function (d) { return new Date((d || Date.now()) + 9 * 3600e3).toISOString().slice(0, 10); };
   var pct = function (r, t) { return t ? Math.round(r / t * 100) : 0; };
   var round1 = function (x) { return x == null ? "-" : Math.round(x * 10) / 10; };
+
+  // ---------- 🤖 AI 고르기 (선생님마다 이 기기에 저장) ----------
+  function buildAiSel(j) {
+    var ais = j.ais || []; if (!ais.length) { $("aiBox").style.display = "none"; return; }
+    var cur = lsGet("cm-ai"); if (!ais.some(function (a) { return a.id === cur; })) cur = j.aiDefault || ais[0].id;
+    $("aiSel").innerHTML = ais.map(function (a) { return '<option value="' + esc(a.id) + '"' + (a.id === cur ? " selected" : "") + ">" + esc(a.label) + "</option>"; }).join("");
+    $("aiBox").style.display = "inline";
+    $("aiSel").onchange = function () { lsSet("cm-ai", this.value); $("aiMsg").textContent = "이제 " + this.options[this.selectedIndex].text + "를 먼저 써요. (안 되면 연결된 다른 AI가 이어받아요)"; };
+    $("aiTest").onclick = function () {
+      var btn = this; btn.disabled = true; $("aiMsg").textContent = "AI " + ais.length + "개에 연결해 보는 중…";
+      post({ action: "t_ai_test" }).then(function (r) {
+        btn.disabled = false; if (!r.ok) { $("aiMsg").textContent = r.msg || "확인하지 못했어요."; return; }
+        $("aiMsg").innerHTML = r.results.map(function (x) { return (x.ok ? "✅ " : "❌ ") + esc(x.label) + ' <span style="opacity:.7">(' + esc(x.model) + (x.ok ? ", " + (x.ms / 1000).toFixed(1) + "초" : "") + ")</span>" + (x.ok ? "" : ' <span class="er">' + esc(x.err) + "</span>"); }).join(" · ");
+      });
+    };
+  }
 
   // ---------- 로그인 ----------
   function init() {
@@ -266,7 +283,8 @@ tr.miss td{color:#A0AAB2}
       $("fMine").checked = !j.me.master;
       $("contact").value = j.me.contact || lsGet("cm-report-contact"); $("repUrl").value = j.me.reportUrl || "";
       var total = j.catalog.reduce(function (s, b) { return s + b.n; }, 0), units = j.catalog.reduce(function (s, b) { return s + b.chapters.reduce(function (a, c) { return a + c.units.length; }, 0); }, 0);
-      $("bankInfo").textContent = "문제은행: 교재 " + j.catalog.length + "권 · " + units + "과 · 문항 " + total + "개" + (j.ai ? " · AI 보충 켜짐" : " · AI 보충 꺼짐");
+      $("bankInfo").textContent = "문제은행: 교재 " + j.catalog.length + "권 · " + units + "과 · 문항 " + total + "개" + (j.ai ? " · AI 켜짐(" + (j.ais || []).map(function (a) { return a.label; }).join("·") + ")" : " · AI 꺼짐");
+      buildAiSel(j);
       fillClassSelects(); renderList(); buildPeriods(); buildQuarters(); buildBookFilters();
     });
   }
@@ -628,18 +646,19 @@ tr.miss td{color:#A0AAB2}
       (function next() {
         if (i >= chunks.length) { bAi.disabled = false; u.questions = got.map(function (q) { q.lv = q.lv || 2; q.warn = q.answer || q.type === "mc" && q.ans >= 0 ? [] : ["AI가 정답을 못 찾았어요"]; return q; }); u.text = ""; renderImport(); return; }
         msg.textContent = "AI가 문항을 나누는 중… (" + (i + 1) + "/" + chunks.length + ")";
-        post({ action: "t_import_ai", mode: "parse", text: chunks[i], answers: u.keyText || "" }).then(function (j) { if (j.ok) got = got.concat(j.questions || []); else msg.textContent = j.msg || "실패"; i++; next(); });
+        post({ action: "t_import_ai", mode: "parse", text: chunks[i], answers: u.keyText || "" }).then(function (j) { if (j.ok) { got = got.concat(j.questions || []); if (j.used) u.aiUsed = j.used; if (j.aiErr) msg.textContent = "AI 응답 실패: " + j.aiErr.join(" / "); } else msg.textContent = j.msg || "실패"; i++; next(); });
       })();
     };
     var bEx = card.querySelector('[data-act="aiexp"]');
     if (bEx) bEx.onclick = function () {
       sync(); var need = u.questions.map(function (q, i) { return { q: q, i: i }; }).filter(function (x) { return !x.q.off && !x.q.exp; });
       if (!need.length) { msg.textContent = "해설이 빈 문항이 없어요."; return; }
-      bEx.disabled = true; var p = 0;
+      bEx.disabled = true; var p = 0, usedAi = "";
       (function next() {
-        if (p >= need.length) { bEx.disabled = false; msg.innerHTML = '<span class="ok">해설을 채웠어요. 확인해 주세요.</span>'; renderImport(); return; }
+        if (p >= need.length) { bEx.disabled = false; var ui = card.getAttribute("data-u"); renderImport(); card = $("impUnits").querySelector('.card[data-u="' + ui + '"]'); msg = card.querySelector("[data-msg]"); msg.innerHTML = '<span class="ok">해설을 채웠어요' + (usedAi ? " (" + esc(usedAi) + ")" : "") + '. 확인해 주세요.</span>'; return; }
         var part = need.slice(p, p + 8); msg.textContent = "AI가 해설을 쓰는 중… (" + Math.min(p + 8, need.length) + "/" + need.length + ")";
         post({ action: "t_import_ai", mode: "explain", items: part.map(function (x) { var q = x.q; return { q: q.q, sub: q.sub, opts: q.opts, answer: q.type === "mc" ? (q.opts || [])[q.ans] : q.type === "multi" ? (q.anss || []).map(function (k) { return (q.opts || [])[k]; }).join(" / ") : q.answer }; }) }).then(function (j) {
+          if (j.used) usedAi = j.used; if (j.aiErr && !(j.items || []).length) { bEx.disabled = false; msg.innerHTML = '<span class="er">AI 응답 실패: ' + esc(j.aiErr.join(" / ")) + "</span>"; return; }
           (j.items || []).forEach(function (r) { var x = part[r.i]; if (x) { x.q.exp = r.exp; x.q.lv = r.lv || x.q.lv; } }); p += 8; next();
         });
       })();

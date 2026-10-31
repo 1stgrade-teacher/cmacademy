@@ -9,7 +9,7 @@
 //   NOTION_STUDENT_DB_ID (선택) '인강 학생별 기록' 데이터베이스 ID
 //                        (안 넣으면 기록 DB의 '학생 페이지' 연결에서 자동으로 찾음)
 //   SHEET_WEBHOOK_URL   (선택) 구글 시트 Apps Script 웹앱 주소 (시트에도 같이 쌓기)
-//   DEEPSEEK_API_KEY    (선택) 있으면 한줄요약 AI 평가 + 확인문제 없는 강의에 AI 문제 출제
+//   AI 키 (선택) DEEPSEEK/OPENAI/ANTHROPIC/GEMINI_API_KEY 중 하나라도 있으면 한줄요약 AI 평가 + 확인문제 없는 강의에 AI 문제 출제
 //   CHAT_CODE           (선택) AI 조교와 같은 입장 코드. 넣으면 코드를 아는 학생만 제출 가능
 //   REPORT_DAILY_LIMIT  (선택) 기기(IP)당 하루 제출 수. 기본 40
 //   REPORT_OFF          (선택) "1"이면 학습 인증 잠시 끄기
@@ -65,37 +65,10 @@ function sendJson(res, code, obj) {
   res.end(JSON.stringify(obj));
 }
 
-// ---------- DeepSeek (짧은 JSON 답) ----------
-async function askAI(system, user, maxTokens, timeoutMs) {
-  const key = process.env.DEEPSEEK_API_KEY;
-  if (!key) return null;
-  const ctl = new AbortController();
-  const t = setTimeout(() => ctl.abort(), timeoutMs || 15000);
-  try {
-    const r = await fetch(AI_URL, {
-      method: "POST",
-      signal: ctl.signal,
-      headers: { "Content-Type": "application/json", Authorization: "Bearer " + key },
-      body: JSON.stringify({
-        model: process.env.CHAT_MODEL || "deepseek-flash",
-        messages: [{ role: "system", content: system }, { role: "user", content: user }],
-        thinking: { type: "disabled" },
-        response_format: { type: "json_object" },
-        temperature: 0.3,
-        max_tokens: maxTokens || 600,
-      }),
-    });
-    if (!r.ok) { console.error("ai", r.status, (await r.text().catch(() => "")).slice(0, 200)); return null; }
-    const j = await r.json();
-    const txt = j && j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
-    return JSON.parse(String(txt || "").replace(/^```(?:json)?\s*|\s*```$/g, ""));
-  } catch (e) {
-    console.error("ai", e && e.message);
-    return null;
-  } finally {
-    clearTimeout(t);
-  }
-}
+// ---------- AI (짧은 JSON 답) — DeepSeek / ChatGPT / Claude / Gemini 중 연결된 것 (api/_ai.js) ----------
+const AI = require("./_ai.js");
+const askAI = (system, user, maxTokens, timeoutMs) => AI.askAI(system, user, maxTokens || 600, timeoutMs || 15000, { temperature: 0.3 });
+const aiOn = () => AI.available().length > 0;
 
 const PASSAGE_SYS = `너는 영어 학원 선생님의 채점 도우미야. 학생이 방금 공부한 영어 독해 지문([강의 내용])을 읽고,
 학생이 직접 쓴 '본문의 내용을 한 줄로 요약'을 평가해.
@@ -395,7 +368,7 @@ module.exports = async function handler(req, res) {
       ready: process.env.REPORT_OFF !== "1" && !!(process.env.NOTION_TOKEN && process.env.NOTION_DB_ID || process.env.SHEET_WEBHOOK_URL),
       notion: !!(process.env.NOTION_TOKEN && process.env.NOTION_DB_ID),
       sheet: !!process.env.SHEET_WEBHOOK_URL,
-      ai: !!process.env.DEEPSEEK_API_KEY,
+      ai: aiOn(),
       needCode: !!process.env.CHAT_CODE,
     });
   }
@@ -439,7 +412,7 @@ module.exports = async function handler(req, res) {
 
   // ---------- AI 확인문제 만들기 (강의에 확인 문제가 없을 때) ----------
   if (b.action === "quiz") {
-    if (!process.env.DEEPSEEK_API_KEY) return sendJson(res, 200, { items: [] });
+    if (!aiOn()) return sendJson(res, 200, { items: [] });
     if (!checkRate(ip, "q", limit)) return sendJson(res, 429, { error: "day", msg: "오늘은 더 만들 수 없어요." });
     const ctx = b.ctx || {};
     const n = Math.max(1, Math.min(10, parseInt(b.n, 10) || 3));
@@ -474,7 +447,7 @@ module.exports = async function handler(req, res) {
   // AI 요약 평가 (실패해도 제출은 계속)
   let aiGrade = "평가없음", aiFeedback = "";
   const lec = clip(b.lectureText, 5000);
-  if (process.env.DEEPSEEK_API_KEY && lec.length >= 60) {
+  if (aiOn() && lec.length >= 60) {
     const out = await askAI(b.summaryKind === "passage" ? PASSAGE_SYS : SUMMARY_SYS, "강의 제목: " + clip(pg.title, 200) + "\n[강의 내용]\n" + lec + "\n[강의 내용 끝]\n\n학생 " + (b.summaryKind === "passage" ? "본문 요약" : "한줄요약") + ": " + summary, 300);
     if (out && /^[상중하]$/.test(out.grade)) { aiGrade = out.grade; aiFeedback = clip(out.feedback, 300); }
   }
