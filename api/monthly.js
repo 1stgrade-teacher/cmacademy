@@ -22,6 +22,8 @@ const PAPER_DB = () => id32(process.env.NOTION_PAPER_DB_ID || "e59cf85ba10240bab
 const AIQ_DB = () => id32(process.env.NOTION_AIQ_DB_ID || "e72b69a9fbc64942b9f47cc81dbd6cd3");
 const EXAM_DB = () => id32(process.env.NOTION_EXAM_DB_ID || "dbdd356f53544c94a45b451a8a4ee84a");
 const STUDENT_DB = () => id32(process.env.NOTION_STUDENT_DB_ID || "d6829ce41b134523945a1bdc2e87ce30");
+const TEACHER_DB = () => id32(process.env.NOTION_TEACHER_DB_ID || "63a6527837024ddaa3d256b0cb243304");
+const MASTER_NAME = () => String(process.env.TEACHER_NAME || "일등급샘").trim();
 const PIN_PROP = "본인번호";
 const KINDS = ["월간평가", "분기평가"];
 const STATUSES = ["준비중", "응시중", "마감"];
@@ -282,9 +284,10 @@ function readPaper(p) {
     mode: P.sel(p, "출제 방식") === MODES.choice ? "choice" : "fixed", level: Math.max(1, LEVELS.indexOf(P.sel(p, "난이도")) + 1), count: P.num(p, "문항 수") || 20,
     minutes: P.num(p, "제한시간(분)") || 0, start: d && d.start ? d.start.slice(0, 10) : "", end: d && (d.end || d.start) ? (d.end || d.start).slice(0, 10) : "",
     show: P.chk(p, "결과 공개"), range: P.text(p, "시험 범위"), takers: P.rollup(p, "응시 인원"), avg: P.rollup(p, "평균 점수"), cfg,
+    teacher: P.sel(p, "출제 선생님"),
   };
 }
-const pub = (pp) => ({ id: pp.id, title: pp.title, cls: pp.cls, kind: pp.kind, period: pp.period, status: pp.status, mode: pp.mode, level: LEVELS[pp.level - 1], count: pp.count, minutes: pp.minutes, start: pp.start, end: pp.end, range: pp.mode === "fixed" ? pp.range : "" });
+const pub = (pp) => ({ id: pp.id, title: pp.title, cls: pp.cls, kind: pp.kind, period: pp.period, status: pp.status, mode: pp.mode, level: LEVELS[pp.level - 1], count: pp.count, minutes: pp.minutes, start: pp.start, end: pp.end, range: pp.mode === "fixed" ? pp.range : "", teacher: pp.teacher || "" });
 async function getPaper(id) {
   const p = await notion("pages/" + id32(id), "GET");
   if (!p || p.archived || normId(p.parent && p.parent.database_id) !== normId(PAPER_DB())) return null;
@@ -387,9 +390,35 @@ function tableBlock(rows, header) {
 const H = (t) => ({ object: "block", type: "heading_3", heading_3: { rich_text: rt(t) } });
 const Pg = (t) => ({ object: "block", type: "paragraph", paragraph: { rich_text: rt(t) } });
 
+// ---------- 선생님 (일등급샘 = Vercel TEACHER_CODE, 다른 선생님 = 노션 👩‍🏫 선생님 DB의 코드) ----------
+const teacherHash = (code) => crypto.createHash("sha256").update("cm-teacher|" + String(code || "").trim() + "|" + secret()).digest("hex");
+let tCache = null;
+async function teacherRows(fresh) {
+  if (!fresh && tCache && Date.now() - tCache.t < 30000) return tCache.rows;
+  const rows = await queryAll(TEACHER_DB(), {}, 2);
+  const out = (rows || []).map((p) => ({ id: normId(p.id), name: P.title(p, "이름"), active: P.chk(p, "사용"), hash: P.text(p, "코드"), contact: P.text(p, "상담 안내"), reportUrl: (p.properties["리포트 위치"] || {}).url || "" })).filter((r) => r.name);
+  if (rows) tCache = { t: Date.now(), rows: out };
+  return out;
+}
+async function teacherFor(name) { return (await teacherRows()).find((r) => r.name === name) || null; }
+const tFails = new Map();
+function tBlocked(ip) { const e = tFails.get(ip); return !!e && Date.now() - e.t < 600000 && e.n >= 15; }
+function tFail(ip) { const e = tFails.get(ip); if (!e || Date.now() - e.t >= 600000) tFails.set(ip, { n: 1, t: Date.now() }); else e.n++; if (tFails.size > 3000) tFails.clear(); }
+async function whoTeacher(code) {
+  code = String(code || "").trim(); if (!code) return null;
+  const master = String(process.env.TEACHER_CODE || "").trim();
+  if (master) {
+    const x = crypto.createHash("sha256").update(code).digest(), y = crypto.createHash("sha256").update(master).digest();
+    if (crypto.timingSafeEqual(x, y)) { const row = await teacherFor(MASTER_NAME()); return { name: MASTER_NAME(), master: true, id: row && row.id, contact: row ? row.contact : "", reportUrl: row ? row.reportUrl : "" }; }
+  }
+  const h = teacherHash(code);
+  const row = (await teacherRows()).find((r) => r.active && r.hash && r.hash.length === h.length && crypto.timingSafeEqual(Buffer.from(r.hash), Buffer.from(h)));
+  return row ? { name: row.name, master: false, id: row.id, contact: row.contact, reportUrl: row.reportUrl } : null;
+}
+
 let _rep = null;
 function reporter() {
-  if (!_rep) _rep = require("./_report.js")({ uuid, notion, queryAll, P, clip, normId, id32, unitIndex, unitData, askAI, EXAM_DB, STUDENT_DB, getPaper });
+  if (!_rep) _rep = require("./_report.js")({ uuid, teacherFor, notion, queryAll, P, clip, normId, id32, unitIndex, unitData, askAI, EXAM_DB, STUDENT_DB, getPaper });
   return _rep;
 }
 
@@ -409,14 +438,43 @@ module.exports = async function handler(req, res) {
 
   // =================== 선생님 ===================
   if (act.startsWith("t_")) {
-    if (!tcode) return send(503, { error: "unset", msg: "Vercel에 TEACHER_CODE를 넣어 주세요." });
-    const x = crypto.createHash("sha256").update(String(b.code || "").trim()).digest(), y = crypto.createHash("sha256").update(tcode).digest();
-    if (!crypto.timingSafeEqual(x, y)) return send(401, { error: "code", msg: "선생님 코드가 맞지 않아요." });
+    const ip = String((req.headers["x-forwarded-for"] || "").split(",")[0]).trim() || "x";
+    if (tBlocked(ip)) return send(429, { error: "limit", msg: "코드를 여러 번 틀렸어요. 10분 뒤에 다시 해 주세요." });
+    const me = await whoTeacher(b.code);
+    if (!me) { tFail(ip); return send(401, { error: "code", msg: "선생님 코드가 맞지 않아요." }); }
+
+    if (act === "t_me") { // 내 상담 안내 문구 · 리포트 위치 저장
+      const props = { "상담 안내": { rich_text: rt(clip(b.contact, 1500)) }, "리포트 위치": { url: /^https?:\/\//.test(b.reportUrl || "") ? clip(b.reportUrl, 500) : null } };
+      const pg = me.id ? await notion("pages/" + me.id, "PATCH", { properties: props })
+        : await notion("pages", "POST", { parent: { database_id: TEACHER_DB() }, properties: Object.assign({ "이름": { title: rt(me.name) }, "사용": { checkbox: true } }, props) });
+      tCache = null;
+      return pg ? send(200, { ok: true }) : send(502, { error: "notion", msg: "저장하지 못했어요. 노션 📔 학습리포트 연결을 확인해 주세요.", debug: lastErr });
+    }
+    if (act === "t_teachers" || act === "t_teacher_save") {
+      if (!me.master) return send(403, { error: "master", msg: MASTER_NAME() + "만 선생님을 관리할 수 있어요." });
+      if (act === "t_teacher_save") {
+        const name = clip(b.name, 30), code = String(b.newCode || "").trim();
+        if (!name) return send(400, { error: "input", msg: "선생님 이름을 넣어 주세요." });
+        if (code && !/^\S{6,40}$/.test(code)) return send(400, { error: "input", msg: "코드는 띄어쓰기 없이 6글자 이상으로 정해 주세요." });
+        if (code && code === String(process.env.TEACHER_CODE || "").trim()) return send(400, { error: "input", msg: "관리자 코드와 다른 코드로 정해 주세요." });
+        const rows = await teacherRows(true);
+        if (code && rows.some((r) => r.hash === teacherHash(code) && r.id !== normId(b.id))) return send(400, { error: "input", msg: "다른 선생님이 쓰는 코드예요. 다른 코드로 정해 주세요." });
+        if (!b.id && rows.some((r) => r.name === name)) return send(400, { error: "input", msg: "같은 이름의 선생님이 이미 있어요." });
+        const props = { "이름": { title: rt(name) }, "사용": { checkbox: b.active !== false } };
+        if (code) props["코드"] = { rich_text: rt(teacherHash(code)) };
+        if (b.contact != null) props["상담 안내"] = { rich_text: rt(clip(b.contact, 1500)) };
+        const pg = b.id ? await notion("pages/" + id32(b.id), "PATCH", { properties: props }) : await notion("pages", "POST", { parent: { database_id: TEACHER_DB() }, properties: props });
+        tCache = null;
+        if (!pg) return send(502, { error: "notion", msg: "저장하지 못했어요.", debug: lastErr });
+      }
+      const rows = await teacherRows(true);
+      return send(200, { ok: true, teachers: rows.map((r) => ({ id: r.id, name: r.name, active: r.active, hasCode: !!r.hash, master: r.name === MASTER_NAME(), contact: r.contact })) });
+    }
 
     if (act === "t_init") {
       const [classes, rows] = await Promise.all([classList(), queryAll(PAPER_DB(), { sorts: [{ timestamp: "created_time", direction: "descending" }] }, 3)]);
       if (!rows) return send(502, { error: "notion", msg: "🗓 월간·분기 시험지 DB를 읽지 못했어요. 노션에서 이 DB에 'cmacademy 학습인증' 연결을 추가했는지 확인해 주세요.", debug: lastErr });
-      return send(200, { ok: true, classes: classes || [], papers: rows.map((p) => Object.assign(pub(readPaper(p)), { cfg: readPaper(p).cfg, show: P.chk(p, "결과 공개"), takers: P.rollup(p, "응시 인원"), avg: P.rollup(p, "평균 점수"), url: p.url })), catalog: catalog.books, ai: !!process.env.DEEPSEEK_API_KEY });
+      return send(200, { ok: true, me: { name: me.name, master: me.master, contact: me.contact, reportUrl: me.reportUrl }, classes: classes || [], papers: rows.map((p) => Object.assign(pub(readPaper(p)), { cfg: readPaper(p).cfg, show: P.chk(p, "결과 공개"), takers: P.rollup(p, "응시 인원"), avg: P.rollup(p, "평균 점수"), url: p.url })), catalog: catalog.books, ai: !!process.env.DEEPSEEK_API_KEY });
     }
     if (act === "t_preview") { // 선생님 지정형: 실제 학생이 받을 문항(정답 포함)을 미리 보기
       const uids = (Array.isArray(b.units) ? b.units : []).filter((u) => unitIndex.has(u)).slice(0, 300);
@@ -454,6 +512,7 @@ module.exports = async function handler(req, res) {
         "결과 공개": { checkbox: !!f.show }, "시험 범위": { rich_text: rt(range) }, "설정": { rich_text: rtLong(JSON.stringify(cfg)) },
         "시험 기간": /^\d{4}-\d{2}-\d{2}$/.test(f.start || "") ? { date: { start: f.start, end: /^\d{4}-\d{2}-\d{2}$/.test(f.end || "") && f.end > f.start ? f.end : null } } : { date: null },
       };
+      if (!old || !old.teacher) props["출제 선생님"] = sel(me.name);
       const pg = old ? await notion("pages/" + old.id, "PATCH", { properties: props }) : await notion("pages", "POST", { parent: { database_id: PAPER_DB() }, properties: props });
       if (!pg) return send(502, { error: "notion", msg: "시험지를 저장하지 못했어요.", debug: lastErr });
       return send(200, { ok: true, paper: Object.assign(pub(readPaper(pg)), { cfg: readPaper(pg).cfg, show: P.chk(pg, "결과 공개"), url: pg.url }) });
@@ -488,13 +547,13 @@ module.exports = async function handler(req, res) {
       return send(200, { ok: true, cls, from, to, students: (ros || []).map((s) => ({ sid: s.id, name: s.name })), records: recs.map((r) => Object.assign(r, { name: names.get(r.sid) || "" })) });
     }
     if (act === "t_rep") { // 학생 1명 · 시험 1회 분석 리포트를 노션에 작성
-      const r = await reporter().buildTestReport({ recId: clip(b.rec, 60), contact: clip(b.contact, 600), host, force: !!b.force });
+      const r = await reporter().buildTestReport({ recId: clip(b.rec, 60), contact: clip(b.contact, 600), host, force: !!b.force, me });
       return r.error ? send(200, { ok: false, msg: r.error, debug: lastErr }) : send(200, Object.assign({ ok: true }, r));
     }
     if (act === "t_qrep") { // 학생 1명 · 분기 종합 리포트
       const from = /^\d{4}-\d{2}-\d{2}$/.test(b.from || "") ? b.from : null, to = /^\d{4}-\d{2}-\d{2}$/.test(b.to || "") ? b.to : null;
       if (!from || !to) return send(400, { error: "input", msg: "기간을 골라 주세요." });
-      const r = await reporter().buildQuarterReport({ sid: clip(b.sid, 60), from, to, label: clip(b.label, 40) || from + "~" + to, contact: clip(b.contact, 600), host });
+      const r = await reporter().buildQuarterReport({ sid: clip(b.sid, 60), from, to, label: clip(b.label, 40) || from + "~" + to, contact: clip(b.contact, 600), host, me });
       return r.error ? send(200, { ok: false, msg: r.error, debug: lastErr }) : send(200, Object.assign({ ok: true }, r));
     }
     return send(400, { error: "action" });

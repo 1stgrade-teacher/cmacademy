@@ -81,7 +81,7 @@ tr.miss td{color:#A0AAB2}
   .rep textarea.cmi{border:1px solid #ccc}
 }
 </style></head><body><div class="wrap">
-<h1>🗓 월간·분기 평가 관리 <a href="./exam.html">📝 점수 직접 입력 →</a> <a href="../월간고사/index.html" target="_blank">👀 학생 화면 →</a></h1>
+<h1>🗓 월간·분기 평가 관리 <a href="./exam.html">📝 점수 직접 입력 →</a> <a href="../월간고사/index.html" target="_blank">👀 학생 화면 →</a><span id="meBox" style="margin-left:auto;display:none;font-size:13.5px;font-weight:600;color:#1B2733">👤 <b id="meName"></b> <button class="sm sub" id="logout" style="margin-left:6px">로그아웃</button></span></h1>
 
 <div class="card" id="login">
   <label class="l">선생님 코드</label>
@@ -96,17 +96,21 @@ tr.miss td{color:#A0AAB2}
     <button class="tab" data-tab="edit" id="tabEdit">➕ 새 시험지</button>
     <button class="tab" data-tab="results" id="tabRes">📊 응시 결과</button>
     <button class="tab" data-tab="report">📈 분기 리포트</button>
+    <button class="tab" data-tab="teachers" id="tabTeachers" style="display:none">👩‍🏫 선생님</button>
   </div>
 
   <div class="card" id="contactCard" style="display:none">
-    <label class="l">리포트 맨 아래 '학부모 상담 안내' 문구 (이 기기에 저장돼요)</label>
-    <textarea id="contact" rows="2" placeholder="예: 더 자세한 상담은 평일 오전 10시 ~ 오후 2시, 주말 오후에 가능합니다. 일등급샘 010-0000-0000"></textarea>
+    <label class="l">리포트 맨 아래 '학부모 상담 안내' 문구 (선생님별로 저장돼요)</label>
+    <textarea id="contact" rows="2" placeholder="예: 더 자세한 상담은 평일 오전 10시 ~ 오후 2시, 주말 오후에 가능합니다. 010-0000-0000"></textarea>
+    <label class="l" style="margin-top:10px">학생 학습레포트 페이지를 못 찾을 때 리포트를 만들 노션 페이지 주소 (선택)</label>
+    <input id="repUrl" placeholder="비워 두면 📔 학습리포트 › 🤖 자동 분석 리포트에 만들어요">
+    <div class="row" style="margin-top:8px"><button class="sm sub" id="saveMe">💾 저장</button><span class="hint" id="meMsg" style="margin:0">선생님마다 따로 저장돼요. 리포트 인사말도 선생님 이름으로 나가요.</span></div>
   </div>
   <!-- 목록 -->
   <section id="v-list">
     <div class="card">
       <div class="row"><select id="fCls" style="max-width:220px"></select><select id="fSt" style="max-width:160px"><option value="">모든 상태</option><option>준비중</option><option>응시중</option><option>마감</option></select>
-        <button class="sub" id="reload">새로고침</button><span class="hint" id="bankInfo" style="margin:0 0 0 auto"></span></div>
+        <label style="font-size:14px"><input type="checkbox" id="fMine"> 내 시험지만</label><button class="sub" id="reload">새로고침</button><span class="hint" id="bankInfo" style="margin:0 0 0 auto"></span></div>
       <div id="paperList"></div>
     </div>
   </section>
@@ -153,6 +157,18 @@ tr.miss td{color:#A0AAB2}
 
     <div class="card"><div class="row"><button id="saveBtn">💾 저장하기</button><button class="sub" id="cancelEdit">목록으로</button><span class="msg" id="saveMsg" style="margin:0"></span></div>
       <div class="hint">저장할 때 상태를 <b>응시중</b>으로 두면 학생 화면에 바로 나타나요. 처음엔 <b>준비중</b>으로 저장하고 미리보기로 확인한 뒤 여는 걸 권해요.</div></div>
+  </section>
+
+  <!-- 선생님 관리 (관리자만) -->
+  <section id="v-teachers" style="display:none">
+    <div class="card">
+      <h2>👩‍🏫 함께 쓰는 선생님</h2>
+      <p class="hint" style="margin-top:0">선생님마다 <b>자기 코드</b>로 이 관리 화면과 📝 점수 직접 입력 화면에 들어가요. 시험지에 출제 선생님이 자동으로 기록되고, 학부모 리포트 인사말과 상담 안내도 그 선생님 이름으로 나가요.</p>
+      <div id="tList"></div>
+      <h3>선생님 추가</h3>
+      <div class="row"><input id="tNew" placeholder="호칭 (예: 저스틴쌤)" style="max-width:220px"><button class="sub" id="tAdd">추가</button></div>
+      <div class="msg" id="tMsg"></div>
+    </div>
   </section>
 
   <!-- 결과 -->
@@ -210,11 +226,16 @@ tr.miss td{color:#A0AAB2}
       if (!j.ok) { $("loginMsg").textContent = j.msg || "불러오지 못했어요."; return; }
       lsSet("cm-teacher-code", CODE);
       DATA = j; $("login").style.display = "none"; $("main").style.display = "";
+      $("meBox").style.display = "inline-flex"; $("meName").textContent = j.me.name + (j.me.master ? " (관리자)" : "");
+      $("tabTeachers").style.display = j.me.master ? "" : "none";
+      $("fMine").checked = !j.me.master;
+      $("contact").value = j.me.contact || lsGet("cm-report-contact"); $("repUrl").value = j.me.reportUrl || "";
       var total = j.catalog.reduce(function (s, b) { return s + b.n; }, 0), units = j.catalog.reduce(function (s, b) { return s + b.chapters.reduce(function (a, c) { return a + c.units.length; }, 0); }, 0);
       $("bankInfo").textContent = "문제은행: 교재 " + j.catalog.length + "권 · " + units + "과 · 문항 " + total + "개" + (j.ai ? " · AI 보충 켜짐" : " · AI 보충 꺼짐");
       fillClassSelects(); renderList(); buildPeriods(); buildQuarters(); buildBookFilters();
     });
   }
+  $("logout").onclick = function () { lsSet("cm-teacher-code", ""); location.reload(); };
   $("loginBtn").onclick = function () { CODE = $("tcode").value.trim(); if (CODE) init(); };
   $("tcode").onkeydown = function (e) { if (e.key === "Enter") $("loginBtn").click(); };
   CODE = lsGet("cm-teacher-code"); if (CODE) init();
@@ -222,12 +243,12 @@ tr.miss td{color:#A0AAB2}
   // ---------- 탭 ----------
   function tab(name) {
     Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) { t.classList.toggle("on", t.getAttribute("data-tab") === name); });
-    ["list", "edit", "results", "report"].forEach(function (n) { $("v-" + n).style.display = n === name ? "" : "none"; });
+    ["list", "edit", "results", "report", "teachers"].forEach(function (n) { $("v-" + n).style.display = n === name ? "" : "none"; });
     $("contactCard").style.display = name === "results" || name === "report" ? "" : "none";
     window.scrollTo(0, 0);
   }
   Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) {
-    t.onclick = function () { var n = t.getAttribute("data-tab"); if (n === "edit") newPaper(); if (n === "results") fillResultSelect(); tab(n); };
+    t.onclick = function () { var n = t.getAttribute("data-tab"); if (n === "edit") newPaper(); if (n === "results") fillResultSelect(); if (n === "teachers") loadTeachers(); tab(n); };
   });
 
   function fillClassSelects() {
@@ -240,14 +261,14 @@ tr.miss td{color:#A0AAB2}
   function stPill(s) { return '<span class="pill ' + (s === "응시중" ? "go" : s === "마감" ? "end" : "") + '">' + esc(s) + "</span>"; }
   function studentLink(p) { return location.origin + "/월간고사/exam.html?id=" + p.id + "&c=" + encodeURIComponent(p.cls); }
   function renderList() {
-    var fc = $("fCls").value, fs = $("fSt").value;
-    var list = DATA.papers.filter(function (p) { return (!fc || p.cls === fc) && (!fs || p.status === fs); });
+    var fc = $("fCls").value, fs = $("fSt").value, mine = $("fMine").checked;
+    var list = DATA.papers.filter(function (p) { return (!fc || p.cls === fc) && (!fs || p.status === fs) && (!mine || !p.teacher || p.teacher === DATA.me.name); });
     if (!list.length) { $("paperList").innerHTML = '<p class="hint">시험지가 없어요. 위의 <b>➕ 새 시험지</b>를 눌러 만들어 보세요.</p>'; return; }
     var groups = {}; list.forEach(function (p) { var k = p.cls + " · " + (p.period || "시기 없음"); (groups[k] = groups[k] || []).push(p); });
     $("paperList").innerHTML = Object.keys(groups).sort(function (a, b) { return a.localeCompare(b, "ko", { numeric: true }); }).map(function (k) {
       return '<div class="grp"><div class="gh">' + esc(k) + "</div>" + groups[k].map(function (p) {
         return '<div class="paper"><div class="b"><div class="t">' + esc(p.title) + " " + stPill(p.status) + ' <span class="pill ' + (p.kind === "분기평가" ? "q" : "m") + '">' + esc(p.kind) + "</span></div>" +
-          '<div class="m">' + esc(p.mode === "choice" ? "학생 선택형" : "선생님 지정") + " · " + esc(p.level) + " · " + p.count + "문항 · " + (p.minutes ? p.minutes + "분" : "시간 제한 없음") + (p.start ? " · " + esc(p.start) + "~" + esc(p.end || "") : "") + "<br>" + esc(p.range || (p.cfg && p.cfg.books ? "" : "")) +
+          '<div class="m">' + (p.teacher ? "출제 <b>" + esc(p.teacher) + "</b> · " : "") + esc(p.mode === "choice" ? "학생 선택형" : "선생님 지정") + " · " + esc(p.level) + " · " + p.count + "문항 · " + (p.minutes ? p.minutes + "분" : "시간 제한 없음") + (p.start ? " · " + esc(p.start) + "~" + esc(p.end || "") : "") + "<br>" + esc(p.range || (p.cfg && p.cfg.books ? "" : "")) +
           '<br>응시 <b>' + (p.takers || 0) + "명</b>" + (p.avg != null ? " · 평균 <b>" + round1(p.avg) + "점</b>" : "") + "</div>" +
           '<div class="copy">학생 링크: ' + esc(studentLink(p)) + "</div></div>" +
           '<div class="row">' + (p.status !== "응시중" ? '<button class="sm" data-st="응시중" data-id="' + p.id + '">▶ 응시 열기</button>' : '<button class="sm warn" data-st="마감" data-id="' + p.id + '">■ 마감</button>') +
@@ -278,7 +299,7 @@ tr.miss td{color:#A0AAB2}
     });
   }
   function paperById(id) { return DATA.papers.filter(function (p) { return p.id === id; })[0]; }
-  $("fCls").onchange = renderList; $("fSt").onchange = renderList;
+  $("fCls").onchange = renderList; $("fSt").onchange = renderList; $("fMine").onchange = renderList;
   $("reload").onclick = function () { post({ action: "t_init" }).then(function (j) { if (j.ok) { DATA = j; renderList(); } }); };
 
   // ---------- 시기·분기 ----------
@@ -460,8 +481,52 @@ tr.miss td{color:#A0AAB2}
   };
 
   // ---------- 상담 안내 문구 ----------
-  $("contact").value = lsGet("cm-report-contact");
-  $("contact").onchange = function () { lsSet("cm-report-contact", $("contact").value.trim()); };
+  $("saveMe").onclick = function () {
+    lsSet("cm-report-contact", $("contact").value.trim());
+    $("meMsg").textContent = "저장하는 중…";
+    post({ action: "t_me", contact: $("contact").value.trim(), reportUrl: $("repUrl").value.trim() }).then(function (j) {
+      $("meMsg").innerHTML = j.ok ? '<span class="ok">저장했어요 ✓ (' + esc(DATA.me.name) + ")</span>" : '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>";
+      if (j.ok) { DATA.me.contact = $("contact").value.trim(); DATA.me.reportUrl = $("repUrl").value.trim(); }
+    });
+  };
+  // ---------- 선생님 관리 ----------
+  function genCode(name) { var a = "abcdefghjkmnpqrstuvwxyz", s = ""; for (var i = 0; i < 4; i++) s += a[Math.floor(Math.random() * a.length)]; return s + (1000 + Math.floor(Math.random() * 9000)); }
+  function renderTeachers(list) {
+    $("tList").innerHTML = '<div class="tw"><table><thead><tr><th>선생님</th><th>사용</th><th>로그인 코드</th><th></th></tr></thead><tbody>' + list.map(function (t) {
+      return "<tr><td><b>" + esc(t.name) + "</b>" + (t.master ? ' <span class="pill">관리자</span>' : "") + "</td>" +
+        "<td>" + (t.master ? "-" : '<input type="checkbox" data-act="' + t.id + '"' + (t.active ? " checked" : "") + ">") + "</td>" +
+        "<td>" + (t.master ? '<span class="hint">Vercel의 TEACHER_CODE</span>' : (t.hasCode ? '<span class="ok">설정됨</span>' : '<span class="er">아직 없음</span>')) + "</td>" +
+        "<td>" + (t.master ? "" : '<button class="sm sub" data-code="' + t.id + '" data-name="' + esc(t.name) + '">' + (t.hasCode ? "코드 새로 만들기" : "코드 만들기") + "</button>") + "</td></tr>";
+    }).join("") + "</tbody></table></div>";
+    Array.prototype.forEach.call($("tList").querySelectorAll("[data-code]"), function (b) {
+      b.onclick = function () {
+        var name = b.getAttribute("data-name"), code = prompt(name + " 로그인 코드를 정해 주세요. (띄어쓰기 없이 6글자 이상)\n그대로 확인을 누르면 아래 코드로 만들어요.", genCode());
+        if (!code) return;
+        post({ action: "t_teacher_save", id: b.getAttribute("data-code"), name: name, newCode: code.trim(), active: true }).then(function (j) {
+          if (!j.ok) { $("tMsg").innerHTML = '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; return; }
+          $("tMsg").innerHTML = '<div class="copy" style="font-size:15px">✅ <b>' + esc(name) + "</b> 코드: <b>" + esc(code.trim()) + "</b><br>지금 이 코드를 " + esc(name) + "께 알려 주세요. (암호화되어 저장돼서 다시 볼 수 없어요)<br>관리 화면 주소: " + esc(location.origin) + "/admin/monthly.html</div>";
+          renderTeachers(j.teachers);
+        });
+      };
+    });
+    Array.prototype.forEach.call($("tList").querySelectorAll("[data-act]"), function (c) {
+      c.onchange = function () {
+        var t = list.filter(function (x) { return x.id === c.getAttribute("data-act"); })[0];
+        post({ action: "t_teacher_save", id: t.id, name: t.name, active: c.checked }).then(function (j) { $("tMsg").innerHTML = j.ok ? '<span class="ok">' + esc(t.name) + (c.checked ? " 사용 켬" : " 사용 끔 (로그인 안 됨)") + "</span>" : '<span class="er">' + esc(j.msg || "실패") + "</span>"; });
+      };
+    });
+  }
+  function loadTeachers() {
+    $("tList").innerHTML = '<p class="hint">불러오는 중…</p>';
+    post({ action: "t_teachers" }).then(function (j) { if (!j.ok) { $("tList").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; } renderTeachers(j.teachers); });
+  }
+  $("tAdd").onclick = function () {
+    var name = $("tNew").value.trim(); if (!name) return;
+    post({ action: "t_teacher_save", name: name, active: true }).then(function (j) {
+      if (!j.ok) { $("tMsg").innerHTML = '<span class="er">' + esc(j.msg || "추가하지 못했어요.") + "</span>"; return; }
+      $("tNew").value = ""; $("tMsg").innerHTML = '<span class="ok">' + esc(name) + " 추가했어요. 이제 '코드 만들기'를 눌러 주세요.</span>"; renderTeachers(j.teachers);
+    });
+  };
   // 학생 여러 명 리포트를 차례로 만들기 (한 번에 한 명씩 → 시간 초과 없음)
   function runReports(jobs, box, done) {
     var total = jobs.length, ok = 0, fail = 0, lines = [];

@@ -9,7 +9,16 @@ const crypto = require("crypto");
 const NOTION_VER = "2022-06-28";
 const EXAM_DB = () => (process.env.NOTION_EXAM_DB_ID || "dbdd356f53544c94a45b451a8a4ee84a").replace(/-/g, "").trim();
 const STUDENT_DB = () => (process.env.NOTION_STUDENT_DB_ID || "d6829ce41b134523945a1bdc2e87ce30").replace(/-/g, "").trim();
-const KINDS = ["단어시험", "듣기시험", "주간평가", "월간평가"];
+const KINDS = ["단어시험", "듣기시험", "주간평가", "월간평가", "분기평가"];
+// 다른 선생님(저스틴쌤·로미쌤 등)의 코드: 노션 👩‍🏫 선생님 DB (월간·분기 평가 관리 화면에서 만듦)
+const TEACHER_DB = () => (process.env.NOTION_TEACHER_DB_ID || "63a6527837024ddaa3d256b0cb243304").replace(/-/g, "").trim();
+const teacherHash = (code) => crypto.createHash("sha256").update("cm-teacher|" + String(code || "").trim() + "|" + (process.env.REPORT_SECRET || process.env.NOTION_TOKEN || "cm")).digest("hex");
+async function otherTeacherOk(code) {
+  code = String(code || "").trim(); if (!code) return false;
+  const q = await notion("databases/" + TEACHER_DB() + "/query", "POST", { page_size: 100, filter: { property: "사용", checkbox: { equals: true } } }, 1);
+  const h = teacherHash(code);
+  return !!(q && (q.results || []).some((p) => ((p.properties["코드"] && p.properties["코드"].rich_text) || []).map((x) => x.plain_text).join("") === h));
+}
 const GRADES = ["우수", "양호", "보통", "노력 필요"];
 
 const fails = new Map();
@@ -139,7 +148,7 @@ module.exports = async function handler(req, res) {
   if (blocked(ip)) return send(429, { error: "limit", msg: "시도가 너무 많아요. 잠시 뒤에 다시 해 주세요." });
   const b = await readBody(req);
   const a = crypto.createHash("sha256").update(String(b.code || "").trim()).digest(), c = crypto.createHash("sha256").update(code).digest();
-  if (!crypto.timingSafeEqual(a, c)) { failed(ip); return send(401, { error: "code", msg: "선생님 코드가 맞지 않아요." }); }
+  if (!crypto.timingSafeEqual(a, c) && !(await otherTeacherOk(b.code))) { failed(ip); return send(401, { error: "code", msg: "선생님 코드가 맞지 않아요." }); }
 
   lastErr = null;
   const act = b.action;
