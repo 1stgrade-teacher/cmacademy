@@ -61,6 +61,8 @@
   .chip{border:1.5px solid var(--border-strong);background:#fff;border-radius:9px;padding:8px 12px;font:600 15.5px var(--font);color:var(--ink);cursor:pointer}
   .chip.used{visibility:hidden}
   .built .chip{background:var(--accent-bg);border-color:var(--accent-light)}
+  .sa{width:100%;margin-top:12px;border:1.5px solid var(--border-strong);border-radius:11px;padding:12px 13px;font:500 17px var(--font);color:var(--ink);-webkit-user-select:text;user-select:text}
+  .sa:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
   .reset{margin-top:8px;border:0;background:none;color:var(--muted);font:600 13px var(--font);cursor:pointer;text-decoration:underline}
   .foot{position:sticky;bottom:0;background:rgba(243,243,245,.96);padding:12px 0 16px;margin-top:16px;display:flex;gap:10px;align-items:center;justify-content:space-between;border-top:1px solid var(--border)}
   .foot .info{font-size:14px;color:var(--muted)}
@@ -94,6 +96,7 @@
   var API = "/api/monthly", app = document.getElementById("app");
   var qs = new URLSearchParams(location.search), PID = qs.get("id") || "", CLS = qs.get("c") || "";
   if (CLS) document.getElementById("backLink").href = "./index.html?c=" + encodeURIComponent(CLS);
+  var fmt = function (s) { return esc(s).replace(/⟪([^⟫]*)⟫/g, "<u>$1</u>"); };
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
   function post(b) {
     return fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b) })
@@ -243,20 +246,31 @@
     function save() { ls.set("cm-monthly-run:" + PID, run); }
     app.innerHTML = '<div class="bar"><span class="ttl">' + esc(run.paper.title) + '</span><span class="prog"><i id="pg"></i></span><span class="timer" id="tm">' + (run.deadline ? "" : "0/" + total) + "</span></div>" +
       Q.map(function (q, i) {
-        var h = '<div class="q" id="q' + i + '"><div class="qh"><span class="qn">' + q.n + '</span><div><div class="qt">' + esc(q.q) + "</div>" + (q.unit ? '<div class="qu">' + esc(q.unit) + "</div>" : "") + "</div></div>";
-        if (q.sub) h += '<div class="qs">' + esc(q.sub) + "</div>";
-        if (q.type === "mc") h += '<div class="opts">' + q.opts.map(function (o, k) { return '<button class="opt" data-i="' + i + '" data-k="' + k + '"><b>' + NUM[k] + "</b><span>" + esc(o) + "</span></button>"; }).join("") + "</div>";
+        var h = '<div class="q" id="q' + i + '"><div class="qh"><span class="qn">' + q.n + '</span><div><div class="qt">' + fmt(q.q) + (q.type === "multi" ? ' <span style="color:#A2342A">(정답 모두 고르기)</span>' : "") + "</div>" + (q.unit ? '<div class="qu">' + esc(q.unit) + "</div>" : "") + "</div></div>";
+        if (q.sub) h += '<div class="qs">' + fmt(q.sub) + "</div>";
+        if (q.type === "mc" || q.type === "multi") h += '<div class="opts">' + q.opts.map(function (o, k) { return '<button class="opt" data-i="' + i + '" data-k="' + k + '"><b>' + NUM[k] + "</b><span>" + fmt(o) + "</span></button>"; }).join("") + "</div>";
+        else if (q.type === "short") h += '<input class="sa" data-i="' + i + '" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="답을 쓰세요 (빈칸에 들어갈 말만 써도 돼요)">';
         else h += '<div class="built" id="b' + i + '"></div><div class="chips" id="c' + i + '"></div><button class="reset" data-reset="' + i + '">처음부터 다시 배열</button>';
         return h + "</div>";
       }).join("") +
       '<div class="foot"><span class="info" id="left"></span><button class="btn" id="submit">제출하기</button></div>';
-    Q.forEach(function (q, i) { if (q.type === "arrange") paintArrange(i); else paintMc(i); });
+    Q.forEach(function (q, i) { if (q.type === "arrange") paintArrange(i); else if (q.type === "short") paintShort(i); else paintMc(i); });
     Array.prototype.forEach.call(app.querySelectorAll(".opt"), function (b) {
-      b.onclick = function () { var i = +b.getAttribute("data-i"); run.answers[i] = +b.getAttribute("data-k"); save(); paintMc(i); status(); };
+      b.onclick = function () {
+        var i = +b.getAttribute("data-i"), k = +b.getAttribute("data-k");
+        if (Q[i].type === "multi") { var arr = (run.answers[i] || []).slice(), p = arr.indexOf(k); if (p >= 0) arr.splice(p, 1); else arr.push(k); if (arr.length) run.answers[i] = arr; else delete run.answers[i]; }
+        else run.answers[i] = k;
+        save(); paintMc(i); status();
+      };
     });
+    Array.prototype.forEach.call(app.querySelectorAll(".sa"), function (inp) {
+      inp.oninput = function () { var i = +inp.getAttribute("data-i"); if (inp.value.trim()) run.answers[i] = inp.value; else delete run.answers[i]; save(); document.getElementById("q" + i).classList.toggle("done", !!inp.value.trim()); status(); };
+    });
+    function paintShort(i) { var inp = app.querySelector('.sa[data-i="' + i + '"]'); inp.value = run.answers[i] || ""; document.getElementById("q" + i).classList.toggle("done", !!inp.value.trim()); }
     Array.prototype.forEach.call(app.querySelectorAll("[data-reset]"), function (b) { b.onclick = function () { var i = +b.getAttribute("data-reset"); delete run.answers[i]; save(); paintArrange(i); status(); }; });
     function paintMc(i) {
-      Array.prototype.forEach.call(document.querySelectorAll('.opt[data-i="' + i + '"]'), function (b) { b.classList.toggle("on", run.answers[i] === +b.getAttribute("data-k")); });
+      var a = run.answers[i];
+      Array.prototype.forEach.call(document.querySelectorAll('.opt[data-i="' + i + '"]'), function (b) { var k = +b.getAttribute("data-k"); b.classList.toggle("on", Array.isArray(a) ? a.indexOf(k) >= 0 : a === k); });
       document.getElementById("q" + i).classList.toggle("done", run.answers[i] != null);
     }
     function paintArrange(i) {
@@ -268,7 +282,7 @@
       Array.prototype.forEach.call(built.querySelectorAll(".chip"), function (b) { b.onclick = function () { picked.splice(+b.getAttribute("data-k"), 1); if (picked.length) run.answers[i] = picked; else delete run.answers[i]; save(); paintArrange(i); status(); }; });
       document.getElementById("q" + i).classList.toggle("done", picked.length === q.words.length);
     }
-    function answered(i) { var a = run.answers[i]; return Q[i].type === "mc" ? a != null : !!a && a.length === Q[i].words.length; }
+    function answered(i) { var a = run.answers[i], t = Q[i].type; return t === "mc" ? a != null : t === "multi" ? !!a && a.length > 0 : t === "short" ? !!a && !!String(a).trim() : !!a && a.length === Q[i].words.length; }
     function status() {
       var n = Q.filter(function (_, i) { return answered(i); }).length;
       document.getElementById("pg").style.width = (n / total * 100) + "%";
@@ -300,7 +314,7 @@
     function submit(auto) {
       if (sending) return; sending = true;
       var btn = document.getElementById("submit"); btn.disabled = true; btn.textContent = auto ? "시간 종료 · 제출하는 중…" : "채점하는 중…";
-      var answers = Q.map(function (q, i) { var a = run.answers[i]; if (a == null) return null; return q.type === "mc" ? a : a.map(function (k) { return q.words[k]; }); });
+      var answers = Q.map(function (q, i) { var a = run.answers[i]; if (a == null) return null; return q.type === "arrange" ? a.map(function (k) { return q.words[k]; }) : a; });
       post({ action: "s_submit", token: ME.token, key: run.key, answers: answers, away: run.away || 0 }).then(function (j) {
         sending = false;
         if (j.relogin) { alert("본인 확인 시간이 끝났어요. 다시 확인하면 푼 답 그대로 제출할 수 있어요."); logout(); loginFlow(); return; }
@@ -330,8 +344,8 @@
     }
     var wrong = items.filter(function (x) { return !x.ok; });
     html += '<div class="box"><h2>' + (wrong.length ? "📝 틀린 문제 다시 보기 (" + wrong.length + ")" : "💯 모두 맞혔어요!") + "</h2>" + wrong.map(function (x) {
-      return '<div class="rv"><div class="h">' + x.n + ". " + esc(x.q) + "</div>" + (x.sub ? '<div class="qs" style="font-size:15px">' + esc(x.sub) + "</div>" : "") +
-        '<div class="a"><span class="no">내 답: ' + esc(x.given) + '</span><br><span class="ok">정답: ' + esc(x.answer) + "</span></div>" + (x.exp ? '<div class="x">💡 ' + esc(x.exp) + "</div>" : "") + "</div>";
+      return '<div class="rv"><div class="h">' + x.n + ". " + fmt(x.q) + "</div>" + (x.sub ? '<div class="qs" style="font-size:15px">' + fmt(x.sub) + "</div>" : "") +
+        '<div class="a"><span class="no">내 답: ' + fmt(x.given) + '</span><br><span class="ok">정답: ' + fmt(x.answer) + "</span></div>" + (x.exp ? '<div class="x">💡 ' + esc(x.exp) + "</div>" : "") + "</div>";
     }).join("") + backRow() + "</div>";
     app.innerHTML = html; bindBack();
   }

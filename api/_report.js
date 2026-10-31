@@ -19,13 +19,13 @@ module.exports = function makeReporter(ctx) {
   // **굵게**, `코드` 표시를 노션 서식으로 바꿈
   function rich(s) {
     s = String(s == null ? "" : s);
-    const out = [], re = /(\*\*[^*]+\*\*|`[^`]+`)/g;
+    const out = [], re = /(\*\*[^*]+\*\*|`[^`]+`|⟪[^⟫]+⟫)/g;
     let last = 0, m;
     const push = (t, ann) => { for (let i = 0; i < t.length; i += 1900) out.push({ type: "text", text: { content: t.slice(i, i + 1900) }, annotations: ann || {} }); };
     while ((m = re.exec(s))) {
       if (m.index > last) push(s.slice(last, m.index));
       const t = m[0];
-      if (t[0] === "*") push(t.slice(2, -2), { bold: true }); else push(t.slice(1, -1), { code: true });
+      if (t[0] === "*") push(t.slice(2, -2), { bold: true }); else if (t[0] === "⟪") push(t.slice(1, -1), { underline: true }); else push(t.slice(1, -1), { code: true });
       last = m.index + t.length;
     }
     if (last < s.length) push(s.slice(last));

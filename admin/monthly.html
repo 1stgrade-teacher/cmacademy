@@ -66,6 +66,19 @@ tr.miss td{color:#A0AAB2}
 .copy{font-size:12.5px;color:var(--ac-ink);background:var(--ac-soft);border:1px dashed #9BD3D0;border-radius:8px;padding:6px 9px;word-break:break-all;margin-top:6px}
 /* 학부모 리포트 (인쇄) */
 #printArea{display:none}
+.drop{border:2px dashed #9BD3D0;border-radius:14px;padding:22px;text-align:center;cursor:pointer;background:var(--ac-soft);line-height:1.8}
+.drop.on{background:var(--ac-bg);border-color:var(--ac)}
+.iq{border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px}
+.iq.off{opacity:.45}.iq.warn{border-color:#F0B37E;background:#FFFBF5}
+.iq .hd{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.iq .hd b{font-size:15px;color:var(--ac-ink)}
+.iq .hd select{width:auto;padding:6px 8px;font-size:13.5px}.iq .hd label{font-size:13.5px}
+.iq textarea,.iq input{font-size:14px;padding:7px 9px}
+.iq .ops{display:grid;gap:5px;margin-top:6px}
+.iq .op2{display:flex;gap:8px;align-items:center}
+.iq .op2 input[type=text]{flex:1}
+.iq .pv{font-size:13.5px;line-height:1.6;background:#F7F9FA;border-radius:8px;padding:8px 10px;margin-top:6px}
+.chips2{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
 .repbox{background:var(--ac-soft);border:1px solid #CDE9E7;border-radius:12px;padding:12px;margin-top:12px}
 .prog{margin-top:10px;font-size:13.5px;line-height:1.9}.prog a{color:var(--ac-ink);font-weight:700}
 .pbar{height:8px;background:#DCE9E9;border-radius:6px;overflow:hidden;margin:8px 0}.pbar i{display:block;height:100%;background:var(--ac);width:0;transition:width .3s}
@@ -96,6 +109,7 @@ tr.miss td{color:#A0AAB2}
     <button class="tab" data-tab="edit" id="tabEdit">➕ 새 시험지</button>
     <button class="tab" data-tab="results" id="tabRes">📊 응시 결과</button>
     <button class="tab" data-tab="report">📈 분기 리포트</button>
+    <button class="tab" data-tab="import">📚 자료 올리기</button>
     <button class="tab" data-tab="teachers" id="tabTeachers" style="display:none">👩‍🏫 선생님</button>
   </div>
 
@@ -159,6 +173,19 @@ tr.miss td{color:#A0AAB2}
       <div class="hint">저장할 때 상태를 <b>응시중</b>으로 두면 학생 화면에 바로 나타나요. 처음엔 <b>준비중</b>으로 저장하고 미리보기로 확인한 뒤 여는 걸 권해요.</div></div>
   </section>
 
+  <!-- 📚 자료 올리기 -->
+  <section id="v-import" style="display:none">
+    <div class="card">
+      <h2>📚 내 자료로 문제은행 채우기</h2>
+      <p class="hint" style="margin-top:0">문제지와 정답지를 함께 올리면 문항으로 나누고 정답을 맞춰 넣어요. 확인·수정한 뒤 저장하면 <b>새 시험지 → 출제 범위</b>에 <b>📁 교재 → 단원 → 과</b>로 나타나요.</p>
+      <div class="drop" id="drop"><b>파일을 여기에 끌어다 놓거나 눌러서 고르세요</b><br><span class="hint">워드(.docx) · 한글(.hwpx / .hwp) · PDF · 엑셀 양식(.xlsx) · 여러 개 함께 가능 · 파일 이름에 「정답」이 들어간 파일은 정답지로 읽어요</span>
+        <input type="file" id="impFiles" multiple accept=".docx,.hwpx,.hwp,.pdf,.txt,.xlsx" style="display:none"></div>
+      <div class="row" style="margin-top:10px"><a class="sm" href="./자료올리기_양식.xlsx" download style="font-size:13.5px;color:#0A5F61;font-weight:700">⬇ 엑셀 양식 내려받기</a><span class="hint" style="margin:0">문제를 직접 정리하실 땐 엑셀 양식이 가장 정확해요.</span></div>
+      <div class="msg" id="impMsg"></div>
+    </div>
+    <div id="impUnits"></div>
+  </section>
+
   <!-- 선생님 관리 (관리자만) -->
   <section id="v-teachers" style="display:none">
     <div class="card">
@@ -201,10 +228,12 @@ tr.miss td{color:#A0AAB2}
 </div>
 <div id="printArea"></div>
 </div>
+<script src="./import-parser.js"></script>
 <script>
 (function () {
   var API = "/api/monthly", CODE = "", DATA = { classes: [], papers: [], catalog: [] };
   var $ = function (id) { return document.getElementById(id); };
+  var fmt = function (s) { return esc(s).replace(/⟪([^⟫]*)⟫/g, "<u>$1</u>").replace(/\n/g, "<br>"); };
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
   function lsGet(k) { try { return localStorage.getItem(k) || ""; } catch (e) { return ""; } }
   function lsSet(k, v) { try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); } catch (e) {} }
@@ -243,7 +272,7 @@ tr.miss td{color:#A0AAB2}
   // ---------- 탭 ----------
   function tab(name) {
     Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) { t.classList.toggle("on", t.getAttribute("data-tab") === name); });
-    ["list", "edit", "results", "report", "teachers"].forEach(function (n) { $("v-" + n).style.display = n === name ? "" : "none"; });
+    ["list", "edit", "results", "report", "teachers", "import"].forEach(function (n) { $("v-" + n).style.display = n === name ? "" : "none"; });
     $("contactCard").style.display = name === "results" || name === "report" ? "" : "none";
     window.scrollTo(0, 0);
   }
@@ -434,8 +463,9 @@ tr.miss td{color:#A0AAB2}
       var lvN = ["", "쉬움", "보통", "어려움"];
       $("pv").innerHTML = '<div class="hint">초록 글씨가 정답이에요. 마음에 안 드는 문제는 <b>빼기</b>를 누른 뒤 다시 미리보기 하면 다른 문제로 바뀌어요.' + (EXCL.length ? " (뺀 문제 " + EXCL.length + "개 · <a href='#' id='unex'>모두 되살리기</a>)" : "") + "</div>" +
         j.items.map(function (q, i) {
-          var body = '<div class="tg">' + esc(q.ch) + " › " + esc(q.unit) + '<span class="lv lv' + q.lv + '">' + lvN[q.lv] + "</span>" + (q.ai ? ' <span class="lv lv2">AI</span>' : "") + "</div><div><b>" + esc(q.q) + "</b></div>" + (q.sub ? '<div class="sb">' + esc(q.sub) + "</div>" : "");
-          if (q.type === "mc") body += q.opts.map(function (o, k) { return '<div class="op' + (k === q.ans ? " c" : "") + '">' + "①②③④⑤⑥"[k] + " " + esc(o) + "</div>"; }).join("");
+          var body = '<div class="tg">' + esc(q.ch) + " › " + esc(q.unit) + '<span class="lv lv' + q.lv + '">' + lvN[q.lv] + "</span>" + (q.ai ? ' <span class="lv lv2">AI</span>' : "") + (q.custom ? ' <span class="lv lv1">📁 직접 올림</span>' : "") + "</div><div><b>" + fmt(q.q) + "</b></div>" + (q.sub ? '<div class="sb">' + fmt(q.sub) + "</div>" : "");
+          if (q.type === "mc" || q.type === "multi") body += q.opts.map(function (o, k) { var c = q.type === "mc" ? k === q.ans : (q.anss || []).indexOf(k) >= 0; return '<div class="op' + (c ? " c" : "") + '">' + "①②③④⑤⑥"[k] + " " + fmt(o) + "</div>"; }).join("") + (q.type === "multi" ? '<div class="tg">(모두 고르기)</div>' : "");
+          else if (q.type === "short") body += '<div class="op c">정답: ' + fmt(q.answer) + '</div><div class="tg">이렇게 써도 정답: ' + esc((q.accept || []).join(" | ")) + "</div>";
           else body += '<div class="op">조각: ' + esc(q.words.join(" / ")) + '</div><div class="op c">정답: ' + esc(q.answer) + "</div>";
           if (q.exp) body += '<div class="tg">해설: ' + esc(q.exp) + "</div>";
           return '<div class="qv"><span class="no">' + (i + 1) + '</span><div class="bd">' + body + '</div><div><button class="sm sub" data-ex="' + esc(q.id) + '">빼기</button></div></div>';
@@ -489,6 +519,141 @@ tr.miss td{color:#A0AAB2}
       if (j.ok) { DATA.me.contact = $("contact").value.trim(); DATA.me.reportUrl = $("repUrl").value.trim(); }
     });
   };
+  // ---------- 📚 자료 올리기 ----------
+  var IMP = [];
+  var drop = $("drop");
+  drop.onclick = function () { $("impFiles").click(); };
+  drop.ondragover = function (e) { e.preventDefault(); drop.classList.add("on"); };
+  drop.ondragleave = function () { drop.classList.remove("on"); };
+  drop.ondrop = function (e) { e.preventDefault(); drop.classList.remove("on"); readFiles(e.dataTransfer.files); };
+  $("impFiles").onchange = function () { readFiles(this.files); this.value = ""; };
+  var isKey = function (f) { return /정답|답지|해답|answer|key/i.test(f.name); };
+  async function readFiles(list) {
+    var files = Array.prototype.slice.call(list || []); if (!files.length) return;
+    var P = window.ImportParser; $("impMsg").innerHTML = "파일을 읽는 중…";
+    try {
+      var keyLines = [], units = [];
+      for (var f of files.filter(isKey)) { if (!/\.xlsx$/i.test(f.name)) keyLines = keyLines.concat(await P.fileLines(f)); }
+      for (var f2 of files.filter(function (x) { return !isKey(x); })) {
+        if (/\.xlsx$/i.test(f2.name)) { units = units.concat(await P.xlsxUnits(f2)); continue; }
+        var lines = await P.fileLines(f2), part = P.splitAnswerSection(lines);
+        var key = P.parseAnswers(keyLines.length ? keyLines : part.a);
+        var qs = P.parseQuestions(part.q, key), meta = P.guessMeta(f2.name, lines);
+        meta.file = f2.name;
+        units.push({ meta: meta, questions: qs, text: qs.length >= 2 ? "" : lines.join("\n"), raw: part.q.join("\n"), keyText: Object.keys(key).map(function (k) { return k + ". " + key[k]; }).join(" "), keyCount: Object.keys(key).length });
+      }
+      if (!units.length) { $("impMsg").innerHTML = '<span class="er">문제지 파일이 없어요. (정답지만 올리셨다면 문제지도 함께 올려 주세요)</span>'; return; }
+      IMP = units; renderImport();
+      var nq = units.reduce(function (a, u) { return a + u.questions.length; }, 0);
+      $("impMsg").innerHTML = '<span class="ok">읽었어요: ' + units.length + "개 자료 · 문항 " + nq + "개</span> — 아래에서 확인하고 저장해 주세요.";
+    } catch (err) { $("impMsg").innerHTML = '<span class="er">파일을 읽지 못했어요: ' + esc(err.message) + "</span><br>한글(.hwp)이 안 읽히면 한글에서 <b>다른 이름으로 저장 → .hwpx 또는 PDF</b>로 저장해서 올려 주세요."; }
+  }
+  var TYPES = { mc: "객관식", multi: "모두 고르기", short: "서술형(직접 쓰기)", arrange: "배열" };
+  function renderImport() {
+    var areas = ["문법", "구문", "독해", "교과서", "어휘", "기타"], grades = ["", "초등", "중1", "중2", "중3", "고등"];
+    $("impUnits").innerHTML = IMP.map(function (u, ui) {
+      var cnt = {}; u.questions.forEach(function (q) { cnt[q.type] = (cnt[q.type] || 0) + 1; });
+      var warn = u.questions.filter(function (q) { return q.warn && q.warn.length; }).length;
+      return '<div class="card" data-u="' + ui + '"><h2>📄 ' + esc(u.meta.file || "자료") + "</h2>" +
+        '<div class="grid"><div><label class="l">교재</label><input data-m="book" value="' + esc(u.meta.book) + '" placeholder="예: Grammar Inside Level 2"></div>' +
+        '<div><label class="l">단원(챕터)</label><input data-m="chapter" value="' + esc(u.meta.chapter) + '" placeholder="예: Chapter 02 시제"></div>' +
+        '<div><label class="l">과(자료 이름)</label><input data-m="unit" value="' + esc(u.meta.unit) + '" placeholder="예: 추가 문제"></div>' +
+        '<div><label class="l">영역</label><select data-m="area">' + areas.map(function (a) { return "<option" + (a === u.meta.area ? " selected" : "") + ">" + a + "</option>"; }).join("") + "</select></div>" +
+        '<div><label class="l">학년</label><select data-m="grade">' + grades.map(function (g) { return '<option value="' + g + '"' + (g === (u.meta.grade || "") ? " selected" : "") + ">" + (g || "고르지 않음") + "</option>"; }).join("") + "</select></div></div>" +
+        '<div class="chips2">' + Object.keys(cnt).map(function (t) { return '<span class="pill go">' + TYPES[t] + " " + cnt[t] + "</span>"; }).join("") +
+        (u.keyCount != null ? '<span class="pill">정답지에서 ' + u.keyCount + "개 읽음</span>" : "") + (warn ? '<span class="pill end">확인 필요 ' + warn + "개</span>" : "") + "</div>" +
+        (u.questions.length < 2 ? '<p class="hint">문항으로 나누지 못했어요. 문제 없는 <b>본문 자료</b>로 저장하면 시험 때 AI가 이 글로 문제를 만들어요. 문제지라면 <b>🤖 AI로 문항 나누기</b>를 눌러 보세요.</p><textarea data-text rows="6">' + esc(u.text) + "</textarea>" : "") +
+        '<div class="row" style="margin-top:10px">' + (DATA.ai ? '<button class="sm sub" data-act="aiparse">🤖 AI로 문항 나누기</button><button class="sm sub" data-act="aiexp">🧠 빈 해설 AI로 채우기</button>' : "") +
+        '<label><input type="checkbox" data-replace> 같은 과에 이미 올린 문항을 지우고 새로 저장</label><button data-act="save">💾 문제은행에 저장</button><span class="msg" data-msg style="margin:0"></span></div>' +
+        '<div data-qs>' + u.questions.map(function (q, qi) { return qCard(q, qi); }).join("") + "</div></div>";
+    }).join("");
+    Array.prototype.forEach.call($("impUnits").querySelectorAll(".card[data-u]"), bindUnit);
+  }
+  function qCard(q, i) {
+    var w = q.warn && q.warn.length, off = q.off;
+    var h = '<div class="iq' + (off ? " off" : "") + (w ? " warn" : "") + '" data-q="' + i + '"><div class="hd"><b>' + esc(q.no || i + 1) + "번</b>" +
+      '<select data-f="type">' + Object.keys(TYPES).map(function (t) { return '<option value="' + t + '"' + (t === q.type ? " selected" : "") + ">" + TYPES[t] + "</option>"; }).join("") + "</select>" +
+      '<select data-f="lv">' + [1, 2, 3].map(function (l) { return '<option value="' + l + '"' + (l === +q.lv ? " selected" : "") + ">" + ["", "쉬움", "보통", "어려움"][l] + "</option>"; }).join("") + "</select>" +
+      '<label><input type="checkbox" data-f="use"' + (off ? "" : " checked") + "> 넣기</label>" + (w ? '<span class="er" style="font-size:13px">⚠ ' + esc(q.warn.join(" · ")) + "</span>" : "") + "</div>" +
+      '<input data-f="q" value="' + esc(q.q) + '" placeholder="문제 (지시문)">' +
+      '<textarea data-f="sub" rows="' + Math.min(6, Math.max(1, (q.sub || "").split("\n").length)) + '" placeholder="지문·예문·<보기> (없으면 비워 두세요)" style="margin-top:6px">' + esc(q.sub) + "</textarea>";
+    if (q.type === "mc" || q.type === "multi") {
+      var opts = (q.opts || []).slice(); while (opts.length < 5) opts.push("");
+      h += '<div class="ops">' + opts.map(function (o, k) { var c = q.type === "mc" ? k === q.ans : (q.anss || []).indexOf(k) >= 0; return '<div class="op2"><input type="' + (q.type === "mc" ? "radio" : "checkbox") + '" name="a' + Math.random().toString(36).slice(2, 6) + '" data-ans="' + k + '"' + (c ? " checked" : "") + ' title="정답">' + "①②③④⑤"[k] + '<input type="text" data-opt="' + k + '" value="' + esc(o) + '"></div>'; }).join("") + '</div><div class="hint">동그라미를 누른 보기가 정답이에요.</div>';
+    } else if (q.type === "short") {
+      h += '<div class="grid" style="margin-top:6px"><div><label class="l">정답</label><input data-f="answer" value="' + esc(q.answer) + '"></div><div><label class="l">답 쓰는 틀 (선택)</label><input data-f="frame" value="' + esc(q.frame || "") + '" placeholder="예: Owen ______ 2021."></div></div>' +
+        '<div class="hint">정답 안의 <b>단어[다른 답]</b>은 둘 다 정답으로, <b>X, 고친 말</b>·<b>틀린 말 → 고친 말</b>은 고친 말만 써도 정답으로 처리해요.</div>';
+    } else {
+      h += '<div class="grid" style="margin-top:6px"><div><label class="l">조각 ( / 로 나눠요)</label><input data-f="words" value="' + esc((q.words || []).join(" / ")) + '"></div><div><label class="l">정답 문장</label><input data-f="answer" value="' + esc(q.answer) + '"></div></div>';
+    }
+    h += '<textarea data-f="exp" rows="1" placeholder="해설 (선택)" style="margin-top:6px">' + esc(q.exp || "") + "</textarea>" +
+      '<div class="pv">' + fmt(q.q) + (q.sub ? "<br>" + fmt(q.sub) : "") + "</div></div>";
+    return h;
+  }
+  function readCard(el, q) {
+    var g = function (f) { var x = el.querySelector('[data-f="' + f + '"]'); return x ? x.value : ""; };
+    q.type = g("type"); q.lv = +g("lv"); q.off = !el.querySelector('[data-f="use"]').checked;
+    q.q = g("q").trim(); q.sub = g("sub").trim(); q.exp = g("exp").trim();
+    if (q.type === "mc" || q.type === "multi") {
+      var opts = [], map = {};
+      Array.prototype.forEach.call(el.querySelectorAll("[data-opt]"), function (x) { var k = +x.getAttribute("data-opt"); if (x.value.trim()) { map[k] = opts.length; opts.push(x.value.trim()); } });
+      var chosen = Array.prototype.filter.call(el.querySelectorAll("[data-ans]"), function (x) { return x.checked; }).map(function (x) { return map[+x.getAttribute("data-ans")]; }).filter(function (x) { return x != null; });
+      q.opts = opts; if (q.type === "mc") q.ans = chosen.length ? chosen[0] : -1; else q.anss = chosen;
+    } else if (q.type === "short") { q.answer = g("answer").trim(); q.frame = g("frame").trim(); }
+    else { q.words = g("words").split("/").map(function (x) { return x.trim(); }).filter(Boolean); q.answer = g("answer").trim(); }
+    return q;
+  }
+  function bindUnit(card) {
+    var ui = +card.getAttribute("data-u"), u = IMP[ui], msg = card.querySelector("[data-msg]");
+    function sync() {
+      Array.prototype.forEach.call(card.querySelectorAll("[data-m]"), function (x) { u.meta[x.getAttribute("data-m")] = x.value.trim(); });
+      Array.prototype.forEach.call(card.querySelectorAll(".iq"), function (el) { readCard(el, u.questions[+el.getAttribute("data-q")]); });
+      var t = card.querySelector("[data-text]"); if (t) u.text = t.value;
+    }
+    Array.prototype.forEach.call(card.querySelectorAll('.iq [data-f="type"]'), function (sel) {
+      sel.onchange = function () { sync(); var el = sel.closest(".iq"), i = +el.getAttribute("data-q"); el.outerHTML = qCard(u.questions[i], i); bindUnit(card); };
+    });
+    Array.prototype.forEach.call(card.querySelectorAll('.iq [data-f="use"]'), function (c) { c.onchange = function () { c.closest(".iq").classList.toggle("off", !c.checked); }; });
+    var bAi = card.querySelector('[data-act="aiparse"]');
+    if (bAi) bAi.onclick = function () {
+      sync(); var src = u.raw || u.text; if (!src) return;
+      var chunks = [], cur = ""; src.split("\n").forEach(function (l) { if (cur.length > 5000 && /^\s*(\d{1,3})\s*[.)]/.test(l)) { chunks.push(cur); cur = ""; } cur += l + "\n"; }); if (cur) chunks.push(cur);
+      var got = [], i = 0; bAi.disabled = true;
+      (function next() {
+        if (i >= chunks.length) { bAi.disabled = false; u.questions = got.map(function (q) { q.lv = q.lv || 2; q.warn = q.answer || q.type === "mc" && q.ans >= 0 ? [] : ["AI가 정답을 못 찾았어요"]; return q; }); u.text = ""; renderImport(); return; }
+        msg.textContent = "AI가 문항을 나누는 중… (" + (i + 1) + "/" + chunks.length + ")";
+        post({ action: "t_import_ai", mode: "parse", text: chunks[i], answers: u.keyText || "" }).then(function (j) { if (j.ok) got = got.concat(j.questions || []); else msg.textContent = j.msg || "실패"; i++; next(); });
+      })();
+    };
+    var bEx = card.querySelector('[data-act="aiexp"]');
+    if (bEx) bEx.onclick = function () {
+      sync(); var need = u.questions.map(function (q, i) { return { q: q, i: i }; }).filter(function (x) { return !x.q.off && !x.q.exp; });
+      if (!need.length) { msg.textContent = "해설이 빈 문항이 없어요."; return; }
+      bEx.disabled = true; var p = 0;
+      (function next() {
+        if (p >= need.length) { bEx.disabled = false; msg.innerHTML = '<span class="ok">해설을 채웠어요. 확인해 주세요.</span>'; renderImport(); return; }
+        var part = need.slice(p, p + 8); msg.textContent = "AI가 해설을 쓰는 중… (" + Math.min(p + 8, need.length) + "/" + need.length + ")";
+        post({ action: "t_import_ai", mode: "explain", items: part.map(function (x) { var q = x.q; return { q: q.q, sub: q.sub, opts: q.opts, answer: q.type === "mc" ? (q.opts || [])[q.ans] : q.type === "multi" ? (q.anss || []).map(function (k) { return (q.opts || [])[k]; }).join(" / ") : q.answer }; }) }).then(function (j) {
+          (j.items || []).forEach(function (r) { var x = part[r.i]; if (x) { x.q.exp = r.exp; x.q.lv = r.lv || x.q.lv; } }); p += 8; next();
+        });
+      })();
+    };
+    card.querySelector('[data-act="save"]').onclick = function () {
+      sync();
+      if (!u.meta.book) { msg.innerHTML = '<span class="er">교재 이름을 넣어 주세요.</span>'; return; }
+      var qs = u.questions.filter(function (q) { return !q.off; });
+      var bad = qs.filter(function (q) { return q.type === "mc" ? !(q.ans >= 0) : q.type === "multi" ? !(q.anss && q.anss.length) : !q.answer; });
+      if (bad.length && !confirm("정답이 비어 있는 문항 " + bad.length + "개(" + bad.map(function (q) { return q.no; }).join(", ") + "번)는 빼고 저장할까요?")) return;
+      var btn = this; btn.disabled = true; msg.textContent = "저장하는 중…";
+      post({ action: "t_import_save", meta: u.meta, questions: qs.filter(function (q) { return bad.indexOf(q) < 0; }), text: u.text || "", replace: card.querySelector("[data-replace]").checked }).then(function (j) {
+        btn.disabled = false;
+        if (!j.ok) { msg.innerHTML = '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; return; }
+        DATA.catalog = j.catalog || DATA.catalog;
+        msg.innerHTML = '<span class="ok">저장했어요 ✓ 이 과의 문항 ' + j.n + "개" + (j.skipped && j.skipped.length ? " (건너뜀 " + j.skipped.length + "개)" : "") + '</span> · <a href="' + esc(j.url) + '" target="_blank">노션</a> · 이제 <b>➕ 새 시험지</b>의 출제 범위에 📁 ' + esc(u.meta.book) + "로 보여요.";
+      });
+    };
+  }
+
   // ---------- 선생님 관리 ----------
   function genCode(name) { var a = "abcdefghjkmnpqrstuvwxyz", s = ""; for (var i = 0; i < 4; i++) s += a[Math.floor(Math.random() * a.length)]; return s + (1000 + Math.floor(Math.random() * 9000)); }
   function renderTeachers(list) {
