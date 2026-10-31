@@ -766,6 +766,13 @@ tr.miss td{color:#A0AAB2}
   }
   var isKeyName = function (n) { return /정답|답지|해답|answer|key/i.test(n); };
   var baseOf = function (n) { return n.replace(/\.[^.]+$/, "").replace(/[_\s-]*(정답(지)?|답지|해답|answer|key)[_\s-]*/ig, "").replace(/[_\s]+/g, " ").trim(); };
+  // 파일 이름에서 챕터·유닛 읽기: ..._CH01_여러 가지 동사 (챕터) / ..._CH12_UNIT2_I wish + 가정법 (유닛)
+  function parseDriveName(name) {
+    var n = baseOf(name), m = n.match(/(?:^|\s)(?:CH|Chapter)\s*0?(\d{1,2})\s*(?:UNIT|Unit|유닛)\s*0?(\d{1,2})\s*(.*)$/);
+    if (m) return { kind: "unit", ch: +m[1], unit: +m[2], title: m[3].trim() };
+    m = n.match(/(?:^|\s)(?:CH|Chapter)\s*0?(\d{1,2})\s*(.*)$/);
+    return m ? { kind: "chapter", ch: +m[1], title: m[2].trim() } : null;
+  }
   function pairKey(f, files) {
     var keys = files.filter(function (x) { return isKeyName(x.name) && x.path.join("/") === f.path.join("/"); });
     if (keys.length <= 1) return keys[0] || null;
@@ -792,6 +799,7 @@ tr.miss td{color:#A0AAB2}
     var ids = Array.prototype.filter.call($("drvList").querySelectorAll("[data-drv]"), function (c) { return c.checked; }).map(function (c) { return c.getAttribute("data-drv"); });
     if (!ids.length) return;
     var P = window.ImportParser, units = [], fails = [], btn = $("drvGo"); btn.disabled = true;
+    var topics = {}; DRV.files.forEach(function (x) { var q = isKeyName(x.name) ? null : parseDriveName(x.name); if (q && q.kind === "chapter" && q.title && !topics[q.ch]) topics[q.ch] = q.title; }); // CH번호 → 챕터 이름
     for (var i = 0; i < ids.length; i++) {
       var f = DRV.files.find(function (x) { return x.id === ids[i]; }); if (!f) continue;
       $("drvInfo").textContent = "가져오는 중… (" + (i + 1) + "/" + ids.length + ") " + f.name;
@@ -805,12 +813,14 @@ tr.miss td{color:#A0AAB2}
         var key = P.parseAnswers(keyLines.length ? keyLines : part.a), qsx = P.parseQuestions(part.q, key), meta = P.guessMeta(f.name, lines);
         if (f.path[0]) meta.book = f.path[0];
         if (f.path[1]) meta.chapter = f.path[1];
-        else { // 교재 폴더에 바로 넣은 파일: 파일 이름의 CH01 여러 가지 동사 → 단원
-          var cm = baseOf(f.name).match(/(?:^|\s)(?:CH|Chapter|Unit|Lesson)\s*0?(\d{1,2})\s*(.*)$/i);
-          if (cm) meta.chapter = "Chapter " + cm[1].padStart(2, "0") + (cm[2].trim() ? " " + cm[2].trim() : "");
+        else { // 교재 폴더에 바로 넣은 파일: 파일 이름의 CH01 여러 가지 동사 → 단원 (유닛 파일은 같은 CH 번호의 챕터 이름을 따라가요)
+          var pn = parseDriveName(f.name);
+          if (pn) meta.chapter = "Chapter " + String(pn.ch).padStart(2, "0") + ((pn.kind === "chapter" ? pn.title : topics[pn.ch]) ? " " + (pn.kind === "chapter" ? pn.title : topics[pn.ch]) : "");
         }
         if (meta.area === "기타") meta.area = P.guessMeta(f.path.join(" ") + " " + f.name, lines).area;
         meta.unit = f.done ? f.done.unit : (function () {
+          var pn2 = !f.path[1] ? parseDriveName(f.name) : null;
+          if (pn2 && pn2.kind === "unit") return "UNIT" + pn2.unit + (pn2.title ? " " + pn2.title : "");
           var bk = String(meta.book || "").replace(/[_\s]+/g, " ").trim(), n = baseOf(f.name);
           if (bk && n.toLowerCase().indexOf(bk.toLowerCase()) === 0) n = n.slice(bk.length);
           if (!f.path[1]) n = n.split(/(?:^|\s)(?:CH|Chapter|Unit|Lesson)\s*\d/i)[0];
