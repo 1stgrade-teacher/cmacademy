@@ -17,6 +17,9 @@ async function token(code) {
 
 export default async function middleware(request) {
   try {
+    // 문제은행(정답 포함)·관리 도구 폴더는 사이트에서 직접 열 수 없음 (서버만 읽음)
+    const p0 = new URL(request.url).pathname;
+    if (/^\/(exam-bank|tools|\.github)(\/|$)/i.test(p0)) return new Response("Not found", { status: 404 });
     const code = (typeof process !== "undefined" && process.env && process.env.SITE_CODE || "").trim();
     if (!code) return pass();
     const url = new URL(request.url);
