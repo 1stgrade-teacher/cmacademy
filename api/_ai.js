@@ -18,18 +18,29 @@ const PROVIDERS = {
   gemini: { label: "Gemini", env: "GEMINI_API_KEY", model: () => process.env.GEMINI_MODEL || "gemini-2.5-flash" },
 };
 const ORDER = ["deepseek", "openai", "claude", "gemini"];
+// 화면에서 고를 수 있는 모델 (앞쪽일수록 가볍고 저렴). 목록에 없으면 '직접 입력'으로 아무 모델 이름이나 쓸 수 있어요.
+const MODELS = {
+  deepseek: [["deepseek-flash", "빠르고 저렴 (기본)"], ["deepseek-chat", "일반 대화"]],
+  openai: [["gpt-4.1-mini", "빠르고 저렴 (기본)"], ["gpt-4.1", "더 똑똑함"], ["gpt-4o-mini", "가벼움"], ["gpt-4o", "균형"]],
+  claude: [["claude-haiku-5-5", "빠르고 저렴 (기본)"], ["claude-sonnet-5-5", "균형"], ["claude-opus-5-5", "가장 똑똑함 · 비쌈"]],
+  gemini: [["gemini-2.5-flash", "빠르고 저렴 (기본)"], ["gemini-2.5-flash-lite", "더 가벼움"], ["gemini-2.5-pro", "더 똑똑함"]],
+};
+const okModel = (m) => /^[A-Za-z0-9][A-Za-z0-9._:\-]{0,59}$/.test(String(m || ""));
 
 const keyOf = (p) => String(process.env[PROVIDERS[p].env] || "").trim();
 function available() { return ORDER.filter((p) => keyOf(p)); }
-function list() { return available().map((p) => ({ id: p, label: PROVIDERS[p].label, model: PROVIDERS[p].model() })); }
+function list() { return available().map((p) => ({ id: p, label: PROVIDERS[p].label, model: PROVIDERS[p].model(), models: MODELS[p].map((m) => ({ id: m[0], note: m[1] })) })); }
+// 선생님이 고른 모델이 있으면 그것, 없으면 Vercel 열쇠/기본값
+const modelFor = (p) => { const st = als.getStore() || {}, m = st.models && st.models[p]; return okModel(m) ? m : PROVIDERS[p].model(); };
 function norm(p) { p = String(p || "").toLowerCase().trim(); return p === "chatgpt" || p === "gpt" ? "openai" : p === "anthropic" ? "claude" : p === "google" ? "gemini" : p; }
 function order(prefer) {
   const av = available(), first = [norm(prefer), norm(process.env.AI_PROVIDER)].filter((p) => av.includes(p));
   return [...new Set(first.concat(av))];
 }
 // 요청 하나 동안 "이 선생님은 이 AI를 먼저" 를 기억
-function withPrefer(prefer, fn) { return als.run({ prefer: norm(prefer) }, fn); }
-function setPrefer(prefer) { als.enterWith({ prefer: norm(prefer) }); }
+function cleanModels(m) { const o = {}; if (m && typeof m === "object") for (const p of ORDER) if (okModel(m[p])) o[p] = String(m[p]); return o; }
+function withPrefer(prefer, fn, models) { return als.run({ prefer: norm(prefer), models: cleanModels(models) }, fn); }
+function setPrefer(prefer, models) { als.enterWith({ prefer: norm(prefer), models: cleanModels(models) }); }
 function defaultId() { return order("")[0] || ""; }
 
 function parseJson(txt) {
@@ -41,7 +52,7 @@ function parseJson(txt) {
 }
 
 async function callOne(p, system, user, maxTokens, temperature, signal) {
-  const key = keyOf(p), model = PROVIDERS[p].model(), H = { "Content-Type": "application/json" };
+  const key = keyOf(p), model = modelFor(p), H = { "Content-Type": "application/json" };
   let url, body;
   if (p === "deepseek" || p === "openai") {
     url = p === "deepseek" ? "https://api.deepseek.com/chat/completions" : "https://api.openai.com/v1/chat/completions";
@@ -71,13 +82,13 @@ async function callOne(p, system, user, maxTokens, temperature, signal) {
   return out;
 }
 
-let last = { used: "", errors: [] };
+let last = { used: "", model: "", errors: [] };
 // 고른 AI → 실패하면 다음 AI. 전체 시간은 timeoutMs 안에서.
 async function askAI(system, user, maxTokens, timeoutMs, opts) {
   opts = opts || {};
   const st = als.getStore() || {};
   const list = opts.only ? available().filter((p) => p === norm(opts.only)) : order(opts.prefer || st.prefer);
-  last = { used: "", errors: [] };
+  last = { used: "", model: "", errors: [] };
   if (!list.length) return null;
   const end = Date.now() + (timeoutMs || 40000);
   for (const p of list) {
@@ -85,11 +96,11 @@ async function askAI(system, user, maxTokens, timeoutMs, opts) {
     const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), left);
     try {
       const out = await callOne(p, system, user, maxTokens || 3000, opts.temperature == null ? 0.5 : opts.temperature, ctl.signal);
-      last.used = p; return out;
+      last.used = p; last.model = modelFor(p); return out;
     } catch (e) { console.error("ai", e && e.message); last.errors.push(PROVIDERS[p].label + ": " + String((e && e.message) || e).slice(0, 160)); }
     finally { clearTimeout(t); }
   }
   return null;
 }
 
-module.exports = { askAI, available, list, withPrefer, setPrefer, defaultId, label: (p) => (PROVIDERS[p] || {}).label || "", lastInfo: () => last, _t: { parseJson, order, callOne } };
+module.exports = { askAI, available, list, withPrefer, setPrefer, defaultId, modelFor, label: (p) => (PROVIDERS[p] || {}).label || "", lastInfo: () => last, _t: { parseJson, order, callOne } };

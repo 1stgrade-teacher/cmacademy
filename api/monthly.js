@@ -523,7 +523,7 @@ module.exports = async function handler(req, res) {
 
   // =================== 선생님 ===================
   if (act.startsWith("t_")) {
-    AI.setPrefer(b.ai); // 선생님이 고른 AI를 먼저
+    AI.setPrefer(b.ai, b.aiModels); // 선생님이 고른 AI와 모델을 먼저
     const ip = String((req.headers["x-forwarded-for"] || "").split(",")[0]).trim() || "x";
     if (tBlocked(ip)) return send(429, { error: "limit", msg: "코드를 여러 번 틀렸어요. 10분 뒤에 다시 해 주세요." });
     const me = await whoTeacher(b.code);
@@ -708,6 +708,7 @@ module.exports = async function handler(req, res) {
       for (const x of AI.list()) {
         const t0 = Date.now();
         const out = await AI.askAI("너는 연결 확인용 도우미야. 반드시 JSON으로만 답해.", '{"ok":true, "say":"한 단어 인사"} 형태로 답해.', 200, 15000, { only: x.id, temperature: 0 });
+        x.model = AI.modelFor(x.id);
         const used = AI.lastInfo().used;
         res.push({ id: x.id, label: x.label, model: x.model, ok: !!out && used === x.id, ms: Date.now() - t0, err: used === x.id ? "" : (AI.lastInfo().errors[0] || "응답 없음") });
       }
@@ -719,11 +720,11 @@ module.exports = async function handler(req, res) {
         const items = (Array.isArray(b.items) ? b.items : []).slice(0, 10).map((x, i) => ({ i, 문제: clip(x.q, 400), 지문: clip(x.sub, 800), 보기: x.opts, 정답: clip(x.answer, 300) }));
         const out = await askAI(IMPORT_EXPLAIN_SYS, "[문항]\n" + JSON.stringify(items) + "\n[문항 끝]", 300 + items.length * 220, 50000);
         const list = (out && Array.isArray(out.items) ? out.items : []).filter((x) => x && Number.isInteger(x.i)).map((x) => ({ i: x.i, exp: clip(x.exp, 500), lv: num(x.lv, 1, 3, 2) }));
-        return send(200, { ok: true, items: list, used: AI.label(AI.lastInfo().used), aiErr: out ? undefined : AI.lastInfo().errors });
+        return send(200, { ok: true, items: list, used: AI.label(AI.lastInfo().used) + (AI.lastInfo().model ? " · " + AI.lastInfo().model : ""), aiErr: out ? undefined : AI.lastInfo().errors });
       }
       const text = clip(b.text, 9000), answers = clip(b.answers, 4000);
       const out = await askAI(IMPORT_PARSE_SYS, "[문제지]\n" + text + "\n[문제지 끝]\n[정답]\n" + answers + "\n[정답 끝]", 6000, 55000);
-      return send(200, { ok: true, questions: out && Array.isArray(out.questions) ? out.questions.slice(0, 40) : [], used: AI.label(AI.lastInfo().used), aiErr: out ? undefined : AI.lastInfo().errors });
+      return send(200, { ok: true, questions: out && Array.isArray(out.questions) ? out.questions.slice(0, 40) : [], used: AI.label(AI.lastInfo().used) + (AI.lastInfo().model ? " · " + AI.lastInfo().model : ""), aiErr: out ? undefined : AI.lastInfo().errors });
     }
     if (act === "t_rep") { // 학생 1명 · 시험 1회 분석 리포트를 노션에 작성
       const r = await reporter().buildTestReport({ recId: clip(b.rec, 60), contact: clip(b.contact, 600), host, force: !!b.force, me });

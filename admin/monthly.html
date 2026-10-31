@@ -94,7 +94,7 @@ tr.miss td{color:#A0AAB2}
   .rep textarea.cmi{border:1px solid #ccc}
 }
 </style></head><body><div class="wrap">
-<h1>🗓 월간·분기 평가 관리 <a href="./exam.html">📝 점수 직접 입력 →</a> <a href="../월간고사/index.html" target="_blank">👀 학생 화면 →</a><span id="meBox" style="margin-left:auto;display:none;font-size:13.5px;font-weight:600;color:#1B2733">👤 <b id="meName"></b> <span id="aiBox" style="display:none;margin-left:10px" title="해설·문항 나누기·AI 보충·리포트에 먼저 쓸 AI">🤖 <select id="aiSel" style="width:auto;padding:4px 6px;font-size:13px"></select> <button class="sm sub" id="aiTest">연결 확인</button></span> <button class="sm sub" id="logout" style="margin-left:6px">로그아웃</button></span></h1>
+<h1>🗓 월간·분기 평가 관리 <a href="./exam.html">📝 점수 직접 입력 →</a> <a href="../월간고사/index.html" target="_blank">👀 학생 화면 →</a><span id="meBox" style="margin-left:auto;display:none;font-size:13.5px;font-weight:600;color:#1B2733">👤 <b id="meName"></b> <span id="aiBox" style="display:none;margin-left:10px" title="해설·문항 나누기·AI 보충·리포트에 먼저 쓸 AI">🤖 <select id="aiSel" style="width:auto;padding:4px 6px;font-size:13px"></select> <select id="aiModel" title="같은 AI 안에서 모델(엔진) 고르기" style="width:auto;max-width:190px;padding:4px 6px;font-size:13px"></select> <button class="sm sub" id="aiTest">연결 확인</button></span> <button class="sm sub" id="logout" style="margin-left:6px">로그아웃</button></span></h1>
 <div class="hint" id="aiMsg" style="text-align:right;margin:-6px 0 8px"></div>
 
 <div class="card" id="login">
@@ -245,7 +245,7 @@ tr.miss td{color:#A0AAB2}
   function lsGet(k) { try { return localStorage.getItem(k) || ""; } catch (e) { return ""; } }
   function lsSet(k, v) { try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); } catch (e) {} }
   function post(b) {
-    b.code = CODE; if (!b.ai) b.ai = lsGet("cm-ai");
+    b.code = CODE; if (!b.ai) b.ai = lsGet("cm-ai"); if (!b.aiModels) { try { b.aiModels = JSON.parse(lsGet("cm-ai-models") || "{}"); } catch (e) { b.aiModels = {}; } }
     return fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b) })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { j._s = r.status; return j; }); })
       .catch(function () { return { _s: 0, msg: "인터넷 연결을 확인해 주세요." }; });
@@ -255,12 +255,25 @@ tr.miss td{color:#A0AAB2}
   var round1 = function (x) { return x == null ? "-" : Math.round(x * 10) / 10; };
 
   // ---------- 🤖 AI 고르기 (선생님마다 이 기기에 저장) ----------
+  function aiModels() { try { return JSON.parse(lsGet("cm-ai-models") || "{}"); } catch (e) { return {}; } }
   function buildAiSel(j) {
     var ais = j.ais || []; if (!ais.length) { $("aiBox").style.display = "none"; return; }
     var cur = lsGet("cm-ai"); if (!ais.some(function (a) { return a.id === cur; })) cur = j.aiDefault || ais[0].id;
     $("aiSel").innerHTML = ais.map(function (a) { return '<option value="' + esc(a.id) + '"' + (a.id === cur ? " selected" : "") + ">" + esc(a.label) + "</option>"; }).join("");
     $("aiBox").style.display = "inline";
-    $("aiSel").onchange = function () { lsSet("cm-ai", this.value); $("aiMsg").textContent = "이제 " + this.options[this.selectedIndex].text + "를 먼저 써요. (안 되면 연결된 다른 AI가 이어받아요)"; };
+    function fillModels() {
+      var a = ais.filter(function (x) { return x.id === $("aiSel").value; })[0], mine = aiModels()[a.id] || a.model, known = a.models.some(function (m) { return m.id === mine; });
+      $("aiModel").innerHTML = a.models.map(function (m) { return '<option value="' + esc(m.id) + '"' + (m.id === mine ? " selected" : "") + ">" + esc(m.id) + " — " + esc(m.note) + "</option>"; }).join("") +
+        (known ? "" : '<option value="' + esc(mine) + '" selected>' + esc(mine) + " (직접 입력)</option>") + '<option value="__custom">✏️ 직접 입력…</option>';
+    }
+    fillModels();
+    $("aiSel").onchange = function () { lsSet("cm-ai", this.value); fillModels(); $("aiMsg").textContent = "이제 " + this.options[this.selectedIndex].text + "(" + $("aiModel").value + ")를 먼저 써요. 안 되면 연결된 다른 AI가 이어받아요."; };
+    $("aiModel").onchange = function () {
+      var id = $("aiSel").value, v = this.value;
+      if (v === "__custom") { v = (prompt("쓸 모델 이름을 정확히 써 주세요.\n예: gpt-4.1, gemini-2.5-pro, claude-sonnet-5-5") || "").trim(); if (!/^[A-Za-z0-9][A-Za-z0-9._:\-]{0,59}$/.test(v)) { if (v) $("aiMsg").innerHTML = '<span class="er">모델 이름은 영어·숫자·점·하이픈만 쓸 수 있어요.</span>'; fillModels(); return; } }
+      var m = aiModels(); m[id] = v; lsSet("cm-ai-models", JSON.stringify(m)); fillModels();
+      $("aiMsg").textContent = "모델을 " + v + "로 바꿨어요. [연결 확인]으로 잘 되는지 확인해 보세요.";
+    };
     $("aiTest").onclick = function () {
       var btn = this; btn.disabled = true; $("aiMsg").textContent = "AI " + ais.length + "개에 연결해 보는 중…";
       post({ action: "t_ai_test" }).then(function (r) {
