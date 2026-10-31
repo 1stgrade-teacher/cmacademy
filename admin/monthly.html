@@ -223,6 +223,7 @@ tr.miss td{color:#A0AAB2}
   function tab(name) {
     Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) { t.classList.toggle("on", t.getAttribute("data-tab") === name); });
     ["list", "edit", "results", "report"].forEach(function (n) { $("v-" + n).style.display = n === name ? "" : "none"; });
+    $("contactCard").style.display = name === "results" || name === "report" ? "" : "none";
     window.scrollTo(0, 0);
   }
   Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) {
@@ -482,7 +483,7 @@ tr.miss td{color:#A0AAB2}
   var LAST_RES = null;
   function fillResultSelect() {
     var cur = $("rPaper").value;
-    $("rPaper").innerHTML = DATA.papers.map(function (p) { return '<option value="' + p.id + '">' + esc(p.cls + " · " + p.title + " (" + p.status + ")") + "</option>"; }).join("");
+    $("rPaper").innerHTML = (DATA.papers.length ? "" : '<option value="">아직 만든 시험지가 없어요 (➕ 새 시험지에서 만들어요)</option>') + DATA.papers.map(function (p) { return '<option value="' + p.id + '">' + esc(p.cls + " · " + p.title + " (" + p.status + ")") + "</option>"; }).join("");
     if (cur) $("rPaper").value = cur;
   }
   $("rLoad").onclick = function () { loadResults(); };
