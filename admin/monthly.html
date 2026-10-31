@@ -728,7 +728,7 @@ tr.miss td{color:#A0AAB2}
           if (!f.path[1]) n = n.split(/(?:^|\s)(?:CH|Chapter|Unit|Lesson)\s*\d/i)[0];
           else n = n.replace(/(CH|Chapter)\s*0?\d+[^ ]*/i, "");
           n = n.replace(/\s+/g, " ").trim();
-          return /^챕터\s*추가\s*문제$/.test(n) ? "챕터 추가문제" : (n || meta.unit);
+          return /챕터\s*추가\s*문제/.test(n) ? "챕터 추가문제" : /추가\s*문제/.test(n) ? "추가 문제" : (n || meta.unit);
         })();
         meta.file = f.name;
         units.push({ meta: meta, questions: qsx, text: qsx.length >= 2 ? "" : lines.join("\n"), raw: part.q.join("\n"), keyText: Object.keys(key).map(function (k) { return k + ". " + key[k]; }).join(" "), keyCount: Object.keys(key).length, drive: refs, replace: !!f.done });
