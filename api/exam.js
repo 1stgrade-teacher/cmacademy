@@ -10,7 +10,7 @@ const NOTION_VER = "2022-06-28";
 const EXAM_DB = () => (process.env.NOTION_EXAM_DB_ID || "dbdd356f53544c94a45b451a8a4ee84a").replace(/-/g, "").trim();
 const STUDENT_DB = () => (process.env.NOTION_STUDENT_DB_ID || "d6829ce41b134523945a1bdc2e87ce30").replace(/-/g, "").trim();
 const KINDS = ["단어시험", "듣기시험", "주간평가", "월간평가", "분기평가"];
-// 다른 선생님(저스틴쌤·로미쌤 등)의 코드: 노션 👩‍🏫 선생님 DB (월간·분기 평가 관리 화면에서 만듦)
+// 다른 선생님(저스틴쌤·로미쌤 등)의 코드: 노션 👩‍🏫 선생님 DB (정기평가 관리 화면에서 만듦)
 const TEACHER_DB = () => (process.env.NOTION_TEACHER_DB_ID || "63a6527837024ddaa3d256b0cb243304").replace(/-/g, "").trim();
 const teacherHash = (code) => crypto.createHash("sha256").update("cm-teacher|" + String(code || "").trim() + "|" + (process.env.REPORT_SECRET || process.env.NOTION_TOKEN || "cm")).digest("hex");
 async function otherTeacherOk(code) {

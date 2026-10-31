@@ -287,7 +287,7 @@ module.exports = function makeReporter(ctx) {
 
     const bl = [];
     bl.push(B.p("👋 안녕하세요, 학부모님! **청명학원 " + T.name + "**입니다."));
-    bl.push(B.p(label + " 동안 " + nm + " 학생이 치른 월간·분기 평가 결과를 모아 한 분기의 학습 흐름을 정리해 드립니다."));
+    bl.push(B.p(label + " 동안 " + nm + " 학생이 치른 정기평가 결과를 모아 한 분기의 학습 흐름을 정리해 드립니다."));
     bl.push(B.h2("🗓 " + stu.name + " 학생 " + label + " 종합 학습 리포트"));
     bl.push(B.quote("🏆 **분기 평균: " + r1(myAvg) + "점**" + (clsAvg != null ? " · 반 평균 " + r1(clsAvg) + "점 (" + (myAvg - clsAvg >= 0 ? "+" : "") + r1(myAvg - clsAvg) + "점)" : "") + " · 평가 " + rows.length + "회"));
     bl.push(B.quote("💡 **[담당 교사 총평]**\n" + clip(g.summary, 1800)));

@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex"><title>월간·분기 평가 관리 · 일등급샘</title>
+<meta name="robots" content="noindex"><title>정기평가 관리 · 일등급샘</title>
 <style>
 *{box-sizing:border-box}
 :root{--ink:#1B2733;--muted:#5F6E7C;--line:#DCE7E7;--ac:#0E8A8C;--ac-ink:#0A5F61;--ac-bg:#DDF2F1;--ac-soft:#F3FAFA;--amber:#8A5A00;--amber-bg:#FFF1D8;--red:#C0392B;--red-bg:#FDE3E1;--green:#1F7A4A}
@@ -94,7 +94,7 @@ tr.miss td{color:#A0AAB2}
   .rep textarea.cmi{border:1px solid #ccc}
 }
 </style></head><body><div class="wrap">
-<h1>🗓 월간·분기 평가 관리 <a href="./exam.html">📝 점수 직접 입력 →</a> <a href="../월간고사/index.html" target="_blank">👀 학생 화면 →</a><span id="meBox" style="margin-left:auto;display:none;font-size:13.5px;font-weight:600;color:#1B2733">👤 <b id="meName"></b> <span id="aiBox" style="display:none;margin-left:10px" title="해설·문항 나누기·AI 보충·리포트에 먼저 쓸 AI">🤖 <select id="aiSel" style="width:auto;padding:4px 6px;font-size:13px"></select> <select id="aiModel" title="같은 AI 안에서 모델(엔진) 고르기" style="width:auto;max-width:190px;padding:4px 6px;font-size:13px"></select> <button class="sm sub" id="aiTest">연결 확인</button></span> <button class="sm sub" id="healthBtn" title="노션·드라이브·AI가 잘 연결됐는지 한 번에 점검">🩺 점검</button> <button class="sm sub" id="logout" style="margin-left:6px">로그아웃</button></span></h1>
+<h1>🗓 정기평가 관리 <a href="./exam.html">📝 점수 직접 입력 →</a> <a href="../월간고사/index.html" target="_blank">👀 학생 화면 →</a><span id="meBox" style="margin-left:auto;display:none;font-size:13.5px;font-weight:600;color:#1B2733">👤 <b id="meName"></b> <span id="aiBox" style="display:none;margin-left:10px" title="해설·문항 나누기·AI 보충·리포트에 먼저 쓸 AI">🤖 <select id="aiSel" style="width:auto;padding:4px 6px;font-size:13px"></select> <select id="aiModel" title="같은 AI 안에서 모델(엔진) 고르기" style="width:auto;max-width:190px;padding:4px 6px;font-size:13px"></select> <button class="sm sub" id="aiTest">연결 확인</button></span> <button class="sm sub" id="healthBtn" title="노션·드라이브·AI가 잘 연결됐는지 한 번에 점검">🩺 점검</button> <button class="sm sub" id="logout" style="margin-left:6px">로그아웃</button></span></h1>
 <div class="hint" id="aiMsg" style="text-align:right;margin:-6px 0 8px"></div>
 
 <div class="card" id="login">
@@ -957,7 +957,7 @@ tr.miss td{color:#A0AAB2}
         '<div class="tw"><table><thead><tr><th>이름</th>' + exams.map(function (e) { return "<th title='" + esc(e.date) + "'>" + esc(e.title) + "<br><span style='font-weight:500'>" + esc(e.kind.replace("평가", "")) + " " + esc(e.date.slice(5)) + "</span></th>"; }).join("") + "<th>평균</th><th>변화</th><th>보충이 필요한 단원</th></tr></thead><tbody>" +
         rows.map(function (r) { return "<tr><td><b>" + esc(r.s.name) + "</b></td>" + r.cells.map(function (c) { return "<td class=num>" + (c == null ? "<span style='color:#B0B8BE'>-</span>" : round1(c)) + "</td>"; }).join("") + "<td class=num><b>" + round1(r.avg) + "</b></td><td class=num>" + (r.trend == null ? "-" : (r.trend > 0 ? "▲" : r.trend < 0 ? "▼" : "") + Math.abs(Math.round(r.trend))) + "</td><td>" + esc(r.weak.map(function (u) { return u.k + "(" + pct(u.r, u.t) + "%)"; }).join(", ")) + "</td></tr>"; }).join("") +
         "<tr><td><b>반 평균</b></td>" + colAvg.map(function (c) { return "<td class=num><b>" + round1(c) + "</b></td>"; }).join("") + "<td></td><td></td><td></td></tr></tbody></table></div>"
-        : '<p class="hint">이 기간에 월간·분기 평가 기록이 없어요.</p>';
+        : '<p class="hint">이 기간에 정기평가 기록이 없어요.</p>';
       $("qPrint").style.display = exams.length ? "" : "none";
       $("qNotion").style.display = exams.length ? "" : "none"; $("qProg").innerHTML = ""; $("contactCard").style.display = "";
       $("qNotion").onclick = function () {
