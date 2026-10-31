@@ -703,6 +703,30 @@ module.exports = async function handler(req, res) {
       try { return send(200, Object.assign({ ok: true }, await drive.get(clip(b.id, 100)))); }
       catch (e) { return send(200, { ok: false, msg: e.message === "too-big" ? "파일이 너무 커요(3MB 넘음). 그림을 줄이거나 나눠서 올려 주세요." : "파일을 내려받지 못했어요.", debug: clip(e.message, 200) }); }
     }
+    if (act === "t_health") { // 🩺 시스템 점검: 노션 DB 연결 · 필요한 칸 · 드라이브 · AI · 문제은행을 한 번에 확인
+      const checks = [], add = (name, state, detail, fix) => checks.push({ name, state, detail: detail || "", fix: fix || "" });
+      const NEED = { // DB별로 꼭 있어야 하는 칸 (없으면 저장·기록이 실패해요)
+        "시험 기록": [EXAM_DB(), ["시험명", "학생", "시험지", "반", "종류", "시험일", "시험 범위", "점수", "만점", "오답 수", "종합 평가", "코멘트", "응시 방식", "소요시간(분)", "자리비움", "단원 분석", "문항 기록", "분석 리포트"]],
+        "학생": [STUDENT_DB(), [PIN_PROP, "반"]],
+        "시험지": [PAPER_DB(), []], "AI 문항": [AIQ_DB(), []], "직접 올린 문항": [CUSTOM_DB(), ["과", "교재", "단원", "과ID", "문항", "본문"]], "선생님": [TEACHER_DB(), []],
+      };
+      const fixConn = "노션에서 「📔 학습리포트」와 「💗 일등급샘 반별 관리페이지」 각각 ⋯ → 연결 → 「cmacademy 학습인증」을 추가해 주세요.";
+      for (const name of Object.keys(NEED)) {
+        const [id, props] = NEED[name], d = await notion("databases/" + id, "GET", null, 2);
+        if (!d) { add("노션 · " + name, "bad", lastErr ? (lastErr.status + " " + (lastErr.code || "")) : "읽지 못함", lastErr && lastErr.status === 404 ? fixConn : lastErr && lastErr.status === 401 ? "Vercel의 NOTION_TOKEN이 틀렸어요. 새 토큰으로 바꾸고 Redeploy 해 주세요." : "잠시 뒤 다시 점검해 보세요."); continue; }
+        const have = Object.keys(d.properties || {}), miss = props.filter((x) => !have.includes(x));
+        add("노션 · " + name, miss.length ? "warn" : "ok", miss.length ? "빠진 칸: " + miss.join(", ") : "연결됨 · 칸 " + have.length + "개", miss.length ? "노션 " + name + " DB에 위 이름의 칸(속성)을 같은 이름으로 만들어 주세요." : "");
+      }
+      add("문제은행", loadCatalog() ? "ok" : "bad", loadCatalog() ? "교재 " + allBooks().length + "권 · 직접 올린 문항 포함" : "exam-bank 없음", loadCatalog() ? "" : "GitHub Actions의 exam-bank 빌드를 확인해 주세요.");
+      const ais = AI.list();
+      add("AI", ais.length ? "ok" : "warn", ais.length ? ais.map((x) => x.label + "(" + x.model + ")").join(" · ") : "연결된 AI 없음", ais.length ? "화면 위 [🤖 연결 확인]을 누르면 실제로 답하는지 확인해요." : "AI 없이도 시험은 돼요. 해설·리포트 문장을 AI가 쓰게 하려면 Vercel에 API 키를 넣어 주세요.");
+      if (!drive.configured()) add("구글 드라이브", "warn", "연결 안 됨", "GOOGLE_SERVICE_ACCOUNT, DRIVE_FOLDER_ID를 Vercel에 넣고 Redeploy 하면 드라이브에서 자료를 가져올 수 있어요.");
+      else { try { const l = await drive.list(); add("구글 드라이브", "ok", "폴더 「" + l.root + "」 · 파일 " + l.files.length + "개 · 서비스 계정 " + (drive.account() || {}).client_email); } catch (e) { add("구글 드라이브", "bad", clip(e.message, 120), "폴더를 서비스 계정(cm-bank@…)에 뷰어로 공유했는지, DRIVE_FOLDER_ID가 맞는지 확인해 주세요."); } }
+      const rows = await teacherRows();
+      add("선생님 코드", "ok", "관리자 " + MASTER_NAME() + " · 추가 선생님 " + rows.filter((r) => r.active && r.hash).length + "명");
+      add("학생 화면 잠금", process.env.SITE_CODE ? "ok" : "warn", process.env.SITE_CODE ? "사이트 입장 코드 사용 중" : "SITE_CODE 없음", process.env.SITE_CODE ? "" : "학생·학부모만 들어오게 하려면 Vercel에 SITE_CODE를 넣어 주세요.");
+      return send(200, { ok: true, checks, summary: { bad: checks.filter((c) => c.state === "bad").length, warn: checks.filter((c) => c.state === "warn").length } });
+    }
     if (act === "t_ai_test") { // 🤖 연결된 AI 하나씩 시험해 보기
       const res = [];
       for (const x of AI.list()) {

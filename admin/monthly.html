@@ -94,7 +94,7 @@ tr.miss td{color:#A0AAB2}
   .rep textarea.cmi{border:1px solid #ccc}
 }
 </style></head><body><div class="wrap">
-<h1>🗓 월간·분기 평가 관리 <a href="./exam.html">📝 점수 직접 입력 →</a> <a href="../월간고사/index.html" target="_blank">👀 학생 화면 →</a><span id="meBox" style="margin-left:auto;display:none;font-size:13.5px;font-weight:600;color:#1B2733">👤 <b id="meName"></b> <span id="aiBox" style="display:none;margin-left:10px" title="해설·문항 나누기·AI 보충·리포트에 먼저 쓸 AI">🤖 <select id="aiSel" style="width:auto;padding:4px 6px;font-size:13px"></select> <select id="aiModel" title="같은 AI 안에서 모델(엔진) 고르기" style="width:auto;max-width:190px;padding:4px 6px;font-size:13px"></select> <button class="sm sub" id="aiTest">연결 확인</button></span> <button class="sm sub" id="logout" style="margin-left:6px">로그아웃</button></span></h1>
+<h1>🗓 월간·분기 평가 관리 <a href="./exam.html">📝 점수 직접 입력 →</a> <a href="../월간고사/index.html" target="_blank">👀 학생 화면 →</a><span id="meBox" style="margin-left:auto;display:none;font-size:13.5px;font-weight:600;color:#1B2733">👤 <b id="meName"></b> <span id="aiBox" style="display:none;margin-left:10px" title="해설·문항 나누기·AI 보충·리포트에 먼저 쓸 AI">🤖 <select id="aiSel" style="width:auto;padding:4px 6px;font-size:13px"></select> <select id="aiModel" title="같은 AI 안에서 모델(엔진) 고르기" style="width:auto;max-width:190px;padding:4px 6px;font-size:13px"></select> <button class="sm sub" id="aiTest">연결 확인</button></span> <button class="sm sub" id="healthBtn" title="노션·드라이브·AI가 잘 연결됐는지 한 번에 점검">🩺 점검</button> <button class="sm sub" id="logout" style="margin-left:6px">로그아웃</button></span></h1>
 <div class="hint" id="aiMsg" style="text-align:right;margin:-6px 0 8px"></div>
 
 <div class="card" id="login">
@@ -103,6 +103,8 @@ tr.miss td{color:#A0AAB2}
   <div class="hint">'시험 점수 입력' 화면과 같은 코드예요. 한 번 넣으면 이 기기에 저장돼요.</div>
   <div class="msg er" id="loginMsg"></div>
 </div>
+
+<div class="card" id="healthCard" style="display:none"><div class="row" style="justify-content:space-between"><b>🩺 시스템 점검</b><button class="sm sub" id="healthClose">닫기</button></div><div id="healthList"></div></div>
 
 <div id="main" style="display:none">
   <div class="tabs">
@@ -299,6 +301,7 @@ tr.miss td{color:#A0AAB2}
       $("bankInfo").textContent = "문제은행: 교재 " + j.catalog.length + "권 · " + units + "과 · 문항 " + total + "개" + (j.ai ? " · AI 켜짐(" + (j.ais || []).map(function (a) { return a.label; }).join("·") + ")" : " · AI 꺼짐");
       buildAiSel(j);
       fillClassSelects(); renderList(); buildPeriods(); buildQuarters(); buildBookFilters();
+      var h = (location.hash || "").slice(1); if (/^(results|report|import)$/.test(h) || (h === "teachers" && j.me.master)) { if (h === "results") fillResultSelect(); if (h === "teachers") loadTeachers(); tab(h); }
     });
   }
   $("logout").onclick = function () { lsSet("cm-teacher-code", ""); location.reload(); };
@@ -306,11 +309,24 @@ tr.miss td{color:#A0AAB2}
   $("tcode").onkeydown = function (e) { if (e.key === "Enter") $("loginBtn").click(); };
   CODE = lsGet("cm-teacher-code"); if (CODE) init();
 
+  // ---------- 🩺 시스템 점검 ----------
+  $("healthClose").onclick = function () { $("healthCard").style.display = "none"; };
+  $("healthBtn").onclick = function () {
+    var btn = this; btn.disabled = true; $("healthCard").style.display = ""; $("healthList").innerHTML = '<p class="hint">점검하는 중… (10초쯤 걸려요)</p>';
+    post({ action: "t_health" }).then(function (j) {
+      btn.disabled = false; if (!j.ok) { $("healthList").innerHTML = '<p class="er">' + esc(j.msg || "점검하지 못했어요.") + "</p>"; return; }
+      var ico = { ok: "✅", warn: "⚠️", bad: "❌" };
+      $("healthList").innerHTML = '<p class="hint" style="margin:6px 0">' + (j.summary.bad ? '<span class="er">❌ ' + j.summary.bad + "곳을 고쳐야 해요.</span> " : '<span class="ok">✅ 꼭 필요한 연결은 모두 정상이에요.</span> ') + (j.summary.warn ? "⚠️ " + j.summary.warn + "곳은 선택 사항이에요." : "") + "</p>" +
+        j.checks.map(function (c) { return '<div style="padding:7px 0;border-top:1px solid var(--line)">' + ico[c.state] + " <b>" + esc(c.name) + "</b> <span class=\"hint\" style=\"margin:0\">" + esc(c.detail) + "</span>" + (c.fix && c.state !== "ok" ? '<div class="hint" style="margin:3px 0 0 24px">👉 ' + esc(c.fix) + "</div>" : "") + "</div>"; }).join("");
+    });
+  };
+
   // ---------- 탭 ----------
   function tab(name) {
     Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) { t.classList.toggle("on", t.getAttribute("data-tab") === name); });
     ["list", "edit", "results", "report", "teachers", "import"].forEach(function (n) { $("v-" + n).style.display = n === name ? "" : "none"; });
     $("contactCard").style.display = name === "results" || name === "report" ? "" : "none";
+    try { history.replaceState(null, "", "#" + name); } catch (e) {}
     window.scrollTo(0, 0);
   }
   Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) {
@@ -587,8 +603,9 @@ tr.miss td{color:#A0AAB2}
   }
   var TYPES = { mc: "객관식", multi: "모두 고르기", short: "서술형(직접 쓰기)", arrange: "배열" };
   function renderImport() {
+    Array.prototype.forEach.call($("impUnits").querySelectorAll(".card[data-u]"), function (c) { if (c.__sync) c.__sync(); }); // 다시 그리기 전에 손본 내용 보존
     var areas = ["문법", "구문", "독해", "교과서", "어휘", "기타"], grades = ["", "초등", "중1", "중2", "중3", "고등"];
-    $("impUnits").innerHTML = IMP.map(function (u, ui) {
+    $("impUnits").innerHTML = (IMP.length > 1 ? '<div class="card" id="impBulk"><b>📦 ' + IMP.length + '개를 한꺼번에</b><div class="row" style="margin-top:8px">' + (DATA.ai ? '<button class="sub" id="bulkExp">🧠 빈 해설 AI로 모두 채우기</button>' : "") + '<button id="bulkSave">💾 모두 저장</button><span class="msg" id="bulkMsg" style="margin:0"></span></div><div class="hint">모두 저장은 물어보지 않고, 정답이 비어 있는 문항은 빼고 저장해요. 먼저 카드마다 문항 수·경고(⚠)를 훑어보세요.</div></div>' : "") + IMP.map(function (u, ui) {
       var cnt = {}; u.questions.forEach(function (q) { cnt[q.type] = (cnt[q.type] || 0) + 1; });
       var warn = u.questions.filter(function (q) { return q.warn && q.warn.length; }).length;
       return '<div class="card" data-u="' + ui + '"><h2>' + (u.drive ? "📂 " : "📄 ") + esc(u.meta.file || "자료") + "</h2>" +
@@ -605,6 +622,27 @@ tr.miss td{color:#A0AAB2}
         '<div data-qs>' + u.questions.map(function (q, qi) { return qCard(q, qi); }).join("") + "</div></div>";
     }).join("");
     Array.prototype.forEach.call($("impUnits").querySelectorAll(".card[data-u]"), bindUnit);
+    if ($("bulkSave")) bindBulk();
+  }
+  function bindBulk() {
+    var say = function (t, cls) { $("bulkMsg").innerHTML = cls ? '<span class="' + cls + '">' + t + "</span>" : esc(t); };
+    function cards() { return Array.prototype.slice.call($("impUnits").querySelectorAll(".card[data-u]")); }
+    function seq(fn, done) { var cs = cards(), i = 0, out = []; (function next() { if (i >= cs.length) return done(out); var c = cs[i++]; fn(c, i, cs.length).then(function (r) { out.push({ c: c, r: r }); next(); }); })(); }
+    $("bulkSave").onclick = function () {
+      var b1 = this; if (!confirm(cards().length + "개를 모두 문제은행에 저장할까요?")) return; b1.disabled = true;
+      seq(function (c, i, n) { say("저장하는 중… (" + i + "/" + n + ")"); return c.__save ? c.__save(true) : Promise.resolve({ ok: false }); }, function (res) {
+        b1.disabled = false; var ok = res.filter(function (x) { return x.r.ok; }), bad = res.length - ok.length, qn = ok.reduce(function (a, x) { return a + (x.r.n || 0); }, 0), drop = ok.reduce(function (a, x) { return a + (x.r.dropped || 0); }, 0);
+        say((bad ? "⚠ " + ok.length + "개 저장, " + bad + "개는 못 했어요(카드의 빨간 글을 보세요)" : "✅ " + ok.length + "개 모두 저장했어요") + " · 문항 " + qn + "개" + (drop ? " · 정답 없는 " + drop + "개는 뺐어요" : ""), bad ? "er" : "ok");
+        if (!bad && DRV) setTimeout(function () { loadDrive(); }, 600); // 가져온 파일을 '가져옴'으로 바꿔 보여줘요
+      });
+    };
+    if ($("bulkExp")) $("bulkExp").onclick = function () {
+      var b2 = this; b2.disabled = true; var total = 0, used = "", err = "";
+      seq(function (c, i, n) { return c.__explain ? c.__explain(function (t) { say("[" + i + "/" + n + "] " + t); }) : Promise.resolve({ ok: true, n: 0 }); }, function (res) {
+        b2.disabled = false; res.forEach(function (x) { total += x.r.n || 0; if (x.r.used) used = x.r.used; if (!x.r.ok && !err) err = x.r.err; });
+        renderImport(); $("bulkMsg").innerHTML = err ? '<span class="er">일부 실패: ' + esc(err) + " (해설 " + total + "개는 채웠어요)</span>" : total ? '<span class="ok">해설 ' + total + "개를 채웠어요" + (used ? " (" + esc(used) + ")" : "") + ". 확인한 뒤 모두 저장하세요.</span>" : '<span class="ok">채울 빈 해설이 없어요.</span>';
+      });
+    };
   }
   function qCard(q, i) {
     var w = q.warn && q.warn.length, off = q.off;
@@ -647,6 +685,7 @@ tr.miss td{color:#A0AAB2}
       Array.prototype.forEach.call(card.querySelectorAll(".iq"), function (el) { readCard(el, u.questions[+el.getAttribute("data-q")]); });
       var t = card.querySelector("[data-text]"); if (t) u.text = t.value;
     }
+    card.__sync = sync;
     Array.prototype.forEach.call(card.querySelectorAll('.iq [data-f="type"]'), function (sel) {
       sel.onchange = function () { sync(); var el = sel.closest(".iq"), i = +el.getAttribute("data-q"); el.outerHTML = qCard(u.questions[i], i); bindUnit(card); };
     });
@@ -662,34 +701,51 @@ tr.miss td{color:#A0AAB2}
         post({ action: "t_import_ai", mode: "parse", text: chunks[i], answers: u.keyText || "" }).then(function (j) { if (j.ok) { got = got.concat(j.questions || []); if (j.used) u.aiUsed = j.used; if (j.aiErr) msg.textContent = "AI 응답 실패: " + j.aiErr.join(" / "); } else msg.textContent = j.msg || "실패"; i++; next(); });
       })();
     };
+    // 해설 채우기: 빈 해설만 8개씩 AI에게 맡겨요. 끝나면 {ok, n, used, err}
+    function explainCard(say) {
+      sync(); var need = u.questions.map(function (q, i) { return { q: q, i: i }; }).filter(function (x) { return !x.q.off && !x.q.exp; });
+      if (!need.length) return Promise.resolve({ ok: true, n: 0 });
+      var p = 0, usedAi = "", n = 0;
+      return new Promise(function (done) {
+        (function next() {
+          if (p >= need.length) return done({ ok: true, n: n, used: usedAi });
+          var part = need.slice(p, p + 8); if (say) say("AI가 해설을 쓰는 중… (" + Math.min(p + 8, need.length) + "/" + need.length + ")");
+          post({ action: "t_import_ai", mode: "explain", items: part.map(function (x) { var q = x.q; return { q: q.q, sub: q.sub, opts: q.opts, answer: q.type === "mc" ? (q.opts || [])[q.ans] : q.type === "multi" ? (q.anss || []).map(function (k) { return (q.opts || [])[k]; }).join(" / ") : q.answer }; }) }).then(function (j) {
+            if (j.used) usedAi = j.used;
+            if (!j.ok || (j.aiErr && !(j.items || []).length)) return done({ ok: false, n: n, used: usedAi, err: j.msg || (j.aiErr || []).join(" / ") || "AI가 답하지 않았어요" });
+            (j.items || []).forEach(function (r) { var x = part[r.i]; if (x) { x.q.exp = r.exp; x.q.lv = r.lv || x.q.lv; n++; } }); p += 8; next();
+          });
+        })();
+      });
+    }
+    card.__explain = explainCard;
     var bEx = card.querySelector('[data-act="aiexp"]');
     if (bEx) bEx.onclick = function () {
-      sync(); var need = u.questions.map(function (q, i) { return { q: q, i: i }; }).filter(function (x) { return !x.q.off && !x.q.exp; });
-      if (!need.length) { msg.textContent = "해설이 빈 문항이 없어요."; return; }
-      bEx.disabled = true; var p = 0, usedAi = "";
-      (function next() {
-        if (p >= need.length) { bEx.disabled = false; var ui = card.getAttribute("data-u"); renderImport(); card = $("impUnits").querySelector('.card[data-u="' + ui + '"]'); msg = card.querySelector("[data-msg]"); msg.innerHTML = '<span class="ok">해설을 채웠어요' + (usedAi ? " (" + esc(usedAi) + ")" : "") + '. 확인해 주세요.</span>'; return; }
-        var part = need.slice(p, p + 8); msg.textContent = "AI가 해설을 쓰는 중… (" + Math.min(p + 8, need.length) + "/" + need.length + ")";
-        post({ action: "t_import_ai", mode: "explain", items: part.map(function (x) { var q = x.q; return { q: q.q, sub: q.sub, opts: q.opts, answer: q.type === "mc" ? (q.opts || [])[q.ans] : q.type === "multi" ? (q.anss || []).map(function (k) { return (q.opts || [])[k]; }).join(" / ") : q.answer }; }) }).then(function (j) {
-          if (j.used) usedAi = j.used; if (j.aiErr && !(j.items || []).length) { bEx.disabled = false; msg.innerHTML = '<span class="er">AI 응답 실패: ' + esc(j.aiErr.join(" / ")) + "</span>"; return; }
-          (j.items || []).forEach(function (r) { var x = part[r.i]; if (x) { x.q.exp = r.exp; x.q.lv = r.lv || x.q.lv; } }); p += 8; next();
-        });
-      })();
-    };
-    card.querySelector('[data-act="save"]').onclick = function () {
-      sync();
-      if (!u.meta.book) { msg.innerHTML = '<span class="er">교재 이름을 넣어 주세요.</span>'; return; }
-      var qs = u.questions.filter(function (q) { return !q.off; });
-      var bad = qs.filter(function (q) { return q.type === "mc" ? !(q.ans >= 0) : q.type === "multi" ? !(q.anss && q.anss.length) : !q.answer; });
-      if (bad.length && !confirm("정답이 비어 있는 문항 " + bad.length + "개(" + bad.map(function (q) { return q.no; }).join(", ") + "번)는 빼고 저장할까요?")) return;
-      var btn = this; btn.disabled = true; msg.textContent = "저장하는 중…";
-      post({ action: "t_import_save", meta: u.meta, questions: qs.filter(function (q) { return bad.indexOf(q) < 0; }), text: u.text || "", replace: card.querySelector("[data-replace]").checked, drive: u.drive || [] }).then(function (j) {
-        btn.disabled = false;
-        if (!j.ok) { msg.innerHTML = '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; return; }
-        DATA.catalog = j.catalog || DATA.catalog;
-        msg.innerHTML = '<span class="ok">저장했어요 ✓ 이 과의 문항 ' + j.n + "개" + (j.skipped && j.skipped.length ? " (건너뜀 " + j.skipped.length + "개)" : "") + '</span> · <a href="' + esc(j.url) + '" target="_blank">노션</a> · 이제 <b>➕ 새 시험지</b>의 출제 범위에 📁 ' + esc(u.meta.book) + "로 보여요.";
+      sync(); if (!u.questions.some(function (q) { return !q.off && !q.exp; })) { msg.textContent = "해설이 빈 문항이 없어요."; return; }
+      bEx.disabled = true;
+      explainCard(function (t) { msg.textContent = t; }).then(function (r) {
+        bEx.disabled = false; var ui = card.getAttribute("data-u"); renderImport(); card = $("impUnits").querySelector('.card[data-u="' + ui + '"]'); msg = card.querySelector("[data-msg]");
+        msg.innerHTML = r.ok ? '<span class="ok">해설을 채웠어요' + (r.used ? " (" + esc(r.used) + ")" : "") + '. 확인해 주세요.</span>' : '<span class="er">AI 응답 실패: ' + esc(r.err) + "</span>";
       });
     };
+    // 저장: silent면 물어보지 않고 정답 없는 문항은 빼고 저장 (모두 저장에서 사용)
+    function doSave(silent) {
+      sync();
+      if (!u.meta.book) { msg.innerHTML = '<span class="er">교재 이름을 넣어 주세요.</span>'; return Promise.resolve({ ok: false, why: "교재 이름 없음" }); }
+      var qs = u.questions.filter(function (q) { return !q.off; });
+      var bad = qs.filter(function (q) { return q.type === "mc" ? !(q.ans >= 0) : q.type === "multi" ? !(q.anss && q.anss.length) : !q.answer; });
+      if (bad.length && !silent && !confirm("정답이 비어 있는 문항 " + bad.length + "개(" + bad.map(function (q) { return q.no; }).join(", ") + "번)는 빼고 저장할까요?")) return Promise.resolve({ ok: false, why: "취소" });
+      var btn = card.querySelector('[data-act="save"]'); btn.disabled = true; msg.textContent = "저장하는 중…";
+      return post({ action: "t_import_save", meta: u.meta, questions: qs.filter(function (q) { return bad.indexOf(q) < 0; }), text: u.text || "", replace: card.querySelector("[data-replace]").checked, drive: u.drive || [] }).then(function (j) {
+        btn.disabled = false;
+        if (!j.ok) { msg.innerHTML = '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; return { ok: false, why: j.msg || "저장 실패" }; }
+        DATA.catalog = j.catalog || DATA.catalog; u.saved = true;
+        msg.innerHTML = '<span class="ok">저장했어요 ✓ 이 과의 문항 ' + j.n + "개" + (j.skipped && j.skipped.length ? " (건너뜀 " + j.skipped.length + "개)" : "") + (bad.length ? " (정답 없는 " + bad.length + "개는 뺐어요)" : "") + '</span> · <a href="' + esc(j.url) + '" target="_blank">노션</a> · 이제 <b>➕ 새 시험지</b>의 출제 범위에 📁 ' + esc(u.meta.book) + "로 보여요.";
+        return { ok: true, n: j.n, dropped: bad.length };
+      });
+    }
+    card.__save = doSave;
+    card.querySelector('[data-act="save"]').onclick = function () { doSave(false); };
   }
 
   // ---------- 📂 드라이브에서 가져오기 ----------
