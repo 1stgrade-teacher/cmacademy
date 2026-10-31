@@ -15,6 +15,7 @@ const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 const zlib = require("zlib");
+const drive = require("./_drive.js");
 
 const NOTION_VER = "2022-06-28";
 const id32 = (s) => String(s || "").replace(/-/g, "").trim();
@@ -519,7 +520,7 @@ function reporter() {
 module.exports = async function handler(req, res) {
   const send = (code, obj) => sendTo(res, code, obj);
   const tcode = String(process.env.TEACHER_CODE || "").trim();
-  if (req.method === "GET") return send(200, { ok: true, ready: !!process.env.NOTION_TOKEN && process.env.MONTHLY_OFF !== "1", bank: !!loadCatalog(), ai: !!process.env.DEEPSEEK_API_KEY, teacher: !!tcode });
+  if (req.method === "GET") return send(200, { ok: true, ready: !!process.env.NOTION_TOKEN && process.env.MONTHLY_OFF !== "1", bank: !!loadCatalog(), ai: !!process.env.DEEPSEEK_API_KEY, teacher: !!tcode, drive: drive.configured() });
   if (req.method !== "POST") return send(405, { error: "method" });
   const origin = req.headers.origin || "", host = req.headers["x-forwarded-host"] || req.headers.host || "";
   if (origin) { let oh = ""; try { oh = new URL(origin).host; } catch (e) {} if (oh !== host) return send(403, { error: "origin" }); }
@@ -681,10 +682,36 @@ module.exports = async function handler(req, res) {
       const props = { "과": { title: rt(unit) }, "교재": { rich_text: rt(book) }, "단원": { rich_text: rt(chapter) }, "영역": sel(area), "학년": gradeV ? sel(gradeV) : { select: null },
         "과ID": { rich_text: rt(uid) }, "문항 수": { number: all.length }, "사용": { checkbox: true }, "올린 선생님": sel(me.name), "원본 파일": { rich_text: rt(clip(m.file, 300)) },
         "문항": { rich_text: rtLong(JSON.stringify(all)) }, "본문": { rich_text: rtLong(text || oldText) } };
+      // 드라이브에서 가져온 파일이면 파일 id·수정 시각을 남겨 '이미 가져옴/바뀜'을 표시
+      const refs = (Array.isArray(b.drive) ? b.drive : []).filter((d) => d && /^[A-Za-z0-9_-]{10,}$/.test(d.id)).slice(0, 10).map((d) => ({ id: d.id, m: clip(d.m, 40), n: clip(d.n, 120) }));
+      if (refs.length) {
+        let old = []; try { old = found[0] ? JSON.parse(P.text(found[0], "드라이브") || "[]") : []; } catch (e) { old = []; }
+        const map = new Map(old.map((d) => [d.id, d])); refs.forEach((d) => map.set(d.id, d));
+        props["드라이브"] = { rich_text: rtLong(JSON.stringify([...map.values()])) };
+      }
       const pg = found[0] ? await notion("pages/" + normId(found[0].id), "PATCH", { properties: props }) : await notion("pages", "POST", { parent: { database_id: CUSTOM_DB() }, properties: props });
       if (!pg) return send(502, { error: "notion", msg: "저장하지 못했어요. 문항이 너무 많으면 나눠서 올려 주세요.", debug: lastErr });
       await loadCustom(true);
       return send(200, { ok: true, uid, n: all.length, added: qs.length, skipped: bad, url: pg.url, catalog: allBooks() });
+    }
+    if (act === "t_drive_list") { // 📂 드라이브 문제은행 폴더 목록 + 이미 가져온 파일 표시
+      if (!drive.configured()) return send(200, { ok: false, setup: true, msg: "드라이브가 아직 연결되지 않았어요. (Vercel에 GOOGLE_SERVICE_ACCOUNT, DRIVE_FOLDER_ID 필요)" });
+      let d;
+      try { d = await drive.list(); } catch (e) {
+        const email = (drive.account() || {}).client_email || "";
+        const why = /not-folder|404/.test(e.message) ? "폴더를 찾지 못했어요. 문제은행 폴더를 " + email + " 에게 공유했는지, DRIVE_FOLDER_ID가 맞는지 확인해 주세요."
+          : /token/.test(e.message) ? "구글 인증에 실패했어요. GOOGLE_SERVICE_ACCOUNT 값(JSON 전체)을 확인해 주세요." : /403/.test(e.message) ? "Google Drive API가 꺼져 있거나 권한이 없어요. 구글 클라우드에서 Drive API를 '사용'으로 해 주세요." : "드라이브를 읽지 못했어요.";
+        return send(200, { ok: false, msg: why, email, debug: clip(e.message, 300) });
+      }
+      const rows = await queryAll(CUSTOM_DB(), {}, 5) || [];
+      const done = {};
+      rows.forEach((p) => { let refs = []; try { refs = JSON.parse(P.text(p, "드라이브") || "[]"); } catch (e) { refs = []; } refs.forEach((r) => { done[r.id] = { m: r.m, unit: P.title(p, "과"), book: P.text(p, "교재"), chapter: P.text(p, "단원"), url: p.url }; }); });
+      return send(200, { ok: true, root: d.root, email: (drive.account() || {}).client_email, files: d.files.map((f) => Object.assign(f, { done: done[f.id] || null, changed: !!(done[f.id] && done[f.id].m && f.modified && done[f.id].m !== f.modified) })) });
+    }
+    if (act === "t_drive_get") {
+      if (!drive.configured()) return send(400, { error: "setup" });
+      try { return send(200, Object.assign({ ok: true }, await drive.get(clip(b.id, 100)))); }
+      catch (e) { return send(200, { ok: false, msg: e.message === "too-big" ? "파일이 너무 커요(3MB 넘음). 그림을 줄이거나 나눠서 올려 주세요." : "파일을 내려받지 못했어요.", debug: clip(e.message, 200) }); }
     }
     if (act === "t_import_ai") { // AI 도움: 문제지 글을 문항으로 나누기(parse) / 해설·난이도 달기(explain)
       if (!process.env.DEEPSEEK_API_KEY) return send(503, { error: "noai", msg: "AI 키(DEEPSEEK_API_KEY)가 없어요." });

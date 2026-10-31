@@ -183,6 +183,12 @@ tr.miss td{color:#A0AAB2}
       <div class="row" style="margin-top:10px"><a class="sm" href="./자료올리기_양식.xlsx" download style="font-size:13.5px;color:#0A5F61;font-weight:700">⬇ 엑셀 양식 내려받기</a><span class="hint" style="margin:0">문제를 직접 정리하실 땐 엑셀 양식이 가장 정확해요.</span></div>
       <div class="msg" id="impMsg"></div>
     </div>
+    <div class="card" id="drvCard">
+      <h2>📂 구글 드라이브 문제은행 폴더</h2>
+      <p class="hint" style="margin-top:0">공유 폴더에 <b>교재 / 단원 / 문제지 + 정답지</b>로 넣어 두면, 여기서 새 파일·바뀐 파일만 골라 가져와요. 폴더 이름이 그대로 교재·단원이 돼요.</p>
+      <div class="row"><button class="sub" id="drvLoad">📂 드라이브 목록 불러오기</button><label><input type="checkbox" id="drvAll"> 이미 가져온 파일도 보기</label><span class="hint" id="drvInfo" style="margin:0"></span></div>
+      <div id="drvList"></div>
+    </div>
     <div id="impUnits"></div>
   </section>
 
@@ -554,7 +560,7 @@ tr.miss td{color:#A0AAB2}
     $("impUnits").innerHTML = IMP.map(function (u, ui) {
       var cnt = {}; u.questions.forEach(function (q) { cnt[q.type] = (cnt[q.type] || 0) + 1; });
       var warn = u.questions.filter(function (q) { return q.warn && q.warn.length; }).length;
-      return '<div class="card" data-u="' + ui + '"><h2>📄 ' + esc(u.meta.file || "자료") + "</h2>" +
+      return '<div class="card" data-u="' + ui + '"><h2>' + (u.drive ? "📂 " : "📄 ") + esc(u.meta.file || "자료") + "</h2>" +
         '<div class="grid"><div><label class="l">교재</label><input data-m="book" value="' + esc(u.meta.book) + '" placeholder="예: Grammar Inside Level 2"></div>' +
         '<div><label class="l">단원(챕터)</label><input data-m="chapter" value="' + esc(u.meta.chapter) + '" placeholder="예: Chapter 02 시제"></div>' +
         '<div><label class="l">과(자료 이름)</label><input data-m="unit" value="' + esc(u.meta.unit) + '" placeholder="예: 추가 문제"></div>' +
@@ -564,7 +570,7 @@ tr.miss td{color:#A0AAB2}
         (u.keyCount != null ? '<span class="pill">정답지에서 ' + u.keyCount + "개 읽음</span>" : "") + (warn ? '<span class="pill end">확인 필요 ' + warn + "개</span>" : "") + "</div>" +
         (u.questions.length < 2 ? '<p class="hint">문항으로 나누지 못했어요. 문제 없는 <b>본문 자료</b>로 저장하면 시험 때 AI가 이 글로 문제를 만들어요. 문제지라면 <b>🤖 AI로 문항 나누기</b>를 눌러 보세요.</p><textarea data-text rows="6">' + esc(u.text) + "</textarea>" : "") +
         '<div class="row" style="margin-top:10px">' + (DATA.ai ? '<button class="sm sub" data-act="aiparse">🤖 AI로 문항 나누기</button><button class="sm sub" data-act="aiexp">🧠 빈 해설 AI로 채우기</button>' : "") +
-        '<label><input type="checkbox" data-replace> 같은 과에 이미 올린 문항을 지우고 새로 저장</label><button data-act="save">💾 문제은행에 저장</button><span class="msg" data-msg style="margin:0"></span></div>' +
+        '<label><input type="checkbox" data-replace' + (u.replace ? " checked" : "") + '> 같은 과에 이미 올린 문항을 지우고 새로 저장</label><button data-act="save">💾 문제은행에 저장</button><span class="msg" data-msg style="margin:0"></span></div>' +
         '<div data-qs>' + u.questions.map(function (q, qi) { return qCard(q, qi); }).join("") + "</div></div>";
     }).join("");
     Array.prototype.forEach.call($("impUnits").querySelectorAll(".card[data-u]"), bindUnit);
@@ -645,13 +651,82 @@ tr.miss td{color:#A0AAB2}
       var bad = qs.filter(function (q) { return q.type === "mc" ? !(q.ans >= 0) : q.type === "multi" ? !(q.anss && q.anss.length) : !q.answer; });
       if (bad.length && !confirm("정답이 비어 있는 문항 " + bad.length + "개(" + bad.map(function (q) { return q.no; }).join(", ") + "번)는 빼고 저장할까요?")) return;
       var btn = this; btn.disabled = true; msg.textContent = "저장하는 중…";
-      post({ action: "t_import_save", meta: u.meta, questions: qs.filter(function (q) { return bad.indexOf(q) < 0; }), text: u.text || "", replace: card.querySelector("[data-replace]").checked }).then(function (j) {
+      post({ action: "t_import_save", meta: u.meta, questions: qs.filter(function (q) { return bad.indexOf(q) < 0; }), text: u.text || "", replace: card.querySelector("[data-replace]").checked, drive: u.drive || [] }).then(function (j) {
         btn.disabled = false;
         if (!j.ok) { msg.innerHTML = '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; return; }
         DATA.catalog = j.catalog || DATA.catalog;
         msg.innerHTML = '<span class="ok">저장했어요 ✓ 이 과의 문항 ' + j.n + "개" + (j.skipped && j.skipped.length ? " (건너뜀 " + j.skipped.length + "개)" : "") + '</span> · <a href="' + esc(j.url) + '" target="_blank">노션</a> · 이제 <b>➕ 새 시험지</b>의 출제 범위에 📁 ' + esc(u.meta.book) + "로 보여요.";
       });
     };
+  }
+
+  // ---------- 📂 드라이브에서 가져오기 ----------
+  var DRV = null;
+  $("drvLoad").onclick = loadDrive; $("drvAll").onchange = function () { if (DRV) renderDrive(); };
+  function loadDrive() {
+    $("drvInfo").textContent = "드라이브를 읽는 중…"; $("drvLoad").disabled = true;
+    post({ action: "t_drive_list" }).then(function (j) {
+      $("drvLoad").disabled = false;
+      if (!j.ok) {
+        $("drvInfo").textContent = "";
+        $("drvList").innerHTML = '<div class="copy" style="font-size:14px;line-height:1.7">' + (j.setup ? "⚙️ 아직 드라이브가 연결되지 않았어요. 안내서 「📂 구글 드라이브 연결」 순서대로 Vercel에 <b>GOOGLE_SERVICE_ACCOUNT</b>, <b>DRIVE_FOLDER_ID</b>를 넣어 주세요."
+          : "⚠️ " + esc(j.msg)) + (j.email ? "<br>문제은행 폴더를 이 주소에 <b>뷰어</b>로 공유해 주세요: <b>" + esc(j.email) + "</b>" : "") + "</div>";
+        return;
+      }
+      DRV = j; renderDrive();
+    });
+  }
+  var isKeyName = function (n) { return /정답|답지|해답|answer|key/i.test(n); };
+  var baseOf = function (n) { return n.replace(/\.[^.]+$/, "").replace(/[_\s-]*(정답(지)?|답지|해답|answer|key)[_\s-]*/ig, "").replace(/[_\s]+/g, " ").trim(); };
+  function pairKey(f, files) {
+    var keys = files.filter(function (x) { return isKeyName(x.name) && x.path.join("/") === f.path.join("/"); });
+    if (keys.length <= 1) return keys[0] || null;
+    var b = baseOf(f.name); return keys.find(function (k) { return baseOf(k.name) === b; }) || keys.find(function (k) { return baseOf(k.name).indexOf(b) >= 0 || b.indexOf(baseOf(k.name)) >= 0; }) || null;
+  }
+  function renderDrive() {
+    var all = $("drvAll").checked, files = DRV.files;
+    var qs = files.filter(function (f) { return !isKeyName(f.name) || /\.xlsx$/i.test(f.name); });
+    var show = qs.filter(function (f) { return all || !f.done || f.changed; });
+    var groups = {}; show.forEach(function (f) { var k = f.path.join(" › ") || "(맨 위 폴더)"; (groups[k] = groups[k] || []).push(f); });
+    $("drvInfo").innerHTML = "📁 " + esc(DRV.root) + " · 문제지 " + qs.length + "개 (새 파일 " + qs.filter(function (f) { return !f.done; }).length + " · 바뀜 " + qs.filter(function (f) { return f.changed; }).length + ")";
+    if (!show.length) { $("drvList").innerHTML = '<p class="hint">새로 가져올 파일이 없어요. 폴더에 파일을 넣고 다시 불러오세요.</p>'; return; }
+    $("drvList").innerHTML = Object.keys(groups).sort(function (a, b) { return a.localeCompare(b, "ko", { numeric: true }); }).map(function (g) {
+      return '<div class="grp"><div class="gh">📁 ' + esc(g) + "</div>" + groups[g].map(function (f) {
+        var k = /\.xlsx$/i.test(f.name) ? null : pairKey(f, files), st = f.changed ? '<span class="pill m">바뀜</span>' : f.done ? '<span class="pill">가져옴</span>' : '<span class="pill go">새 파일</span>';
+        return '<label class="un" style="padding-left:6px"><input type="checkbox" data-drv="' + esc(f.id) + '"' + (!f.done || f.changed ? " checked" : "") + "> " + st + " <b>" + esc(f.name) + "</b>" +
+          '<span class="n">' + (k ? "정답지: " + esc(k.name) : /\.xlsx$/i.test(f.name) ? "엑셀 양식" : '<span class="er">정답지 없음</span>') + " · " + esc((f.modified || "").slice(0, 10)) + (f.by ? " · " + esc(f.by) : "") + "</span></label>";
+      }).join("") + "</div>";
+    }).join("") + '<div class="row" style="margin-top:10px"><button id="drvGo">⬇ 선택한 파일 가져오기</button><span class="hint" style="margin:0">가져온 뒤 아래에서 확인하고 저장해요.</span></div>';
+    $("drvGo").onclick = importDrive;
+  }
+  function b64File(j) { var bin = atob(j.b64), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new File([u], j.name); }
+  async function importDrive() {
+    var ids = Array.prototype.filter.call($("drvList").querySelectorAll("[data-drv]"), function (c) { return c.checked; }).map(function (c) { return c.getAttribute("data-drv"); });
+    if (!ids.length) return;
+    var P = window.ImportParser, units = [], fails = [], btn = $("drvGo"); btn.disabled = true;
+    for (var i = 0; i < ids.length; i++) {
+      var f = DRV.files.find(function (x) { return x.id === ids[i]; }); if (!f) continue;
+      $("drvInfo").textContent = "가져오는 중… (" + (i + 1) + "/" + ids.length + ") " + f.name;
+      try {
+        var j = await post({ action: "t_drive_get", id: f.id }); if (!j.ok) throw new Error(j.msg);
+        var refs = [{ id: f.id, m: f.modified, n: f.name }];
+        if (/\.xlsx$/i.test(f.name)) { (await P.xlsxUnits(b64File(j))).forEach(function (u) { u.drive = refs; units.push(u); }); continue; }
+        var keyLines = [], kf = pairKey(f, DRV.files);
+        if (kf) { var kj = await post({ action: "t_drive_get", id: kf.id }); if (kj.ok) { keyLines = await P.fileLines(b64File(kj)); refs.push({ id: kf.id, m: kf.modified, n: kf.name }); } }
+        var lines = await P.fileLines(b64File(j)), part = P.splitAnswerSection(lines);
+        var key = P.parseAnswers(keyLines.length ? keyLines : part.a), qsx = P.parseQuestions(part.q, key), meta = P.guessMeta(f.name, lines);
+        if (f.path[0]) meta.book = f.path[0];
+        if (f.path[1]) meta.chapter = f.path[1];
+        if (meta.area === "기타") meta.area = P.guessMeta(f.path.join(" ") + " " + f.name, lines).area;
+        meta.unit = f.done ? f.done.unit : (baseOf(f.name).replace(meta.book, "").replace(/(CH|Chapter)\s*0?\d+[^ ]*/i, "").replace(/\s+/g, " ").trim() || meta.unit);
+        meta.file = f.name;
+        units.push({ meta: meta, questions: qsx, text: qsx.length >= 2 ? "" : lines.join("\n"), raw: part.q.join("\n"), keyText: Object.keys(key).map(function (k) { return k + ". " + key[k]; }).join(" "), keyCount: Object.keys(key).length, drive: refs, replace: !!f.done });
+      } catch (err) { fails.push(f.name + " (" + err.message + ")"); }
+    }
+    btn.disabled = false;
+    IMP = units; renderImport();
+    $("drvInfo").innerHTML = '<span class="ok">' + units.length + "개 가져왔어요.</span> 아래에서 확인하고 저장해 주세요." + (fails.length ? '<br><span class="er">못 가져온 파일: ' + esc(fails.join(", ")) + "</span>" : "");
+    $("impUnits").scrollIntoView({ behavior: "smooth" });
   }
 
   // ---------- 선생님 관리 ----------
