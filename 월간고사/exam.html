@@ -167,7 +167,7 @@
     app.innerHTML = '<div class="box"><p class="sub">시험 정보를 불러오는 중…</p></div>';
     post({ action: "s_open", token: ME.token, id: PID }).then(function (j) {
       if (j.relogin) { logout(); loginFlow(j.msg); return; }
-      if (!j.ok) { app.innerHTML = '<div class="box"><h2>시험을 열 수 없어요</h2><p class="sub">' + esc(j.msg || "잠시 뒤 다시 해 주세요.") + "</p></div>"; return; }
+      if (!j.ok) { app.innerHTML = '<div class="box"><h2>시험을 열 수 없어요</h2><p class="sub">' + esc(j.msg || "잠시 뒤 다시 해 주세요.") + "</p>" + (j.debug ? '<p class="sub" style="font-size:12px;margin-top:8px">선생님께 보여 주세요: ' + esc(JSON.stringify(j.debug)) + "</p>" : "") + '<div class="row"><button class="btn ghost" onclick="location.reload()">다시 시도</button></div></div>'; return; }
       PAPER = j.paper;
       if (j.taken) { showTaken(j); return; }
       var p = j.paper;

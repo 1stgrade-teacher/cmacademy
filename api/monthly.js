@@ -45,6 +45,8 @@ function rtLong(s) { // 2000자 제한을 넘는 글(JSON 등)을 여러 조각�
 const plain = (arr) => (arr || []).map((x) => x.plain_text || (x.text && x.text.content) || "").join("");
 const sel = (n) => { n = clip(n, 90).replace(/,/g, " "); return n ? { select: { name: n } } : { select: null }; };
 const normId = (x) => String(x || "").replace(/-/g, "").toLowerCase();
+// 노션은 필터·관계 값에 하이픈이 있는 UUID(8-4-4-4-12)를 원함
+const uuid = (x) => { const h = normId(x); return h.length === 32 ? h.slice(0, 8) + "-" + h.slice(8, 12) + "-" + h.slice(12, 16) + "-" + h.slice(16, 20) + "-" + h.slice(20) : h; };
 const today = () => new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10); // 한국 날짜
 function normAns(s) {
   return String(s || "").toLowerCase().replace(/[‘’`´]/g, "'").replace(/[“”]/g, '"')
@@ -296,7 +298,7 @@ function openNow(pp) {
   return "";
 }
 async function findAttempt(pid, sid) {
-  const q = await notion("databases/" + EXAM_DB() + "/query", "POST", { page_size: 5, filter: { and: [{ property: "시험지", relation: { contains: pid } }, { property: "학생", relation: { contains: sid } }] } });
+  const q = await notion("databases/" + EXAM_DB() + "/query", "POST", { page_size: 5, filter: { and: [{ property: "시험지", relation: { contains: uuid(pid) } }, { property: "학생", relation: { contains: uuid(sid) } }] } });
   if (!q) return undefined;
   return (q.results || [])[0] || null;
 }
@@ -387,7 +389,7 @@ const Pg = (t) => ({ object: "block", type: "paragraph", paragraph: { rich_text:
 
 let _rep = null;
 function reporter() {
-  if (!_rep) _rep = require("./_report.js")({ notion, queryAll, P, clip, normId, id32, unitIndex, unitData, askAI, EXAM_DB, STUDENT_DB, getPaper });
+  if (!_rep) _rep = require("./_report.js")({ uuid, notion, queryAll, P, clip, normId, id32, unitIndex, unitData, askAI, EXAM_DB, STUDENT_DB, getPaper });
   return _rep;
 }
 
@@ -467,7 +469,7 @@ module.exports = async function handler(req, res) {
     }
     if (act === "t_results") { // 한 시험지의 응시 현황 (안 본 학생 포함)
       const pp = await getPaper(b.id); if (!pp) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." });
-      const [rows, ros] = await Promise.all([queryAll(EXAM_DB(), { filter: { property: "시험지", relation: { contains: pp.id } } }, 3), roster(pp.cls)]);
+      const [rows, ros] = await Promise.all([queryAll(EXAM_DB(), { filter: { property: "시험지", relation: { contains: uuid(pp.id) } } }, 3), roster(pp.cls)]);
       if (!rows) return send(502, { error: "notion", msg: "결과를 불러오지 못했어요.", debug: lastErr });
       const done = new Map(rows.map((p) => [P.rel(p, "학생")[0], p]));
       const list = (ros || []).map((s) => ({ name: s.name, sid: s.id })).concat([...done.keys()].filter((k) => !(ros || []).some((s) => s.id === k)).map((k) => ({ name: "(다른 반 학생)", sid: k })));
@@ -520,7 +522,7 @@ module.exports = async function handler(req, res) {
     const pp = await getPaper(b.id); if (!pp) return send(404, { error: "nf", msg: "시험을 찾지 못했어요." });
     if (pp.cls !== who.cls) return send(403, { error: "cls", msg: "우리 반 시험이 아니에요." });
     const att = await findAttempt(pp.id, who.sid);
-    if (att === undefined) return send(502, { error: "notion", msg: "응시 기록을 확인하지 못했어요. 잠시 뒤 다시 해 주세요." });
+    if (att === undefined) return send(502, { error: "notion", msg: "응시 기록을 확인하지 못했어요. 잠시 뒤 다시 해 주세요.", debug: lastErr });
     if (att) return send(200, { ok: true, paper: pub(pp), taken: true, result: pp.show ? Object.assign(attemptSummary(att), { url: undefined }) : null });
     const closed = openNow(pp);
     let choose = null;
@@ -573,7 +575,7 @@ module.exports = async function handler(req, res) {
     const comment = [weak.length ? "보충 필요: " + weak.join(", ") : "모든 단원 60% 이상", strong.length ? "강점: " + strong.join(", ") : "", late ? "⏰ 제한시간 초과 제출" : "", away ? "자리비움 " + away + "회" : ""].filter(Boolean).join(" · ");
     const range = rangeText(key.units);
     const props = {
-      "시험명": { title: rt(pp.title) }, "학생": { relation: [{ id: who.sid }] }, "시험지": { relation: [{ id: pp.id }] }, "반": sel(pp.cls), "종류": sel(pp.kind || "월간평가"),
+      "시험명": { title: rt(pp.title) }, "학생": { relation: [{ id: uuid(who.sid) }] }, "시험지": { relation: [{ id: uuid(pp.id) }] }, "반": sel(pp.cls), "종류": sel(pp.kind || "월간평가"),
       "시험일": { date: { start: today() } }, "시험 범위": { rich_text: rt(range) }, "점수": { number: right }, "만점": { number: total }, "오답 수": { number: total - right },
       "종합 평가": sel(gradeOf(pct)), "코멘트": { rich_text: rt(comment) }, "응시 방식": sel("온라인"), "소요시간(분)": { number: mins }, "자리비움": { number: away },
       "단원 분석": { rich_text: rtLong(JSON.stringify(units)) },

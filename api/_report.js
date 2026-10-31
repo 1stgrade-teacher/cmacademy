@@ -13,7 +13,7 @@ const COVERS = [
 ];
 
 module.exports = function makeReporter(ctx) {
-  const { notion, queryAll, P, clip, normId, id32, unitIndex, unitData, askAI, EXAM_DB, STUDENT_DB, getPaper } = ctx;
+  const { uuid, notion, queryAll, P, clip, normId, id32, unitIndex, unitData, askAI, EXAM_DB, STUDENT_DB, getPaper } = ctx;
 
   // ---------- 노션 블록 도구 ----------
   // **굵게**, `코드` 표시를 노션 서식으로 바꿈
@@ -130,8 +130,8 @@ module.exports = function makeReporter(ctx) {
 
     // 반 비교 · 지난 시험
     const [peers, hist] = await Promise.all([
-      rec.pid ? queryAll(EXAM_DB(), { filter: { property: "시험지", relation: { contains: rec.pid } } }, 3) : Promise.resolve([]),
-      queryAll(EXAM_DB(), { filter: { and: [{ property: "학생", relation: { contains: rec.sid } }, { property: "시험일", date: { before: rec.date || "2999-01-01" } },
+      rec.pid ? queryAll(EXAM_DB(), { filter: { property: "시험지", relation: { contains: uuid(rec.pid) } } }, 3) : Promise.resolve([]),
+      queryAll(EXAM_DB(), { filter: { and: [{ property: "학생", relation: { contains: uuid(rec.sid) } }, { property: "시험일", date: { before: rec.date || "2999-01-01" } },
         { or: [{ property: "종류", select: { equals: "월간평가" } }, { property: "종류", select: { equals: "분기평가" } }] }] }, sorts: [{ property: "시험일", direction: "descending" }] }, 1),
     ]);
     const ps = (peers || []).map((x) => P.formula(x, "환산점수")).filter((x) => x != null).sort((a, b) => b - a);
@@ -247,7 +247,7 @@ module.exports = function makeReporter(ctx) {
     if (!stu) return { error: "학생을 찾지 못했어요." };
     const kindF = { or: [{ property: "종류", select: { equals: "월간평가" } }, { property: "종류", select: { equals: "분기평가" } }] };
     const [mine, cls] = await Promise.all([
-      queryAll(EXAM_DB(), { filter: { and: [{ property: "학생", relation: { contains: sid } }, { property: "시험일", date: { on_or_after: from } }, { property: "시험일", date: { on_or_before: to } }, kindF] }, sorts: [{ property: "시험일", direction: "ascending" }] }, 2),
+      queryAll(EXAM_DB(), { filter: { and: [{ property: "학생", relation: { contains: uuid(sid) } }, { property: "시험일", date: { on_or_after: from } }, { property: "시험일", date: { on_or_before: to } }, kindF] }, sorts: [{ property: "시험일", direction: "ascending" }] }, 2),
       queryAll(EXAM_DB(), { filter: { and: [{ property: "반", select: { equals: stu.cls } }, { property: "시험일", date: { on_or_after: from } }, { property: "시험일", date: { on_or_before: to } }, kindF] } }, 5),
     ]);
     const recs = (mine || []).map(readRec);
