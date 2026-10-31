@@ -717,8 +717,19 @@ tr.miss td{color:#A0AAB2}
         var key = P.parseAnswers(keyLines.length ? keyLines : part.a), qsx = P.parseQuestions(part.q, key), meta = P.guessMeta(f.name, lines);
         if (f.path[0]) meta.book = f.path[0];
         if (f.path[1]) meta.chapter = f.path[1];
+        else { // 교재 폴더에 바로 넣은 파일: 파일 이름의 CH01 여러 가지 동사 → 단원
+          var cm = baseOf(f.name).match(/(?:^|\s)(?:CH|Chapter|Unit|Lesson)\s*0?(\d{1,2})\s*(.*)$/i);
+          if (cm) meta.chapter = "Chapter " + cm[1].padStart(2, "0") + (cm[2].trim() ? " " + cm[2].trim() : "");
+        }
         if (meta.area === "기타") meta.area = P.guessMeta(f.path.join(" ") + " " + f.name, lines).area;
-        meta.unit = f.done ? f.done.unit : (baseOf(f.name).replace(meta.book, "").replace(/(CH|Chapter)\s*0?\d+[^ ]*/i, "").replace(/\s+/g, " ").trim() || meta.unit);
+        meta.unit = f.done ? f.done.unit : (function () {
+          var bk = String(meta.book || "").replace(/[_\s]+/g, " ").trim(), n = baseOf(f.name);
+          if (bk && n.toLowerCase().indexOf(bk.toLowerCase()) === 0) n = n.slice(bk.length);
+          if (!f.path[1]) n = n.split(/(?:^|\s)(?:CH|Chapter|Unit|Lesson)\s*\d/i)[0];
+          else n = n.replace(/(CH|Chapter)\s*0?\d+[^ ]*/i, "");
+          n = n.replace(/\s+/g, " ").trim();
+          return /^챕터\s*추가\s*문제$/.test(n) ? "챕터 추가문제" : (n || meta.unit);
+        })();
         meta.file = f.name;
         units.push({ meta: meta, questions: qsx, text: qsx.length >= 2 ? "" : lines.join("\n"), raw: part.q.join("\n"), keyText: Object.keys(key).map(function (k) { return k + ". " + key[k]; }).join(" "), keyCount: Object.keys(key).length, drive: refs, replace: !!f.done });
       } catch (err) { fails.push(f.name + " (" + err.message + ")"); }
