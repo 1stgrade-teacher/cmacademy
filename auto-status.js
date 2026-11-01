@@ -2,7 +2,7 @@
  * auto-status.js
  * ------------------------------------------------------
  * "준비중"으로 표시된 모든 강의 링크를 자동으로 검사해서,
- * 실제로 해당 파일이 서버에 업로드되어 있으면 "GO"로 바꿔주는 스크립트.
+ * 실제로 해당 파일이 서버에 업로드되어 있으면 "학습가능"으로 바꿔주는 스크립트.
  *
  * 사용법:
  *   1) 이 파일을 저장소(cmacademy)의 가장 바깥쪽(최상위) 폴더에 둡니다.
@@ -15,14 +15,12 @@
 
 (function () {
   // 완료 표시로 바꿀 단어 (원하시면 이 부분만 바꾸면 전체 사이트에 반영됩니다)
-  var GO_LABEL = "GO";
+  var GO_LABEL = "학습가능";
   var PENDING_LABEL = "준비중";
 
   function markAsReady(pillEl) {
     pillEl.textContent = GO_LABEL;
-    pillEl.style.background = "var(--sage, #7a9b7e)";
-    pillEl.style.color = "#fff";
-    pillEl.style.fontWeight = "600";
+    pillEl.classList.add("ready"); // index 페이지의 기존 "학습가능" 배지와 동일한 스타일
   }
 
   function checkAndUpdate(rowEl) {
