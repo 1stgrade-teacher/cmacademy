@@ -447,11 +447,11 @@ async function makeSheet(pp, uids, sid) {
 // ---------- 학생 본인 확인 (학습 인증과 같은 번호를 씀) ----------
 function secret() { return process.env.REPORT_SECRET || process.env.NOTION_TOKEN || "cm"; }
 function signToken(obj) { const body = b64u(JSON.stringify(obj)); return body + "." + b64u(crypto.createHmac("sha256", secret()).update(body).digest()); }
-function readToken(t) {
+function readToken(t, game) { // game: 🏆 단어 게임용 긴 토큰(sc:"g")도 받기
   const [body, sig] = String(t || "").split("."); if (!body || !sig) return null;
   const ok = b64u(crypto.createHmac("sha256", secret()).update(body).digest());
   if (ok.length !== sig.length || !crypto.timingSafeEqual(Buffer.from(ok), Buffer.from(sig))) return null;
-  try { const o = JSON.parse(unb64u(body).toString("utf8")); return o.exp > Date.now() ? o : null; } catch (e) { return null; }
+  try { const o = JSON.parse(unb64u(body).toString("utf8")); return o.exp > Date.now() && (game || o.sc !== "g") ? o : null; } catch (e) { return null; }
 }
 function pinHash(pin, sid) { return crypto.createHash("sha256").update("cm-pin|" + String(sid).replace(/-/g, "") + "|" + pin + "|" + secret()).digest("hex"); }
 function siteOk(req) {
@@ -483,7 +483,7 @@ async function login(id, pin, setPin) {
     if (!up) return { status: 502, msg: "번호를 저장하지 못했어요. 다시 해 주세요." };
   } else if (stored !== pinHash(pin, id)) { pinFail(id); return { status: 401, msg: "번호가 달라요. 다시 확인해 주세요." }; }
   pinFails.delete(id);
-  return { status: 200, name, cls, token: signToken({ sid: normId(id), name, cls, exp: Date.now() + 4 * 3600 * 1000 }) };
+  return { status: 200, name, cls, sid: normId(id), token: signToken({ sid: normId(id), name, cls, exp: Date.now() + 4 * 3600 * 1000 }) };
 }
 
 // ---------- 채점 + 노션 기록 ----------
@@ -557,6 +557,7 @@ async function whoTeacher(code) {
 }
 
 let _hw = null; // 📸 사진 과제
+let _game = null; const GAME = () => _game || (_game = require("./_game.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, getLastErr: () => lastErr }));
 const HW = () => _hw || (_hw = require("./_homework.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, getLastErr: () => lastErr }));
 let _rep = null;
 function reporter() {
@@ -675,6 +676,7 @@ module.exports = async function handler(req, res) {
       const pg = await notion("pages/" + id32(b.id), "PATCH", { archived: true });
       return pg ? send(200, { ok: true }) : send(502, { error: "notion", msg: "지우지 못했어요.", debug: lastErr });
     }
+    if (act === "t_game_rank") { const r = await GAME().rank(b, null, true); return send(r.status, Object.assign({ ok: r.status === 200 }, r)); }
     if (act === "t_game_list") { loadCatalog(); await loadCustom(true); return send(200, { ok: true, books: gameBooks(true) }); }
     if (act === "t_game_set") { // 🎮 단어장을 학생 게임에 보이기/숨기기
       loadCatalog(); await loadCustom(); const ids = (Array.isArray(b.ids) ? b.ids : []).slice(0, 200).filter((id) => custom.data.has(id)), hide = !!b.hide; let fail = 0;
@@ -871,6 +873,11 @@ module.exports = async function handler(req, res) {
   // =================== 학생 ===================
   if (!siteOk(req)) return send(401, { error: "site", msg: "입장 코드가 필요해요. 페이지를 새로고침해 주세요." });
   if (act === "g_books") { loadCatalog(); await loadCustom(); return send(200, { ok: true, books: gameBooks(false) }); } // 🎮 단어 게임: 단어장 목록 (로그인 없이)
+  if (act === "g_score") { // 🏆 게임 한 판 기록
+    const me = readToken(b.token, true); if (!me) return send(401, { error: "login", relogin: true, msg: "다시 로그인하면 기록돼요." });
+    const r = await GAME().save(me, b); return send(r.status, Object.assign({ ok: r.status === 200 }, r));
+  }
+  if (act === "g_rank") { const r = await GAME().rank(b, readToken(b.token, true)); return send(r.status, Object.assign({ ok: r.status === 200 }, r)); }
   if (act === "g_words") {
     loadCatalog(); await loadCustom();
     const ids = (Array.isArray(b.ids) ? b.ids : []).slice(0, 20).filter((id) => custom.data.has(id) && !custom.data.get(id).hide);
@@ -881,6 +888,8 @@ module.exports = async function handler(req, res) {
   if (act === "roster") { const l = await roster(clip(b.cls, 40)); return l ? send(200, { ok: true, students: l.map((s) => ({ id: s.id, name: s.name, hasPin: s.hasPin })) }) : send(502, { error: "notion", msg: "명단을 불러오지 못했어요." }); }
   if (act === "login") {
     const r = await login(clip(b.id, 60), clip(b.pin, 10), !!b.setPin);
+    if (r.status === 200 && b.game) // 🏆 단어 게임: 게임 기록만 남길 수 있는 30일짜리 토큰 (시험·과제에는 못 씀)
+      return send(200, { ok: true, gtoken: signToken({ sid: r.sid, name: r.name, cls: r.cls, sc: "g", exp: Date.now() + 30 * 864e5 }), name: r.name, cls: r.cls });
     return r.status === 200 ? send(200, { ok: true, token: r.token, name: r.name, cls: r.cls }) : send(r.status, { ok: false, msg: r.msg, needSet: r.needSet });
   }
   if (act === "s_list") { // 반의 시험 목록 (시기별)

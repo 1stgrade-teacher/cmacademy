@@ -282,7 +282,7 @@ function readToken(t) {
   if (!body || !sig) return null;
   const ok = b64u(crypto.createHmac("sha256", secret()).update(body).digest());
   if (ok.length !== sig.length || !crypto.timingSafeEqual(Buffer.from(ok), Buffer.from(sig))) return null;
-  try { const o = JSON.parse(Buffer.from(body.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8")); return o.exp > Date.now() ? o : null; } catch (e) { return null; }
+  try { const o = JSON.parse(Buffer.from(body.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8")); return o.exp > Date.now() && o.sc !== "g" ? o : null; } catch (e) { return null; }
 }
 function pinHash(pin, sid) { return crypto.createHash("sha256").update("cm-pin|" + String(sid).replace(/-/g, "") + "|" + pin + "|" + secret()).digest("hex"); }
 function siteOk(req) {

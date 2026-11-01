@@ -238,6 +238,11 @@ tr.miss td{color:#A0AAB2}
       <div class="row"><button class="sub sm" id="gmReload">새로고침</button><span class="hint" style="margin:0">학생 화면: <b id="gmUrl"></b></span><button class="sm sub" id="gmCopy">링크 복사</button><span class="msg" id="gmMsg" style="margin:0"></span></div>
       <div id="gmList"><p class="hint">불러오는 중…</p></div>
     </div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin:0"><h2 style="margin:0">🏆 단어 랭킹</h2><div class="row" style="margin:0"><select id="rkCls" style="width:auto"><option value="">학원 전체</option></select><select id="rkPer" style="width:auto"><option value="week">이번 주</option><option value="month">이번 달</option></select><button class="sub sm" id="rkLoad">보기</button></div></div>
+      <div class="hint">학생이 게임을 끝낼 때마다 노션 🏆 단어 게임 기록에 한 줄씩 쌓여요. 포인트: 고르기 1점 · 철자·듣고 쓰기 2점 · 카드 2장에 1점 · 짝 1개 1점 · 60초 챌린지 맞힌 수 (하루 최대 300점). 주간 랭킹은 월요일에 새로 시작해요. 학생 화면 '학원 전체'에서는 다른 학생 이름이 가운데 글자를 가리고(김*등) 보여요.</div>
+      <div id="rkOut"></div>
+    </div>
   </section>
 
   <section id="v-teachers" style="display:none">
@@ -345,7 +350,7 @@ tr.miss td{color:#A0AAB2}
       $("bankInfo").textContent = "문제은행: 교재 " + j.catalog.length + "권 · " + units + "과 · 문항 " + total + "개" + (j.ai ? " · AI 켜짐(" + (j.ais || []).map(function (a) { return a.label; }).join("·") + ")" : " · AI 꺼짐");
       buildAiSel(j);
       fillClassSelects(); renderList(); buildPeriods(); buildQuarters(); buildBookFilters();
-      var h = (location.hash || "").slice(1); if (h === "hw") { hwOpen(); tab("hw"); } else if (h === "game") { gmLoad(); tab("game"); } else if (/^(results|report|import)$/.test(h) || (h === "teachers" && j.me.master)) { if (h === "results") fillResultSelect(); if (h === "teachers") loadTeachers(); tab(h); }
+      var h = (location.hash || "").slice(1); if (h === "hw") { hwOpen(); tab("hw"); } else if (h === "game") { gmLoad(); rkLoad(); tab("game"); } else if (/^(results|report|import)$/.test(h) || (h === "teachers" && j.me.master)) { if (h === "results") fillResultSelect(); if (h === "teachers") loadTeachers(); tab(h); }
     });
   }
   $("logout").onclick = function () { lsSet("cm-teacher-code", ""); location.reload(); };
@@ -429,6 +434,16 @@ tr.miss td{color:#A0AAB2}
     $("gmUrl").textContent = GM_URL; $("gmList").innerHTML = '<p class="hint">불러오는 중…</p>';
     post({ action: "t_game_list" }).then(function (j) { if (!j.ok) { $("gmList").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; } GM_BOOKS = j.books; gmRender(j.books); });
   }
+  function rkLoad() {
+    if ($("rkCls").options.length < 2) $("rkCls").innerHTML = '<option value="">학원 전체</option>' + (DATA.classes || []).map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
+    var c = $("rkCls").value; $("rkOut").innerHTML = '<p class="hint">불러오는 중…</p>';
+    post({ action: "t_game_rank", scope: c ? "cls" : "all", cls: c, period: $("rkPer").value }).then(function (j) {
+      if (!j.ok) { $("rkOut").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; }
+      var tb = function (list, unit, more) { return list.length ? '<div class="tw"><table><thead><tr><th>순위</th><th>이름</th>' + (c ? "" : "<th>반</th>") + "<th>" + unit + "</th>" + (more ? "<th>판 수</th><th>푼 단어</th>" : "") + "</tr></thead><tbody>" + list.map(function (x) { return "<tr><td class=num>" + (x.rank <= 3 ? ["", "🥇", "🥈", "🥉"][x.rank] : x.rank) + "</td><td>" + esc(x.name) + "</td>" + (c ? "" : "<td>" + esc(x.cls) + "</td>") + "<td class=num><b>" + x.val + "</b></td>" + (more ? "<td class=num>" + x.plays + "</td><td class=num>" + (x.words || 0) + "</td>" : "") + "</tr>"; }).join("") + "</tbody></table></div>" : '<p class="hint">아직 기록이 없어요.</p>'; };
+      $("rkOut").innerHTML = "<h3 style=\"margin:12px 0 6px\">🏅 포인트</h3>" + tb(j.points, "포인트", true) + "<h3 style=\"margin:14px 0 6px\">⚡ 60초 챌린지 최고 기록</h3>" + tb(j.speed, "맞힌 수", false);
+    });
+  }
+  $("rkLoad").onclick = rkLoad; $("rkCls").onchange = rkLoad; $("rkPer").onchange = rkLoad;
   $("gmReload").onclick = gmLoad; $("gmCopy").onclick = function () { copyText(GM_URL, this); };
 
   function hwDetail(h) {
@@ -466,7 +481,7 @@ tr.miss td{color:#A0AAB2}
     window.scrollTo(0, 0);
   }
   Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) {
-    t.onclick = function () { var n = t.getAttribute("data-tab"); if (n === "edit") newPaper(); if (n === "results") fillResultSelect(); if (n === "teachers") loadTeachers(); if (n === "hw") hwOpen(); if (n === "game") gmLoad(); tab(n); };
+    t.onclick = function () { var n = t.getAttribute("data-tab"); if (n === "edit") newPaper(); if (n === "results") fillResultSelect(); if (n === "teachers") loadTeachers(); if (n === "hw") hwOpen(); if (n === "game") { gmLoad(); rkLoad(); } tab(n); };
   });
 
   function fillClassSelects() {
