@@ -19,7 +19,7 @@ import re
 import sys
 
 TAG = '<script src="/chat-widget.js" defer></script>'
-SKIP_DIRS = {".git", "api", "게임", "node_modules"}
+SKIP_DIRS = {".git", "api", "게임", "어휘", "node_modules"}
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
 

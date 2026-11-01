@@ -242,7 +242,7 @@ tr.miss td{color:#A0AAB2}
 
   <section id="v-game" style="display:none">
     <div class="card">
-      <h2>🎮 학생 단어 게임 (게임 → 📒 단어 마스터)</h2>
+      <h2>🎮 학생 단어 게임 (홈 → 어휘)</h2>
       <p class="hint" style="margin-top:0">「📚 자료 올리기」에서 저장한 📒 단어장이 여기에 모두 나와요. 학생은 자기 교재·Day를 골라 단어 카드, 뜻 맞추기, 철자 쓰기, 듣고 쓰기, 예문 빈칸, 짝 맞추기, 60초 챌린지로 공부해요. 아직 보여 주고 싶지 않은 Day는 체크를 끄세요. (시험 출제에는 영향 없어요)</p>
       <div class="row"><button class="sub sm" id="gmReload">새로고침</button><span class="hint" style="margin:0">학생 화면: <b id="gmUrl"></b></span><button class="sm sub" id="gmCopy">링크 복사</button><span class="msg" id="gmMsg" style="margin:0"></span></div>
       <div id="gmList"><p class="hint">불러오는 중…</p></div>
@@ -420,7 +420,7 @@ tr.miss td{color:#A0AAB2}
     });
   }
   // ---------- 🎮 단어 게임: 단어장 보이기/숨기기 · 링크 ----------
-  var GM_URL = location.origin + "/게임/word-master.html";
+  var GM_URL = location.origin + "/어휘/";
   function copyText(t, b) { (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { var o = b.textContent; b.textContent = "✓ 복사됨"; setTimeout(function () { b.textContent = o; }, 1500); }, function () { prompt("복사해서 단톡방에 보내세요", t); }); }
   function gmRender(books) {
     if (!books.length) { $("gmList").innerHTML = '<p class="hint">아직 📒 단어장이 없어요. 「📚 자료 올리기」에서 단어장 엑셀을 올려 저장하면 여기에 나타나요.</p>'; return; }
