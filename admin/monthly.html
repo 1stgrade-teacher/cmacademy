@@ -548,7 +548,7 @@ tr.miss td{color:#A0AAB2}
         j.items.map(function (q, i) {
           var body = '<div class="tg">' + esc(q.ch) + " › " + esc(q.unit) + '<span class="lv lv' + q.lv + '">' + lvN[q.lv] + "</span>" + (q.ai ? ' <span class="lv lv2">AI</span>' : "") + (q.custom ? ' <span class="lv lv1">📁 직접 올림</span>' : "") + (q.vt ? ' <span class="lv lv1">📒 ' + esc(((DATA.vtypes || []).filter(function (t) { return t.id === q.vt; })[0] || {}).label || q.vt) + "</span>" : "") + "</div><div><b>" + fmt(q.q) + "</b></div>" + (q.sub ? '<div class="sb">' + fmt(q.sub) + "</div>" : "");
           if (q.type === "mc" || q.type === "multi") body += q.opts.map(function (o, k) { var c = q.type === "mc" ? k === q.ans : (q.anss || []).indexOf(k) >= 0; return '<div class="op' + (c ? " c" : "") + '">' + "①②③④⑤⑥"[k] + " " + fmt(o) + "</div>"; }).join("") + (q.type === "multi" ? '<div class="tg">(모두 고르기)</div>' : "");
-          else if (q.type === "short") body += '<div class="op c">정답: ' + fmt(q.answer) + '</div><div class="tg">이렇게 써도 정답: ' + esc((q.accept || []).join(" | ")) + "</div>";
+          else if (q.type === "short") body += '<div class="op c">정답: ' + fmt(q.answer) + '</div><div class="tg">이렇게 써도 정답: ' + esc((q.accept || []).join(" | ")) + (q.vt === "mwrite" ? (DATA.ai ? " · 🤖 이 밖의 사전 뜻·비슷한 뜻은 AI가 확인해서 정답 처리" : " · (AI 키가 없어서 단어장 뜻과 같을 때만 정답)") : "") + "</div>";
           else body += '<div class="op">조각: ' + esc(q.words.join(" / ")) + '</div><div class="op c">정답: ' + esc(q.answer) + "</div>";
           if (q.exp) body += '<div class="tg">해설: ' + esc(q.exp) + "</div>";
           return '<div class="qv"><span class="no">' + (i + 1) + '</span><div class="bd">' + body + '</div><div><button class="sm sub" data-ex="' + esc(q.id) + '">빼기</button></div></div>';

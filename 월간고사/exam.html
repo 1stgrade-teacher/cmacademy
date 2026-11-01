@@ -249,7 +249,7 @@
         var h = '<div class="q" id="q' + i + '"><div class="qh"><span class="qn">' + q.n + '</span><div><div class="qt">' + fmt(q.q) + (q.type === "multi" ? ' <span style="color:#A2342A">(정답 모두 고르기)</span>' : "") + "</div>" + (q.unit ? '<div class="qu">' + esc(q.unit) + "</div>" : "") + "</div></div>";
         if (q.sub) h += '<div class="qs">' + fmt(q.sub) + "</div>";
         if (q.type === "mc" || q.type === "multi") h += '<div class="opts">' + q.opts.map(function (o, k) { return '<button class="opt" data-i="' + i + '" data-k="' + k + '"><b>' + NUM[k] + "</b><span>" + fmt(o) + "</span></button>"; }).join("") + "</div>";
-        else if (q.type === "short") h += '<input class="sa" data-i="' + i + '" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="답을 쓰세요 (빈칸에 들어갈 말만 써도 돼요)">';
+        else if (q.type === "short") h += '<input class="sa" data-i="' + i + '" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="' + esc(q.hint || "답을 쓰세요 (빈칸에 들어갈 말만 써도 돼요)") + '">';
         else h += '<div class="built" id="b' + i + '"></div><div class="chips" id="c' + i + '"></div><button class="reset" data-reset="' + i + '">처음부터 다시 배열</button>';
         return h + "</div>";
       }).join("") +
@@ -345,8 +345,11 @@
     var wrong = items.filter(function (x) { return !x.ok; });
     html += '<div class="box"><h2>' + (wrong.length ? "📝 틀린 문제 다시 보기 (" + wrong.length + ")" : "💯 모두 맞혔어요!") + "</h2>" + wrong.map(function (x) {
       return '<div class="rv"><div class="h">' + x.n + ". " + fmt(x.q) + "</div>" + (x.sub ? '<div class="qs" style="font-size:15px">' + fmt(x.sub) + "</div>" : "") +
-        '<div class="a"><span class="no">내 답: ' + fmt(x.given) + '</span><br><span class="ok">정답: ' + fmt(x.answer) + "</span></div>" + (x.exp ? '<div class="x">💡 ' + esc(x.exp) + "</div>" : "") + "</div>";
-    }).join("") + backRow() + "</div>";
+        '<div class="a"><span class="no">내 답: ' + fmt(x.given) + '</span><br><span class="ok">정답: ' + fmt(x.answer) + "</span>" + (x.ai ? '<br><span style="color:var(--muted);font-size:14px">🤖 ' + esc(x.ai) + "</span>" : "") + "</div>" + (x.exp ? '<div class="x">💡 ' + esc(x.exp) + "</div>" : "") + "</div>";
+    }).join("") + (function () { // 단어장 뜻과 달라도 AI가 맞다고 본 답
+      var ai = items.filter(function (x) { return x.ok && /^AI 인정/.test(x.ai || ""); });
+      return ai.length ? '<div class="rv"><div class="h">🤖 AI가 맞다고 인정한 뜻 (' + ai.length + ")</div>" + ai.map(function (x) { return '<div class="a">' + x.n + ". " + fmt(x.sub || "") + ' · <span class="ok">내 답: ' + fmt(x.given) + "</span> · 단어장 뜻: " + fmt(x.answer) + "</div>"; }).join("") + "</div>" : "";
+    })() + backRow() + "</div>";
     app.innerHTML = html; bindBack();
   }
   function backRow() { return '<div class="row" style="justify-content:center"><a class="btn ghost" style="text-decoration:none" href="./index.html' + (CLS ? "?c=" + encodeURIComponent(CLS) : "") + '">시험 목록으로</a><button class="btn ghost" id="done">끝내기 (다음 학생)</button></div>'; }

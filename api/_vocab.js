@@ -7,12 +7,14 @@
 //   blankmc 예문 빈칸 고르기             blank  예문 빈칸 쓰기
 //   def     영영 풀이 → 단어 고르기       paren  괄호 속 문맥에 맞는 단어 고르기
 //   synmc   동의어·반의어 → 단어 고르기   synw   동의어·반의어 → 단어 쓰기
+//   mwrite  단어 → 우리말 뜻 쓰기: 단어장 뜻과 같으면 바로 정답, 다르면 채점 때 AI가 사전에 있는 뜻·비슷한 뜻인지 확인
 // ------------------------------------------------------------------
 const crypto = require("crypto");
 
 const VTYPES = [
   { id: "meaning", label: "뜻 고르기", need: "뜻" },
   { id: "spell", label: "철자 쓰기 (뜻 보고)", need: "뜻" },
+  { id: "mwrite", label: "뜻 쓰기 (AI가 비슷한 뜻도 채점)", need: "뜻" },
   { id: "blankmc", label: "예문 빈칸 고르기", need: "예문" },
   { id: "blank", label: "예문 빈칸 쓰기", need: "예문" },
   { id: "def", label: "영영 풀이 → 단어 고르기", need: "영영정의" },
@@ -85,6 +87,18 @@ function others(list, e, n, r, also) {
   return same.concat(rest).slice(0, n);
 }
 
+// 우리말 뜻 맞추기: 띄어쓰기·물결(~)·괄호 속 설명·문장부호는 빼고 비교
+const koNorm = (s) => String(s || "").replace(/\([^)]*\)|\[[^\]]*\]/g, "").replace(/[~∼〜\s.,·!?'"“”‘’…\-]/g, "").replace(/^(을|를|에게|에|와|과|이|가)(?=[가-힣]{2})/, "").trim();
+// "끌어당기다, 매혹하다 / (마음을) 끌다" → 정답으로 받을 뜻 목록
+function meaningAccept(m) { return [...new Set(String(m || "").split(/\s*[,\/;·|]\s*|\s+또는\s+/).map((x) => x.trim()).filter(Boolean).concat([String(m || "").trim()]))].slice(0, 12); }
+function mwriteOk(given, k) { const g = koNorm(given); return !!g && (k.accept && k.accept.length ? k.accept : meaningAccept(k.answer)).some((a) => koNorm(a) === g); }
+// 예전에 저장한 단어장(뜻 쓰기 문항이 없던 때)도 '뜻 고르기' 문항에서 뜻 쓰기 문항을 만들어 써요
+function mwriteFrom(q) {
+  if (!q || q.vt !== "meaning" || !Array.isArray(q.opts)) return null;
+  const m = q.opts[q.ans]; if (!m) return null;
+  return { type: "short", lv: 2, vt: "mwrite", w: q.w, kind: "단어", id: "w" + String(q.id || "").slice(1), q: "다음 단어의 뜻을 우리말로 쓰시오.", sub: q.sub, answer: m, accept: meaningAccept(m), exp: q.exp };
+}
+
 // 단어 목록 → 문항 목록 (한 과 안에서). 문항마다 w(단어)·vt(유형)를 달아 출제 때 같은 단어가 겹치지 않게 해요.
 function build(words, uid) {
   const list = (Array.isArray(words) ? words : []).map(cleanWord).filter(Boolean);
@@ -97,6 +111,8 @@ function build(words, uid) {
     const pos = e.pos ? " (" + e.pos + ")" : "";
     // 1) 단어 → 뜻 고르기
     if (e.m) { const o = mc([e.m].concat(others(L, e, 4, r, (x) => x.m && x.m !== e.m).map((x) => x.m)), e.m); if (o) add(e, "meaning", Object.assign({ type: "mc", lv: 1, q: "다음 단어의 뜻으로 알맞은 것을 고르시오.", sub: W + pos }, o)); }
+    // 1-1) 단어 → 우리말 뜻 쓰기 (채점 때 AI가 비슷한 뜻도 확인)
+    if (e.m) add(e, "mwrite", { type: "short", lv: 2, q: "다음 단어의 뜻을 우리말로 쓰시오.", sub: W + pos, answer: e.m, accept: meaningAccept(e.m) });
     // 2) 뜻 → 철자 쓰기 (첫 글자 힌트)
     if (e.m) add(e, "spell", { type: "short", lv: 2, q: "우리말 뜻에 알맞은 영어 단어를 쓰시오.", sub: e.m + pos + "  →  " + W[0] + " " + "_ ".repeat(Math.max(1, W.length - 1)).trim() + " (" + W.replace(/\s/g, "").length + "글자)", answer: W, accept: altForms(e.w) });
     if (tk) {
@@ -132,4 +148,4 @@ function build(words, uid) {
 // 이 단어장으로 만들 수 있는 유형별 문항 수
 function typeCounts(qs) { const c = {}; (qs || []).forEach((q) => { if (q.vt) c[q.vt] = (c[q.vt] || 0) + 1; }); return c; }
 
-module.exports = { VTYPES, VT_IDS, build, cleanWord, typeCounts, _t: { findToken, inflect } };
+module.exports = { VTYPES, VT_IDS, build, cleanWord, typeCounts, mwriteOk, mwriteFrom, meaningAccept, _t: { findToken, inflect, koNorm } };
