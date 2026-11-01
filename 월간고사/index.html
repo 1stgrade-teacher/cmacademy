@@ -28,6 +28,15 @@
   .paper.off{opacity:.62}
   .paper.off .st{background:#EEF1F3;color:var(--muted)}
   .chg{margin-left:auto;border:0;background:none;color:var(--accent-ink);font:600 13.5px var(--font);cursor:pointer;text-decoration:underline}
+  .paper .kind.p{background:#FDE8E8;color:#A12A2A}
+  .newbtn{display:flex;align-items:center;gap:12px;width:100%;margin-top:14px;padding:16px 18px;border:1.5px dashed #D9534F;border-radius:var(--radius);background:#FFF7F6;color:#8C2A27;font:700 16px var(--font);cursor:pointer;text-align:left}
+  .newbtn small{display:block;font:500 13px var(--font);color:var(--muted);margin-top:3px}
+  .join{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-top:14px}
+  .join label{display:block;font:600 14px var(--font);margin:12px 0 6px}
+  .join input,.join select{width:100%;box-sizing:border-box;padding:12px;border:1.5px solid var(--border-strong);border-radius:10px;font:500 16px var(--font)}
+  .join .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .join .go{margin-top:16px;width:100%;padding:14px;border:0;border-radius:10px;background:var(--accent);color:#fff;font:700 16px var(--font);cursor:pointer}
+  .join .er{color:#A2342A;font-size:14px;margin-top:10px;line-height:1.5}
   .msgbox{padding:22px;text-align:center;color:var(--muted);background:var(--card);border-radius:var(--radius);border:1px dashed var(--border-strong);margin-top:16px;line-height:1.6}
 </style>
 </head>
@@ -47,7 +56,19 @@
   </div>
 
   <div id="pickCls">
-    <p class="section-label">내 반을 골라요</p>
+    <button class="newbtn" id="newBtn" type="button">🆕 <span>처음 왔어요 — 반배정 시험 보기<small>이름·학교·학년을 쓰고 바로 시험을 봐요</small></span></button>
+    <div class="join" id="joinBox" style="display:none">
+      <b style="font-size:17px">🆕 처음 왔어요</b>
+      <label for="jName">이름</label><input id="jName" maxlength="20" autocomplete="off" placeholder="예: 김민준">
+      <div class="row2"><div><label for="jSchool">학교</label><input id="jSchool" maxlength="30" autocomplete="off" placeholder="예: 한빛중"></div>
+      <div><label for="jGrade">학년</label><select id="jGrade"><option value="">고르기</option><option>초3</option><option>초4</option><option>초5</option><option>초6</option><option>중1</option><option>중2</option><option>중3</option><option>고1</option><option>고2</option><option>고3</option></select></div></div>
+      <div class="row2"><div><label for="jPin">나만의 번호 (숫자 4자리)</label><input id="jPin" type="password" inputmode="numeric" maxlength="4" autocomplete="off"></div>
+      <div><label for="jPin2">번호 한 번 더</label><input id="jPin2" type="password" inputmode="numeric" maxlength="4" autocomplete="off"></div></div>
+      <p style="font-size:13px;color:var(--muted);margin:8px 0 0">번호는 시험을 다시 열 때 써요. 잊지 않게 기억해 두세요.</p>
+      <button class="go" id="jGo" type="button">등록하고 시험 보러 가기</button>
+      <div class="er" id="jEr"></div>
+    </div>
+    <p class="section-label" style="margin-top:22px">내 반을 골라요</p>
     <div class="cls-grid" id="clsGrid"><div class="msgbox" style="grid-column:1/-1">반 목록을 불러오는 중…</div></div>
   </div>
 
@@ -104,13 +125,33 @@
           var off = !!p.closed;
           var meta = [p.mode === "choice" ? "내가 배운 교재·과 선택" : (p.range || ""), p.count + "문항", p.minutes ? p.minutes + "분" : "시간 제한 없음", p.level].filter(Boolean).join(" · ");
           return '<a class="paper' + (off ? " off" : "") + '" href="exam.html?id=' + encodeURIComponent(p.id) + "&c=" + encodeURIComponent(cls) + '">' +
-            '<span class="kind' + ({ "분기평가": " q", "단어시험": " v", "주간평가": " w" })[p.kind] || "" + '">' + esc(({ "분기평가": "분기", "주간평가": "주간", "단어시험": "단어" })[p.kind] || "월간") + "</span>" +
+            '<span class="kind' + (({ "분기평가": " q", "단어시험": " v", "주간평가": " w", "반배정시험": " p" })[p.kind] || "") + '">' + esc(({ "분기평가": "분기", "주간평가": "주간", "단어시험": "단어", "반배정시험": "반배정" })[p.kind] || "월간") + "</span>" +
             '<span class="body"><div class="t">' + esc(p.title) + '</div><div class="m">' + esc(meta) + (p.end ? " · ~" + esc(p.end.slice(5).replace("-", "/")) : "") + "</div></span>" +
             '<span class="st">' + (off ? (p.status === "마감" ? "마감" : "대기") : "응시하기 →") + "</span></a>";
         }).join("") + "</section>";
       }).join("");
     });
   }
+  // 🆕 신입생 스스로 등록 → '신입 반배정' 반 시험으로
+  var $ = function (id) { return document.getElementById(id); };
+  $("newBtn").onclick = function () { var b = $("joinBox"); b.style.display = b.style.display === "none" ? "" : "none"; if (b.style.display === "") $("jName").focus(); };
+  $("jGo").onclick = function () {
+    var er = $("jEr"), name = $("jName").value.trim(), pin = $("jPin").value;
+    if (name.length < 2) { er.textContent = "이름을 써 주세요."; return; }
+    if (!$("jGrade").value) { er.textContent = "학년을 골라 주세요."; return; }
+    if (!/^\d{4}$/.test(pin)) { er.textContent = "번호는 숫자 4자리예요."; return; }
+    if (pin !== $("jPin2").value) { er.textContent = "두 번호가 달라요."; return; }
+    var go = $("jGo"); go.disabled = true; er.textContent = "등록하는 중…";
+    post({ action: "s_join", name: name, school: $("jSchool").value.trim(), grade: $("jGrade").value, pin: pin }).then(function (j) {
+      go.disabled = false;
+      if (j.token) {
+        try { sessionStorage.setItem("cm-monthly-me", JSON.stringify({ token: j.token, name: j.name, cls: j.cls, exp: Date.now() + 3.8 * 3600 * 1000 })); } catch (e) {}
+        er.textContent = ""; $("joinBox").style.display = "none"; openCls(j.cls); return;
+      }
+      er.textContent = j.msg || "등록하지 못했어요. 선생님께 알려 주세요.";
+      if (j.error === "exists" && j.cls) { var a = document.createElement("button"); a.className = "cls-btn"; a.style.marginTop = "10px"; a.textContent = j.cls + " 열기"; a.onclick = function () { openCls(j.cls); }; er.appendChild(document.createElement("br")); er.appendChild(a); }
+    });
+  };
   document.getElementById("chgCls").onclick = function () { history.replaceState(null, "", location.pathname); showClasses(); };
   var c = qs.get("c") || lsGet("cm-monthly-cls");
   if (c) openCls(c); else showClasses();

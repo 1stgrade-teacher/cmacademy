@@ -28,7 +28,23 @@ const CUSTOM_DB = () => id32(process.env.NOTION_CUSTOM_DB_ID || "f75d764be3d04c9
 const TEACHER_DB = () => id32(process.env.NOTION_TEACHER_DB_ID || "63a6527837024ddaa3d256b0cb243304");
 const MASTER_NAME = () => String(process.env.TEACHER_NAME || "일등급샘").trim();
 const PIN_PROP = "본인번호";
-const KINDS = ["월간평가", "분기평가", "주간평가", "단어시험"];
+const KINDS = ["월간평가", "분기평가", "주간평가", "단어시험", "반배정시험"];
+const PLACE_CLS = () => String(process.env.PLACE_CLASS || "신입 반배정").trim(); // 신입생이 스스로 등록되는 반
+const GRADES = ["초3", "초4", "초5", "초6", "중1", "중2", "중3", "고1", "고2", "고3"];
+// 반배정 추천 기준: 줄마다 "중1: 90 중1 사관반, 70 중1 S반, 0 중1 I반" (학년 없이 "80 중2 일등급반, 0 중2 S반"도 됨)
+function placeRec(rules, grade, pct) {
+  const blocks = String(rules || "").split(/\n+/).map((l) => l.trim()).filter(Boolean).map((l) => {
+    const m = l.match(/^([초중고]\s*[1-6])\s*(?:학년)?\s*[:：]\s*(.+)$/), g = m ? m[1].replace(/\s/g, "") : null;
+    const items = (m ? m[2] : l).split(/\s*[,，;]\s*/).map((x) => x.match(/^(\d{1,3})\s*(?:점)?\s*(?:이상)?\s*(?:→|->|:|=)?\s*(.+)$/)).filter(Boolean).map((x) => ({ min: +x[1], cls: x[2].trim() })).sort((a, b) => b.min - a.min);
+    return { g, items };
+  }).filter((x) => x.items.length);
+  const blk = blocks.find((x) => x.g && x.g === grade) || blocks.find((x) => !x.g);
+  if (!blk) return "";
+  const hit = blk.items.find((x) => pct >= x.min);
+  return hit ? hit.cls : "";
+}
+const joinHits = new Map();
+function joinLimited(ip) { const e = joinHits.get(ip), now = Date.now(); if (!e || now - e.t > 3600000) { joinHits.set(ip, { n: 1, t: now }); return false; } e.n++; if (joinHits.size > 3000) joinHits.clear(); return e.n > 40; }
 const STATUSES = ["준비중", "응시중", "마감"];
 const MODES = { fixed: "선생님 지정", choice: "학생 선택" };
 const LEVELS = ["기본", "표준", "심화"];
@@ -449,7 +465,7 @@ async function classList() {
 }
 async function roster(cls) {
   const rows = await queryAll(STUDENT_DB(), { filter: { property: "반", select: { equals: cls } }, sorts: [{ property: "이름", direction: "ascending" }] }, 4);
-  return rows && rows.map((p) => ({ id: normId(p.id), name: P.title(p, "이름"), hasPin: !!P.text(p, PIN_PROP) }));
+  return rows && rows.map((p) => ({ id: normId(p.id), name: P.title(p, "이름"), hasPin: !!P.text(p, PIN_PROP), grade: P.sel(p, "학년") || "", school: P.text(p, "학교") || "" }));
 }
 async function login(id, pin, setPin) {
   if (pinLocked(id)) return { status: 429, msg: "번호를 여러 번 틀려서 잠시 잠겼어요. 10분 뒤에 다시 해 주세요." };
@@ -596,7 +612,7 @@ module.exports = async function handler(req, res) {
     if (act === "t_init") {
       const [classes, rows] = await Promise.all([classList(), queryAll(PAPER_DB(), { sorts: [{ timestamp: "created_time", direction: "descending" }] }, 3)]);
       if (!rows) return send(502, { error: "notion", msg: "🗓 월간·분기 시험지 DB를 읽지 못했어요. 노션에서 이 DB에 'cmacademy 학습인증' 연결을 추가했는지 확인해 주세요.", debug: lastErr });
-      return send(200, { ok: true, me: { name: me.name, master: me.master, contact: me.contact, reportUrl: me.reportUrl }, classes: classes || [], papers: rows.map((p) => Object.assign(pub(readPaper(p)), { cfg: readPaper(p).cfg, show: P.chk(p, "결과 공개"), takers: P.rollup(p, "응시 인원"), avg: P.rollup(p, "평균 점수"), url: p.url })), catalog: allBooks(), ai: aiOn(), ais: AI.list(), aiDefault: AI.defaultId(), vtypes: V.VTYPES });
+      return send(200, { ok: true, me: { name: me.name, master: me.master, contact: me.contact, reportUrl: me.reportUrl }, classes: (classes || []).concat((classes || []).includes(PLACE_CLS()) ? [] : [PLACE_CLS()]), papers: rows.map((p) => Object.assign(pub(readPaper(p)), { cfg: readPaper(p).cfg, show: P.chk(p, "결과 공개"), takers: P.rollup(p, "응시 인원"), avg: P.rollup(p, "평균 점수"), url: p.url })), catalog: allBooks(), ai: aiOn(), ais: AI.list(), aiDefault: AI.defaultId(), vtypes: V.VTYPES });
     }
     if (act === "t_preview") { // 선생님 지정형: 실제 학생이 받을 문항(정답 포함)을 미리 보기
       const uids = (Array.isArray(b.units) ? b.units : []).filter((u) => unitIndex.has(u)).slice(0, 300);
@@ -625,7 +641,7 @@ module.exports = async function handler(req, res) {
       if (mode === "choice" && !books.length && !units.length) return send(400, { error: "input", msg: "학생이 고를 수 있는 교재를 골라 주세요." });
       let old = null;
       if (f.id) { old = await getPaper(f.id); if (!old) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." }); }
-      const cfg = { units, books, seed: (old && old.cfg.seed) || clip(f.seed, 40).replace(/[^\w-]/g, "") || hash(Date.now() + title, 12), exclude: (Array.isArray(f.exclude) ? f.exclude : (old && old.cfg.exclude) || []).slice(0, 500), vtypes: (Array.isArray(f.vtypes) ? f.vtypes : (old && old.cfg.vtypes) || []).filter((t) => V.VT_IDS.includes(t)) };
+      const cfg = { units, books, seed: (old && old.cfg.seed) || clip(f.seed, 40).replace(/[^\w-]/g, "") || hash(Date.now() + title, 12), exclude: (Array.isArray(f.exclude) ? f.exclude : (old && old.cfg.exclude) || []).slice(0, 500), vtypes: (Array.isArray(f.vtypes) ? f.vtypes : (old && old.cfg.vtypes) || []).filter((t) => V.VT_IDS.includes(t)), place: clip(f.place != null ? f.place : (old && old.cfg.place) || "", 1500) };
       if (f.reseed) cfg.seed = hash(Date.now() + Math.random(), 12);
       const range = mode === "fixed" ? rangeText(units) : "학생 선택: " + (books.length ? allBooks().filter((x) => books.includes(x.id)).map((x) => x.name).join(", ") : rangeText(units));
       const props = {
@@ -648,13 +664,23 @@ module.exports = async function handler(req, res) {
       const pg = await notion("pages/" + id32(b.id), "PATCH", { archived: true });
       return pg ? send(200, { ok: true }) : send(502, { error: "notion", msg: "지우지 못했어요.", debug: lastErr });
     }
+    if (act === "t_assign") { // 반배정: 학생의 반을 바꿔요 (노션 학생 DB의 '반')
+      const cls = clip(b.cls, 40), sid = clip(b.sid, 60), list = await classList();
+      if (!list || !list.concat([PLACE_CLS()]).includes(cls)) return send(400, { error: "input", msg: "반을 골라 주세요." });
+      const st = await notion("pages/" + id32(sid), "GET");
+      if (!st || normId(st.parent && st.parent.database_id) !== normId(STUDENT_DB())) return send(404, { error: "nf", msg: "학생을 찾지 못했어요." });
+      const memo = P.text(st, "메모"), line = today() + " " + me.name + ": " + (P.sel(st, "반") || "-") + " → " + cls;
+      const up = await notion("pages/" + id32(sid), "PATCH", { properties: { "반": sel(cls), "메모": { rich_text: rt(clip((memo ? memo + "\n" : "") + line, 1900)) } } });
+      return up ? send(200, { ok: true, cls }) : send(502, { error: "notion", msg: "반을 바꾸지 못했어요.", debug: lastErr });
+    }
     if (act === "t_results") { // 한 시험지의 응시 현황 (안 본 학생 포함)
       const pp = await getPaper(b.id); if (!pp) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." });
       const [rows, ros] = await Promise.all([queryAll(EXAM_DB(), { filter: { property: "시험지", relation: { contains: uuid(pp.id) } } }, 3), roster(pp.cls)]);
       if (!rows) return send(502, { error: "notion", msg: "결과를 불러오지 못했어요.", debug: lastErr });
       const done = new Map(rows.map((p) => [P.rel(p, "학생")[0], p]));
       const list = (ros || []).map((s) => ({ name: s.name, sid: s.id })).concat([...done.keys()].filter((k) => !(ros || []).some((s) => s.id === k)).map((k) => ({ name: "(다른 반 학생)", sid: k })));
-      const out = list.map((s) => { const p = done.get(s.sid); return p ? Object.assign({ name: s.name, url: p.url, rec: normId(p.id), report: (p.properties["분석 리포트"] || {}).url || "", mins: P.num(p, "소요시간(분)"), away: P.num(p, "자리비움"), units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }, attemptSummary(p)) : { name: s.name, missing: true }; });
+      const info = new Map((ros || []).map((s) => [s.id, s]));
+      const out = list.map((s) => { const p = done.get(s.sid), st = info.get(s.sid) || {}; return p ? Object.assign({ name: s.name, sid: s.sid, sgrade: st.grade || "", school: st.school || "", rec2: P.text(p, "추천 반"), url: p.url, rec: normId(p.id), report: (p.properties["분석 리포트"] || {}).url || "", mins: P.num(p, "소요시간(분)"), away: P.num(p, "자리비움"), units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }, attemptSummary(p)) : { name: s.name, sid: s.sid, sgrade: st.grade || "", school: st.school || "", missing: true }; });
       return send(200, { ok: true, paper: pub(pp), rows: out });
     }
     if (act === "t_report") { // 분기(또는 기간) 리포트: 반의 월간·분기 평가를 학생별로 모음
@@ -831,6 +857,23 @@ module.exports = async function handler(req, res) {
     return send(200, { ok: true, papers: rows.map((p) => { const pp = readPaper(p); return Object.assign(pub(pp), { closed: openNow(pp) }); }) });
   }
 
+  if (act === "s_join") { // 🆕 신입생: 이름·학교·학년·번호로 스스로 등록 → '신입 반배정' 반 학생이 돼요
+    const ip = String((req.headers["x-forwarded-for"] || "").split(",")[0]).trim() || "x";
+    if (joinLimited(ip)) return send(429, { error: "limit", msg: "등록이 너무 많아요. 잠시 뒤에 다시 해 주세요." });
+    const name = clip(b.name, 20).replace(/\s+/g, " "), school = clip(b.school, 30), grade = GRADES.includes(b.grade) ? b.grade : null, pin = String(b.pin || "");
+    if (!/^[가-힣A-Za-z][가-힣A-Za-z0-9 ]{1,19}$/.test(name)) return send(400, { error: "input", msg: "이름을 한글이나 영어로 2글자 이상 써 주세요." });
+    if (!grade) return send(400, { error: "input", msg: "학년을 골라 주세요." });
+    if (!/^\d{4}$/.test(pin)) return send(400, { error: "input", msg: "번호는 숫자 4자리예요." });
+    const dup = await queryAll(STUDENT_DB(), { filter: { and: [{ property: "이름", title: { equals: name } }, { property: "반", select: { equals: PLACE_CLS() } }] } }, 1);
+    if (!dup) return send(502, { error: "notion", msg: "등록하지 못했어요. 선생님께 알려 주세요.", debug: lastErr });
+    if (dup.length) return send(409, { error: "exists", cls: PLACE_CLS(), msg: "이미 등록된 이름이에요. 아래 「" + PLACE_CLS() + "」을 눌러 내 이름을 고르고 번호로 들어가세요. (같은 이름의 다른 학생이면 이름 뒤에 학교를 붙여 등록하세요. 예: 김민준 한빛중)" });
+    const pg = await notion("pages", "POST", { parent: { database_id: STUDENT_DB() }, properties: { "이름": { title: rt(name) }, "반": sel(PLACE_CLS()), "학년": sel(grade), "학교": { rich_text: rt(school) }, "메모": { rich_text: rt(today() + " 반배정 시험 스스로 등록") } } });
+    if (!pg) return send(502, { error: "notion", msg: "등록하지 못했어요. 선생님께 알려 주세요.", debug: lastErr });
+    const sid = normId(pg.id);
+    await notion("pages/" + id32(sid), "PATCH", { properties: { [PIN_PROP]: { rich_text: rt(pinHash(pin, sid)) } } });
+    return send(200, { ok: true, token: signToken({ sid, name, cls: PLACE_CLS(), exp: Date.now() + 4 * 3600 * 1000 }), name, cls: PLACE_CLS() });
+  }
+
   const who = readToken(b.token);
   if (!who) return send(401, { error: "login", relogin: true, msg: "본인 확인이 끝났어요. 이름과 번호를 다시 확인해 주세요." });
 
@@ -891,11 +934,18 @@ module.exports = async function handler(req, res) {
     const strong = [...chs.values()].filter((u) => u.t >= 2 && u.r === u.t).slice(0, 3).map((u) => u.k);
     const comment = [weak.length ? "보충 필요: " + weak.join(", ") : "모든 단원 60% 이상", strong.length ? "강점: " + strong.join(", ") : "", late ? "⏰ 제한시간 초과 제출" : "", away ? "자리비움 " + away + "회" : ""].filter(Boolean).join(" · ");
     const range = rangeText(key.units);
+    let rec2 = "";
+    if (pp.kind === "반배정시험" || (pp.cfg && pp.cfg.place)) {
+      const st = await notion("pages/" + id32(who.sid), "GET"), grade = st ? P.sel(st, "학년") : "";
+      rec2 = (placeRec(pp.cfg.place, grade, pct) || (pp.cfg.place ? "기준에 맞는 반 없음" : "기준 미설정")) + " (" + (grade || "학년 ?") + " · " + pct + "점)";
+      if (st) { const memo = P.text(st, "메모"); await notion("pages/" + id32(who.sid), "PATCH", { properties: { "메모": { rich_text: rt(clip((memo ? memo + "\n" : "") + today() + " " + pp.title + " " + right + "/" + total + " → 추천 " + rec2, 1900)) } } }); }
+    }
     const props = {
       "시험명": { title: rt(pp.title) }, "학생": { relation: [{ id: uuid(who.sid) }] }, "시험지": { relation: [{ id: uuid(pp.id) }] }, "반": sel(pp.cls), "종류": sel(pp.kind || "월간평가"),
       "시험일": { date: { start: today() } }, "시험 범위": { rich_text: rt(range) }, "점수": { number: right }, "만점": { number: total }, "오답 수": { number: total - right },
       "종합 평가": sel(gradeOf(pct)), "코멘트": { rich_text: rt(comment) }, "응시 방식": sel("온라인"), "소요시간(분)": { number: mins }, "자리비움": { number: away },
       "단원 분석": { rich_text: rtLong(JSON.stringify(units)) },
+      ...(rec2 ? { "추천 반": { rich_text: rt(rec2) } } : {}),
       // 분석 리포트용: 문항마다 영역·단원·학생 답·정답 (짧게)
       "문항 기록": { rich_text: rtLong(JSON.stringify(key.items.map((k, i) => {
         const ui = unitIndex.get(k.u) || {};
@@ -920,4 +970,4 @@ module.exports = async function handler(req, res) {
   return send(400, { error: "action" });
 };
 // 시험용 내부 함수 (로컬 점검에서 씀)
-module.exports._t = { expandAccept, shortOk, pick, buildSheet, seal, unseal, grade, unitStats, rangeText, loadCatalog, unitData, poolFor, rngOf };
+module.exports._t = { placeRec, expandAccept, shortOk, pick, buildSheet, seal, unseal, grade, unitStats, rangeText, loadCatalog, unitData, poolFor, rngOf };
