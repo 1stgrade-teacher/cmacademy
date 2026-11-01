@@ -1096,7 +1096,7 @@ tr.miss td{color:#A0AAB2}
       try {
         var j = await post({ action: "t_drive_get", id: f.id }); if (!j.ok) throw new Error(j.msg);
         var refs = [{ id: f.id, m: f.modified, n: f.name }];
-        if (/\.xlsx$/i.test(f.name)) { (await P.xlsxUnits(b64File(j))).forEach(function (u) { u.drive = refs; if (u.vocab && !u.meta.bookFromCol && f.path[0] && /(^|[^A-Za-z])(day|unit|lesson)\s*0?\d/i.test(f.name)) { u.meta.book = f.path[0]; /* 「교재 폴더/Day 01.xlsx」처럼 Day마다 파일일 때만 폴더 이름이 교재 이름. 한 파일에 여러 Day가 든 단어장은 파일 이름 그대로 */ if (f.path[1] && u.meta.chapter === "단어") u.meta.chapter = f.path[1]; } units.push(u); }); continue; }
+        if (/\.xlsx$/i.test(f.name)) { (await P.xlsxUnits(b64File(j))).forEach(function (u) { u.drive = refs; if (u.vocab && !u.meta.bookFromCol && f.path[0] && /(^|[^A-Za-z])(day|unit|lesson)\s*0?\d/i.test(f.name)) { u.meta.book = f.path[f.path.length - 1]; /* 「교재 폴더/Day 01.xlsx」처럼 (가장 안쪽 폴더 = 교재) Day마다 파일일 때만 폴더 이름이 교재 이름. 한 파일에 여러 Day가 든 단어장은 파일 이름 그대로 */ if (f.path[1] && u.meta.chapter === "단어") u.meta.chapter = f.path[1]; } units.push(u); }); continue; }
         var keyLines = [], kf = pairKey(f, DRV.files);
         if (kf) { var kj = await post({ action: "t_drive_get", id: kf.id }); if (kj.ok) { keyLines = await P.fileLines(b64File(kj)); refs.push({ id: kf.id, m: kf.modified, n: kf.name }); } }
         var lines = await P.fileLines(b64File(j)), part = P.splitAnswerSection(lines);
