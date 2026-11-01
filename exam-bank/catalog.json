@@ -1,5 +1,5 @@
 {
- "built": "2026-11-01T00:40:45.132Z",
+ "built": "2026-11-01T01:29:05.864Z",
  "books": [
   {
    "id": "bb391852c",
@@ -1502,6 +1502,12 @@
      "name": "Chapter 01 시제",
      "units": [
       {
+       "id": "u06774274",
+       "name": "TEST Chapter 01 Actual Test",
+       "n": 0,
+       "lv": null
+      },
+      {
        "id": "u0cdd2f20",
        "name": "CU1 P1 확인문제 · Grammar Check Up",
        "n": 0,
@@ -1512,6 +1518,12 @@
        "name": "P1 현재완료",
        "n": 4,
        "lv": 2
+      },
+      {
+       "id": "u27828df2",
+       "name": "CU2 P2 확인문제 · Grammar Check Up",
+       "n": 0,
+       "lv": null
       },
       {
        "id": "u064d259d",
