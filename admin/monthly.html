@@ -202,7 +202,7 @@ tr.miss td{color:#A0AAB2}
     </div>
     <div class="card" id="drvCard">
       <h2>📂 구글 드라이브 문제은행 폴더</h2>
-      <p class="hint" style="margin-top:0">공유 폴더에 <b>교재 / 단원 / 문제지 + 정답지</b>로 넣어 두면, 여기서 새 파일·바뀐 파일만 골라 가져와요. 폴더 이름이 그대로 교재·단원이 돼요.</p>
+      <p class="hint" style="margin-top:0">공유 폴더에 <b>교재 / 단원 / 문제지 + 정답지</b>로 넣어 두면, 여기서 필요한 파일만 골라 가져와요. (「가져옴」은 이미 저장한 파일, 「바뀜」은 저장 뒤 드라이브에서 고친 파일 — 바뀐 파일만 처음부터 체크돼 있어요) 폴더 이름이 그대로 교재·단원이 돼요.</p>
       <div class="row"><button class="sub" id="drvLoad">📂 드라이브 목록 불러오기</button><label><input type="checkbox" id="drvAll"> 이미 가져온 파일도 보기</label><span class="hint" id="drvInfo" style="margin:0"></span></div>
       <div id="drvList"></div>
     </div>
@@ -1032,14 +1032,20 @@ tr.miss td{color:#A0AAB2}
     var groups = {}; show.forEach(function (f) { var k = f.path.join(" › ") || "(맨 위 폴더)"; (groups[k] = groups[k] || []).push(f); });
     $("drvInfo").innerHTML = "📁 " + esc(DRV.root) + " · 문제지 " + qs.length + "개 (새 파일 " + qs.filter(function (f) { return !f.done; }).length + " · 바뀜 " + qs.filter(function (f) { return f.changed; }).length + ")";
     if (!show.length) { $("drvList").innerHTML = '<p class="hint">새로 가져올 파일이 없어요. 폴더에 파일을 넣고 다시 불러오세요.</p>'; return; }
-    $("drvList").innerHTML = Object.keys(groups).sort(function (a, b) { return a.localeCompare(b, "ko", { numeric: true }); }).map(function (g) {
-      return '<div class="grp"><div class="gh">📁 ' + esc(g) + "</div>" + groups[g].map(function (f) {
+    $("drvList").innerHTML = '<div class="row" style="margin:6px 0"><button class="sm sub" id="drvAllOn">☑ 전체 선택</button><button class="sm sub" id="drvAllOff">☐ 전체 해제</button><span class="hint" style="margin:0">필요한 폴더의 「이 폴더 선택」을 누르거나 파일을 하나씩 골라요.</span></div>' + Object.keys(groups).sort(function (a, b) { return a.localeCompare(b, "ko", { numeric: true }); }).map(function (g, gi) {
+      return '<div class="grp" data-grp="' + gi + '"><div class="gh">📁 ' + esc(g) + ' <button class="sm sub" data-gon="' + gi + '" style="margin-left:6px;padding:2px 8px">이 폴더 선택</button><button class="sm sub" data-goff="' + gi + '" style="padding:2px 8px">해제</button></div>' + groups[g].map(function (f) {
         var k = /\.xlsx$/i.test(f.name) ? null : pairKey(f, files), st = f.changed ? '<span class="pill m">바뀜</span>' : f.done ? '<span class="pill">가져옴</span>' : '<span class="pill go">새 파일</span>';
-        return '<label class="un" style="padding-left:6px"><input type="checkbox" data-drv="' + esc(f.id) + '"' + (!f.done || f.changed ? " checked" : "") + "> " + st + " <b>" + esc(f.name) + "</b>" +
+        return '<label class="un" style="padding-left:6px"><input type="checkbox" data-drv="' + esc(f.id) + '"' + (f.changed ? " checked" : "") + "> " + st + " <b>" + esc(f.name) + "</b>" +
           '<span class="n">' + (k ? "정답지: " + esc(k.name) : /\.xlsx$/i.test(f.name) ? "엑셀 (문제 양식·📒 단어장)" : '<span class="er">정답지 없음</span>') + " · " + esc((f.modified || "").slice(0, 10)) + (f.by ? " · " + esc(f.by) : "") + "</span></label>";
       }).join("") + "</div>";
-    }).join("") + '<div class="row" style="margin-top:10px"><button id="drvGo">⬇ 선택한 파일 가져오기</button><span class="hint" style="margin:0">가져온 뒤 아래에서 확인하고 저장해요.</span></div>';
+    }).join("") + '<div class="row" style="margin-top:10px"><button id="drvGo">⬇ 선택한 파일 가져오기 <span id="drvN"></span></button><span class="hint" style="margin:0">가져온 뒤 아래에서 확인하고 저장해요.</span></div>';
     $("drvGo").onclick = importDrive;
+    var boxes = function (root) { return Array.prototype.slice.call((root || $("drvList")).querySelectorAll("[data-drv]")); };
+    var cnt = function () { var n = boxes().filter(function (c) { return c.checked; }).length; $("drvN").textContent = "(" + n + "개)"; $("drvGo").disabled = !n; };
+    var setAll = function (root, on) { boxes(root).forEach(function (c) { c.checked = on; }); cnt(); };
+    $("drvAllOn").onclick = function () { setAll(null, true); }; $("drvAllOff").onclick = function () { setAll(null, false); };
+    Array.prototype.forEach.call($("drvList").querySelectorAll("[data-gon],[data-goff]"), function (b) { b.onclick = function (e) { e.preventDefault(); var on = b.hasAttribute("data-gon"), g = $("drvList").querySelector('[data-grp="' + b.getAttribute(on ? "data-gon" : "data-goff") + '"]'); setAll(g, on); }; });
+    boxes().forEach(function (c) { c.onchange = cnt; }); cnt();
   }
   function b64File(j) { var bin = atob(j.b64), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new File([u], j.name); }
   async function importDrive() {
