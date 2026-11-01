@@ -676,6 +676,15 @@ module.exports = async function handler(req, res) {
       const pg = await notion("pages/" + id32(b.id), "PATCH", { archived: true });
       return pg ? send(200, { ok: true }) : send(502, { error: "notion", msg: "지우지 못했어요.", debug: lastErr });
     }
+    if (act === "t_students") { const l = await roster(clip(b.cls, 40)); return l ? send(200, { ok: true, students: l.map((x) => ({ id: x.id, name: x.name, hasPin: x.hasPin, grade: x.grade, school: x.school })) }) : send(502, { error: "notion", msg: "명단을 불러오지 못했어요.", debug: lastErr }); }
+    if (act === "t_pin_reset") { // 🔑 학생 번호 초기화: 본인번호를 지우면 다음 접속 때 새로 정해요
+      const id = clip(b.id, 60), pg = await notion("pages/" + id32(id), "GET");
+      if (!pg || normId(pg.parent && pg.parent.database_id) !== normId(STUDENT_DB())) return send(404, { error: "input", msg: "학생을 찾지 못했어요." });
+      const up = await notion("pages/" + id32(id), "PATCH", { properties: { [PIN_PROP]: { rich_text: [] } } });
+      if (!up) return send(502, { error: "notion", msg: "초기화하지 못했어요. 잠시 뒤 다시 해 주세요.", debug: lastErr });
+      pinFails.delete(id); pinFails.delete(normId(id));
+      return send(200, { ok: true, name: P.title(pg, "이름") });
+    }
     if (act === "t_game_rank") { const r = await GAME().rank(b, null, true); return send(r.status, Object.assign({ ok: r.status === 200 }, r)); }
     if (act === "t_game_list") { loadCatalog(); await loadCustom(true); return send(200, { ok: true, books: gameBooks(true) }); }
     if (act === "t_game_set") { // 🎮 단어장을 학생 게임에 보이기/숨기기

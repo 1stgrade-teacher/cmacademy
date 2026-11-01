@@ -116,6 +116,7 @@ tr.miss td{color:#A0AAB2}
     <button class="tab" data-tab="import">📚 자료 올리기</button>
     <button class="tab" data-tab="hw">📸 과제</button>
     <button class="tab" data-tab="game">🎮 단어 게임</button>
+    <button class="tab" data-tab="stu">🧑‍🎓 학생</button>
     <button class="tab" data-tab="teachers" id="tabTeachers" style="display:none">👩‍🏫 선생님</button>
   </div>
 
@@ -210,6 +211,14 @@ tr.miss td{color:#A0AAB2}
   </section>
 
   <!-- 선생님 관리 (관리자만) -->
+  <section id="v-stu" style="display:none">
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin:0"><h2 style="margin:0">🔑 학생 번호 초기화</h2><div class="row" style="margin:0"><select id="stCls" style="width:auto"></select><button class="sub sm" id="stLoad">새로고침</button></div></div>
+      <div class="hint">학생이 4자리 번호를 잊어버렸으면 「번호 초기화」를 누르세요. 다음 접속 때 반 → 이름을 누르면 새 번호를 정하는 화면이 나와요. (TEST·과제·단어 게임 모두 같은 번호, 번호를 여러 번 틀려 잠긴 것도 함께 풀려요)</div>
+      <div id="stList"></div>
+    </div>
+  </section>
+
   <section id="v-hw" style="display:none">
     <div class="card">
       <h2 id="hwFormTitle">📸 새 과제</h2>
@@ -350,7 +359,7 @@ tr.miss td{color:#A0AAB2}
       $("bankInfo").textContent = "문제은행: 교재 " + j.catalog.length + "권 · " + units + "과 · 문항 " + total + "개" + (j.ai ? " · AI 켜짐(" + (j.ais || []).map(function (a) { return a.label; }).join("·") + ")" : " · AI 꺼짐");
       buildAiSel(j);
       fillClassSelects(); renderList(); buildPeriods(); buildQuarters(); buildBookFilters();
-      var h = (location.hash || "").slice(1); if (h === "hw") { hwOpen(); tab("hw"); } else if (h === "game") { gmLoad(); rkLoad(); tab("game"); } else if (/^(results|report|import)$/.test(h) || (h === "teachers" && j.me.master)) { if (h === "results") fillResultSelect(); if (h === "teachers") loadTeachers(); tab(h); }
+      var h = (location.hash || "").slice(1); if (h === "hw") { hwOpen(); tab("hw"); } else if (h === "game") { gmLoad(); rkLoad(); tab("game"); } else if (h === "stu") { stOpen(); tab("stu"); } else if (/^(results|report|import)$/.test(h) || (h === "teachers" && j.me.master)) { if (h === "results") fillResultSelect(); if (h === "teachers") loadTeachers(); tab(h); }
     });
   }
   $("logout").onclick = function () { lsSet("cm-teacher-code", ""); location.reload(); };
@@ -443,6 +452,34 @@ tr.miss td{color:#A0AAB2}
       $("rkOut").innerHTML = "<h3 style=\"margin:12px 0 6px\">🏅 포인트</h3>" + tb(j.points, "포인트", true) + "<h3 style=\"margin:14px 0 6px\">⚡ 60초 챌린지 최고 기록</h3>" + tb(j.speed, "맞힌 수", false);
     });
   }
+  // ---------- 🧑‍🎓 학생: 번호 초기화 ----------
+  function stOpen() {
+    if (!$("stCls").options.length) { $("stCls").innerHTML = (DATA.classes || []).map(function (c) { return "<option>" + esc(c) + "</option>"; }).join(""); var last = lsGet("cm-teacher-cls"); if (last && (DATA.classes || []).indexOf(last) >= 0) $("stCls").value = last; }
+    stLoad();
+  }
+  function stLoad() {
+    var c = $("stCls").value; if (!c) { $("stList").innerHTML = '<p class="hint">반이 없어요.</p>'; return; }
+    $("stList").innerHTML = '<p class="hint">불러오는 중…</p>';
+    post({ action: "t_students", cls: c }).then(function (j) {
+      if (!j.ok) { $("stList").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; }
+      if (!j.students.length) { $("stList").innerHTML = '<p class="hint">이 반에 학생이 없어요.</p>'; return; }
+      $("stList").innerHTML = '<div class="tw"><table><thead><tr><th>이름</th><th>학년</th><th>번호</th><th></th></tr></thead><tbody>' + j.students.map(function (x, i) {
+        return "<tr><td><b>" + esc(x.name) + "</b></td><td>" + esc(x.grade) + "</td><td>" + (x.hasPin ? "✅ 정해 둠" : '<span class="hint" style="margin:0">아직 없음 (처음 들어올 때 정해요)</span>') + "</td><td>" + (x.hasPin ? '<button class="sm sub" data-pr="' + i + '">🔑 번호 초기화</button>' : "") + "</td></tr>";
+      }).join("") + "</tbody></table></div>";
+      Array.prototype.forEach.call($("stList").querySelectorAll("[data-pr]"), function (b) {
+        b.onclick = function () {
+          var x = j.students[+b.getAttribute("data-pr")];
+          if (!confirm(x.name + " 학생의 번호를 지울까요?\n다음 접속 때 새 번호를 정하게 돼요.")) return;
+          b.disabled = true; b.textContent = "초기화하는 중…";
+          post({ action: "t_pin_reset", id: x.id }).then(function (r) {
+            if (!r.ok) { b.disabled = false; b.textContent = "🔑 번호 초기화"; alert(r.msg || "초기화하지 못했어요."); return; }
+            var td = b.parentNode, tr = td.parentNode; tr.children[2].innerHTML = '<span class="ok">🔄 초기화됨 · 다음 접속 때 새로 정해요</span>'; td.innerHTML = "";
+          });
+        };
+      });
+    });
+  }
+  $("stLoad").onclick = stLoad; $("stCls").onchange = function () { lsSet("cm-teacher-cls", $("stCls").value); stLoad(); };
   $("rkLoad").onclick = rkLoad; $("rkCls").onchange = rkLoad; $("rkPer").onchange = rkLoad;
   $("gmReload").onclick = gmLoad; $("gmCopy").onclick = function () { copyText(GM_URL, this); };
 
@@ -475,13 +512,13 @@ tr.miss td{color:#A0AAB2}
   // ---------- 탭 ----------
   function tab(name) {
     Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) { t.classList.toggle("on", t.getAttribute("data-tab") === name); });
-    ["list", "edit", "results", "report", "teachers", "import", "hw", "game"].forEach(function (n) { $("v-" + n).style.display = n === name ? "" : "none"; });
+    ["list", "edit", "results", "report", "teachers", "import", "hw", "game", "stu"].forEach(function (n) { $("v-" + n).style.display = n === name ? "" : "none"; });
     $("contactCard").style.display = name === "results" || name === "report" ? "" : "none";
     try { history.replaceState(null, "", "#" + name); } catch (e) {}
     window.scrollTo(0, 0);
   }
   Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) {
-    t.onclick = function () { var n = t.getAttribute("data-tab"); if (n === "edit") newPaper(); if (n === "results") fillResultSelect(); if (n === "teachers") loadTeachers(); if (n === "hw") hwOpen(); if (n === "game") { gmLoad(); rkLoad(); } tab(n); };
+    t.onclick = function () { var n = t.getAttribute("data-tab"); if (n === "edit") newPaper(); if (n === "results") fillResultSelect(); if (n === "teachers") loadTeachers(); if (n === "hw") hwOpen(); if (n === "game") { gmLoad(); rkLoad(); } if (n === "stu") stOpen(); tab(n); };
   });
 
   function fillClassSelects() {
