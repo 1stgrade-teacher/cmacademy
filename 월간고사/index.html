@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>정기평가 - 청명학원 문화본원 +수업저장소</title>
+<title>TEST 관리 - 청명학원 문화본원 +수업저장소</title>
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.json">
@@ -47,10 +47,10 @@
   <span class="brand" style="margin-left:auto;"><span class="spark">✳</span>청명학원 문화본원 +수업저장소</span>
 </div>
 <div class="wrap">
-  <p class="breadcrumb"><a href="../index.html">홈</a><span class="sep">/</span>정기평가</p>
+  <p class="breadcrumb"><a href="../index.html">홈</a><span class="sep">/</span>TEST 관리</p>
   <div class="hero" style="padding-bottom:6px">
     <div class="hero-text">
-      <h1>정기평가</h1>
+      <h1>TEST 관리</h1>
       <p>배운 교재와 과에서 자동으로 문제가 나오고, 제출하면 바로 채점돼요.</p>
     </div>
   </div>
@@ -61,7 +61,7 @@
       <b style="font-size:17px">🆕 처음 왔어요</b>
       <label for="jName">이름</label><input id="jName" maxlength="20" autocomplete="off" placeholder="예: 김민준">
       <div class="row2"><div><label for="jSchool">학교</label><input id="jSchool" maxlength="30" autocomplete="off" placeholder="예: 한빛중"></div>
-      <div><label for="jGrade">학년</label><select id="jGrade"><option value="">고르기</option><option>초3</option><option>초4</option><option>초5</option><option>초6</option><option>중1</option><option>중2</option><option>중3</option><option>고1</option><option>고2</option><option>고3</option></select></div></div>
+      <div><label for="jGrade">학년</label><select id="jGrade"><option value="">고르기</option><option>초4</option><option>초5</option><option>초6</option><option>중1</option><option>중2</option><option>중3</option></select></div></div>
       <div class="row2"><div><label for="jPin">나만의 번호 (숫자 4자리)</label><input id="jPin" type="password" inputmode="numeric" maxlength="4" autocomplete="off"></div>
       <div><label for="jPin2">번호 한 번 더</label><input id="jPin2" type="password" inputmode="numeric" maxlength="4" autocomplete="off"></div></div>
       <p style="font-size:13px;color:var(--muted);margin:8px 0 0">번호는 시험을 다시 열 때 써요. 잊지 않게 기억해 두세요.</p>
@@ -123,7 +123,7 @@
         var gs = p.grades || [], k = !place ? (p.period || "기타") : myG ? (gs.indexOf(myG) >= 0 ? "⭐ 내 학년(" + myG + ") 시험" : gs.length ? "다른 학년 시험" : "모든 학년") : (gs.length ? gs.join("·") + " 시험" : "모든 학년");
         if (!groups[k]) { groups[k] = []; order.push(k); } groups[k].push(p);
       });
-      if (place) order.sort(function (a, b) { var r = function (x) { return /^⭐/.test(x) ? 0 : x === "모든 학년" ? 2 : x === "다른 학년 시험" ? 3 : 1; }; var GO = ["초3", "초4", "초5", "초6", "중1", "중2", "중3", "고1", "고2", "고3"], gi = function (x) { var i = GO.indexOf(x.slice(0, 2)); return i < 0 ? 99 : i; }; return r(a) - r(b) || gi(a) - gi(b); });
+      if (place) order.sort(function (a, b) { var r = function (x) { return /^⭐/.test(x) ? 0 : x === "모든 학년" ? 2 : x === "다른 학년 시험" ? 3 : 1; }; var GO = ["초4", "초5", "초6", "중1", "중2", "중3"], gi = function (x) { var i = GO.indexOf(x.slice(0, 2)); return i < 0 ? 99 : i; }; return r(a) - r(b) || gi(a) - gi(b); });
       else order.sort(function (a, b) { return b.localeCompare(a, "ko", { numeric: true }); });
       box.innerHTML = order.map(function (k) {
         return '<section class="period"><h2>' + (place ? "" : "📅 ") + esc(k) + ' <span class="cnt">' + groups[k].length + "개</span></h2>" + groups[k].map(function (p) {

@@ -30,7 +30,7 @@ const MASTER_NAME = () => String(process.env.TEACHER_NAME || "일등급샘").tri
 const PIN_PROP = "본인번호";
 const KINDS = ["월간평가", "분기평가", "주간평가", "단어시험", "반배정시험"];
 const PLACE_CLS = () => String(process.env.PLACE_CLASS || "신입 반배정").trim(); // 신입생이 스스로 등록되는 반
-const GRADES = ["초3", "초4", "초5", "초6", "중1", "중2", "중3", "고1", "고2", "고3"];
+const GRADES = ["초4", "초5", "초6", "중1", "중2", "중3"]; // 학원 시험 학년
 // 반배정 추천 기준: 줄마다 "중1: 90 중1 사관반, 70 중1 S반, 0 중1 I반" (학년 없이 "80 중2 일등급반, 0 중2 S반"도 됨)
 function placeRec(rules, grade, pct) {
   const blocks = String(rules || "").split(/\n+/).map((l) => l.trim()).filter(Boolean).map((l) => {
