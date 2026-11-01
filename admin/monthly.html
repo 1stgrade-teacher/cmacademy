@@ -115,6 +115,7 @@ tr.miss td{color:#A0AAB2}
     <button class="tab" data-tab="report">📈 분기 리포트</button>
     <button class="tab" data-tab="import">📚 자료 올리기</button>
     <button class="tab" data-tab="hw">📸 과제</button>
+    <button class="tab" data-tab="game">🎮 단어 게임</button>
     <button class="tab" data-tab="teachers" id="tabTeachers" style="display:none">👩‍🏫 선생님</button>
   </div>
 
@@ -230,6 +231,15 @@ tr.miss td{color:#A0AAB2}
     <div class="card" id="hwDetailCard" style="display:none"><div id="hwDetail"></div></div>
   </section>
 
+  <section id="v-game" style="display:none">
+    <div class="card">
+      <h2>🎮 학생 단어 게임 (게임 → 📒 단어 마스터)</h2>
+      <p class="hint" style="margin-top:0">「📚 자료 올리기」에서 저장한 📒 단어장이 여기에 모두 나와요. 학생은 자기 교재·Day를 골라 단어 카드, 뜻 맞추기, 철자 쓰기, 듣고 쓰기, 예문 빈칸, 짝 맞추기, 60초 챌린지로 공부해요. 아직 보여 주고 싶지 않은 Day는 체크를 끄세요. (시험 출제에는 영향 없어요)</p>
+      <div class="row"><button class="sub sm" id="gmReload">새로고침</button><span class="hint" style="margin:0">학생 화면: <b id="gmUrl"></b></span><button class="sm sub" id="gmCopy">링크 복사</button><span class="msg" id="gmMsg" style="margin:0"></span></div>
+      <div id="gmList"><p class="hint">불러오는 중…</p></div>
+    </div>
+  </section>
+
   <section id="v-teachers" style="display:none">
     <div class="card">
       <h2>👩‍🏫 함께 쓰는 선생님</h2>
@@ -335,7 +345,7 @@ tr.miss td{color:#A0AAB2}
       $("bankInfo").textContent = "문제은행: 교재 " + j.catalog.length + "권 · " + units + "과 · 문항 " + total + "개" + (j.ai ? " · AI 켜짐(" + (j.ais || []).map(function (a) { return a.label; }).join("·") + ")" : " · AI 꺼짐");
       buildAiSel(j);
       fillClassSelects(); renderList(); buildPeriods(); buildQuarters(); buildBookFilters();
-      var h = (location.hash || "").slice(1); if (h === "hw") { hwOpen(); tab("hw"); } else if (/^(results|report|import)$/.test(h) || (h === "teachers" && j.me.master)) { if (h === "results") fillResultSelect(); if (h === "teachers") loadTeachers(); tab(h); }
+      var h = (location.hash || "").slice(1); if (h === "hw") { hwOpen(); tab("hw"); } else if (h === "game") { gmLoad(); tab("game"); } else if (/^(results|report|import)$/.test(h) || (h === "teachers" && j.me.master)) { if (h === "results") fillResultSelect(); if (h === "teachers") loadTeachers(); tab(h); }
     });
   }
   $("logout").onclick = function () { lsSet("cm-teacher-code", ""); location.reload(); };
@@ -395,6 +405,32 @@ tr.miss td{color:#A0AAB2}
       Array.prototype.forEach.call($("hwList").querySelectorAll("[data-hwd]"), function (b) { b.onclick = function () { hwDetail(HW_LIST[+b.getAttribute("data-hwd")]); }; });
     });
   }
+  // ---------- 🎮 단어 게임: 단어장 보이기/숨기기 · 링크 ----------
+  var GM_URL = location.origin + "/게임/word-master.html";
+  function copyText(t, b) { (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { var o = b.textContent; b.textContent = "✓ 복사됨"; setTimeout(function () { b.textContent = o; }, 1500); }, function () { prompt("복사해서 단톡방에 보내세요", t); }); }
+  function gmRender(books) {
+    if (!books.length) { $("gmList").innerHTML = '<p class="hint">아직 📒 단어장이 없어요. 「📚 자료 올리기」에서 단어장 엑셀을 올려 저장하면 여기에 나타나요.</p>'; return; }
+    $("gmList").innerHTML = books.map(function (bk, bi) {
+      var all = [], on = 0; bk.chapters.forEach(function (c) { c.units.forEach(function (u) { all.push(u.id); if (!u.hide) on++; }); });
+      return '<div style="border-top:1px solid var(--line);padding:12px 0"><div class="row" style="margin:0;justify-content:space-between"><b>📒 ' + esc(bk.name) + (bk.grade ? ' <span class="hint" style="margin:0">' + esc(bk.grade) + "</span>" : "") + '</b><span class="row" style="margin:0"><span class="hint" style="margin:0">학생에게 보임 ' + on + "/" + all.length + '</span><button class="sm sub" data-gall="' + bi + '" data-h="0">모두 보이기</button><button class="sm sub" data-gall="' + bi + '" data-h="1">모두 숨기기</button></span></div>' +
+        (function () { var flat = bk.chapters.every(function (c) { return c.units.length === 1; }); return flat ? [{ name: "", units: bk.chapters.map(function (c) { var u = c.units[0]; return Object.assign({}, u, { name: c.name + (/^(단어|어휘|words?|vocab)$/i.test(u.name) || u.name === c.name ? "" : " " + u.name) }); }) }] : bk.chapters; })().map(function (c) {
+          return '<div style="margin-top:8px">' + (c.name ? '<span class="hint" style="margin:0">' + esc(c.name) + "</span>" : "") + '<div class="row" style="margin-top:4px;gap:6px">' + c.units.map(function (u) {
+            return '<span style="display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:8px;padding:4px 8px;' + (u.hide ? "opacity:.55" : "") + '"><label style="display:inline-flex;gap:4px;align-items:center"><input type="checkbox" data-gu="' + esc(u.id) + '"' + (u.hide ? "" : " checked") + "> " + esc(u.name) + ' <span class="hint" style="margin:0">' + (u.words || 0) + '</span></label><button class="sm sub" style="padding:2px 6px" data-glink="' + esc(u.id) + '" title="이 Day만 바로 여는 학생 링크">🔗</button></span>';
+          }).join("") + "</div></div>";
+        }).join("") + "</div>";
+    }).join("");
+    function setHide(ids, hide) { $("gmMsg").textContent = "바꾸는 중…"; post({ action: "t_game_set", ids: ids, hide: hide }).then(function (j) { $("gmMsg").innerHTML = j.ok ? '<span class="ok">저장했어요 ✓</span>' : '<span class="er">' + esc(j.msg || "바꾸지 못했어요.") + "</span>"; if (j.books) { GM_BOOKS = j.books; gmRender(j.books); } }); }
+    Array.prototype.forEach.call($("gmList").querySelectorAll("[data-gu]"), function (cb) { cb.onchange = function () { setHide([cb.getAttribute("data-gu")], !cb.checked); }; });
+    Array.prototype.forEach.call($("gmList").querySelectorAll("[data-gall]"), function (b) { b.onclick = function () { var bk = books[+b.getAttribute("data-gall")], ids = []; bk.chapters.forEach(function (c) { c.units.forEach(function (u) { ids.push(u.id); }); }); setHide(ids, b.getAttribute("data-h") === "1"); }; });
+    Array.prototype.forEach.call($("gmList").querySelectorAll("[data-glink]"), function (b) { b.onclick = function () { copyText(GM_URL + "?u=" + b.getAttribute("data-glink"), b); }; });
+  }
+  var GM_BOOKS = [];
+  function gmLoad() {
+    $("gmUrl").textContent = GM_URL; $("gmList").innerHTML = '<p class="hint">불러오는 중…</p>';
+    post({ action: "t_game_list" }).then(function (j) { if (!j.ok) { $("gmList").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; } GM_BOOKS = j.books; gmRender(j.books); });
+  }
+  $("gmReload").onclick = gmLoad; $("gmCopy").onclick = function () { copyText(GM_URL, this); };
+
   function hwDetail(h) {
     $("hwDetailCard").style.display = ""; $("hwDetail").innerHTML = '<p class="hint">불러오는 중…</p>';
     post({ action: "t_hw_detail", id: h.id }).then(function (j) {
@@ -424,13 +460,13 @@ tr.miss td{color:#A0AAB2}
   // ---------- 탭 ----------
   function tab(name) {
     Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) { t.classList.toggle("on", t.getAttribute("data-tab") === name); });
-    ["list", "edit", "results", "report", "teachers", "import", "hw"].forEach(function (n) { $("v-" + n).style.display = n === name ? "" : "none"; });
+    ["list", "edit", "results", "report", "teachers", "import", "hw", "game"].forEach(function (n) { $("v-" + n).style.display = n === name ? "" : "none"; });
     $("contactCard").style.display = name === "results" || name === "report" ? "" : "none";
     try { history.replaceState(null, "", "#" + name); } catch (e) {}
     window.scrollTo(0, 0);
   }
   Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) {
-    t.onclick = function () { var n = t.getAttribute("data-tab"); if (n === "edit") newPaper(); if (n === "results") fillResultSelect(); if (n === "teachers") loadTeachers(); if (n === "hw") hwOpen(); tab(n); };
+    t.onclick = function () { var n = t.getAttribute("data-tab"); if (n === "edit") newPaper(); if (n === "results") fillResultSelect(); if (n === "teachers") loadTeachers(); if (n === "hw") hwOpen(); if (n === "game") gmLoad(); tab(n); };
   });
 
   function fillClassSelects() {

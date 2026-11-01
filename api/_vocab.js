@@ -145,7 +145,30 @@ function build(words, uid) {
   });
   return { questions: out, words: L };
 }
+// 저장된 문항에서 단어장(단어·품사·뜻·예문·영영풀이·동의어·반의어)을 다시 꺼내요 → 학생 단어 게임용
+function wordsFrom(qs) {
+  const map = new Map();
+  const get = (k) => { if (!map.has(k)) map.set(k, { w: "", pos: "", m: "", ex: "", exk: "", def: "", syn: "", ant: "" }); return map.get(k); };
+  const line1 = (s) => String(s || "").split("\n")[0].trim();
+  (Array.isArray(qs) ? qs : []).forEach((q) => {
+    if (!q || !q.vt || !q.w) return; const e = get(q.w);
+    if ((q.vt === "meaning" || q.vt === "mwrite") && !e.m) {
+      e.m = q.vt === "meaning" && Array.isArray(q.opts) ? q.opts[q.ans] || "" : q.answer || "";
+      const pm = line1(q.sub).match(/^(.*?)\s*\(([^)]*)\)$/); if (pm) { e.pos = e.pos || pm[2]; if (!e.w) e.w = pm[1]; } else if (!e.w) e.w = line1(q.sub);
+    }
+    if (q.vt === "spell") { const a = (q.accept || []).filter(Boolean); e.w = a.length ? a.join(" / ") : q.answer || e.w; if (!e.m) e.m = line1(q.sub).split("  →  ")[0].replace(/\s*\([^)]*\)$/, ""); }
+    if ((q.vt === "blankmc" || q.vt === "blank") && !e.ex) {
+      const lines = String(q.sub || "").split("\n"), tok = q.vt === "blank" ? q.answer : Array.isArray(q.opts) ? q.opts[q.ans] : "";
+      if (tok && lines[0].includes(BL)) e.ex = lines[0].replace(BL, "[" + tok + "]");
+      if (q.vt === "blankmc" && lines[1] && /^\(.*\)$/.test(lines[1])) e.exk = lines[1].slice(1, -1);
+    }
+    if (q.vt === "blankmc" && !e.exk) { const l2 = String(q.sub || "").split("\n")[1]; if (l2 && /^\(.*\)$/.test(l2)) e.exk = l2.slice(1, -1); }
+    if (q.vt === "def" && !e.def) e.def = q.sub || "";
+    if (q.vt === "synmc" || q.vt === "synw") { const l = line1(q.sub), i = l.indexOf(": "); if (i > 0) { const k = /반의어/.test(l.slice(0, i)) ? "ant" : "syn"; if (!e[k]) e[k] = l.slice(i + 2); } }
+  });
+  return [...map.entries()].map(([k, e]) => Object.assign(e, { w: e.w || k })).filter((e) => e.w && e.m);
+}
 // 이 단어장으로 만들 수 있는 유형별 문항 수
 function typeCounts(qs) { const c = {}; (qs || []).forEach((q) => { if (q.vt) c[q.vt] = (c[q.vt] || 0) + 1; }); return c; }
 
-module.exports = { VTYPES, VT_IDS, build, cleanWord, typeCounts, mwriteOk, mwriteFrom, meaningAccept, _t: { findToken, inflect, koNorm } };
+module.exports = { VTYPES, VT_IDS, build, wordsFrom, cleanWord, typeCounts, mwriteOk, mwriteFrom, meaningAccept, _t: { findToken, inflect, koNorm } };

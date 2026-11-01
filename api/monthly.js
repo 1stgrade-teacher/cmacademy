@@ -198,7 +198,7 @@ async function loadCustom(force) {
     bk.chs.get(chapter).units.push(Object.assign({ id: uid, name, n: qs.length, lv, url: p.url }, isV ? { v: vt, words: new Set(qs.map((q) => q.w)).size } : {}));
     bk.n += qs.length;
     unitIndex.set(uid, { bid, book: bookName, area, grade, chapter, name, n: qs.length, lv, custom: true, vocab: isV });
-    custom.data.set(uid, { qs: qs.map((q) => Object.assign({ lv: 2 }, q)), text, file: "" });
+    custom.data.set(uid, { qs: qs.map((q) => Object.assign({ lv: 2 }, q)), text, file: "", hide: P.chk(p, "게임 숨김"), pid: normId(p.id) });
     custom.ids.push(uid);
   });
   const nat = (a, b) => a.localeCompare(b, "ko", { numeric: true });
@@ -210,6 +210,10 @@ async function loadCustom(force) {
   return custom;
 }
 const allBooks = () => custom.books.concat(catalog.books);
+// 🎮 학생 단어 게임: 📒 단어장(단어 문항이 있는 과)만, 교재 → 단원 → Day
+function gameBooks(all) {
+  return custom.books.map((bk) => ({ id: bk.id, name: bk.name.replace(/^📁 /, ""), grade: bk.grade, chapters: bk.chapters.map((c) => ({ name: c.name, units: c.units.filter((u) => u.v && (all || !(custom.data.get(u.id) || {}).hide)).map((u) => ({ id: u.id, name: u.name, words: u.words, hide: !!(custom.data.get(u.id) || {}).hide })) })).filter((c) => c.units.length) })).filter((bk) => bk.chapters.length);
+}
 // 주관식 정답 변형: hasn’t[has not] → 둘 다, "X, knows" → knows 도, "have met → met" → met 도
 function expandAccept(ans) {
   ans = String(ans || "").trim(); if (!ans) return [];
@@ -671,6 +675,13 @@ module.exports = async function handler(req, res) {
       const pg = await notion("pages/" + id32(b.id), "PATCH", { archived: true });
       return pg ? send(200, { ok: true }) : send(502, { error: "notion", msg: "지우지 못했어요.", debug: lastErr });
     }
+    if (act === "t_game_list") { loadCatalog(); await loadCustom(true); return send(200, { ok: true, books: gameBooks(true) }); }
+    if (act === "t_game_set") { // 🎮 단어장을 학생 게임에 보이기/숨기기
+      loadCatalog(); await loadCustom(); const ids = (Array.isArray(b.ids) ? b.ids : []).slice(0, 200).filter((id) => custom.data.has(id)), hide = !!b.hide; let fail = 0;
+      for (let i = 0; i < ids.length; i += 5) { const rs = await Promise.all(ids.slice(i, i + 5).map((id) => notion("pages/" + id32(custom.data.get(id).pid), "PATCH", { properties: { "게임 숨김": { checkbox: hide } } }))); fail += rs.filter((r) => !r).length; }
+      await loadCustom(true);
+      return send(fail ? 502 : 200, { ok: !fail, books: gameBooks(true), msg: fail ? "일부를 바꾸지 못했어요. 노션 📚 직접 올린 문항에 '게임 숨김' 칸이 있는지 확인해 주세요." : "", debug: fail ? lastErr : undefined });
+    }
     if (act === "t_hw_list") { const l = await HW().teacherList(clip(b.cls, 40)); return l ? send(200, { ok: true, list: l, mode: require("./_notify.js").mode() }) : send(502, { error: "notion", msg: "과제 목록을 읽지 못했어요. 🩺 점검을 눌러 보세요.", debug: lastErr }); }
     if (act === "t_hw_save") { const r = await HW().teacherSave(me, b.hw || {}); return r.status === 200 ? send(200, { ok: true, hw: r.hw }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
     if (act === "t_hw_detail") { const r = await HW().teacherDetail(clip(b.id, 60)); return r ? send(200, Object.assign({ ok: true }, r)) : send(404, { error: "nf", msg: "과제를 찾지 못했어요." }); }
@@ -859,6 +870,13 @@ module.exports = async function handler(req, res) {
 
   // =================== 학생 ===================
   if (!siteOk(req)) return send(401, { error: "site", msg: "입장 코드가 필요해요. 페이지를 새로고침해 주세요." });
+  if (act === "g_books") { loadCatalog(); await loadCustom(); return send(200, { ok: true, books: gameBooks(false) }); } // 🎮 단어 게임: 단어장 목록 (로그인 없이)
+  if (act === "g_words") {
+    loadCatalog(); await loadCustom();
+    const ids = (Array.isArray(b.ids) ? b.ids : []).slice(0, 20).filter((id) => custom.data.has(id) && !custom.data.get(id).hide);
+    const units = ids.map((id) => { const u = unitIndex.get(id) || {}; return { id, book: u.book || "", chapter: u.chapter || "", name: u.name || "", words: V.wordsFrom(custom.data.get(id).qs) }; }).filter((u) => u.words.length);
+    return send(200, { ok: true, units });
+  }
   if (act === "classes") { const l = await classList(); return l ? send(200, { ok: true, classes: l }) : send(502, { error: "notion", msg: "반 목록을 불러오지 못했어요." }); }
   if (act === "roster") { const l = await roster(clip(b.cls, 40)); return l ? send(200, { ok: true, students: l.map((s) => ({ id: s.id, name: s.name, hasPin: s.hasPin })) }) : send(502, { error: "notion", msg: "명단을 불러오지 못했어요." }); }
   if (act === "login") {
