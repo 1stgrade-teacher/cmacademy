@@ -114,6 +114,7 @@ tr.miss td{color:#A0AAB2}
     <button class="tab" data-tab="results" id="tabRes">📊 응시 결과</button>
     <button class="tab" data-tab="report">📈 분기 리포트</button>
     <button class="tab" data-tab="import">📚 자료 올리기</button>
+    <button class="tab" data-tab="hw">📸 과제</button>
     <button class="tab" data-tab="teachers" id="tabTeachers" style="display:none">👩‍🏫 선생님</button>
   </div>
 
@@ -208,6 +209,27 @@ tr.miss td{color:#A0AAB2}
   </section>
 
   <!-- 선생님 관리 (관리자만) -->
+  <section id="v-hw" style="display:none">
+    <div class="card">
+      <h2 id="hwFormTitle">📸 새 과제</h2>
+      <div class="grid">
+        <div><label class="l">반</label><select id="hwCls"></select></div>
+        <div style="grid-column:span 2"><label class="l">과제명</label><input id="hwTitle" placeholder="예: Day 3 단어 3번씩 쓰기"></div>
+        <div><label class="l">마감 (날짜·시간)</label><input id="hwDue" type="datetime-local"></div>
+      </div>
+      <label class="l" style="margin-top:10px">설명 (학생에게 보여요)</label><textarea id="hwDesc" rows="2" placeholder="예: 공책에 3번씩 쓰고 한 페이지씩 사진 찍어 올리기"></textarea>
+      <div class="row" style="margin-top:10px"><label><input type="checkbox" id="hwNotify" checked> 마감까지 안 내면 학부모님께 알림톡 보내기</label><label><input type="checkbox" id="hwActive" checked> 학생에게 보이기</label></div>
+      <div class="row" style="margin-top:10px"><button id="hwSave">💾 과제 저장</button><button class="sub" id="hwNew">새로 쓰기</button><span class="msg" id="hwMsg" style="margin:0"></span></div>
+      <div class="hint" id="hwLink"></div>
+    </div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between"><h2 style="margin:0">과제 목록</h2><div class="row" style="margin:0"><select id="hwFilter" style="width:auto"><option value="">모든 반</option></select><button class="sub sm" id="hwReload">새로고침</button><button class="sub sm" id="hwCheck" title="마감이 지난 과제를 지금 바로 확인해서 미제출 기록·알림을 보내요">⏰ 지금 마감 확인</button></div></div>
+      <div class="hint" id="hwMode"></div>
+      <div id="hwList"><p class="hint">불러오는 중…</p></div>
+    </div>
+    <div class="card" id="hwDetailCard" style="display:none"><div id="hwDetail"></div></div>
+  </section>
+
   <section id="v-teachers" style="display:none">
     <div class="card">
       <h2>👩‍🏫 함께 쓰는 선생님</h2>
@@ -313,7 +335,7 @@ tr.miss td{color:#A0AAB2}
       $("bankInfo").textContent = "문제은행: 교재 " + j.catalog.length + "권 · " + units + "과 · 문항 " + total + "개" + (j.ai ? " · AI 켜짐(" + (j.ais || []).map(function (a) { return a.label; }).join("·") + ")" : " · AI 꺼짐");
       buildAiSel(j);
       fillClassSelects(); renderList(); buildPeriods(); buildQuarters(); buildBookFilters();
-      var h = (location.hash || "").slice(1); if (/^(results|report|import)$/.test(h) || (h === "teachers" && j.me.master)) { if (h === "results") fillResultSelect(); if (h === "teachers") loadTeachers(); tab(h); }
+      var h = (location.hash || "").slice(1); if (h === "hw") { hwOpen(); tab("hw"); } else if (/^(results|report|import)$/.test(h) || (h === "teachers" && j.me.master)) { if (h === "results") fillResultSelect(); if (h === "teachers") loadTeachers(); tab(h); }
     });
   }
   $("logout").onclick = function () { lsSet("cm-teacher-code", ""); location.reload(); };
@@ -324,6 +346,67 @@ tr.miss td{color:#A0AAB2}
   function assignCell(r) {
     var rec = String(r.rec2 || "").replace(/\s*\(.*$/, "");
     return '<select style="width:auto;padding:4px;font-size:13px">' + '<option value="">반 고르기</option>' + (DATA.classes || []).filter(function (c) { return c !== "신입 반배정"; }).map(function (c) { return '<option' + (c === rec ? " selected" : "") + ">" + esc(c) + "</option>"; }).join("") + '</select> <button class="sm" data-assign="' + esc(r.sid) + '" data-name="' + esc(r.name) + '">배정</button>';
+  }
+
+  // ---------- 📸 사진 과제 ----------
+  var HW_EDIT = null, HW_LIST = [];
+  var hwPad = function (n) { return ("0" + n).slice(-2); };
+  function hwDefaultDue() { var d = new Date(Date.now() + 9 * 3600e3 + 2 * 864e5); return d.toISOString().slice(0, 10) + "T21:00"; }
+  function hwForm(h) {
+    HW_EDIT = h || null; $("hwFormTitle").textContent = h ? "✏️ 과제 수정 · " + h.title : "📸 새 과제";
+    $("hwCls").value = h ? h.cls : (lsGet("cm-teacher-cls") || $("hwCls").value); $("hwTitle").value = h ? h.title : ""; $("hwDue").value = h ? h.dueKst : hwDefaultDue();
+    $("hwDesc").value = h ? h.desc : ""; $("hwNotify").checked = h ? h.notify : true; $("hwActive").checked = h ? h.active : true; $("hwMsg").textContent = ""; hwLinkHint();
+  }
+  function hwLinkHint() { var c = $("hwCls").value; $("hwLink").innerHTML = c ? '학생 링크: <b>' + esc(location.origin + "/과제/?c=" + c) + '</b> <button class="sm sub" id="hwCopy">링크 복사</button>' : ""; var b = $("hwCopy"); if (b) b.onclick = function () { var t = location.origin + "/과제/?c=" + encodeURIComponent(c); (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { b.textContent = "✓ 복사됨"; }, function () { prompt("복사해서 단톡방에 보내세요", t); }); }; }
+  function hwOpen() {
+    var opts = (DATA.classes || []).filter(function (c) { return c !== "신입 반배정"; }).map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
+    if (!$("hwCls").options.length) { $("hwCls").innerHTML = opts; $("hwFilter").innerHTML = '<option value="">모든 반</option>' + opts; hwForm(null); }
+    hwLoad();
+  }
+  $("hwCls").onchange = hwLinkHint; $("hwNew").onclick = function () { hwForm(null); };
+  $("hwReload").onclick = hwLoad; $("hwFilter").onchange = hwLoad;
+  $("hwSave").onclick = function () {
+    var b = this, hw = { id: HW_EDIT && HW_EDIT.id, cls: $("hwCls").value, title: $("hwTitle").value.trim(), due: $("hwDue").value, desc: $("hwDesc").value.trim(), notify: $("hwNotify").checked, active: $("hwActive").checked };
+    if (!hw.title || !hw.due) { $("hwMsg").innerHTML = '<span class="er">과제명과 마감을 넣어 주세요.</span>'; return; }
+    b.disabled = true; $("hwMsg").textContent = "저장하는 중…"; lsSet("cm-teacher-cls", hw.cls);
+    post({ action: "t_hw_save", hw: hw }).then(function (j) { b.disabled = false; if (!j.ok) { $("hwMsg").innerHTML = '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; return; } $("hwMsg").innerHTML = '<span class="ok">저장했어요 ✓ 학생 화면 「과제 제출」에 바로 보여요.</span>'; HW_EDIT = j.hw; hwLoad(); });
+  };
+  $("hwCheck").onclick = function () {
+    var b = this; b.disabled = true; b.textContent = "확인하는 중…";
+    post({ action: "t_hw_check" }).then(function (j) {
+      b.disabled = false; b.textContent = "⏰ 지금 마감 확인";
+      if (!j.ok) { alert(j.msg || "확인하지 못했어요."); return; }
+      $("hwMode").innerHTML = j.checked ? "마감 지난 과제 " + j.checked + "개를 처리했어요: " + j.report.map(function (r) { return esc(r.title) + " (미제출 " + (r.missing || 0) + "명, 보냄 " + (r.sent || 0) + (r.failed ? ", 실패 " + r.failed : "") + (r.notSent ? ", 발송 설정 전 " + r.notSent : "") + ")"; }).join(" · ") : "새로 처리할 마감 지난 과제가 없어요. (마감 확인은 30분마다 자동으로도 돌아요)";
+      hwLoad(true);
+    });
+  };
+  var HW_MODE = { kakao: "✅ 미제출 알림: 카카오 알림톡 (안 되면 문자)", sms: "📱 미제출 알림: 문자 (알림톡 템플릿 등록 전)", off: "⚠️ 미제출 알림 발송 설정 전 — 미제출 명단과 보낼 문구만 기록돼요. (설정방법 문서 「📸 과제」 참고)" };
+  function hwLoad(keepMode) {
+    $("hwList").innerHTML = '<p class="hint">불러오는 중…</p>';
+    post({ action: "t_hw_list", cls: $("hwFilter").value }).then(function (j) {
+      if (!j.ok) { $("hwList").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; }
+      HW_LIST = j.list; if (!keepMode) $("hwMode").textContent = HW_MODE[j.mode] || "";
+      if (!j.list.length) { $("hwList").innerHTML = '<p class="hint">아직 과제가 없어요. 위에서 첫 과제를 만들어 보세요.</p>'; return; }
+      $("hwList").innerHTML = '<div class="tw"><table><thead><tr><th>반</th><th>과제</th><th>마감</th><th>제출</th><th>늦게</th><th>미제출</th><th>상태</th><th></th></tr></thead><tbody>' + j.list.map(function (h, i) {
+        var st = !h.active ? "숨김" : !h.past ? "진행 중" : h.done ? "마감 확인 끝" + (h.notify ? " · 알림" : "") : "마감 확인 대기";
+        return "<tr><td>" + esc(h.cls) + "</td><td><b>" + esc(h.title) + "</b></td><td>" + esc(h.dueLabel) + "</td><td class=num>" + (h.counted ? h.nSub : "-") + "</td><td class=num>" + (h.counted ? h.nLate : "-") + "</td><td class=num>" + (h.counted ? h.nMiss : "-") + "</td><td>" + st + '</td><td><button class="sm sub" data-hwd="' + i + '">보기</button> <button class="sm sub" data-hwe="' + i + '">수정</button></td></tr>';
+      }).join("") + "</tbody></table></div>";
+      Array.prototype.forEach.call($("hwList").querySelectorAll("[data-hwe]"), function (b) { b.onclick = function () { hwForm(HW_LIST[+b.getAttribute("data-hwe")]); window.scrollTo(0, 0); }; });
+      Array.prototype.forEach.call($("hwList").querySelectorAll("[data-hwd]"), function (b) { b.onclick = function () { hwDetail(HW_LIST[+b.getAttribute("data-hwd")]); }; });
+    });
+  }
+  function hwDetail(h) {
+    $("hwDetailCard").style.display = ""; $("hwDetail").innerHTML = '<p class="hint">불러오는 중…</p>';
+    post({ action: "t_hw_detail", id: h.id }).then(function (j) {
+      if (!j.ok) { $("hwDetail").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; }
+      var badge = function (s) { return s === "제출" ? '<span class="pill go">제출</span>' : s === "지각 제출" ? '<span class="pill m">늦게 제출</span>' : s === "미제출" ? '<span class="pill end">미제출</span>' : '<span class="pill">아직</span>'; };
+      $("hwDetail").innerHTML = "<h2>" + esc(j.hw.title) + ' <span class="hint" style="font-size:14px">' + esc(j.hw.cls) + " · 마감 " + esc(j.hw.dueLabel) + "</span></h2>" + (j.hw.desc ? '<p class="hint">' + esc(j.hw.desc) + "</p>" : "") +
+        '<div class="tw"><table><thead><tr><th>이름</th><th>상태</th><th>제출 시각</th><th>사진</th><th>학생 메모</th><th>학부모 알림</th></tr></thead><tbody>' + j.rows.map(function (r) {
+          return "<tr><td><b>" + esc(r.name) + "</b>" + (r.phone ? "" : ' <span class="hint" style="margin:0" title="학생 DB에 학부모 연락처가 없어요">📵</span>') + (r.mute ? ' <span class="hint" style="margin:0">(알림 끔)</span>' : "") + "</td><td>" + badge(r.status) + "</td><td>" + esc(r.at ? new Date(r.at).toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "") + "</td><td>" +
+            r.files.map(function (f, k) { return '<a href="' + esc(f.url) + '" target="_blank"><img src="' + esc(f.url) + '" alt="사진 ' + (k + 1) + '" style="width:54px;height:54px;object-fit:cover;border-radius:6px;margin-right:4px;vertical-align:middle"></a>'; }).join("") + "</td><td>" + esc(r.memo) + "</td><td>" + esc(r.notice) + "</td></tr>";
+        }).join("") + "</tbody></table></div>" + '<p class="hint">📵 = 학부모 연락처 없음 (노션 학생 DB의 「학부모 연락처」 칸에 넣어 주세요) · 사진은 누르면 크게 보여요. 사진 주소는 1시간 뒤 바뀌니 다시 보려면 「보기」를 다시 누르세요.</p>';
+      $("hwDetailCard").scrollIntoView({ behavior: "smooth" });
+    });
   }
 
   // ---------- 🩺 시스템 점검 ----------
@@ -341,13 +424,13 @@ tr.miss td{color:#A0AAB2}
   // ---------- 탭 ----------
   function tab(name) {
     Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) { t.classList.toggle("on", t.getAttribute("data-tab") === name); });
-    ["list", "edit", "results", "report", "teachers", "import"].forEach(function (n) { $("v-" + n).style.display = n === name ? "" : "none"; });
+    ["list", "edit", "results", "report", "teachers", "import", "hw"].forEach(function (n) { $("v-" + n).style.display = n === name ? "" : "none"; });
     $("contactCard").style.display = name === "results" || name === "report" ? "" : "none";
     try { history.replaceState(null, "", "#" + name); } catch (e) {}
     window.scrollTo(0, 0);
   }
   Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) {
-    t.onclick = function () { var n = t.getAttribute("data-tab"); if (n === "edit") newPaper(); if (n === "results") fillResultSelect(); if (n === "teachers") loadTeachers(); tab(n); };
+    t.onclick = function () { var n = t.getAttribute("data-tab"); if (n === "edit") newPaper(); if (n === "results") fillResultSelect(); if (n === "teachers") loadTeachers(); if (n === "hw") hwOpen(); tab(n); };
   });
 
   function fillClassSelects() {

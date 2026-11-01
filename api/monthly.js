@@ -465,7 +465,7 @@ async function classList() {
 }
 async function roster(cls) {
   const rows = await queryAll(STUDENT_DB(), { filter: { property: "반", select: { equals: cls } }, sorts: [{ property: "이름", direction: "ascending" }] }, 4);
-  return rows && rows.map((p) => ({ id: normId(p.id), name: P.title(p, "이름"), hasPin: !!P.text(p, PIN_PROP), grade: P.sel(p, "학년") || "", school: P.text(p, "학교") || "" }));
+  return rows && rows.map((p) => ({ id: normId(p.id), name: P.title(p, "이름"), hasPin: !!P.text(p, PIN_PROP), grade: P.sel(p, "학년") || "", school: P.text(p, "학교") || "", phone: (p.properties["학부모 연락처"] || {}).phone_number || "", mute: P.chk(p, "알림 끄기") }));
 }
 async function login(id, pin, setPin) {
   if (pinLocked(id)) return { status: 429, msg: "번호를 여러 번 틀려서 잠시 잠겼어요. 10분 뒤에 다시 해 주세요." };
@@ -552,6 +552,8 @@ async function whoTeacher(code) {
   return row ? { name: row.name, master: false, id: row.id, contact: row.contact, reportUrl: row.reportUrl } : null;
 }
 
+let _hw = null; // 📸 사진 과제
+const HW = () => _hw || (_hw = require("./_homework.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, getLastErr: () => lastErr }));
 let _rep = null;
 function reporter() {
   if (!_rep) _rep = require("./_report.js")({ uuid, teacherFor, notion, queryAll, P, clip, normId, id32, unitIndex, unitData, askAI, EXAM_DB, STUDENT_DB, getPaper });
@@ -570,6 +572,11 @@ module.exports = async function handler(req, res) {
   if (!loadCatalog()) return send(503, { error: "bank", msg: "문제은행(exam-bank)이 없어요." });
   const b = await readBody(req);
   const act = String(b.action || "");
+  if (act === "hw_cron") { // ⏰ 과제 마감 확인 (GitHub Actions가 30분마다). 몇 번을 불러도 과제마다 한 번만 처리돼요.
+    const sec = String(process.env.HW_CRON_SECRET || "").trim();
+    if (sec && String(b.secret || "") !== sec) return send(401, { error: "secret" });
+    try { return send(200, await HW().cron()); } catch (e) { return send(500, { ok: false, msg: clip(e && e.message, 200) }); }
+  }
   if (!/^(classes|roster|login|s_list)$/.test(act)) await loadCustom();
   lastErr = null;
 
@@ -664,6 +671,11 @@ module.exports = async function handler(req, res) {
       const pg = await notion("pages/" + id32(b.id), "PATCH", { archived: true });
       return pg ? send(200, { ok: true }) : send(502, { error: "notion", msg: "지우지 못했어요.", debug: lastErr });
     }
+    if (act === "t_hw_list") { const l = await HW().teacherList(clip(b.cls, 40)); return l ? send(200, { ok: true, list: l, mode: require("./_notify.js").mode() }) : send(502, { error: "notion", msg: "과제 목록을 읽지 못했어요. 🩺 점검을 눌러 보세요.", debug: lastErr }); }
+    if (act === "t_hw_save") { const r = await HW().teacherSave(me, b.hw || {}); return r.status === 200 ? send(200, { ok: true, hw: r.hw }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_hw_detail") { const r = await HW().teacherDetail(clip(b.id, 60)); return r ? send(200, Object.assign({ ok: true }, r)) : send(404, { error: "nf", msg: "과제를 찾지 못했어요." }); }
+    if (act === "t_hw_check") { const r = await HW().cron({ only: clip(b.id, 60) || undefined }); return send(200, r); }
+    if (act === "t_hw_template") { const N2 = require("./_notify.js"); return send(200, { ok: true, template: N2.TEMPLATE, sample: N2.fill({ 학원: N2.ACADEMY(), 학생: "김민준", 과제: "Day 3 단어 쓰기", 마감: "11/5(목) 21:00" }), mode: N2.mode() }); }
     if (act === "t_assign") { // 반배정: 학생의 반을 바꿔요 (노션 학생 DB의 '반')
       const cls = clip(b.cls, 40), sid = clip(b.sid, 60), list = await classList();
       if (!list || !list.concat([PLACE_CLS()]).includes(cls)) return send(400, { error: "input", msg: "반을 골라 주세요." });
@@ -779,7 +791,8 @@ module.exports = async function handler(req, res) {
       const checks = [], add = (name, state, detail, fix) => checks.push({ name, state, detail: detail || "", fix: fix || "" });
       const NEED = { // DB별로 꼭 있어야 하는 칸 (없으면 저장·기록이 실패해요)
         "시험 기록": [EXAM_DB(), ["시험명", "학생", "시험지", "반", "종류", "시험일", "시험 범위", "점수", "만점", "오답 수", "종합 평가", "코멘트", "응시 방식", "소요시간(분)", "자리비움", "단원 분석", "문항 기록", "분석 리포트"]],
-        "학생": [STUDENT_DB(), [PIN_PROP, "반"]],
+        "학생": [STUDENT_DB(), [PIN_PROP, "반", "학부모 연락처", "알림 끄기"]],
+        "📸 과제": [HW().HW_DB(), ["과제명", "반", "마감", "설명", "사용", "알림 보내기", "알림 처리"]], "📮 과제 제출": [HW().SUB_DB(), ["제목", "과제", "학생", "상태", "사진", "제출 시각", "학생 메모", "알림 결과"]],
         "시험지": [PAPER_DB(), []], "AI 문항": [AIQ_DB(), []], "직접 올린 문항": [CUSTOM_DB(), ["과", "교재", "단원", "과ID", "문항", "본문"]], "선생님": [TEACHER_DB(), []],
       };
       const fixConn = "노션에서 「📔 학습리포트」와 「💗 일등급샘 반별 관리페이지」 각각 ⋯ → 연결 → 「cmacademy 학습인증」을 추가해 주세요.";
@@ -792,6 +805,8 @@ module.exports = async function handler(req, res) {
       add("문제은행", loadCatalog() ? "ok" : "bad", loadCatalog() ? "교재 " + allBooks().length + "권 · 직접 올린 문항 포함" : "exam-bank 없음", loadCatalog() ? "" : "GitHub Actions의 exam-bank 빌드를 확인해 주세요.");
       const ais = AI.list();
       add("AI", ais.length ? "ok" : "warn", ais.length ? ais.map((x) => x.label + "(" + x.model + ")").join(" · ") : "연결된 AI 없음", ais.length ? "화면 위 [🤖 연결 확인]을 누르면 실제로 답하는지 확인해요." : "AI 없이도 시험은 돼요. 해설·리포트 문장을 AI가 쓰게 하려면 Vercel에 API 키를 넣어 주세요.");
+      const nm = require("./_notify.js").mode();
+      add("학부모 알림", nm === "kakao" ? "ok" : nm === "sms" ? "warn" : "warn", nm === "kakao" ? "카카오 알림톡 (안 되면 문자)" : nm === "sms" ? "문자로 보내요 (알림톡 템플릿 ID 없음)" : "발송 설정 전 — 미제출 명단과 보낼 문구만 기록돼요", nm === "kakao" ? "" : "솔라피 키(SOLAPI_API_KEY·SOLAPI_API_SECRET·SOLAPI_FROM)와 카카오 채널·템플릿(KAKAO_PFID·KAKAO_TEMPLATE_ID)을 Vercel에 넣어 주세요. 설정방법 문서의 '📸 과제' 부분 참고.");
       if (!drive.configured()) add("구글 드라이브", "warn", "연결 안 됨", "GOOGLE_SERVICE_ACCOUNT, DRIVE_FOLDER_ID를 Vercel에 넣고 Redeploy 하면 드라이브에서 자료를 가져올 수 있어요.");
       else { try { const l = await drive.list(); add("구글 드라이브", "ok", "폴더 「" + l.root + "」 · 파일 " + l.files.length + "개 · 서비스 계정 " + (drive.account() || {}).client_email); } catch (e) { add("구글 드라이브", "bad", clip(e.message, 120), "폴더를 서비스 계정(cm-bank@…)에 뷰어로 공유했는지, DRIVE_FOLDER_ID가 맞는지 확인해 주세요."); } }
       const rows = await teacherRows();
@@ -876,6 +891,11 @@ module.exports = async function handler(req, res) {
 
   const who = readToken(b.token);
   if (!who) return send(401, { error: "login", relogin: true, msg: "본인 확인이 끝났어요. 이름과 번호를 다시 확인해 주세요." });
+
+  // 📸 사진 과제 (학생)
+  if (act === "s_hw_list") { const l = await HW().studentList(who); return l ? send(200, { ok: true, list: l, name: who.name, cls: who.cls }) : send(502, { error: "notion", msg: "과제 목록을 불러오지 못했어요." }); }
+  if (act === "s_hw_upload") { const r = await HW().uploadPhoto(b.name, String(b.type || ""), b.b64); return r.error ? send(400, { ok: false, msg: r.error }) : send(200, { ok: true, fid: r.fid, name: r.name }); }
+  if (act === "s_hw_submit") { const r = await HW().studentSubmit(who, b); return r.status === 200 ? send(200, Object.assign({ ok: true }, r)) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
 
   if (act === "s_open") {
     const pp = await getPaper(b.id); if (!pp) return send(404, { error: "nf", msg: "시험을 찾지 못했어요." });

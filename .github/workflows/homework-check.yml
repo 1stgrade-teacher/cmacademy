@@ -1,0 +1,23 @@
+# 📸 사진 과제 마감 확인 — 30분마다 사이트에 "마감 지난 과제 확인해 줘"라고 알려요.
+# 마감이 지난 과제마다 미제출 학생을 기록하고, 알림이 켜져 있으면 학부모님께 알림톡을 보내요.
+# 과제마다 한 번만 처리되므로 여러 번 돌아도 같은 알림이 두 번 가지 않아요.
+# (GitHub 예약 실행은 몇 분 늦어질 수 있어요. 수동 실행: Actions 탭 → 이 작업 → Run workflow)
+name: 과제 마감 확인
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: 마감 지난 과제 확인
+        env:
+          SITE: ${{ vars.SITE_URL || 'https://cmacademy.vercel.app' }}
+          SECRET: ${{ secrets.HW_CRON_SECRET }}
+        run: |
+          body=$(printf '{"action":"hw_cron","secret":"%s"}' "$SECRET")
+          curl -sS --max-time 90 -X POST "$SITE/api/monthly" -H "Content-Type: application/json" -d "$body" | tee out.json
+          echo
+          grep -q '"ok":true' out.json
