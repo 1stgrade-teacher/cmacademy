@@ -19,6 +19,8 @@
   .paper:hover{border-color:var(--accent-light)}
   .paper .kind{flex:0 0 auto;font:700 12px var(--font);padding:4px 9px;border-radius:999px;background:var(--amber-bg);color:var(--amber-ink)}
   .paper .kind.q{background:#FDE3E1;color:#A2342A}
+  .paper .kind.v{background:#E3F0FF;color:#1F5FA8}
+  .paper .kind.w{background:#E6F6F4;color:#11706A}
   .paper .body{flex:1;min-width:0}
   .paper .t{font-weight:700;font-size:16px}
   .paper .m{font-size:13px;color:var(--muted);margin-top:3px;line-height:1.5}
@@ -102,7 +104,7 @@
           var off = !!p.closed;
           var meta = [p.mode === "choice" ? "내가 배운 교재·과 선택" : (p.range || ""), p.count + "문항", p.minutes ? p.minutes + "분" : "시간 제한 없음", p.level].filter(Boolean).join(" · ");
           return '<a class="paper' + (off ? " off" : "") + '" href="exam.html?id=' + encodeURIComponent(p.id) + "&c=" + encodeURIComponent(cls) + '">' +
-            '<span class="kind' + (p.kind === "분기평가" ? " q" : "") + '">' + esc(p.kind === "분기평가" ? "분기" : "월간") + "</span>" +
+            '<span class="kind' + ({ "분기평가": " q", "단어시험": " v", "주간평가": " w" })[p.kind] || "" + '">' + esc(({ "분기평가": "분기", "주간평가": "주간", "단어시험": "단어" })[p.kind] || "월간") + "</span>" +
             '<span class="body"><div class="t">' + esc(p.title) + '</div><div class="m">' + esc(meta) + (p.end ? " · ~" + esc(p.end.slice(5).replace("-", "/")) : "") + "</div></span>" +
             '<span class="st">' + (off ? (p.status === "마감" ? "마감" : "대기") : "응시하기 →") + "</span></a>";
         }).join("") + "</section>";

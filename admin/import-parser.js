@@ -222,9 +222,53 @@
   }
 
   // ---------- 5. 엑셀 양식 (📚 자료 올리기 양식.xlsx) ----------
+  // ---------- 5-1. 📒 단어장 엑셀 (단어·뜻·예문·영영정의·동의어·반의어) ----------
+  // 열 이름은 자유롭게: 단어/word/영단어, 뜻/의미/meaning, 예문/example, 해석, 영영/definition, 동의어/유의어/synonym, 반의어/antonym, 품사, Day/Unit/단원, 교재
+  var VCOL = {
+    w: /^(단어|영단어|어휘|word|words|vocab|vocabulary|english|표제어|영어)$/i, m: /^(뜻|의미|meaning|meanings|korean|한글\s*뜻|우리말\s*뜻|해석\s*뜻|한국어)$/i,
+    pos: /^(품사|pos|part\s*of\s*speech)$/i, ex: /^(예문|example|example\s*sentence|sentence|영어\s*예문)$/i, exk: /^(예문\s*해석|해석|translation|예문\s*뜻|우리말\s*해석)$/i,
+    def: /^(영영|영영\s*정의|영영\s*풀이|definition|english\s*definition|정의)$/i, syn: /^(동의어|유의어|synonyms?|syn)$/i, ant: /^(반의어|antonyms?|ant)$/i,
+    day: /^(day|unit|lesson|단원|과|챕터|chapter|회차|일차|날짜|week)$/i, book: /^(교재|교재명|book|책)$/i, no: /^(번호|no\.?|#|순번)$/i,
+  };
+  function vocabSheet(rows) {
+    for (var hi = 0; hi < Math.min(6, rows.length); hi++) { // 제목 줄이 위에 있어도 머리글을 찾아요
+      var head = rows[hi].map(function (c) { return String(c || "").replace(/\s+/g, " ").trim(); }), col = {};
+      head.forEach(function (c, i) { Object.keys(VCOL).forEach(function (k) { if (col[k] == null && VCOL[k].test(c)) col[k] = i; }); });
+      if (col.w != null && col.m != null) return { col: col, start: hi + 1 };
+    }
+    // 머리글이 없으면: A열이 영어, B열이 한글인 표
+    var ok = rows.slice(0, 8).filter(function (r) { return /^[A-Za-z][A-Za-z '\-\/.,~()]*$/.test(String(r[0] || "").trim()) && /[가-힣]/.test(String(r[1] || "")); }).length;
+    return ok >= 3 ? { col: { w: 0, m: 1 }, start: 0 } : null;
+  }
+  function vocabUnits(wb, fileName) {
+    var base = String(fileName || "단어장").replace(/\.[^.]+$/, "").replace(/[_]+/g, " ").trim(), units = new Map();
+    var fm = base.match(/(?:^|\s|[^A-Za-z])(day|unit|lesson)\s*0?(\d{1,3})/i), fday = fm ? fm[1][0].toUpperCase() + fm[1].slice(1).toLowerCase() + " " + ("0" + fm[2]).slice(-2) : "", fbase = fm ? (base.replace(fm[0], " ").replace(/\s+/g, " ").trim() || base) : base;
+    var sheets = wb.SheetNames.filter(function (n) { return !/안내|설명|예시|guide|readme/i.test(n); });
+    sheets.forEach(function (sn) {
+      var rows = window.XLSX.utils.sheet_to_json(wb.Sheets[sn], { header: 1, defval: "" }), v = vocabSheet(rows); if (!v) return;
+      var c = v.col, cell = function (r, k) { return c[k] == null ? "" : String(r[c[k]] == null ? "" : r[c[k]]).replace(/\s+/g, " ").trim(); };
+      rows.slice(v.start).forEach(function (r) {
+        var w = cell(r, "w"); if (!w || !/[A-Za-z]/.test(w)) return;
+        var day = cell(r, "day"); if (/^\d+$/.test(day)) day = "Day " + ("0" + day).slice(-2);
+        var book = cell(r, "book"), chapter = day || (sheets.length > 1 ? sn : fday ? fday : "단어"), bk = book || (fday ? fbase : base);
+        var id = bk + "|" + chapter;
+        if (!units.has(id)) units.set(id, { vocab: true, meta: { book: bk, chapter: chapter, unit: "단어", area: "어휘", grade: "", file: fileName, bookFromCol: !!book }, words: [], questions: [], text: "" });
+        units.get(id).words.push({ w: w, pos: cell(r, "pos"), m: cell(r, "m"), ex: cell(r, "ex"), exk: cell(r, "exk"), def: cell(r, "def"), syn: cell(r, "syn"), ant: cell(r, "ant") });
+      });
+    });
+    // 한 묶음이 너무 크면 50단어씩 나눠요 (시험 문항을 노션 한 줄에 담기 위해)
+    var out = [];
+    units.forEach(function (u) {
+      if (u.words.length <= 60) { out.push(u); return; }
+      for (var i = 0, k = 1; i < u.words.length; i += 50, k++) out.push({ vocab: true, meta: Object.assign({}, u.meta, { unit: "단어 " + k }), words: u.words.slice(i, i + 50), questions: [], text: "" });
+    });
+    return out;
+  }
+
   async function xlsxUnits(file) {
     await loadScript(LIB.xlsx);
     var wb = window.XLSX.read(await file.arrayBuffer(), { type: "array" });
+    if (!wb.Sheets["문제"]) { var vu = vocabUnits(wb, file.name); if (vu.length) return vu; } // 단어장이면 단어 시험용으로
     var units = new Map();
     function U(r) {
       var k = [r["교재"], r["단원"], r["과"]].map(function (x) { return String(x || "").trim(); });
@@ -255,6 +299,6 @@
     return [...units.values()];
   }
 
-  var API = { fileLines: fileLines, parseAnswers: parseAnswers, splitAnswerSection: splitAnswerSection, parseQuestions: parseQuestions, guessMeta: guessMeta, xlsxUnits: xlsxUnits, htmlToLines: htmlToLines };
+  var API = { fileLines: fileLines, parseAnswers: parseAnswers, splitAnswerSection: splitAnswerSection, parseQuestions: parseQuestions, guessMeta: guessMeta, xlsxUnits: xlsxUnits, vocabUnits: vocabUnits, vocabSheet: vocabSheet, htmlToLines: htmlToLines };
   if (typeof module !== "undefined" && module.exports) module.exports = API; else root.ImportParser = API;
 })(typeof window !== "undefined" ? window : globalThis);
