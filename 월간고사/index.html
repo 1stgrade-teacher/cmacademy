@@ -116,14 +116,19 @@
     post({ action: "s_list", cls: cls }).then(function (j) {
       if (!j.papers) { box.innerHTML = '<div class="msgbox">' + esc(j.msg || "목록을 불러오지 못했어요.") + "</div>"; return; }
       if (!j.papers.length) { box.innerHTML = '<div class="msgbox">아직 열린 시험이 없어요.<br>선생님이 시험을 열면 여기에 나타나요.</div>'; return; }
-      // 시기별로 묶기 (최근 시기가 위로)
-      var groups = {}, order = [];
-      j.papers.forEach(function (p) { var k = p.period || "기타"; if (!groups[k]) { groups[k] = []; order.push(k); } groups[k].push(p); });
-      order.sort(function (a, b) { return b.localeCompare(a, "ko", { numeric: true }); });
+      // 시기별로 묶기 (최근 시기가 위로) — 반배정 시험은 학년별로, 내 학년이 맨 위
+      var groups = {}, order = [], me = null; try { me = JSON.parse(sessionStorage.getItem("cm-monthly-me") || "null"); } catch (e) {}
+      var myG = me && me.cls === cls && me.grade ? me.grade : "", place = j.papers.every(function (p) { return p.kind === "반배정시험"; });
+      j.papers.forEach(function (p) {
+        var gs = p.grades || [], k = !place ? (p.period || "기타") : myG ? (gs.indexOf(myG) >= 0 ? "⭐ 내 학년(" + myG + ") 시험" : gs.length ? "다른 학년 시험" : "모든 학년") : (gs.length ? gs.join("·") + " 시험" : "모든 학년");
+        if (!groups[k]) { groups[k] = []; order.push(k); } groups[k].push(p);
+      });
+      if (place) order.sort(function (a, b) { var r = function (x) { return /^⭐/.test(x) ? 0 : x === "모든 학년" ? 2 : x === "다른 학년 시험" ? 3 : 1; }; var GO = ["초3", "초4", "초5", "초6", "중1", "중2", "중3", "고1", "고2", "고3"], gi = function (x) { var i = GO.indexOf(x.slice(0, 2)); return i < 0 ? 99 : i; }; return r(a) - r(b) || gi(a) - gi(b); });
+      else order.sort(function (a, b) { return b.localeCompare(a, "ko", { numeric: true }); });
       box.innerHTML = order.map(function (k) {
-        return '<section class="period"><h2>📅 ' + esc(k) + ' <span class="cnt">' + groups[k].length + "개</span></h2>" + groups[k].map(function (p) {
+        return '<section class="period"><h2>' + (place ? "" : "📅 ") + esc(k) + ' <span class="cnt">' + groups[k].length + "개</span></h2>" + groups[k].map(function (p) {
           var off = !!p.closed;
-          var meta = [p.mode === "choice" ? "내가 배운 교재·과 선택" : (p.range || ""), p.count + "문항", p.minutes ? p.minutes + "분" : "시간 제한 없음", p.level].filter(Boolean).join(" · ");
+          var meta = [p.grades && p.grades.length ? "대상 " + p.grades.join("·") : "", p.mode === "choice" ? "내가 배운 교재·과 선택" : (p.range || ""), p.count + "문항", p.minutes ? p.minutes + "분" : "시간 제한 없음", p.level].filter(Boolean).join(" · ");
           return '<a class="paper' + (off ? " off" : "") + '" href="exam.html?id=' + encodeURIComponent(p.id) + "&c=" + encodeURIComponent(cls) + '">' +
             '<span class="kind' + (({ "분기평가": " q", "단어시험": " v", "주간평가": " w", "반배정시험": " p" })[p.kind] || "") + '">' + esc(({ "분기평가": "분기", "주간평가": "주간", "단어시험": "단어", "반배정시험": "반배정" })[p.kind] || "월간") + "</span>" +
             '<span class="body"><div class="t">' + esc(p.title) + '</div><div class="m">' + esc(meta) + (p.end ? " · ~" + esc(p.end.slice(5).replace("-", "/")) : "") + "</div></span>" +
@@ -145,7 +150,7 @@
     post({ action: "s_join", name: name, school: $("jSchool").value.trim(), grade: $("jGrade").value, pin: pin }).then(function (j) {
       go.disabled = false;
       if (j.token) {
-        try { sessionStorage.setItem("cm-monthly-me", JSON.stringify({ token: j.token, name: j.name, cls: j.cls, exp: Date.now() + 3.8 * 3600 * 1000 })); } catch (e) {}
+        try { sessionStorage.setItem("cm-monthly-me", JSON.stringify({ token: j.token, name: j.name, cls: j.cls, grade: j.grade, exp: Date.now() + 3.8 * 3600 * 1000 })); } catch (e) {}
         er.textContent = ""; $("joinBox").style.display = "none"; openCls(j.cls); return;
       }
       er.textContent = j.msg || "등록하지 못했어요. 선생님께 알려 주세요.";

@@ -157,6 +157,8 @@ tr.miss td{color:#A0AAB2}
       </div>
       <div class="hint" id="modeHint"></div>
       <div id="placeBox" style="display:none;margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px">
+        <b>🎓 대상 학년</b> <span class="hint" style="margin:0">신입생이 등록한 학년의 시험이 맨 위에 「내 학년 시험」으로 나와요. 학년마다 시험지를 따로 만드세요.</span>
+        <div id="gList" class="row" style="flex-wrap:wrap;gap:6px 14px;margin:8px 0 14px"></div>
         <b>🆕 반배정 추천 기준</b> <span class="hint" style="margin:0">학생은 못 보고, 결과 화면과 노션에만 「추천 반」으로 나와요. 비워 두면 점수만 보여요.</span>
         <textarea id="ePlace" rows="4" style="margin-top:8px" placeholder="학년: 점수 반, 점수 반 … (높은 점수부터, 한 줄에 한 학년)&#10;중1: 90 중1 사관반, 70 중1 S반, 0 중1 I반&#10;중2: 85 중2 일등급반, 60 중2 S반, 0 중2 I반&#10;80 중3 일등급반, 0 기타   ← 학년 없이 쓰면 나머지 학년 모두"></textarea>
         <div class="hint" style="margin:4px 0 0">학생 화면 → <b>🆕 처음 왔어요</b>에서 신입생이 이름·학교·학년을 쓰고 스스로 등록하면 「신입 반배정」 반 학생이 돼요. 이 시험지의 반은 <b>신입 반배정</b>으로 두세요.</div>
@@ -417,8 +419,16 @@ tr.miss td{color:#A0AAB2}
   }
   function vtSend() { return VT ? VT.slice() : []; }
   var PLACE_CLS = "신입 반배정";
+  var GRADES = ["초3", "초4", "초5", "초6", "중1", "중2", "중3", "고1", "고2", "고3"], PG = [];
+  function gradeUi() {
+    $("gList").innerHTML = GRADES.map(function (g) { return '<label style="font-size:14px"><input type="checkbox" data-g="' + g + '"' + (PG.indexOf(g) >= 0 ? " checked" : "") + "> " + g + "</label>"; }).join("");
+    Array.prototype.forEach.call($("gList").querySelectorAll("[data-g]"), function (c) { c.onchange = function () {
+      PG = Array.prototype.filter.call($("gList").querySelectorAll("[data-g]"), function (x) { return x.checked; }).map(function (x) { return x.getAttribute("data-g"); });
+      autoTitle();
+    }; });
+  }
   function placeUi() {
-    var on = $("eKind").value === "반배정시험"; $("placeBox").style.display = on ? "" : "none";
+    var on = $("eKind").value === "반배정시험"; $("placeBox").style.display = on ? "" : "none"; if (on) gradeUi();
     if (on && !EDIT && Array.prototype.some.call($("eCls").options, function (o) { return o.value === PLACE_CLS; })) { $("eCls").value = PLACE_CLS; autoTitle(); }
   }
 
@@ -452,6 +462,7 @@ tr.miss td{color:#A0AAB2}
     if (titleTouched) return;
     var p = $("ePeriod").value.replace(/^\d{4}년\s*/, ""); $("eTitle").value = p + " " + $("eKind").value + " · " + $("eCls").value;
     if ($("eKind").value === "분기평가" && /월$/.test($("ePeriod").value)) { var q = Math.ceil(parseInt(p, 10) / 3); $("eTitle").value = q + "분기 평가 · " + $("eCls").value; }
+    if ($("eKind").value === "반배정시험") $("eTitle").value = ((PG || []).length ? PG.join("·") + " " : "") + "반배정시험";
   }
 
   // ---------- 범위 고르기 ----------
@@ -525,7 +536,7 @@ tr.miss td{color:#A0AAB2}
     $("editTitle").textContent = "새 시험지"; $("tabEdit").textContent = "➕ 새 시험지";
     setRadio("mode", "fixed"); setRadio("lv", "2"); $("eCount").value = 20; $("eMin").value = 30; $("eStatus").value = "준비중"; $("eShow").checked = true;
     $("eKind").value = "월간평가"; $("eStart").value = kst(); $("eEnd").value = kst(Date.now() + 6 * 864e5);
-    $("ePlace").value = ""; buildPeriods(); autoTitle(); modeUi(); buildBookFilters(); renderBooks(); vtUi(); placeUi(); $("pv").innerHTML = ""; $("pvInfo").textContent = ""; $("fillBtn").style.display = "none"; $("saveMsg").textContent = "";
+    $("ePlace").value = ""; PG = []; buildPeriods(); autoTitle(); modeUi(); buildBookFilters(); renderBooks(); vtUi(); placeUi(); $("pv").innerHTML = ""; $("pvInfo").textContent = ""; $("fillBtn").style.display = "none"; $("saveMsg").textContent = "";
   }
   function editPaper(p) {
     newPaper(); EDIT = p; titleTouched = true;
@@ -536,7 +547,7 @@ tr.miss td{color:#A0AAB2}
     setRadio("mode", p.mode); setRadio("lv", String(["기본", "표준", "심화"].indexOf(p.level) + 1)); $("eCount").value = p.count; $("eMin").value = p.minutes;
     $("eStart").value = p.start || ""; $("eEnd").value = p.end || ""; $("eStatus").value = p.status; $("eShow").checked = !!p.show;
     (p.cfg.units || []).forEach(function (u) { SEL[u] = 1; }); (p.cfg.books || []).forEach(function (b) { SELB[b] = 1; }); EXCL = (p.cfg.exclude || []).slice();
-    $("ePlace").value = (p.cfg && p.cfg.place) || ""; modeUi(); renderBooks(); vtUi(); placeUi(); tab("edit");
+    $("ePlace").value = (p.cfg && p.cfg.place) || ""; PG = (p.cfg && p.cfg.grades) || []; modeUi(); renderBooks(); vtUi(); placeUi(); tab("edit");
     if (p.takers) $("saveMsg").innerHTML = '<span class="er">⚠ 이미 ' + p.takers + "명이 응시했어요. 범위·문항을 바꾸면 학생마다 시험지가 달라질 수 있어요.</span>";
   }
   $("cancelEdit").onclick = function () { tab("list"); };
@@ -592,7 +603,7 @@ tr.miss td{color:#A0AAB2}
     if (m === "fixed" && !units.length) { $("saveMsg").innerHTML = '<span class="er">출제할 과를 골라 주세요.</span>'; return; }
     if (m === "choice" && !units.length && !books.length) { $("saveMsg").innerHTML = '<span class="er">학생이 고를 교재를 골라 주세요.</span>'; return; }
     var paper = { id: EDIT && EDIT.id, title: $("eTitle").value.trim(), cls: $("eCls").value, kind: $("eKind").value, period: $("ePeriod").value, status: $("eStatus").value, mode: m, level: level(),
-      count: +$("eCount").value, minutes: +$("eMin").value, start: $("eStart").value, end: $("eEnd").value, show: $("eShow").checked, units: units, books: books, exclude: EXCL, reseed: RESEED, vtypes: vtSend(), place: $("ePlace").value.trim() };
+      count: +$("eCount").value, minutes: +$("eMin").value, start: $("eStart").value, end: $("eEnd").value, show: $("eShow").checked, units: units, books: books, exclude: EXCL, reseed: RESEED, vtypes: vtSend(), place: $("ePlace").value.trim(), grades: $("eKind").value === "반배정시험" ? PG.slice() : [] };
     if (!paper.title) { autoTitle(); paper.title = $("eTitle").value; }
     lsSet("cm-teacher-cls", paper.cls);
     $("saveBtn").disabled = true; $("saveMsg").textContent = "저장하는 중…";
