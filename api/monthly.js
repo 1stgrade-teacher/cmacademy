@@ -469,11 +469,11 @@ async function classList() {
 }
 async function roster(cls) {
   const rows = await queryAll(STUDENT_DB(), { filter: { property: "반", select: { equals: cls } }, sorts: [{ property: "이름", direction: "ascending" }] }, 4);
-  return rows && rows.map((p) => ({ id: normId(p.id), name: P.title(p, "이름"), hasPin: !!P.text(p, PIN_PROP), grade: P.sel(p, "학년") || "", school: P.text(p, "학교") || "", phone: (p.properties["학부모 연락처"] || {}).phone_number || "", mute: P.chk(p, "알림 끄기") }));
+  return rows && rows.filter((p) => !["휴원", "퇴원"].includes(P.sel(p, "상태"))).map((p) => ({ id: normId(p.id), name: P.title(p, "이름"), hasPin: !!P.text(p, PIN_PROP), grade: P.sel(p, "학년") || "", school: P.text(p, "학교") || "", phone: (p.properties["학부모 연락처"] || {}).phone_number || "", mute: P.chk(p, "알림 끄기") }));
 }
 
 // ---------- 🧑‍🎓 선생님 화면에서 학생 추가·수정 ----------
-const STU_GRADES = ["초3", "초4", "초5", "초6", "중1", "중2", "중3"];
+const STU_GRADES = ["초1", "초2", "초3", "초4", "초5", "초6", "중1", "중2", "중3", "고1", "고2", "고3"];
 function fmtPhone(s) { const d = String(s || "").replace(/\D/g, ""); if (!d) return ""; if (!/^01[016789]\d{7,8}$/.test(d)) return null; return d.length === 11 ? d.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3") : d.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3"); }
 // 한 명 저장: id가 있으면 수정, 없으면 추가. 같은 반에 같은 이름이 있으면 추가하지 않아요.
 async function saveStudent(x, classes, me) {
@@ -482,6 +482,8 @@ async function saveStudent(x, classes, me) {
   if (!classes.includes(cls)) return { ok: false, msg: "반을 골라 주세요. (노션에 없는 반은 추가할 수 없어요)" };
   if (phone === null) return { ok: false, msg: "학부모 연락처는 010으로 시작하는 휴대폰 번호로 써 주세요." };
   const props = { "이름": { title: rt(name) }, "반": sel(cls), "학년": grade ? sel(grade) : { select: null }, "학교": { rich_text: rt(school) }, "학부모 연락처": { phone_number: phone || null }, "알림 끄기": { checkbox: !!x.mute } };
+  if (["재원", "휴원", "퇴원"].includes(x.status)) props["상태"] = sel(x.status);
+  if (typeof x.memo === "string" && x.id) props["메모"] = { rich_text: rt(clip(x.memo, 1900)) };
   if (x.id) {
     const pg = await notion("pages/" + id32(clip(x.id, 60)), "GET");
     if (!pg || normId(pg.parent && pg.parent.database_id) !== normId(STUDENT_DB())) return { ok: false, msg: "학생을 찾지 못했어요." };
@@ -491,7 +493,7 @@ async function saveStudent(x, classes, me) {
   const dup = await queryAll(STUDENT_DB(), { filter: { and: [{ property: "이름", title: { equals: name } }, { property: "반", select: { equals: cls } }] } }, 1);
   if (!dup) return { ok: false, msg: "저장하지 못했어요. 잠시 뒤 다시 해 주세요." };
   if (dup.length) return { ok: false, dup: true, msg: "이미 같은 이름이 있어요." };
-  props["메모"] = { rich_text: rt(today() + " " + me.name + " 선생님이 추가") };
+  props["메모"] = { rich_text: rt(clip((typeof x.memo === "string" && x.memo.trim() ? x.memo.trim() + "\n" : "") + today() + " " + me.name + " 선생님이 추가", 1900)) };
   const pg = await notion("pages", "POST", { parent: { database_id: STUDENT_DB() }, properties: props });
   return pg ? { ok: true, id: normId(pg.id), name } : { ok: false, msg: "저장하지 못했어요. 잠시 뒤 다시 해 주세요." };
 }
@@ -581,6 +583,16 @@ async function whoTeacher(code) {
 }
 
 let _hw = null; // 📸 사진 과제
+let _stu = null; const STU = () => _stu || (_stu = require("./_students.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, EXAM_DB, PAPER_DB, HW_DB: () => HW().HW_DB(), SUB_DB: () => HW().SUB_DB(), GAME_DB: () => id32(process.env.NOTION_GAME_DB_ID || "3ef113187ca24388b1a68de4cc535144"), PIN_PROP, PLACE_CLS, getLastErr: () => lastErr }));
+// 학생 화면의 반 목록: 재원생이 있는 반만 (+ 신입 반배정). 1분 동안 기억
+const stuCls = { t: 0, list: null };
+async function studentClasses() {
+  if (stuCls.list && Date.now() - stuCls.t < 60000) return stuCls.list;
+  const a = await STU().all(); if (!a) return classList();
+  const has = new Set(a.students.filter(STU().active).map((x) => x.cls));
+  stuCls.list = a.classes.filter((c) => has.has(c) || c === PLACE_CLS()); stuCls.t = Date.now();
+  return stuCls.list;
+}
 let _game = null; const GAME = () => _game || (_game = require("./_game.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, getLastErr: () => lastErr }));
 const HW = () => _hw || (_hw = require("./_homework.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, getLastErr: () => lastErr }));
 let _rep = null;
@@ -701,7 +713,16 @@ module.exports = async function handler(req, res) {
       return pg ? send(200, { ok: true }) : send(502, { error: "notion", msg: "지우지 못했어요.", debug: lastErr });
     }
     if (act === "t_students") { const l = await roster(clip(b.cls, 40)); return l ? send(200, { ok: true, students: l.map((x) => ({ id: x.id, name: x.name, hasPin: x.hasPin, grade: x.grade, school: x.school, phone: x.phone, mute: x.mute })) }) : send(502, { error: "notion", msg: "명단을 불러오지 못했어요.", debug: lastErr }); }
-    if (act === "t_student_save") { const cl = await classList(); if (!cl) return send(502, { error: "notion", msg: "반 목록을 불러오지 못했어요.", debug: lastErr }); const r = await saveStudent(b.student || {}, cl, me); return send(r.ok ? 200 : r.dup ? 409 : 400, r); }
+    if (act === "t_students_all") { const a = await STU().all(); return a ? send(200, Object.assign({ ok: true }, a)) : send(502, { error: "notion", msg: "학생 명단을 불러오지 못했어요.", debug: lastErr }); }
+    if (act === "t_class_add" || act === "t_class_rename" || act === "t_class_delete") { // 🏫 반 만들기·이름 바꾸기·지우기
+      const r = act === "t_class_add" ? await STU().classAdd(b.name) : act === "t_class_rename" ? await STU().classRename(b.from, b.to) : await STU().classDelete(b.name);
+      stuCls.t = 0; const cl = await classList();
+      return send(r.ok ? 200 : 400, Object.assign(r, { classes: (cl || []).concat((cl || []).includes(PLACE_CLS()) ? [] : [PLACE_CLS()]) }));
+    }
+    if (act === "t_student_patch") { const cl = await classList(); if (!cl) return send(502, { error: "notion", msg: "반 목록을 불러오지 못했어요." }); const r = await STU().patch(b.changes, cl.concat([PLACE_CLS()])); stuCls.t = 0; return send(200, { ok: true, results: r }); }
+    if (act === "t_student_detail") { const d = await STU().detail(clip(b.id, 60)); return d ? send(200, Object.assign({ ok: true }, d)) : send(404, { error: "input", msg: "학생을 찾지 못했어요." }); }
+    if (act === "t_student_memo") { const up = await notion("pages/" + id32(clip(b.id, 60)), "PATCH", { properties: { "메모": { rich_text: rt(clip(b.memo, 1900)) } } }); return up ? send(200, { ok: true }) : send(502, { error: "notion", msg: "메모를 저장하지 못했어요." }); }
+    if (act === "t_student_save") { const cl = await classList(); if (!cl) return send(502, { error: "notion", msg: "반 목록을 불러오지 못했어요.", debug: lastErr }); const r = await saveStudent(b.student || {}, cl, me); stuCls.t = 0; return send(r.ok ? 200 : r.dup ? 409 : 400, r); }
     if (act === "t_student_bulk") { // 여러 명 붙여넣기: 한 줄 = 한 명
       const cl = await classList(); if (!cl) return send(502, { error: "notion", msg: "반 목록을 불러오지 못했어요.", debug: lastErr });
       const list = (Array.isArray(b.students) ? b.students : []).slice(0, 60), out = [];
@@ -924,7 +945,7 @@ module.exports = async function handler(req, res) {
     const units = ids.map((id) => { const u = unitIndex.get(id) || {}; return { id, book: u.book || "", chapter: u.chapter || "", name: u.name || "", words: V.wordsFrom(custom.data.get(id).qs) }; }).filter((u) => u.words.length);
     return send(200, { ok: true, units });
   }
-  if (act === "classes") { const l = await classList(); return l ? send(200, { ok: true, classes: l }) : send(502, { error: "notion", msg: "반 목록을 불러오지 못했어요." }); }
+  if (act === "classes") { const l = await studentClasses(); return l ? send(200, { ok: true, classes: l }) : send(502, { error: "notion", msg: "반 목록을 불러오지 못했어요." }); }
   if (act === "roster") { const l = await roster(clip(b.cls, 40)); return l ? send(200, { ok: true, students: l.map((s) => ({ id: s.id, name: s.name, hasPin: s.hasPin })) }) : send(502, { error: "notion", msg: "명단을 불러오지 못했어요." }); }
   if (act === "login") {
     const r = await login(clip(b.id, 60), clip(b.pin, 10), !!b.setPin);

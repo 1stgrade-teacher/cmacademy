@@ -213,6 +213,39 @@ tr.miss td{color:#A0AAB2}
   <!-- 선생님 관리 (관리자만) -->
   <section id="v-stu" style="display:none">
     <div class="card">
+      <div class="row" style="justify-content:space-between;margin:0;gap:8px"><h2 style="margin:0">🏫 반 현황</h2>
+        <div class="row" style="margin:0;gap:6px"><input id="stSearch" placeholder="🔍 학생 이름 찾기 (전체 반)" style="width:200px"><button class="sm sub" id="stAddCls">➕ 새 반</button><button class="sm sub" id="stYear">🎓 새 학년 준비</button><button class="sm sub" id="stCsv">⬇ 명단 엑셀</button><button class="sm sub" id="stReload">새로고침</button></div></div>
+      <div class="hint" id="stWarn"></div>
+      <div id="stClasses"><p class="hint">불러오는 중…</p></div>
+    </div>
+
+    <div class="card" id="yearCard" style="display:none">
+      <div class="row" style="justify-content:space-between;margin:0"><h2 style="margin:0">🎓 새 학년 준비</h2><button class="sm sub" id="yearClose">닫기</button></div>
+      <div class="hint">12월 학년 바뀔 때 순서대로 하세요. ① 학년 올리기 → ② 반 이름 바꾸기 → ③ 신입생 등록(아래 「학생 추가」). 지난 시험·과제 기록은 그대로 남아요.</div>
+      <h3 style="margin:14px 0 6px">① 학년 한 칸씩 올리기 (재원생만)</h3>
+      <div id="yearGrades"></div>
+      <div class="row" style="margin-top:6px"><span class="hint" style="margin:0">고3 학생은:</span><label><input type="radio" name="yG3" value="퇴원" checked> 퇴원(졸업) 처리</label><label><input type="radio" name="yG3" value="keep"> 그대로 두기</label></div>
+      <div class="row" style="margin-top:8px"><button id="yearUp">⬆ 학년 올리기</button><span class="msg" id="yearUpMsg" style="margin:0"></span></div>
+      <h3 style="margin:18px 0 6px">② 반 이름 한꺼번에 바꾸기</h3>
+      <div class="hint">새 이름을 확인·수정하고 체크한 반만 바꿔요. 학생은 새 반으로 옮겨지고, 진행 중인 시험지·과제도 새 반으로 따라가요. 높은 학년부터 차례로 바꿔서 이름이 겹치지 않게 해요.</div>
+      <div id="yearRename"></div>
+      <div class="row" style="margin-top:8px"><button id="yearRenGo">✏️ 선택한 반 이름 바꾸기</button><span class="msg" id="yearRenMsg" style="margin:0"></span></div>
+    </div>
+
+    <div class="card" id="stuCard" style="display:none"><div id="stuCardBody"></div></div>
+
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin:0"><h2 style="margin:0" id="stListTitle">📋 명단</h2><div class="row" style="margin:0"><select id="stCls" style="width:auto"></select><label style="font-size:13.5px"><input type="checkbox" id="stAllStat"> 휴원·퇴원도 보기</label></div></div>
+      <div class="row" id="stBulk" style="display:none;background:#F0F8F8;border-radius:10px;padding:8px 10px;margin-top:10px">
+        <b id="stSelN"></b>
+        <select id="stMoveCls" style="width:auto"></select><button class="sm" id="stMove">반 이동</button>
+        <select id="stSetStat" style="width:auto"><option>재원</option><option>휴원</option><option>퇴원</option></select><button class="sm sub" id="stStat">상태 바꾸기</button>
+        <button class="sm sub" id="stGradeUp">학년 +1</button><span class="msg" id="stBulkMsg" style="margin:0"></span>
+      </div>
+      <div class="hint">학생이 4자리 번호를 잊으면 「🔑」, 기록을 보려면 「📋 카드」를 누르세요. 휴원·퇴원 학생은 학생 화면 명단과 과제 알림에서 빠지고 기록은 남아요.</div>
+      <div id="stList"></div>
+    </div>
+    <div class="card">
       <h2 id="sfTitle">➕ 학생 추가</h2>
       <div class="grid">
         <div><label class="l">이름</label><input id="sfName" placeholder="예: 김서현"></div>
@@ -220,7 +253,9 @@ tr.miss td{color:#A0AAB2}
         <div><label class="l">학년</label><select id="sfGrade"><option value="">선택 안 함</option></select></div>
         <div><label class="l">학교</label><input id="sfSchool" placeholder="예: 청명중"></div>
         <div><label class="l">학부모 연락처 (알림용)</label><input id="sfPhone" inputmode="tel" placeholder="010-1234-5678"></div>
+        <div><label class="l">상태</label><select id="sfStatus"><option>재원</option><option>휴원</option><option>퇴원</option></select></div>
       </div>
+      <label class="l" style="margin-top:10px">메모 (상담 내용 등, 선생님만 봐요)</label><textarea id="sfMemo" rows="2" placeholder="예: 11/2 학부모 상담 — 단어 암기 꾸준히 확인 요청"></textarea>
       <div class="row" style="margin-top:10px"><label><input type="checkbox" id="sfMute"> 이 학생은 학부모 알림을 보내지 않기</label></div>
       <div class="row" style="margin-top:10px"><button id="sfSave">➕ 추가</button><button class="sub" id="sfNew" style="display:none">취소 (새 학생 추가로)</button><span class="msg" id="sfMsg" style="margin:0"></span></div>
       <details style="margin-top:12px"><summary style="cursor:pointer;font-weight:700">📋 여러 명 한꺼번에 붙여넣기</summary>
@@ -229,11 +264,7 @@ tr.miss td{color:#A0AAB2}
         <div class="row" style="margin-top:8px"><button class="sub" id="sfBulkGo">📋 한꺼번에 추가</button><span class="msg" id="sfBulkMsg" style="margin:0"></span></div>
       </details>
     </div>
-    <div class="card">
-      <div class="row" style="justify-content:space-between;margin:0"><h2 style="margin:0">🔑 학생 명단 · 번호 초기화</h2><div class="row" style="margin:0"><select id="stCls" style="width:auto"></select><button class="sub sm" id="stLoad">새로고침</button></div></div>
-      <div class="hint">학생이 4자리 번호를 잊어버렸으면 「번호 초기화」를 누르세요. 다음 접속 때 반 → 이름을 누르면 새 번호를 정하는 화면이 나와요. (TEST·과제·단어 게임 모두 같은 번호, 번호를 여러 번 틀려 잠긴 것도 함께 풀려요)</div>
-      <div id="stList"></div>
-    </div>
+
   </section>
 
   <section id="v-hw" style="display:none">
@@ -469,26 +500,210 @@ tr.miss td{color:#A0AAB2}
       $("rkOut").innerHTML = "<h3 style=\"margin:12px 0 6px\">🏅 포인트</h3>" + tb(j.points, "포인트", true) + "<h3 style=\"margin:14px 0 6px\">⚡ 60초 챌린지 최고 기록</h3>" + tb(j.speed, "맞힌 수", false);
     });
   }
-  // ---------- 🧑‍🎓 학생: 번호 초기화 ----------
-  var SF_ID = null, SF_GRADES = ["초3", "초4", "초5", "초6", "중1", "중2", "중3"];
-  function sfFill(x) { SF_ID = x ? x.id : null; $("sfName").value = x ? x.name : ""; if (x) $("sfCls").value = $("stCls").value; $("sfGrade").value = x ? x.grade : ""; $("sfSchool").value = x ? x.school : ""; $("sfPhone").value = x ? x.phone : ""; $("sfMute").checked = !!(x && x.mute); $("sfTitle").textContent = x ? "✏️ 학생 정보 수정 · " + x.name : "➕ 학생 추가"; $("sfSave").textContent = x ? "💾 수정 저장" : "➕ 추가"; $("sfNew").style.display = x ? "" : "none"; $("sfMsg").textContent = ""; }
-  function sfEdit(x) { sfFill(x); window.scrollTo(0, 0); $("sfName").focus(); }
-  function sfData() { return { id: SF_ID, name: $("sfName").value.trim(), cls: $("sfCls").value, grade: $("sfGrade").value, school: $("sfSchool").value.trim(), phone: $("sfPhone").value.trim(), mute: $("sfMute").checked }; }
-  function sfSetup() {
-    if ($("sfCls").options.length) return;
-    $("sfCls").innerHTML = (DATA.classes || []).map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
-    $("sfGrade").innerHTML = '<option value="">선택 안 함</option>' + SF_GRADES.map(function (g) { return "<option>" + g + "</option>"; }).join("");
+  // ---------- 🧑‍🎓 학생 관리: 반 현황 · 검색 · 명단 일괄 작업 · 새 학년 준비 · 학생 카드 ----------
+  var STU = { students: [], classes: [] }, ST_VIEW = { cls: "", q: "" }, ST_SEL = {}, SF_ID = null;
+  var GR = ["초1", "초2", "초3", "초4", "초5", "초6", "중1", "중2", "중3", "고1", "고2", "고3"];
+  var PLACE = "신입 반배정";
+  function nextGrade(g) { var i = GR.indexOf(g); return i < 0 || i === GR.length - 1 ? "" : GR[i + 1]; }
+  function nextName(c) { var m = String(c).match(/(초|중|고)\s*([1-6])/); if (!m) return c; var g = m[1] + m[2], n = nextGrade(g); return n ? c.replace(m[0], n) : c; }
+  function gradeRank(c) { var m = String(c).match(/(초|중|고)\s*([1-6])/); return m ? GR.indexOf(m[1] + m[2]) : -1; }
+  function isActive(x) { return x.status !== "휴원" && x.status !== "퇴원"; }
+  function stById(id) { for (var i = 0; i < STU.students.length; i++) if (STU.students[i].id === id) return STU.students[i]; return null; }
+  function chunks(a, n) { var o = []; for (var i = 0; i < a.length; i += n) o.push(a.slice(i, i + n)); return o; }
+
+  function refreshClassSelects() {
+    fillClassSelects();
+    var opts = DATA.classes.map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
+    var keep = function (id, html) { var el = $(id), v = el.value; el.innerHTML = html; if (v && DATA.classes.indexOf(v) >= 0) el.value = v; };
+    keep("sfCls", opts); keep("stMoveCls", opts);
+    $("hwCls").innerHTML = ""; $("rkCls").innerHTML = '<option value="">학원 전체</option>'; // 다음에 열 때 새 반 목록으로
+    $("sfGrade").innerHTML = '<option value="">선택 안 함</option>' + GR.map(function (g) { return "<option>" + g + "</option>"; }).join("");
+    var stc = $("stCls"), sv = stc.value || ST_VIEW.cls;
+    stc.innerHTML = DATA.classes.map(function (c) { var n = STU.students.filter(function (x) { return x.cls === c && isActive(x); }).length; return '<option value="' + esc(c) + '">' + esc(c) + " (" + n + ")</option>"; }).join("") + (STU.students.some(function (x) { return DATA.classes.indexOf(x.cls) < 0; }) ? '<option value="__none">반 없음·기타</option>' : "");
+    if (sv && (DATA.classes.indexOf(sv) >= 0 || sv === "__none")) stc.value = sv; else { var last = lsGet("cm-teacher-cls"); if (last && DATA.classes.indexOf(last) >= 0) stc.value = last; }
+    ST_VIEW.cls = stc.value;
   }
+  function stOpen() { if (!STU.students.length) stLoad(); else { refreshClassSelects(); stRender(); } }
+  function stLoad() {
+    $("stClasses").innerHTML = '<p class="hint">불러오는 중…</p>';
+    return post({ action: "t_students_all" }).then(function (j) {
+      if (!j.ok) { $("stClasses").innerHTML = '<p class="er">' + esc(j.msg || "학생 명단을 불러오지 못했어요.") + "</p>"; return; }
+      STU = { students: j.students, classes: j.classes }; DATA.classes = j.classes;
+      refreshClassSelects(); stRender();
+    });
+  }
+  function applyClasses(cl) { if (cl && cl.length) { DATA.classes = cl; STU.classes = cl; } }
+  function stRender() { renderClasses(); stRenderList(); if ($("yearCard").style.display !== "none") renderYear(); }
+
+  function renderClasses() {
+    var act = STU.students.filter(isActive);
+    var noPhone = act.filter(function (x) { return !x.phone && !x.mute && x.cls !== PLACE; }).length, noPin = act.filter(function (x) { return !x.hasPin; }).length;
+    $("stWarn").innerHTML = "재원생 <b>" + act.length + "명</b> · 휴원·퇴원 " + (STU.students.length - act.length) + "명" + (noPhone ? ' · <span class="er" style="font-size:inherit">학부모 연락처 없는 재원생 ' + noPhone + "명</span> (과제 미제출 알림을 못 받아요)" : "") + (noPin ? " · 번호 아직 안 정한 학생 " + noPin + "명" : "");
+    $("stClasses").innerHTML = '<div class="tw"><table><thead><tr><th>반</th><th>재원</th><th>휴원·퇴원</th><th>연락처 없음</th><th>번호 미설정</th><th></th></tr></thead><tbody>' + DATA.classes.map(function (c, i) {
+      var all = STU.students.filter(function (x) { return x.cls === c; }), a = all.filter(isActive);
+      return '<tr><td><a href="#" data-cv="' + i + '"><b>' + esc(c) + "</b></a></td><td class=num>" + a.length + "</td><td class=num>" + (all.length - a.length || "") + "</td><td class=num>" + (a.filter(function (x) { return !x.phone && !x.mute; }).length || "") + "</td><td class=num>" + (a.filter(function (x) { return !x.hasPin; }).length || "") + "</td><td>" +
+        (c === PLACE ? '<span class="hint" style="margin:0">신입생 스스로 등록</span>' : '<button class="sm sub" data-cr="' + i + '">✏️ 이름 바꾸기</button>' + (all.length ? "" : ' <button class="sm sub" data-cd="' + i + '">🗑 지우기</button>')) + "</td></tr>";
+    }).join("") + "</tbody></table></div>";
+    Array.prototype.forEach.call($("stClasses").querySelectorAll("[data-cv]"), function (a) { a.onclick = function (e) { e.preventDefault(); $("stSearch").value = ""; ST_VIEW.q = ""; $("stCls").value = DATA.classes[+a.getAttribute("data-cv")]; ST_VIEW.cls = $("stCls").value; stRenderList(); $("stList").scrollIntoView({ behavior: "smooth", block: "start" }); }; });
+    Array.prototype.forEach.call($("stClasses").querySelectorAll("[data-cr]"), function (b) { b.onclick = function () { renameClass(DATA.classes[+b.getAttribute("data-cr")]); }; });
+    Array.prototype.forEach.call($("stClasses").querySelectorAll("[data-cd]"), function (b) {
+      b.onclick = function () { var c = DATA.classes[+b.getAttribute("data-cd")]; if (!confirm("「" + c + "」 반을 지울까요? (학생이 없는 반만 지울 수 있어요)")) return; b.disabled = true;
+        post({ action: "t_class_delete", name: c }).then(function (j) { applyClasses(j.classes); if (!j.ok) alert(j.msg || "지우지 못했어요."); stLoad(); }); };
+    });
+  }
+  function renameClass(c) {
+    var to = prompt("「" + c + "」 반의 새 이름을 쓰세요.\n학생·진행 중인 시험지·과제가 새 이름으로 옮겨져요. (지난 기록은 그대로)", nextName(c)); if (to == null) return; to = to.trim(); if (!to || to === c) return;
+    if (DATA.classes.indexOf(to) >= 0 && !confirm("「" + to + "」 반이 이미 있어요. 두 반 학생이 하나로 합쳐져요. 계속할까요?")) return;
+    $("stWarn").innerHTML = "「" + esc(c) + "」 → 「" + esc(to) + "」 바꾸는 중…";
+    post({ action: "t_class_rename", from: c, to: to }).then(function (j) {
+      applyClasses(j.classes); if (!j.ok) { alert(j.msg || "바꾸지 못했어요."); stLoad(); return; }
+      if (ST_VIEW.cls === c) ST_VIEW.cls = to; lsSet("cm-teacher-cls", to);
+      alert("「" + c + "」 → 「" + to + "」 바꿨어요.\n학생 " + j.students + "명 · 진행 중 시험지 " + j.papers + "개 · 과제 " + j.homework + "개" + (j.removed ? "" : "\n(옛 반 이름은 노션 학생 DB 「반」 선택지에서 직접 지워 주세요)"));
+      stLoad().then(function () { $("stCls").value = to; ST_VIEW.cls = to; stRenderList(); });
+    });
+  }
+
+  function stRenderList() {
+    var q = ST_VIEW.q, showAll = $("stAllStat").checked, list;
+    if (q) list = STU.students.filter(function (x) { return x.name.indexOf(q) >= 0; });
+    else if (ST_VIEW.cls === "__none") list = STU.students.filter(function (x) { return DATA.classes.indexOf(x.cls) < 0; });
+    else list = STU.students.filter(function (x) { return x.cls === ST_VIEW.cls; });
+    var hidden = list.filter(function (x) { return !isActive(x); }).length;
+    if (!showAll && !q) list = list.filter(isActive);
+    $("stListTitle").textContent = q ? "🔍 「" + q + "」 찾은 학생 " + list.length + "명" : "📋 " + (ST_VIEW.cls === "__none" ? "반 없음·기타" : ST_VIEW.cls) + " 명단 " + list.length + "명" + (!showAll && hidden ? " (휴원·퇴원 " + hidden + "명 숨김)" : "");
+    Object.keys(ST_SEL).forEach(function (id) { if (!list.some(function (x) { return x.id === id; })) delete ST_SEL[id]; });
+    if (!list.length) { $("stList").innerHTML = '<p class="hint">' + (q ? "찾는 학생이 없어요." : "이 반에 학생이 없어요. 위 「학생 추가」로 넣어 주세요.") + "</p>"; bulkBar(); return; }
+    var stPillOf = function (s) { return s === "재원" ? "" : '<span class="pill ' + (s === "휴원" ? "m" : "end") + '">' + s + "</span>"; };
+    $("stList").innerHTML = '<div class="tw"><table><thead><tr><th><input type="checkbox" id="stChkAll"></th><th>이름</th>' + (q ? "<th>반</th>" : "") + "<th>학년</th><th>학교</th><th>학부모 연락처</th><th>번호</th><th></th></tr></thead><tbody>" + list.map(function (x) {
+      return '<tr style="' + (isActive(x) ? "" : "opacity:.6") + '"><td><input type="checkbox" data-sel="' + x.id + '"' + (ST_SEL[x.id] ? " checked" : "") + "></td><td><b>" + esc(x.name) + "</b> " + stPillOf(x.status) + "</td>" + (q ? "<td>" + esc(x.cls) + "</td>" : "") + "<td>" + esc(x.grade) + "</td><td>" + esc(x.school) + "</td><td>" +
+        (x.phone ? "📞 있음" + (x.mute ? " (알림 끔)" : "") : '<span class="hint" style="margin:0">없음</span>') + "</td><td>" + (x.hasPin ? "✅" : '<span class="hint" style="margin:0">미설정</span>') + '</td><td style="white-space:nowrap"><button class="sm sub" data-card="' + x.id + '">📋 카드</button> <button class="sm sub" data-pe="' + x.id + '">✏️</button>' + (x.hasPin ? ' <button class="sm sub" data-pr="' + x.id + '" title="번호 초기화">🔑</button>' : "") + "</td></tr>";
+    }).join("") + "</tbody></table></div>";
+    $("stChkAll").checked = list.every(function (x) { return ST_SEL[x.id]; });
+    $("stChkAll").onchange = function () { var on = this.checked; list.forEach(function (x) { if (on) ST_SEL[x.id] = 1; else delete ST_SEL[x.id]; }); stRenderList(); };
+    Array.prototype.forEach.call($("stList").querySelectorAll("[data-sel]"), function (c) { c.onchange = function () { var id = c.getAttribute("data-sel"); if (c.checked) ST_SEL[id] = 1; else delete ST_SEL[id]; bulkBar(); }; });
+    Array.prototype.forEach.call($("stList").querySelectorAll("[data-card]"), function (b) { b.onclick = function () { openCard(b.getAttribute("data-card")); }; });
+    Array.prototype.forEach.call($("stList").querySelectorAll("[data-pe]"), function (b) { b.onclick = function () { sfEdit(stById(b.getAttribute("data-pe"))); }; });
+    Array.prototype.forEach.call($("stList").querySelectorAll("[data-pr]"), function (b) {
+      b.onclick = function () {
+        var x = stById(b.getAttribute("data-pr")); if (!x || !confirm(x.name + " 학생의 번호를 지울까요?\n다음 접속 때 새 번호를 정하게 돼요. (잠긴 것도 풀려요)")) return;
+        b.disabled = true;
+        post({ action: "t_pin_reset", id: x.id }).then(function (r) { if (!r.ok) { b.disabled = false; alert(r.msg || "초기화하지 못했어요."); return; } x.hasPin = false; stRenderList(); $("stBulkMsg").textContent = ""; alert(x.name + " 번호를 초기화했어요. 다음 접속 때 새로 정해요."); });
+      };
+    });
+    bulkBar();
+  }
+  function bulkBar() { var n = Object.keys(ST_SEL).length; $("stBulk").style.display = n ? "" : "none"; $("stSelN").textContent = "선택 " + n + "명:"; }
+  // 여러 명 바꾸기 (25명씩 나눠 보내요)
+  function runPatch(changes, label, msgId) {
+    var M = $(msgId || "stBulkMsg");
+    if (!changes.length) { M.innerHTML = '<span class="er">바꿀 학생이 없어요.</span>'; return Promise.resolve(); }
+    var parts = chunks(changes, 25), done = 0, fail = 0;
+    var step = function (i) {
+      if (i >= parts.length) return Promise.resolve();
+      M.textContent = label + " 중… (" + done + "/" + changes.length + ")";
+      return post({ action: "t_student_patch", changes: parts[i] }).then(function (j) { (j.results || []).forEach(function (r) { if (r.ok) done++; else fail++; }); if (!j.ok) fail += parts[i].length; return step(i + 1); });
+    };
+    return step(0).then(function () { var html = '<span class="ok">' + label + " " + done + "명 완료 ✓</span>" + (fail ? ' <span class="er">못 한 학생 ' + fail + "명 — 다시 눌러 주세요</span>" : ""); ST_SEL = {}; return stLoad().then(function () { M.innerHTML = html; return html; }); });
+  }
+  $("stMove").onclick = function () { var c = $("stMoveCls").value, ids = Object.keys(ST_SEL); if (!confirm(ids.length + "명을 「" + c + "」 반으로 옮길까요?")) return; runPatch(ids.map(function (id) { return { id: id, cls: c }; }), "반 이동"); };
+  $("stStat").onclick = function () { var s = $("stSetStat").value, ids = Object.keys(ST_SEL); if (!confirm(ids.length + "명을 「" + s + "」 상태로 바꿀까요?" + (s !== "재원" ? "\n(학생 화면 명단과 과제 알림에서 빠지고 기록은 남아요)" : ""))) return; runPatch(ids.map(function (id) { return { id: id, status: s }; }), "상태 바꾸기"); };
+  $("stGradeUp").onclick = function () {
+    var ch = Object.keys(ST_SEL).map(stById).filter(function (x) { return x && nextGrade(x.grade); }).map(function (x) { return { id: x.id, grade: nextGrade(x.grade) }; });
+    if (!confirm(ch.length + "명의 학년을 한 칸 올릴까요? (학년이 비었거나 고3인 학생은 빼요)")) return; runPatch(ch, "학년 올리기");
+  };
+  $("stCls").onchange = function () { ST_VIEW.cls = this.value; ST_VIEW.q = ""; $("stSearch").value = ""; if (this.value !== "__none") lsSet("cm-teacher-cls", this.value); ST_SEL = {}; stRenderList(); };
+  $("stAllStat").onchange = stRenderList;
+  $("stSearch").oninput = function () { ST_VIEW.q = this.value.trim(); stRenderList(); };
+  $("stReload").onclick = stLoad;
+  $("stAddCls").onclick = function () {
+    var n = prompt("새 반 이름을 쓰세요. (예: 중3 사관반)"); if (n == null || !n.trim()) return;
+    post({ action: "t_class_add", name: n.trim() }).then(function (j) { applyClasses(j.classes); if (!j.ok) { alert(j.msg || "만들지 못했어요."); return; } stLoad().then(function () { $("stCls").value = j.name; ST_VIEW.cls = j.name; $("sfCls").value = j.name; stRenderList(); }); });
+  };
+  $("stCsv").onclick = function () {
+    var cell = function (v) { v = String(v == null ? "" : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    var rows = [["반", "이름", "학년", "학교", "학부모 연락처", "상태", "번호 설정", "알림 끔"]].concat(STU.students.slice().sort(function (a, b) { return a.cls.localeCompare(b.cls, "ko") || a.name.localeCompare(b.name, "ko"); }).map(function (x) { return [x.cls, x.name, x.grade, x.school, x.phone, x.status, x.hasPin ? "O" : "", x.mute ? "O" : ""]; }));
+    var blob = new Blob(["﻿" + rows.map(function (r) { return r.map(cell).join(","); }).join("\r\n")], { type: "text/csv;charset=utf-8" });
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "학생명단_" + new Date().toISOString().slice(0, 10) + ".csv"; document.body.appendChild(a); a.click(); a.remove();
+  };
+
+  // ---------- 📋 학생 카드 ----------
+  function openCard(id) {
+    var x = stById(id); $("stuCard").style.display = ""; $("stuCardBody").innerHTML = '<p class="hint">' + esc(x ? x.name : "") + " 기록을 불러오는 중…</p>"; $("stuCard").scrollIntoView({ behavior: "smooth", block: "start" });
+    post({ action: "t_student_detail", id: id }).then(function (j) {
+      if (!j.ok) { $("stuCardBody").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; }
+      var s = j.student, h = j.hw, tot = h["제출"] + h["지각 제출"] + h["미제출"];
+      var chip = function (t, v) { return '<div style="background:#F4F8F8;border-radius:10px;padding:8px 12px"><div class="hint" style="margin:0">' + t + '</div><b style="font-size:17px">' + v + "</b></div>"; };
+      $("stuCardBody").innerHTML = '<div class="row" style="justify-content:space-between;margin:0"><h2 style="margin:0">📋 ' + esc(s.name) + ' <span class="hint" style="margin:0">' + esc(s.cls) + (s.grade ? " · " + esc(s.grade) : "") + (s.school ? " · " + esc(s.school) : "") + " · " + esc(s.status) + '</span></h2><div class="row" style="margin:0"><button class="sm sub" id="cdEdit">✏️ 정보 수정</button><a class="sm" href="' + esc(s.url) + '" target="_blank" style="font-size:13px">노션에서 열기</a><button class="sm sub" id="cdClose">닫기</button></div></div>' +
+        '<div class="row" style="gap:8px;margin-top:10px">' + chip("시험 평균", s.testAvg != null ? s.testAvg + "점" : "-") + chip("시험 횟수", (s.tests || 0) + "회") + chip("인강 학습 인증", (s.certs || 0) + "회" + (s.watch != null ? " · 시청 " + s.watch + "%" : "")) + chip("과제 제출", tot ? h["제출"] + " / 지각 " + h["지각 제출"] + " / 미제출 " + h["미제출"] : "-") + chip("단어 게임 (30일)", j.game.plays ? j.game.points + "점 · " + j.game.plays + "판" : "-") + "</div>" +
+        '<h3 style="margin:14px 0 6px">최근 시험</h3>' + (j.tests.length ? '<div class="tw"><table><thead><tr><th>날짜</th><th>시험</th><th>종류</th><th>점수</th><th>환산</th><th>평가</th></tr></thead><tbody>' + j.tests.map(function (t) { return "<tr><td>" + esc(t.date) + '</td><td><a href="' + esc(t.url) + '" target="_blank">' + esc(t.title) + "</a></td><td>" + esc(t.kind) + "</td><td class=num>" + (t.score != null ? t.score + "/" + t.total : "") + "</td><td class=num><b>" + (t.pct != null ? t.pct : "") + "</b></td><td>" + esc(t.grade) + "</td></tr>"; }).join("") + "</tbody></table></div>" : '<p class="hint">아직 시험 기록이 없어요.</p>') +
+        '<h3 style="margin:14px 0 6px">최근 과제</h3>' + (h.recent.length ? h.recent.map(function (r) { return '<div style="padding:4px 0;border-top:1px solid var(--line)"><span class="pill ' + (r.status === "제출" ? "go" : r.status === "미제출" ? "end" : "m") + '">' + esc(r.status) + "</span> " + esc(r.title) + ' <span class="hint" style="margin:0">' + esc(r.at) + "</span></div>"; }).join("") : '<p class="hint">아직 과제 기록이 없어요.</p>') +
+        '<h3 style="margin:14px 0 6px">상담 메모 <span class="hint" style="margin:0">(선생님만 봐요)</span></h3><textarea id="cdMemo" rows="4">' + esc(s.memo) + '</textarea><div class="row" style="margin-top:6px"><button class="sm sub" id="cdStamp">📅 오늘 날짜 넣기</button><button class="sm" id="cdMemoSave">💾 메모 저장</button><span class="msg" id="cdMemoMsg" style="margin:0"></span></div>';
+      $("cdClose").onclick = function () { $("stuCard").style.display = "none"; };
+      $("cdEdit").onclick = function () { sfEdit(stById(s.id) || s); };
+      $("cdStamp").onclick = function () { var d = new Date(Date.now() + 9 * 3600e3).toISOString().slice(5, 10).replace("-", "/"), m = $("cdMemo"); m.value = (m.value ? m.value.replace(/\s+$/, "") + "\n" : "") + d + " "; m.focus(); };
+      $("cdMemoSave").onclick = function () { var b = this; b.disabled = true; post({ action: "t_student_memo", id: s.id, memo: $("cdMemo").value }).then(function (r) { b.disabled = false; $("cdMemoMsg").innerHTML = r.ok ? '<span class="ok">저장했어요 ✓</span>' : '<span class="er">' + esc(r.msg || "저장하지 못했어요.") + "</span>"; var x = stById(s.id); if (r.ok && x) x.memo = $("cdMemo").value; }); };
+    });
+  }
+
+  // ---------- 🎓 새 학년 준비 ----------
+  $("stYear").onclick = function () { $("yearCard").style.display = ""; renderYear(); $("yearCard").scrollIntoView({ behavior: "smooth", block: "start" }); };
+  $("yearClose").onclick = function () { $("yearCard").style.display = "none"; };
+  function renderYear() {
+    var act = STU.students.filter(isActive), by = {};
+    act.forEach(function (x) { var k = x.grade || "(학년 없음)"; by[k] = (by[k] || 0) + 1; });
+    var keys = Object.keys(by).sort(function (a, b) { return GR.indexOf(a) - GR.indexOf(b); });
+    $("yearGrades").innerHTML = keys.length ? '<div class="row" style="gap:6px">' + keys.map(function (g) { var n = nextGrade(g); return '<span class="pill" style="font-size:13px;padding:5px 10px">' + esc(g) + (g === "(학년 없음)" ? " 그대로" : n ? " → " + n : " → 졸업") + " · " + by[g] + "명</span>"; }).join("") + "</div>" : '<p class="hint">재원생이 없어요.</p>';
+    var last = lsGet("cm-year-up"); $("yearUpMsg").innerHTML = last ? '<span class="hint" style="margin:0">이 컴퓨터에서 ' + esc(last) + "에 학년을 올렸어요.</span>" : "";
+    var cls = DATA.classes.filter(function (c) { return c !== PLACE; }).sort(function (a, b) { return gradeRank(b) - gradeRank(a); });
+    $("yearRename").innerHTML = '<div class="tw"><table><thead><tr><th></th><th>지금 이름</th><th>재원</th><th>새 이름</th></tr></thead><tbody>' + cls.map(function (c, i) {
+      var n = nextName(c), cnt = STU.students.filter(function (x) { return x.cls === c && isActive(x); }).length;
+      return '<tr><td><input type="checkbox" data-yr="' + i + '"' + (n !== c ? " checked" : "") + "></td><td>" + esc(c) + "</td><td class=num>" + cnt + '</td><td><input data-yn="' + i + '" value="' + esc(n) + '" style="max-width:220px"></td></tr>';
+    }).join("") + "</tbody></table></div>";
+    $("yearRename").setAttribute("data-list", JSON.stringify(cls));
+  }
+  $("yearUp").onclick = function () {
+    var act = STU.students.filter(function (x) { return isActive(x) && x.grade && x.cls !== PLACE; }), g3 = (document.querySelector('input[name="yG3"]:checked') || {}).value;
+    var ch = []; act.forEach(function (x) { var n = nextGrade(x.grade); if (n) ch.push({ id: x.id, grade: n }); else if (g3 === "퇴원") ch.push({ id: x.id, status: "퇴원" }); });
+    var last = lsGet("cm-year-up");
+    if (!confirm("재원생 " + ch.length + "명의 학년을 한 칸씩 올릴까요?" + (g3 === "퇴원" ? "\n(고3은 퇴원 처리)" : "") + "\n「" + PLACE + "」 반과 학년이 빈 학생은 빼요." + (last ? "\n\n⚠️ 이 컴퓨터에서 " + last + "에 이미 올렸어요. 두 번 누르면 두 칸 올라가요!" : ""))) return;
+    var b = this; b.disabled = true;
+    lsSet("cm-year-up", new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10));
+    runPatch(ch, "학년 올리기", "yearUpMsg").then(function (html) { b.disabled = false; renderYear(); if (html) $("yearUpMsg").innerHTML = html; });
+  };
+  $("yearRenGo").onclick = function () {
+    var list = JSON.parse($("yearRename").getAttribute("data-list") || "[]"), jobs = [];
+    list.forEach(function (c, i) { var on = document.querySelector('[data-yr="' + i + '"]'), to = (document.querySelector('[data-yn="' + i + '"]') || {}).value; to = (to || "").trim(); if (on && on.checked && to && to !== c) jobs.push({ from: c, to: to }); });
+    if (!jobs.length) { $("yearRenMsg").innerHTML = '<span class="er">바꿀 반을 체크해 주세요.</span>'; return; }
+    var pending = jobs.map(function (j) { return j.from; }), merges = [];
+    jobs.forEach(function (j, k) { if (DATA.classes.indexOf(j.to) >= 0 && pending.slice(0, k).indexOf(j.to) < 0) merges.push(j.to); });
+    if (!confirm(jobs.map(function (j) { return j.from + " → " + j.to; }).join("\n") + (merges.length ? "\n\n⚠️ 이미 있는 반과 합쳐져요: " + merges.join(", ") : "") + "\n\n이대로 바꿀까요?")) return;
+    var b = this, i = 0, okN = 0, msgs = []; b.disabled = true;
+    var next = function () {
+      if (i >= jobs.length) { b.disabled = false; $("yearRenMsg").innerHTML = '<span class="ok">' + okN + "개 반 이름을 바꿨어요 ✓</span>" + (msgs.length ? ' <span class="er">' + esc(msgs.join(" / ")) + "</span>" : ""); stLoad(); return; }
+      var jb = jobs[i++]; $("yearRenMsg").textContent = "바꾸는 중… " + jb.from + " → " + jb.to + " (" + i + "/" + jobs.length + ")";
+      post({ action: "t_class_rename", from: jb.from, to: jb.to }).then(function (j) { applyClasses(j.classes); if (j.ok) { okN++; if (!j.removed) msgs.push(jb.from + " 옛 이름은 노션에서 지워 주세요"); } else msgs.push(jb.from + ": " + (j.msg || "실패")); next(); });
+    };
+    next();
+  };
+
+  // ---------- ➕ 학생 추가·수정 ----------
+  function sfFill(x) {
+    SF_ID = x ? x.id : null; $("sfName").value = x ? x.name : ""; if (x && x.cls) $("sfCls").value = x.cls; $("sfGrade").value = x ? x.grade || "" : ""; $("sfSchool").value = x ? x.school || "" : ""; $("sfPhone").value = x ? x.phone || "" : ""; $("sfMute").checked = !!(x && x.mute);
+    $("sfStatus").value = x ? x.status || "재원" : "재원"; $("sfMemo").value = x ? x.memo || "" : "";
+    $("sfTitle").textContent = x ? "✏️ 학생 정보 수정 · " + x.name : "➕ 학생 추가"; $("sfSave").textContent = x ? "💾 수정 저장" : "➕ 추가"; $("sfNew").style.display = x ? "" : "none"; $("sfMsg").textContent = "";
+  }
+  function sfEdit(x) { if (!x) return; sfFill(x); $("sfTitle").scrollIntoView({ behavior: "smooth", block: "start" }); $("sfName").focus(); }
   $("sfNew").onclick = function () { sfFill(null); };
   $("sfSave").onclick = function () {
-    var b = this, d = sfData(); if (!d.name) { $("sfMsg").innerHTML = '<span class="er">이름을 넣어 주세요.</span>'; return; }
+    var b = this, d = { id: SF_ID, name: $("sfName").value.trim(), cls: $("sfCls").value, grade: $("sfGrade").value, school: $("sfSchool").value.trim(), phone: $("sfPhone").value.trim(), mute: $("sfMute").checked, status: $("sfStatus").value, memo: $("sfMemo").value };
+    if (!d.name) { $("sfMsg").innerHTML = '<span class="er">이름을 넣어 주세요.</span>'; return; }
     b.disabled = true; $("sfMsg").textContent = "저장하는 중…";
     post({ action: "t_student_save", student: d }).then(function (j) {
       b.disabled = false;
       if (!j.ok) { $("sfMsg").innerHTML = '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; return; }
-      if (!j.updated) { $("sfName").value = ""; $("sfPhone").value = ""; $("sfName").focus(); } else sfFill(null);
+      if (j.updated) sfFill(null); else { $("sfName").value = ""; $("sfPhone").value = ""; $("sfMemo").value = ""; $("sfName").focus(); }
       $("sfMsg").innerHTML = '<span class="ok">' + esc(j.name) + (j.updated ? " 수정했어요 ✓" : " 추가했어요 ✓ 아래 명단에 나와요") + "</span>";
-      $("stCls").value = d.cls; lsSet("cm-teacher-cls", d.cls); stLoad();
+      ST_VIEW.cls = d.cls; ST_VIEW.q = ""; $("stSearch").value = ""; lsSet("cm-teacher-cls", d.cls); stLoad().then(function () { $("stCls").value = d.cls; stRenderList(); });
     });
   };
   $("sfBulkGo").onclick = function () {
@@ -501,39 +716,10 @@ tr.miss td{color:#A0AAB2}
       b.disabled = false; if (!j.ok) { $("sfBulkMsg").innerHTML = '<span class="er">' + esc(j.msg || "추가하지 못했어요.") + "</span>"; return; }
       var ok = j.results.filter(function (r) { return r.ok; }), bad = j.results.filter(function (r) { return !r.ok; });
       $("sfBulkMsg").innerHTML = '<span class="ok">' + ok.length + "명 추가했어요 ✓</span>" + (bad.length ? ' <span class="er">못 넣은 ' + bad.length + "명: " + bad.map(function (r) { return esc(r.name || "(이름 없음)") + " (" + esc(r.msg) + ")"; }).join(", ") + "</span>" : "");
-      if (!bad.length) $("sfBulk").value = ""; else $("sfBulk").value = rows.filter(function (r, i) { return !j.results[i].ok; }).map(function (r) { return [r.name, r.grade, r.school, r.phone].join(", "); }).join("\n");
-      $("stCls").value = cls; stLoad();
+      $("sfBulk").value = bad.length ? rows.filter(function (r, i) { return !j.results[i].ok; }).map(function (r) { return [r.name, r.grade, r.school, r.phone].join(", "); }).join("\n") : "";
+      ST_VIEW.cls = cls; stLoad().then(function () { $("stCls").value = cls; stRenderList(); });
     });
   };
-  function stOpen() {
-    sfSetup();
-    if (!$("stCls").options.length) { $("stCls").innerHTML = (DATA.classes || []).map(function (c) { return "<option>" + esc(c) + "</option>"; }).join(""); var last = lsGet("cm-teacher-cls"); if (last && (DATA.classes || []).indexOf(last) >= 0) $("stCls").value = last; }
-    stLoad();
-  }
-  function stLoad() {
-    var c = $("stCls").value; if (!c) { $("stList").innerHTML = '<p class="hint">반이 없어요.</p>'; return; }
-    $("stList").innerHTML = '<p class="hint">불러오는 중…</p>';
-    post({ action: "t_students", cls: c }).then(function (j) {
-      if (!j.ok) { $("stList").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; }
-      if (!j.students.length) { $("stList").innerHTML = '<p class="hint">이 반에 학생이 없어요.</p>'; return; }
-      $("stList").innerHTML = '<div class="tw"><table><thead><tr><th>이름</th><th>학년</th><th>학교</th><th>학부모 연락처</th><th>번호</th><th></th></tr></thead><tbody>' + j.students.map(function (x, i) {
-        return "<tr><td><b>" + esc(x.name) + "</b></td><td>" + esc(x.grade) + "</td><td>" + esc(x.school) + "</td><td>" + (x.phone ? "📞 있음" + (x.mute ? " (알림 끔)" : "") : '<span class="hint" style="margin:0">없음</span>') + "</td><td>" + (x.hasPin ? "✅ 정해 둠" : '<span class="hint" style="margin:0">아직 없음</span>') + '</td><td><button class="sm sub" data-pe="' + i + '">✏️ 수정</button> ' + (x.hasPin ? '<button class="sm sub" data-pr="' + i + '">🔑 번호 초기화</button>' : "") + "</td></tr>";
-      }).join("") + "</tbody></table></div>";
-      Array.prototype.forEach.call($("stList").querySelectorAll("[data-pe]"), function (b) { b.onclick = function () { sfEdit(j.students[+b.getAttribute("data-pe")]); }; });
-      Array.prototype.forEach.call($("stList").querySelectorAll("[data-pr]"), function (b) {
-        b.onclick = function () {
-          var x = j.students[+b.getAttribute("data-pr")];
-          if (!confirm(x.name + " 학생의 번호를 지울까요?\n다음 접속 때 새 번호를 정하게 돼요.")) return;
-          b.disabled = true; b.textContent = "초기화하는 중…";
-          post({ action: "t_pin_reset", id: x.id }).then(function (r) {
-            if (!r.ok) { b.disabled = false; b.textContent = "🔑 번호 초기화"; alert(r.msg || "초기화하지 못했어요."); return; }
-            var td = b.parentNode, tr = td.parentNode; tr.children[4].innerHTML = '<span class="ok">🔄 초기화됨 · 다음 접속 때 새로 정해요</span>'; b.remove();
-          });
-        };
-      });
-    });
-  }
-  $("stLoad").onclick = stLoad; $("stCls").onchange = function () { lsSet("cm-teacher-cls", $("stCls").value); stLoad(); };
   $("rkLoad").onclick = rkLoad; $("rkCls").onchange = rkLoad; $("rkPer").onchange = rkLoad;
   $("gmReload").onclick = gmLoad; $("gmCopy").onclick = function () { copyText(GM_URL, this); };
 
