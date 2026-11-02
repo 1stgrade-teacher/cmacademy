@@ -471,6 +471,30 @@ async function roster(cls) {
   const rows = await queryAll(STUDENT_DB(), { filter: { property: "반", select: { equals: cls } }, sorts: [{ property: "이름", direction: "ascending" }] }, 4);
   return rows && rows.map((p) => ({ id: normId(p.id), name: P.title(p, "이름"), hasPin: !!P.text(p, PIN_PROP), grade: P.sel(p, "학년") || "", school: P.text(p, "학교") || "", phone: (p.properties["학부모 연락처"] || {}).phone_number || "", mute: P.chk(p, "알림 끄기") }));
 }
+
+// ---------- 🧑‍🎓 선생님 화면에서 학생 추가·수정 ----------
+const STU_GRADES = ["초3", "초4", "초5", "초6", "중1", "중2", "중3"];
+function fmtPhone(s) { const d = String(s || "").replace(/\D/g, ""); if (!d) return ""; if (!/^01[016789]\d{7,8}$/.test(d)) return null; return d.length === 11 ? d.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3") : d.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3"); }
+// 한 명 저장: id가 있으면 수정, 없으면 추가. 같은 반에 같은 이름이 있으면 추가하지 않아요.
+async function saveStudent(x, classes, me) {
+  const name = clip(x.name, 20).replace(/\s+/g, " "), cls = clip(x.cls, 40), grade = STU_GRADES.includes(x.grade) ? x.grade : "", school = clip(x.school, 30), phone = fmtPhone(x.phone);
+  if (!/^[가-힣A-Za-z][가-힣A-Za-z0-9 ]{1,19}$/.test(name)) return { ok: false, msg: "이름은 2글자 이상 한글이나 영어로 써 주세요." };
+  if (!classes.includes(cls)) return { ok: false, msg: "반을 골라 주세요. (노션에 없는 반은 추가할 수 없어요)" };
+  if (phone === null) return { ok: false, msg: "학부모 연락처는 010으로 시작하는 휴대폰 번호로 써 주세요." };
+  const props = { "이름": { title: rt(name) }, "반": sel(cls), "학년": grade ? sel(grade) : { select: null }, "학교": { rich_text: rt(school) }, "학부모 연락처": { phone_number: phone || null }, "알림 끄기": { checkbox: !!x.mute } };
+  if (x.id) {
+    const pg = await notion("pages/" + id32(clip(x.id, 60)), "GET");
+    if (!pg || normId(pg.parent && pg.parent.database_id) !== normId(STUDENT_DB())) return { ok: false, msg: "학생을 찾지 못했어요." };
+    const up = await notion("pages/" + id32(x.id), "PATCH", { properties: props });
+    return up ? { ok: true, id: normId(x.id), name, updated: true } : { ok: false, msg: "저장하지 못했어요. 잠시 뒤 다시 해 주세요." };
+  }
+  const dup = await queryAll(STUDENT_DB(), { filter: { and: [{ property: "이름", title: { equals: name } }, { property: "반", select: { equals: cls } }] } }, 1);
+  if (!dup) return { ok: false, msg: "저장하지 못했어요. 잠시 뒤 다시 해 주세요." };
+  if (dup.length) return { ok: false, dup: true, msg: "이미 같은 이름이 있어요." };
+  props["메모"] = { rich_text: rt(today() + " " + me.name + " 선생님이 추가") };
+  const pg = await notion("pages", "POST", { parent: { database_id: STUDENT_DB() }, properties: props });
+  return pg ? { ok: true, id: normId(pg.id), name } : { ok: false, msg: "저장하지 못했어요. 잠시 뒤 다시 해 주세요." };
+}
 async function login(id, pin, setPin) {
   if (pinLocked(id)) return { status: 429, msg: "번호를 여러 번 틀려서 잠시 잠겼어요. 10분 뒤에 다시 해 주세요." };
   const pg = await notion("pages/" + id32(id), "GET");
@@ -676,7 +700,14 @@ module.exports = async function handler(req, res) {
       const pg = await notion("pages/" + id32(b.id), "PATCH", { archived: true });
       return pg ? send(200, { ok: true }) : send(502, { error: "notion", msg: "지우지 못했어요.", debug: lastErr });
     }
-    if (act === "t_students") { const l = await roster(clip(b.cls, 40)); return l ? send(200, { ok: true, students: l.map((x) => ({ id: x.id, name: x.name, hasPin: x.hasPin, grade: x.grade, school: x.school })) }) : send(502, { error: "notion", msg: "명단을 불러오지 못했어요.", debug: lastErr }); }
+    if (act === "t_students") { const l = await roster(clip(b.cls, 40)); return l ? send(200, { ok: true, students: l.map((x) => ({ id: x.id, name: x.name, hasPin: x.hasPin, grade: x.grade, school: x.school, phone: x.phone, mute: x.mute })) }) : send(502, { error: "notion", msg: "명단을 불러오지 못했어요.", debug: lastErr }); }
+    if (act === "t_student_save") { const cl = await classList(); if (!cl) return send(502, { error: "notion", msg: "반 목록을 불러오지 못했어요.", debug: lastErr }); const r = await saveStudent(b.student || {}, cl, me); return send(r.ok ? 200 : r.dup ? 409 : 400, r); }
+    if (act === "t_student_bulk") { // 여러 명 붙여넣기: 한 줄 = 한 명
+      const cl = await classList(); if (!cl) return send(502, { error: "notion", msg: "반 목록을 불러오지 못했어요.", debug: lastErr });
+      const list = (Array.isArray(b.students) ? b.students : []).slice(0, 60), out = [];
+      for (const x of list) out.push(Object.assign({ name: clip(x && x.name, 20) }, await saveStudent(x || {}, cl, me)));
+      return send(200, { ok: true, results: out });
+    }
     if (act === "t_pin_reset") { // 🔑 학생 번호 초기화: 본인번호를 지우면 다음 접속 때 새로 정해요
       const id = clip(b.id, 60), pg = await notion("pages/" + id32(id), "GET");
       if (!pg || normId(pg.parent && pg.parent.database_id) !== normId(STUDENT_DB())) return send(404, { error: "input", msg: "학생을 찾지 못했어요." });

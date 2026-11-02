@@ -213,7 +213,24 @@ tr.miss td{color:#A0AAB2}
   <!-- 선생님 관리 (관리자만) -->
   <section id="v-stu" style="display:none">
     <div class="card">
-      <div class="row" style="justify-content:space-between;margin:0"><h2 style="margin:0">🔑 학생 번호 초기화</h2><div class="row" style="margin:0"><select id="stCls" style="width:auto"></select><button class="sub sm" id="stLoad">새로고침</button></div></div>
+      <h2 id="sfTitle">➕ 학생 추가</h2>
+      <div class="grid">
+        <div><label class="l">이름</label><input id="sfName" placeholder="예: 김서현"></div>
+        <div><label class="l">반</label><select id="sfCls"></select></div>
+        <div><label class="l">학년</label><select id="sfGrade"><option value="">선택 안 함</option></select></div>
+        <div><label class="l">학교</label><input id="sfSchool" placeholder="예: 청명중"></div>
+        <div><label class="l">학부모 연락처 (알림용)</label><input id="sfPhone" inputmode="tel" placeholder="010-1234-5678"></div>
+      </div>
+      <div class="row" style="margin-top:10px"><label><input type="checkbox" id="sfMute"> 이 학생은 학부모 알림을 보내지 않기</label></div>
+      <div class="row" style="margin-top:10px"><button id="sfSave">➕ 추가</button><button class="sub" id="sfNew" style="display:none">취소 (새 학생 추가로)</button><span class="msg" id="sfMsg" style="margin:0"></span></div>
+      <details style="margin-top:12px"><summary style="cursor:pointer;font-weight:700">📋 여러 명 한꺼번에 붙여넣기</summary>
+        <div class="hint">엑셀이나 메모장에서 복사해 붙여넣으세요. 한 줄에 한 명, <b>이름 · 학년 · 학교 · 학부모 연락처</b> 순서(칸은 탭이나 쉼표로 구분, 이름만 있어도 돼요). 위에서 고른 <b>반</b>으로 모두 들어가요. 한 번에 60명까지예요.</div>
+        <textarea id="sfBulk" rows="6" placeholder="김서현, 중1, 청명중, 010-1234-5678&#10;박민준, 중1, 청명중"></textarea>
+        <div class="row" style="margin-top:8px"><button class="sub" id="sfBulkGo">📋 한꺼번에 추가</button><span class="msg" id="sfBulkMsg" style="margin:0"></span></div>
+      </details>
+    </div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin:0"><h2 style="margin:0">🔑 학생 명단 · 번호 초기화</h2><div class="row" style="margin:0"><select id="stCls" style="width:auto"></select><button class="sub sm" id="stLoad">새로고침</button></div></div>
       <div class="hint">학생이 4자리 번호를 잊어버렸으면 「번호 초기화」를 누르세요. 다음 접속 때 반 → 이름을 누르면 새 번호를 정하는 화면이 나와요. (TEST·과제·단어 게임 모두 같은 번호, 번호를 여러 번 틀려 잠긴 것도 함께 풀려요)</div>
       <div id="stList"></div>
     </div>
@@ -453,7 +470,43 @@ tr.miss td{color:#A0AAB2}
     });
   }
   // ---------- 🧑‍🎓 학생: 번호 초기화 ----------
+  var SF_ID = null, SF_GRADES = ["초3", "초4", "초5", "초6", "중1", "중2", "중3"];
+  function sfFill(x) { SF_ID = x ? x.id : null; $("sfName").value = x ? x.name : ""; if (x) $("sfCls").value = $("stCls").value; $("sfGrade").value = x ? x.grade : ""; $("sfSchool").value = x ? x.school : ""; $("sfPhone").value = x ? x.phone : ""; $("sfMute").checked = !!(x && x.mute); $("sfTitle").textContent = x ? "✏️ 학생 정보 수정 · " + x.name : "➕ 학생 추가"; $("sfSave").textContent = x ? "💾 수정 저장" : "➕ 추가"; $("sfNew").style.display = x ? "" : "none"; $("sfMsg").textContent = ""; }
+  function sfEdit(x) { sfFill(x); window.scrollTo(0, 0); $("sfName").focus(); }
+  function sfData() { return { id: SF_ID, name: $("sfName").value.trim(), cls: $("sfCls").value, grade: $("sfGrade").value, school: $("sfSchool").value.trim(), phone: $("sfPhone").value.trim(), mute: $("sfMute").checked }; }
+  function sfSetup() {
+    if ($("sfCls").options.length) return;
+    $("sfCls").innerHTML = (DATA.classes || []).map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
+    $("sfGrade").innerHTML = '<option value="">선택 안 함</option>' + SF_GRADES.map(function (g) { return "<option>" + g + "</option>"; }).join("");
+  }
+  $("sfNew").onclick = function () { sfFill(null); };
+  $("sfSave").onclick = function () {
+    var b = this, d = sfData(); if (!d.name) { $("sfMsg").innerHTML = '<span class="er">이름을 넣어 주세요.</span>'; return; }
+    b.disabled = true; $("sfMsg").textContent = "저장하는 중…";
+    post({ action: "t_student_save", student: d }).then(function (j) {
+      b.disabled = false;
+      if (!j.ok) { $("sfMsg").innerHTML = '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; return; }
+      if (!j.updated) { $("sfName").value = ""; $("sfPhone").value = ""; $("sfName").focus(); } else sfFill(null);
+      $("sfMsg").innerHTML = '<span class="ok">' + esc(j.name) + (j.updated ? " 수정했어요 ✓" : " 추가했어요 ✓ 아래 명단에 나와요") + "</span>";
+      $("stCls").value = d.cls; lsSet("cm-teacher-cls", d.cls); stLoad();
+    });
+  };
+  $("sfBulkGo").onclick = function () {
+    var b = this, cls = $("sfCls").value, rows = $("sfBulk").value.split(/\r?\n/).map(function (l) { return l.trim(); }).filter(Boolean).map(function (l) { var c = l.split(/\t|,/).map(function (x) { return x.trim(); }); return { name: c[0], cls: cls, grade: c[1] || "", school: c[2] || "", phone: c[3] || "" }; });
+    if (!rows.length) { $("sfBulkMsg").innerHTML = '<span class="er">붙여넣은 내용이 없어요.</span>'; return; }
+    if (rows.length > 60) { $("sfBulkMsg").innerHTML = '<span class="er">한 번에 60명까지예요. 나눠서 넣어 주세요.</span>'; return; }
+    if (!confirm(cls + " 반에 " + rows.length + "명을 추가할까요?")) return;
+    b.disabled = true; $("sfBulkMsg").textContent = "추가하는 중… (" + rows.length + "명)";
+    post({ action: "t_student_bulk", students: rows }).then(function (j) {
+      b.disabled = false; if (!j.ok) { $("sfBulkMsg").innerHTML = '<span class="er">' + esc(j.msg || "추가하지 못했어요.") + "</span>"; return; }
+      var ok = j.results.filter(function (r) { return r.ok; }), bad = j.results.filter(function (r) { return !r.ok; });
+      $("sfBulkMsg").innerHTML = '<span class="ok">' + ok.length + "명 추가했어요 ✓</span>" + (bad.length ? ' <span class="er">못 넣은 ' + bad.length + "명: " + bad.map(function (r) { return esc(r.name || "(이름 없음)") + " (" + esc(r.msg) + ")"; }).join(", ") + "</span>" : "");
+      if (!bad.length) $("sfBulk").value = ""; else $("sfBulk").value = rows.filter(function (r, i) { return !j.results[i].ok; }).map(function (r) { return [r.name, r.grade, r.school, r.phone].join(", "); }).join("\n");
+      $("stCls").value = cls; stLoad();
+    });
+  };
   function stOpen() {
+    sfSetup();
     if (!$("stCls").options.length) { $("stCls").innerHTML = (DATA.classes || []).map(function (c) { return "<option>" + esc(c) + "</option>"; }).join(""); var last = lsGet("cm-teacher-cls"); if (last && (DATA.classes || []).indexOf(last) >= 0) $("stCls").value = last; }
     stLoad();
   }
@@ -463,9 +516,10 @@ tr.miss td{color:#A0AAB2}
     post({ action: "t_students", cls: c }).then(function (j) {
       if (!j.ok) { $("stList").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; }
       if (!j.students.length) { $("stList").innerHTML = '<p class="hint">이 반에 학생이 없어요.</p>'; return; }
-      $("stList").innerHTML = '<div class="tw"><table><thead><tr><th>이름</th><th>학년</th><th>번호</th><th></th></tr></thead><tbody>' + j.students.map(function (x, i) {
-        return "<tr><td><b>" + esc(x.name) + "</b></td><td>" + esc(x.grade) + "</td><td>" + (x.hasPin ? "✅ 정해 둠" : '<span class="hint" style="margin:0">아직 없음 (처음 들어올 때 정해요)</span>') + "</td><td>" + (x.hasPin ? '<button class="sm sub" data-pr="' + i + '">🔑 번호 초기화</button>' : "") + "</td></tr>";
+      $("stList").innerHTML = '<div class="tw"><table><thead><tr><th>이름</th><th>학년</th><th>학교</th><th>학부모 연락처</th><th>번호</th><th></th></tr></thead><tbody>' + j.students.map(function (x, i) {
+        return "<tr><td><b>" + esc(x.name) + "</b></td><td>" + esc(x.grade) + "</td><td>" + esc(x.school) + "</td><td>" + (x.phone ? "📞 있음" + (x.mute ? " (알림 끔)" : "") : '<span class="hint" style="margin:0">없음</span>') + "</td><td>" + (x.hasPin ? "✅ 정해 둠" : '<span class="hint" style="margin:0">아직 없음</span>') + '</td><td><button class="sm sub" data-pe="' + i + '">✏️ 수정</button> ' + (x.hasPin ? '<button class="sm sub" data-pr="' + i + '">🔑 번호 초기화</button>' : "") + "</td></tr>";
       }).join("") + "</tbody></table></div>";
+      Array.prototype.forEach.call($("stList").querySelectorAll("[data-pe]"), function (b) { b.onclick = function () { sfEdit(j.students[+b.getAttribute("data-pe")]); }; });
       Array.prototype.forEach.call($("stList").querySelectorAll("[data-pr]"), function (b) {
         b.onclick = function () {
           var x = j.students[+b.getAttribute("data-pr")];
@@ -473,7 +527,7 @@ tr.miss td{color:#A0AAB2}
           b.disabled = true; b.textContent = "초기화하는 중…";
           post({ action: "t_pin_reset", id: x.id }).then(function (r) {
             if (!r.ok) { b.disabled = false; b.textContent = "🔑 번호 초기화"; alert(r.msg || "초기화하지 못했어요."); return; }
-            var td = b.parentNode, tr = td.parentNode; tr.children[2].innerHTML = '<span class="ok">🔄 초기화됨 · 다음 접속 때 새로 정해요</span>'; td.innerHTML = "";
+            var td = b.parentNode, tr = td.parentNode; tr.children[4].innerHTML = '<span class="ok">🔄 초기화됨 · 다음 접속 때 새로 정해요</span>'; b.remove();
           });
         };
       });
