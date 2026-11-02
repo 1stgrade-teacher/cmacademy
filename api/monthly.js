@@ -720,6 +720,8 @@ module.exports = async function handler(req, res) {
       return send(r.ok ? 200 : 400, Object.assign(r, { classes: (cl || []).concat((cl || []).includes(PLACE_CLS()) ? [] : [PLACE_CLS()]) }));
     }
     if (act === "t_student_patch") { const cl = await classList(); if (!cl) return send(502, { error: "notion", msg: "반 목록을 불러오지 못했어요." }); const r = await STU().patch(b.changes, cl.concat([PLACE_CLS()])); stuCls.t = 0; return send(200, { ok: true, results: r }); }
+    if (act === "t_cert_list") { const r = await STU().certList(b); return r ? send(200, Object.assign({ ok: true }, r)) : send(502, { error: "notion", msg: "학습 인증 기록을 불러오지 못했어요. 노션 📺 인강 학습 인증 기록 연결을 확인해 주세요.", debug: lastErr }); }
+    if (act === "t_cert_check") { const ok = await STU().certCheck(clip(b.id, 60), b.on); return send(ok ? 200 : 502, { ok, msg: ok ? "" : "저장하지 못했어요." }); }
     if (act === "t_student_detail") { const d = await STU().detail(clip(b.id, 60)); return d ? send(200, Object.assign({ ok: true }, d)) : send(404, { error: "input", msg: "학생을 찾지 못했어요." }); }
     if (act === "t_student_memo") { const up = await notion("pages/" + id32(clip(b.id, 60)), "PATCH", { properties: { "메모": { rich_text: rt(clip(b.memo, 1900)) } } }); return up ? send(200, { ok: true }) : send(502, { error: "notion", msg: "메모를 저장하지 못했어요." }); }
     if (act === "t_student_save") { const cl = await classList(); if (!cl) return send(502, { error: "notion", msg: "반 목록을 불러오지 못했어요.", debug: lastErr }); const r = await saveStudent(b.student || {}, cl, me); stuCls.t = 0; return send(r.ok ? 200 : r.dup ? 409 : 400, r); }

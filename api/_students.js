@@ -3,6 +3,40 @@
 //       반 이름을 바꾸면 진행 중인 시험지(🗓 시험지)·과제(📸 과제)의 반도 함께 바꿔요. 지난 시험 기록은 그대로 둬요.
 module.exports = function (ctx) {
   const { notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, EXAM_DB, PAPER_DB, HW_DB, SUB_DB, GAME_DB, PIN_PROP, PLACE_CLS, getLastErr } = ctx;
+  // 📺 인강 학습 인증 기록 (학생이 강의를 보고 「학습 완료 인증」을 내면 쌓여요)
+  const CERT_DB = () => id32(process.env.NOTION_DB_ID || "d6164dec4d2e461aa2f102de18814b7d");
+  const pct = (v) => (typeof v === "number" ? Math.round(v <= 1.5 ? v * 100 : v) : null);
+  function readCert(p) {
+    return {
+      id: normId(p.id), url: p.url, name: P.title(p, "학생"), sid: P.rel(p, "학생 페이지")[0] || "", cls: P.sel(p, "반"),
+      at: (P.date(p, "제출시각") || {}).start || p.created_time || "", area: P.sel(p, "영역"), book: P.text(p, "교재"), lecture: P.text(p, "강의"), link: (p.properties["강의 링크"] || {}).url || "",
+      watch: pct(P.num(p, "시청률")), minutes: P.num(p, "집중시간(분)"), away: P.num(p, "자리비움"), speed: P.num(p, "최고 배속"),
+      score: pct(P.num(p, "점수")), right: P.text(p, "맞은 수"), wrong: P.text(p, "틀린 문제"), verdict: P.sel(p, "판정"), understand: P.sel(p, "이해도"),
+      summary: P.text(p, "한줄요약"), sumGrade: P.sel(p, "AI 요약평가"), feedback: P.text(p, "AI 피드백"), question: P.text(p, "질문·메시지"), checked: P.chk(p, "선생님 확인"),
+    };
+  }
+  // 기간·반으로 인증 기록 보기. 반은 학생 DB 기준(학생 페이지 연결 → 없으면 이름)으로 맞춰요
+  async function certList(b) {
+    const day = (s) => (/^\d{4}-\d{2}-\d{2}$/.test(s || "") ? s : null);
+    const from = day(b.from) || new Date(Date.now() - 7 * 864e5 + 9 * 3600e3).toISOString().slice(0, 10), to = day(b.to);
+    const f = [{ property: "제출시각", date: { on_or_after: from } }]; if (to) f.push({ property: "제출시각", date: { on_or_before: to + "T23:59:59+09:00" } });
+    const [rows, a] = await Promise.all([queryAll(CERT_DB(), { filter: { and: f }, sorts: [{ property: "제출시각", direction: "descending" }] }, 10), all()]);
+    if (!rows || !a) return null;
+    const cls = clip(b.cls, 40), byId = new Map(a.students.map((x) => [x.id, x])), byName = new Map();
+    a.students.forEach((x) => { if (!byName.has(x.name)) byName.set(x.name, x); });
+    let recs = rows.map(readCert).map((r) => { const st = byId.get(r.sid) || byName.get(r.name); return Object.assign(r, { scls: st ? st.cls : "", sid: st ? st.id : r.sid }); });
+    let roster = [];
+    if (cls) { recs = recs.filter((r) => r.scls === cls || (!r.scls && r.cls === cls)); roster = a.students.filter((x) => x.cls === cls && active(x)); }
+    const sum = new Map(roster.map((x) => [x.id, { sid: x.id, name: x.name, n: 0, watch: [], score: [], retake: 0, q: 0, last: "" }]));
+    recs.forEach((r) => {
+      const k = r.sid || "n:" + r.name; if (!sum.has(k)) { if (cls) return; sum.set(k, { sid: r.sid, name: r.name, n: 0, watch: [], score: [], retake: 0, q: 0, last: "" }); }
+      const s = sum.get(k); s.n++; if (r.watch != null) s.watch.push(r.watch); if (r.score != null) s.score.push(r.score); if (/재수강/.test(r.verdict)) s.retake++; if (r.question) s.q++; if (!s.last || r.at > s.last) s.last = r.at;
+    });
+    const avg = (v) => (v.length ? Math.round(v.reduce((x, y) => x + y, 0) / v.length) : null);
+    const summary = [...sum.values()].map((s) => ({ sid: s.sid, name: s.name, n: s.n, watch: avg(s.watch), score: avg(s.score), retake: s.retake, q: s.q, last: s.last })).sort((x, y) => x.n - y.n || x.name.localeCompare(y.name, "ko"));
+    return { from, to: to || "", cls, records: recs.slice(0, 400), total: recs.length, summary };
+  }
+  async function certCheck(id, on) { return !!(await notion("pages/" + id32(id), "PATCH", { properties: { "선생님 확인": { checkbox: !!on } } })); }
   const STATUSES = ["재원", "휴원", "퇴원"];
   const GRADES = ["초1", "초2", "초3", "초4", "초5", "초6", "중1", "중2", "중3", "고1", "고2", "고3"];
   const rollup = (p, k) => { const r = p.properties[k] && p.properties[k].rollup; if (!r) return null; return r.type === "date" ? (r.date && r.date.start) || null : r.number != null ? r.number : null; };
@@ -120,10 +154,11 @@ module.exports = function (ctx) {
     if (!pg || normId(pg.parent && pg.parent.database_id) !== normId(STUDENT_DB())) return null;
     const s = read(pg), rel = { property: "학생", relation: { contains: uuid(s.id) } };
     const since = new Date(Date.now() - 30 * 864e5).toISOString();
-    const [ex, subs, games] = await Promise.all([
+    const [ex, subs, games, certs] = await Promise.all([
       notion("databases/" + EXAM_DB() + "/query", "POST", { filter: rel, sorts: [{ property: "시험일", direction: "descending" }], page_size: 15 }),
       queryAll(SUB_DB(), { filter: rel }, 3),
       GAME_DB ? queryAll(GAME_DB(), { filter: { and: [rel, { property: "날짜", date: { on_or_after: since } }] } }, 3) : Promise.resolve([]),
+      notion("databases/" + CERT_DB() + "/query", "POST", { filter: { property: "학생 페이지", relation: { contains: uuid(s.id) } }, sorts: [{ property: "제출시각", direction: "descending" }], page_size: 10 }),
     ]);
     const tests = ((ex && ex.results) || []).map((p) => ({ title: P.title(p, "시험명"), kind: P.sel(p, "종류"), date: (P.date(p, "시험일") || {}).start || "", score: P.num(p, "점수"), total: P.num(p, "만점"), pct: P.formula(p, "환산점수"), grade: P.sel(p, "종합 평가"), url: p.url }));
     const hw = { 제출: 0, "지각 제출": 0, 미제출: 0, recent: [] };
@@ -131,8 +166,8 @@ module.exports = function (ctx) {
     hw.recent = (subs || []).sort((a, b) => String(b.created_time || "").localeCompare(String(a.created_time || ""))).slice(0, 6).map((p) => ({ title: P.title(p, "제목"), status: P.sel(p, "상태"), at: ((P.date(p, "제출 시각") || {}).start || "").slice(0, 10) }));
     const game = { points: 0, plays: 0, words: 0 };
     (games || []).forEach((p) => { game.points += P.num(p, "포인트") || 0; game.plays++; game.words += P.num(p, "문제 수") || 0; });
-    return { student: s, tests, hw, game };
+    return { student: s, tests, hw, game, certs: ((certs && certs.results) || []).map(readCert) };
   }
 
-  return { all, read, active, classAdd, classRename, classDelete, patch, detail, STATUSES, GRADES };
+  return { certList, certCheck, all, read, active, classAdd, classRename, classDelete, patch, detail, STATUSES, GRADES };
 };

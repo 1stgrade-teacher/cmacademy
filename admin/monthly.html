@@ -117,6 +117,7 @@ tr.miss td{color:#A0AAB2}
     <button class="tab" data-tab="hw">📸 과제</button>
     <button class="tab" data-tab="game">🎮 단어 게임</button>
     <button class="tab" data-tab="stu">🧑‍🎓 학생</button>
+    <button class="tab" data-tab="cert">📺 학습 인증</button>
     <button class="tab" data-tab="teachers" id="tabTeachers" style="display:none">👩‍🏫 선생님</button>
   </div>
 
@@ -211,6 +212,17 @@ tr.miss td{color:#A0AAB2}
   </section>
 
   <!-- 선생님 관리 (관리자만) -->
+  <section id="v-cert" style="display:none">
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin:0;gap:8px"><h2 style="margin:0">📺 인강 학습 인증</h2>
+        <div class="row" style="margin:0;gap:6px"><select id="ctCls" style="width:auto"></select><select id="ctRange" style="width:auto"><option value="0">오늘</option><option value="7" selected>최근 7일</option><option value="30">최근 30일</option><option value="m">이번 달</option><option value="90">최근 90일</option></select><button class="sm sub" id="ctLoad">보기</button></div></div>
+      <div class="hint">학생이 강의를 보고 「학습 완료 인증」을 내면 여기에 쌓여요(노션 📺 인강 학습 인증 기록과 같은 내용). 반을 고르면 <b>인증을 하나도 안 낸 학생</b>도 보여요.</div>
+      <div class="row" style="margin-top:6px"><label><input type="checkbox" id="ctQ"> 💬 질문 있는 것만</label><label><input type="checkbox" id="ctRe"> 🔴 재수강 권장만</label><label><input type="checkbox" id="ctUn"> 선생님 확인 안 한 것만</label><span class="hint" id="ctWho" style="margin:0"></span></div>
+      <div id="ctSummary"></div>
+    </div>
+    <div class="card"><div id="ctList"><p class="hint">반과 기간을 고르고 「보기」를 누르세요.</p></div></div>
+  </section>
+
   <section id="v-stu" style="display:none">
     <div class="card">
       <div class="row" style="justify-content:space-between;margin:0;gap:8px"><h2 style="margin:0">🏫 반 현황</h2>
@@ -407,7 +419,7 @@ tr.miss td{color:#A0AAB2}
       $("bankInfo").textContent = "문제은행: 교재 " + j.catalog.length + "권 · " + units + "과 · 문항 " + total + "개" + (j.ai ? " · AI 켜짐(" + (j.ais || []).map(function (a) { return a.label; }).join("·") + ")" : " · AI 꺼짐");
       buildAiSel(j);
       fillClassSelects(); renderList(); buildPeriods(); buildQuarters(); buildBookFilters();
-      var h = (location.hash || "").slice(1); if (h === "hw") { hwOpen(); tab("hw"); } else if (h === "game") { gmLoad(); rkLoad(); tab("game"); } else if (h === "stu") { stOpen(); tab("stu"); } else if (/^(results|report|import)$/.test(h) || (h === "teachers" && j.me.master)) { if (h === "results") fillResultSelect(); if (h === "teachers") loadTeachers(); tab(h); }
+      var h = (location.hash || "").slice(1); if (h === "hw") { hwOpen(); tab("hw"); } else if (h === "game") { gmLoad(); rkLoad(); tab("game"); } else if (h === "stu") { stOpen(); tab("stu"); } else if (h === "cert") { ctOpen(); tab("cert"); } else if (/^(results|report|import)$/.test(h) || (h === "teachers" && j.me.master)) { if (h === "results") fillResultSelect(); if (h === "teachers") loadTeachers(); tab(h); }
     });
   }
   $("logout").onclick = function () { lsSet("cm-teacher-code", ""); location.reload(); };
@@ -500,6 +512,58 @@ tr.miss td{color:#A0AAB2}
       $("rkOut").innerHTML = "<h3 style=\"margin:12px 0 6px\">🏅 포인트</h3>" + tb(j.points, "포인트", true) + "<h3 style=\"margin:14px 0 6px\">⚡ 60초 챌린지 최고 기록</h3>" + tb(j.speed, "맞힌 수", false);
     });
   }
+  // ---------- 📺 인강 학습 인증 ----------
+  var CT = null, CT_WHO = "";
+  function ctOpen() {
+    if ($("ctCls").options.length < 2) { $("ctCls").innerHTML = '<option value="">전체 반</option>' + (DATA.classes || []).map(function (c) { return "<option>" + esc(c) + "</option>"; }).join(""); var last = lsGet("cm-teacher-cls"); if (last && DATA.classes.indexOf(last) >= 0) $("ctCls").value = last; }
+    if (!CT) ctLoad();
+  }
+  function ctRangeFrom() {
+    var v = $("ctRange").value, now = new Date(Date.now() + 9 * 3600e3);
+    if (v === "m") return now.toISOString().slice(0, 8) + "01";
+    return new Date(now.getTime() - (+v) * 864e5).toISOString().slice(0, 10);
+  }
+  function ctLoad() {
+    CT_WHO = ""; $("ctList").innerHTML = '<p class="hint">불러오는 중…</p>'; $("ctSummary").innerHTML = "";
+    var c = $("ctCls").value; if (c) lsSet("cm-teacher-cls", c);
+    post({ action: "t_cert_list", cls: c, from: ctRangeFrom() }).then(function (j) {
+      if (!j.ok) { $("ctList").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; }
+      CT = j; ctRender();
+    });
+  }
+  function ctRender() {
+    var j = CT, c = j.cls;
+    var zero = j.summary.filter(function (s) { return !s.n; });
+    $("ctSummary").innerHTML = j.summary.length ? '<h3 style="margin:12px 0 6px">학생별 요약 <span class="hint" style="margin:0">(' + esc(j.from) + " ~ 오늘 · 인증 " + j.total + "개" + (c && zero.length ? ' · <span class="er" style="font-size:inherit">인증 없는 학생 ' + zero.length + "명</span>" : "") + ')</span></h3><div class="tw"><table><thead><tr><th>학생</th><th>인증</th><th>평균 시청률</th><th>평균 점수</th><th>재수강 권장</th><th>질문</th><th>마지막 인증</th></tr></thead><tbody>' + j.summary.map(function (s, i) {
+      return '<tr style="' + (s.n ? "" : "background:#FFF4F2") + '"><td><a href="#" data-cw="' + i + '"><b>' + esc(s.name) + "</b></a></td><td class=num>" + (s.n ? s.n : '<span class="er">⚠️ 0</span>') + "</td><td class=num>" + (s.watch != null ? s.watch + "%" : "") + "</td><td class=num>" + (s.score != null ? s.score + "%" : "") + "</td><td class=num>" + (s.retake || "") + "</td><td class=num>" + (s.q || "") + "</td><td>" + esc(String(s.last || "").slice(0, 10)) + "</td></tr>";
+    }).join("") + "</tbody></table></div>" : "";
+    Array.prototype.forEach.call($("ctSummary").querySelectorAll("[data-cw]"), function (a) { a.onclick = function (e) { e.preventDefault(); var s = j.summary[+a.getAttribute("data-cw")]; CT_WHO = CT_WHO === s.name ? "" : s.name; ctList(); }; });
+    ctList();
+  }
+  function ctList() {
+    var j = CT; if (!j) return;
+    var list = j.records.filter(function (r) { return (!CT_WHO || r.name === CT_WHO) && (!$("ctQ").checked || r.question) && (!$("ctRe").checked || /재수강/.test(r.verdict)) && (!$("ctUn").checked || !r.checked); });
+    $("ctWho").innerHTML = CT_WHO ? "👤 " + esc(CT_WHO) + ' 만 보는 중 <a href="#" id="ctAllWho">모두 보기</a>' : "";
+    var aw = $("ctAllWho"); if (aw) aw.onclick = function (e) { e.preventDefault(); CT_WHO = ""; ctList(); };
+    if (!list.length) { $("ctList").innerHTML = '<p class="hint">조건에 맞는 학습 인증이 없어요.</p>'; return; }
+    var vp = function (v) { return /통과/.test(v) ? "go" : /재수강/.test(v) ? "end" : "m"; };
+    $("ctList").innerHTML = '<h3 style="margin:0 0 6px">인증 ' + list.length + "개" + (j.total > j.records.length ? ' <span class="hint" style="margin:0">(최근 ' + j.records.length + "개만 보여요. 기간을 줄여 보세요)</span>" : "") + "</h3>" + list.map(function (r) {
+      var t = String(r.at); var when = t.slice(5, 10).replace("-", "/") + (t.length > 11 ? " " + new Date(Date.parse(t) + 9 * 3600e3).toISOString().slice(11, 16) : "");
+      return '<div class="ctr" style="border-top:1px solid var(--line);padding:10px 0' + (r.checked ? ";opacity:.65" : "") + '"><div class="row" style="margin:0;gap:8px;align-items:baseline"><span class="hint" style="margin:0">' + esc(when) + "</span><b>" + esc(r.name) + '</b><span class="hint" style="margin:0">' + esc(r.scls || r.cls) + "</span>" + (r.area ? '<span class="pill">' + esc(r.area) + "</span>" : "") +
+        (r.link ? '<a href="' + esc(r.link) + '" target="_blank">' + esc((r.book ? r.book + " · " : "") + r.lecture) + "</a>" : "<span>" + esc((r.book ? r.book + " · " : "") + r.lecture) + "</span>") +
+        (r.verdict ? '<span class="pill ' + vp(r.verdict) + '">' + esc(r.verdict) + "</span>" : "") + '<label style="margin-left:auto;font-size:13px"><input type="checkbox" data-ck="' + esc(r.id) + '"' + (r.checked ? " checked" : "") + "> 확인</label></div>" +
+        '<div class="hint" style="margin:4px 0 0">시청률 <b>' + (r.watch != null ? r.watch + "%" : "-") + "</b> · 집중 " + (r.minutes != null ? r.minutes + "분" : "-") + " · 확인문제 <b>" + (r.score != null ? r.score + "%" : "-") + "</b>" + (r.right ? " (" + esc(r.right) + ")" : "") + (r.understand ? " · 이해도 " + esc(r.understand) : "") + (r.sumGrade ? " · 요약 " + esc(r.sumGrade) : "") + (r.away ? " · 자리비움 " + r.away + "번" : "") + (r.speed ? " · 최고 " + r.speed + "배속" : "") + "</div>" +
+        (r.summary ? '<div style="margin-top:4px">📝 ' + esc(r.summary) + "</div>" : "") + (r.question ? '<div style="margin-top:4px;background:#FFF4E5;border-radius:8px;padding:6px 10px">💬 <b>질문</b> ' + esc(r.question) + "</div>" : "") +
+        (r.feedback || r.wrong ? '<details style="margin-top:4px"><summary class="hint" style="margin:0;cursor:pointer">AI 피드백 · 틀린 문제</summary>' + (r.wrong ? '<div class="hint">틀린 문제: ' + esc(r.wrong) + "</div>" : "") + (r.feedback ? '<div style="white-space:pre-wrap;font-size:13.5px">' + esc(r.feedback) + "</div>" : "") + "</details>" : "") + "</div>";
+    }).join("");
+    Array.prototype.forEach.call($("ctList").querySelectorAll("[data-ck]"), function (c) {
+      c.onchange = function () { var id = c.getAttribute("data-ck"), on = c.checked; c.disabled = true;
+        post({ action: "t_cert_check", id: id, on: on }).then(function (r) { c.disabled = false; if (!r.ok) { c.checked = !on; alert(r.msg || "저장하지 못했어요."); return; } CT.records.forEach(function (x) { if (x.id === id) x.checked = on; }); c.closest(".ctr").style.opacity = on ? ".65" : ""; }); };
+    });
+  }
+  $("ctLoad").onclick = ctLoad; $("ctCls").onchange = ctLoad; $("ctRange").onchange = ctLoad;
+  ["ctQ", "ctRe", "ctUn"].forEach(function (id) { $(id).onchange = ctList; });
+
   // ---------- 🧑‍🎓 학생 관리: 반 현황 · 검색 · 명단 일괄 작업 · 새 학년 준비 · 학생 카드 ----------
   var STU = { students: [], classes: [] }, ST_VIEW = { cls: "", q: "" }, ST_SEL = {}, SF_ID = null;
   var GR = ["초1", "초2", "초3", "초4", "초5", "초6", "중1", "중2", "중3", "고1", "고2", "고3"];
@@ -516,7 +580,7 @@ tr.miss td{color:#A0AAB2}
     var opts = DATA.classes.map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
     var keep = function (id, html) { var el = $(id), v = el.value; el.innerHTML = html; if (v && DATA.classes.indexOf(v) >= 0) el.value = v; };
     keep("sfCls", opts); keep("stMoveCls", opts);
-    $("hwCls").innerHTML = ""; $("rkCls").innerHTML = '<option value="">학원 전체</option>'; // 다음에 열 때 새 반 목록으로
+    $("hwCls").innerHTML = ""; $("rkCls").innerHTML = '<option value="">학원 전체</option>'; $("ctCls").innerHTML = ""; // 다음에 열 때 새 반 목록으로
     $("sfGrade").innerHTML = '<option value="">선택 안 함</option>' + GR.map(function (g) { return "<option>" + g + "</option>"; }).join("");
     var stc = $("stCls"), sv = stc.value || ST_VIEW.cls;
     stc.innerHTML = DATA.classes.map(function (c) { var n = STU.students.filter(function (x) { return x.cls === c && isActive(x); }).length; return '<option value="' + esc(c) + '">' + esc(c) + " (" + n + ")</option>"; }).join("") + (STU.students.some(function (x) { return DATA.classes.indexOf(x.cls) < 0; }) ? '<option value="__none">반 없음·기타</option>' : "");
@@ -636,6 +700,7 @@ tr.miss td{color:#A0AAB2}
       $("stuCardBody").innerHTML = '<div class="row" style="justify-content:space-between;margin:0"><h2 style="margin:0">📋 ' + esc(s.name) + ' <span class="hint" style="margin:0">' + esc(s.cls) + (s.grade ? " · " + esc(s.grade) : "") + (s.school ? " · " + esc(s.school) : "") + " · " + esc(s.status) + '</span></h2><div class="row" style="margin:0"><button class="sm sub" id="cdEdit">✏️ 정보 수정</button><a class="sm" href="' + esc(s.url) + '" target="_blank" style="font-size:13px">노션에서 열기</a><button class="sm sub" id="cdClose">닫기</button></div></div>' +
         '<div class="row" style="gap:8px;margin-top:10px">' + chip("시험 평균", s.testAvg != null ? s.testAvg + "점" : "-") + chip("시험 횟수", (s.tests || 0) + "회") + chip("인강 학습 인증", (s.certs || 0) + "회" + (s.watch != null ? " · 시청 " + s.watch + "%" : "")) + chip("과제 제출", tot ? h["제출"] + " / 지각 " + h["지각 제출"] + " / 미제출 " + h["미제출"] : "-") + chip("단어 게임 (30일)", j.game.plays ? j.game.points + "점 · " + j.game.plays + "판" : "-") + "</div>" +
         '<h3 style="margin:14px 0 6px">최근 시험</h3>' + (j.tests.length ? '<div class="tw"><table><thead><tr><th>날짜</th><th>시험</th><th>종류</th><th>점수</th><th>환산</th><th>평가</th></tr></thead><tbody>' + j.tests.map(function (t) { return "<tr><td>" + esc(t.date) + '</td><td><a href="' + esc(t.url) + '" target="_blank">' + esc(t.title) + "</a></td><td>" + esc(t.kind) + "</td><td class=num>" + (t.score != null ? t.score + "/" + t.total : "") + "</td><td class=num><b>" + (t.pct != null ? t.pct : "") + "</b></td><td>" + esc(t.grade) + "</td></tr>"; }).join("") + "</tbody></table></div>" : '<p class="hint">아직 시험 기록이 없어요.</p>') +
+        '<h3 style="margin:14px 0 6px">최근 학습 인증</h3>' + ((j.certs || []).length ? '<div class="tw"><table><thead><tr><th>날짜</th><th>강의</th><th>시청률</th><th>점수</th><th>판정</th><th>한줄요약</th></tr></thead><tbody>' + j.certs.map(function (c) { return "<tr><td>" + esc(String(c.at).slice(0, 10)) + '</td><td><a href="' + esc(c.url) + '" target="_blank">' + esc((c.book ? c.book + " · " : "") + c.lecture) + "</a></td><td class=num>" + (c.watch != null ? c.watch + "%" : "") + "</td><td class=num>" + (c.score != null ? c.score + "%" : "") + "</td><td>" + esc(c.verdict) + "</td><td>" + esc(c.summary) + (c.question ? '<div class="er" style="font-size:12.5px">💬 ' + esc(c.question) + "</div>" : "") + "</td></tr>"; }).join("") + "</tbody></table></div>" : '<p class="hint">아직 학습 인증이 없어요.</p>') +
         '<h3 style="margin:14px 0 6px">최근 과제</h3>' + (h.recent.length ? h.recent.map(function (r) { return '<div style="padding:4px 0;border-top:1px solid var(--line)"><span class="pill ' + (r.status === "제출" ? "go" : r.status === "미제출" ? "end" : "m") + '">' + esc(r.status) + "</span> " + esc(r.title) + ' <span class="hint" style="margin:0">' + esc(r.at) + "</span></div>"; }).join("") : '<p class="hint">아직 과제 기록이 없어요.</p>') +
         '<h3 style="margin:14px 0 6px">상담 메모 <span class="hint" style="margin:0">(선생님만 봐요)</span></h3><textarea id="cdMemo" rows="4">' + esc(s.memo) + '</textarea><div class="row" style="margin-top:6px"><button class="sm sub" id="cdStamp">📅 오늘 날짜 넣기</button><button class="sm" id="cdMemoSave">💾 메모 저장</button><span class="msg" id="cdMemoMsg" style="margin:0"></span></div>';
       $("cdClose").onclick = function () { $("stuCard").style.display = "none"; };
@@ -752,13 +817,13 @@ tr.miss td{color:#A0AAB2}
   // ---------- 탭 ----------
   function tab(name) {
     Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) { t.classList.toggle("on", t.getAttribute("data-tab") === name); });
-    ["list", "edit", "results", "report", "teachers", "import", "hw", "game", "stu"].forEach(function (n) { $("v-" + n).style.display = n === name ? "" : "none"; });
+    ["list", "edit", "results", "report", "teachers", "import", "hw", "game", "stu", "cert"].forEach(function (n) { $("v-" + n).style.display = n === name ? "" : "none"; });
     $("contactCard").style.display = name === "results" || name === "report" ? "" : "none";
     try { history.replaceState(null, "", "#" + name); } catch (e) {}
     window.scrollTo(0, 0);
   }
   Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) {
-    t.onclick = function () { var n = t.getAttribute("data-tab"); if (n === "edit") newPaper(); if (n === "results") fillResultSelect(); if (n === "teachers") loadTeachers(); if (n === "hw") hwOpen(); if (n === "game") { gmLoad(); rkLoad(); } if (n === "stu") stOpen(); tab(n); };
+    t.onclick = function () { var n = t.getAttribute("data-tab"); if (n === "edit") newPaper(); if (n === "results") fillResultSelect(); if (n === "teachers") loadTeachers(); if (n === "hw") hwOpen(); if (n === "game") { gmLoad(); rkLoad(); } if (n === "stu") stOpen(); if (n === "cert") ctOpen(); tab(n); };
   });
 
   function fillClassSelects() {
