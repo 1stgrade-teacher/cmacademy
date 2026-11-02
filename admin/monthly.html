@@ -171,6 +171,15 @@ tr.miss td{color:#A0AAB2}
         <b>📒 단어 문제 유형</b> <span class="hint" style="margin:0">고른 유형만 섞어서 내요. 한 단어는 한 번만 나와요.</span>
         <div id="vtList" class="row" style="flex-wrap:wrap;gap:6px 14px;margin-top:8px"></div>
       </div>
+      <div id="aiBox" style="margin-top:12px;padding:10px 12px;border:1px dashed #C9B6E8;border-radius:10px;background:#FBF8FF">
+        <b>🧠 AI 활용 출제</b> <span class="hint" style="margin:0">기본은 선생님 자료의 문제를 그대로 내요.</span>
+        <div class="grid" style="margin-top:8px">
+          <div><label class="l">원문 문제 변형 (유사문항)</label><select id="aiVar"><option value="0">안 함 (원문 그대로)</option><option value="30">객관식의 30%를 변형</option><option value="50">객관식의 50%를 변형</option><option value="100">객관식 모두 변형</option></select></div>
+          <div><label class="l">AI 새 문제 추가</label><select id="aiExtra"><option value="0">안 함</option><option value="10">전체의 10%</option><option value="20">전체의 20%</option><option value="30">전체의 30%</option><option value="50">전체의 50%</option></select></div>
+        </div>
+        <div class="row" style="margin-top:8px"><label><input type="checkbox" id="aiFill" checked> 범위 안 문제가 모자라면 AI로 채우기</label></div>
+        <div class="hint" style="margin:4px 0 0"><b>변형</b>: 정답이 있는 원문 객관식을 같은 개념·같은 유형으로 문장·보기·정답 위치를 바꿔 새로 만들어요(학생이 문제를 외워서 맞히는 것 방지). <b>새 문제</b>: 고른 과의 강의 내용·본문으로 AI가 새로 출제해요. AI 문제는 미리보기에 🧠 표시가 붙고, 한 번 만든 문제는 노션 🧠 AI 보충 문항에 저장돼 다시 써요. <b>배포 전에 미리보기로 꼭 확인</b>하세요. (처음 미리보기는 AI가 만드느라 30초~1분 걸려요)</div>
+      </div>
     </div>
 
     <div class="card">
@@ -881,6 +890,7 @@ tr.miss td{color:#A0AAB2}
   var VT = null; // null = 모든 유형
   function vocabSelected() { var ids = SEL; return DATA.catalog.some(function (b) { return b.chapters.some(function (c) { return c.units.some(function (u) { return u.v && (ids[u.id] || SELB[b.id]); }); }); }); }
   function vtUi() {
+    $("aiBox").style.display = $("eKind").value === "단어시험" ? "none" : "";
     var show = $("eKind").value === "단어시험" || vocabSelected(); $("vtBox").style.display = show ? "" : "none"; if (!show) return;
     var cnt = {}; DATA.catalog.forEach(function (b) { b.chapters.forEach(function (c) { c.units.forEach(function (u) { if (u.v && (SEL[u.id] || SELB[b.id])) Object.keys(u.v).forEach(function (t) { cnt[t] = (cnt[t] || 0) + u.v[t]; }); }); }); });
     var any = Object.keys(cnt).length;
@@ -1012,6 +1022,7 @@ tr.miss td{color:#A0AAB2}
     $("editTitle").textContent = "새 시험지"; $("tabEdit").textContent = "➕ 새 시험지";
     setRadio("mode", "fixed"); setRadio("lv", "2"); $("eCount").value = 20; $("eMin").value = 30; $("eStatus").value = "준비중"; $("eShow").checked = true;
     $("eKind").value = "월간평가"; $("eStart").value = kst(); $("eEnd").value = kst(Date.now() + 6 * 864e5);
+    $("aiVar").value = "0"; $("aiExtra").value = "0"; $("aiFill").checked = true;
     $("ePlace").value = ""; PG = []; buildPeriods(); autoTitle(); modeUi(); buildBookFilters(); renderBooks(); vtUi(); placeUi(); $("pv").innerHTML = ""; $("pvInfo").textContent = ""; $("fillBtn").style.display = "none"; $("saveMsg").textContent = "";
   }
   function editPaper(p) {
@@ -1023,11 +1034,13 @@ tr.miss td{color:#A0AAB2}
     setRadio("mode", p.mode); setRadio("lv", String(["기본", "표준", "심화"].indexOf(p.level) + 1)); $("eCount").value = p.count; $("eMin").value = p.minutes;
     $("eStart").value = p.start || ""; $("eEnd").value = p.end || ""; $("eStatus").value = p.status; $("eShow").checked = !!p.show;
     (p.cfg.units || []).forEach(function (u) { SEL[u] = 1; }); (p.cfg.books || []).forEach(function (b) { SELB[b] = 1; }); EXCL = (p.cfg.exclude || []).slice();
+    var ai = (p.cfg && p.cfg.ai) || {}; $("aiVar").value = String(ai.variant || 0); $("aiExtra").value = String(ai.extra || 0); $("aiFill").checked = ai.fill !== false;
     $("ePlace").value = (p.cfg && p.cfg.place) || ""; PG = (p.cfg && p.cfg.grades) || []; modeUi(); renderBooks(); vtUi(); placeUi(); tab("edit");
     if (p.takers) $("saveMsg").innerHTML = '<span class="er">⚠ 이미 ' + p.takers + "명이 응시했어요. 범위·문항을 바꾸면 학생마다 시험지가 달라질 수 있어요.</span>";
   }
   $("cancelEdit").onclick = function () { tab("list"); };
 
+  function aiSend() { return { fill: $("aiFill").checked, variant: +$("aiVar").value, extra: +$("aiExtra").value }; }
   // ---------- 미리보기 ----------
   var PV_SEED = "";
   function preview() {
@@ -1038,21 +1051,27 @@ tr.miss td{color:#A0AAB2}
     if (!units.length) { $("pvInfo").textContent = "과를 먼저 골라 주세요."; return; }
     $("pvInfo").textContent = "만드는 중…"; $("pvBtn").disabled = true;
     var seed = EDIT && !RESEED ? (EDIT.cfg.seed || EDIT.id) : (PV_SEED = PV_SEED || Math.random().toString(36).slice(2, 10));
-    post({ action: "t_preview", units: units.slice(0, 300), count: +$("eCount").value, level: level(), exclude: EXCL, seed: seed, vtypes: vtSend() }).then(function (j) {
+    var aiS = aiSend(); if (aiS.variant || aiS.extra) $("pvInfo").textContent = "🧠 AI가 문제를 만드는 중… (처음엔 30초~1분 걸려요)";
+    post({ action: "t_preview", units: units.slice(0, 300), count: +$("eCount").value, level: level(), exclude: EXCL, seed: seed, vtypes: vtSend(), mode: mode(), ai: aiS }).then(function (j) {
       $("pvBtn").disabled = false;
       if (!j.ok) { $("pvInfo").textContent = j.msg || "미리보기를 만들지 못했어요."; return; }
       var empty = j.stats.filter(function (s) { return !s.bank && !s.ai; });
       $("pvInfo").innerHTML = (mode() === "choice" ? "예시 시험지 (학생마다 달라요) · " : "") + "고른 범위 문항 " + j.total + "개 중 " + j.items.length + "문항" + (j.total < +$("eCount").value ? ' · <span class="er">문항이 모자라요</span>' : "") + (empty.length ? ' · <span class="er">문제 없는 과 ' + empty.length + "개</span>" : "");
+      var nAiV = j.items.filter(function (q) { return q.kind === "AI 변형"; }).length, nAiN = j.items.filter(function (q) { return q.ai && q.kind !== "AI 변형"; }).length;
+      if (nAiV || nAiN) $("pvInfo").innerHTML += " · 🧠 AI 변형 " + nAiV + "개 · AI 새 문제 " + nAiN + "개";
+      if (j.notes && j.notes.length) $("pvInfo").innerHTML += ' · <span class="er">' + esc(j.notes.join(" / ")) + "</span>";
+      if (j.aiOn === false && (aiSend().variant || aiSend().extra)) $("pvInfo").innerHTML += ' · <span class="er">AI 키가 없어서 AI 문제를 만들 수 없어요</span>';
       $("fillBtn").style.display = empty.length && DATA.ai ? "" : "none";
       $("fillBtn").onclick = function () { fillAi(empty.map(function (s) { return s.u; })); };
       var lvN = ["", "쉬움", "보통", "어려움"];
       $("pv").innerHTML = '<div class="hint">초록 글씨가 정답이에요. 마음에 안 드는 문제는 <b>빼기</b>를 누른 뒤 다시 미리보기 하면 다른 문제로 바뀌어요.' + (EXCL.length ? " (뺀 문제 " + EXCL.length + "개 · <a href='#' id='unex'>모두 되살리기</a>)" : "") + "</div>" +
         j.items.map(function (q, i) {
-          var body = '<div class="tg">' + esc(q.ch) + " › " + esc(q.unit) + '<span class="lv lv' + q.lv + '">' + lvN[q.lv] + "</span>" + (q.ai ? ' <span class="lv lv2">AI</span>' : "") + (q.custom ? ' <span class="lv lv1">📁 직접 올림</span>' : "") + (q.vt ? ' <span class="lv lv1">📒 ' + esc(((DATA.vtypes || []).filter(function (t) { return t.id === q.vt; })[0] || {}).label || q.vt) + "</span>" : "") + "</div><div><b>" + fmt(q.q) + "</b></div>" + (q.sub ? '<div class="sb">' + fmt(q.sub) + "</div>" : "");
+          var body = '<div class="tg">' + esc(q.ch) + " › " + esc(q.unit) + '<span class="lv lv' + q.lv + '">' + lvN[q.lv] + "</span>" + (q.kind === "AI 변형" ? ' <span class="lv" style="background:#EFE6FF;color:#5B2DA0">🧠 AI 변형</span>' : q.ai ? ' <span class="lv" style="background:#EFE6FF;color:#5B2DA0">🧠 AI 새 문제</span>' : "") + (q.custom ? ' <span class="lv lv1">📁 직접 올림</span>' : "") + (q.vt ? ' <span class="lv lv1">📒 ' + esc(((DATA.vtypes || []).filter(function (t) { return t.id === q.vt; })[0] || {}).label || q.vt) + "</span>" : "") + "</div><div><b>" + fmt(q.q) + "</b></div>" + (q.sub ? '<div class="sb">' + fmt(q.sub) + "</div>" : "");
           if (q.type === "mc" || q.type === "multi") body += q.opts.map(function (o, k) { var c = q.type === "mc" ? k === q.ans : (q.anss || []).indexOf(k) >= 0; return '<div class="op' + (c ? " c" : "") + '">' + "①②③④⑤⑥"[k] + " " + fmt(o) + "</div>"; }).join("") + (q.type === "multi" ? '<div class="tg">(모두 고르기)</div>' : "");
           else if (q.type === "short") body += '<div class="op c">정답: ' + fmt(q.answer) + '</div><div class="tg">이렇게 써도 정답: ' + esc((q.accept || []).join(" | ")) + (q.vt === "mwrite" ? (DATA.ai ? " · 🤖 이 밖의 사전 뜻·비슷한 뜻은 AI가 확인해서 정답 처리" : " · (AI 키가 없어서 단어장 뜻과 같을 때만 정답)") : "") + "</div>";
           else body += '<div class="op">조각: ' + esc(q.words.join(" / ")) + '</div><div class="op c">정답: ' + esc(q.answer) + "</div>";
           if (q.exp) body += '<div class="tg">해설: ' + esc(q.exp) + "</div>";
+          if (q.orig) body += '<details style="margin-top:4px"><summary class="tg" style="cursor:pointer">원문 문제 보기</summary><div class="tg" style="background:#F7F7F7;border-radius:8px;padding:6px 8px">' + fmt(q.orig.q) + (q.orig.sub ? "<br>" + fmt(q.orig.sub) : "") + "<br>" + (q.orig.opts || []).map(function (o, k) { return (k === q.orig.ans ? "<b>" : "") + "①②③④⑤⑥"[k] + " " + fmt(o) + (k === q.orig.ans ? "</b>" : ""); }).join(" ") + "</div></details>";
           return '<div class="qv"><span class="no">' + (i + 1) + '</span><div class="bd">' + body + '</div><div><button class="sm sub" data-ex="' + esc(q.id) + '">빼기</button></div></div>';
         }).join("");
       Array.prototype.forEach.call($("pv").querySelectorAll("[data-ex]"), function (b) { b.onclick = function () { EXCL.push(b.getAttribute("data-ex")); b.closest(".qv").style.opacity = .35; b.disabled = true; b.textContent = "뺌"; }; });
@@ -1079,7 +1098,7 @@ tr.miss td{color:#A0AAB2}
     if (m === "fixed" && !units.length) { $("saveMsg").innerHTML = '<span class="er">출제할 과를 골라 주세요.</span>'; return; }
     if (m === "choice" && !units.length && !books.length) { $("saveMsg").innerHTML = '<span class="er">학생이 고를 교재를 골라 주세요.</span>'; return; }
     var paper = { id: EDIT && EDIT.id, title: $("eTitle").value.trim(), cls: $("eCls").value, kind: $("eKind").value, period: $("ePeriod").value, status: $("eStatus").value, mode: m, level: level(),
-      count: +$("eCount").value, minutes: +$("eMin").value, start: $("eStart").value, end: $("eEnd").value, show: $("eShow").checked, units: units, books: books, exclude: EXCL, reseed: RESEED, vtypes: vtSend(), place: $("ePlace").value.trim(), grades: $("eKind").value === "반배정시험" ? PG.slice() : [] };
+      count: +$("eCount").value, minutes: +$("eMin").value, start: $("eStart").value, end: $("eEnd").value, show: $("eShow").checked, units: units, books: books, exclude: EXCL, reseed: RESEED, vtypes: vtSend(), ai: aiSend(), place: $("ePlace").value.trim(), grades: $("eKind").value === "반배정시험" ? PG.slice() : [] };
     if (!paper.title) { autoTitle(); paper.title = $("eTitle").value; }
     lsSet("cm-teacher-cls", paper.cls);
     $("saveBtn").disabled = true; $("saveMsg").textContent = "저장하는 중…";
