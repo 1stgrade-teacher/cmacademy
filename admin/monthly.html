@@ -211,6 +211,18 @@ tr.miss td{color:#A0AAB2}
       <div class="row" style="margin-top:10px"><a class="sm" href="./자료올리기_양식.xlsx" download style="font-size:13.5px;color:#0A5F61;font-weight:700">⬇ 엑셀 양식 내려받기</a><a class="sm" href="./단어장_양식.xlsx" download style="font-size:13.5px;color:#1F5FA8;font-weight:700">⬇ 📒 단어장 양식</a><span class="hint" style="margin:0">문제를 직접 정리하실 땐 엑셀 양식이 가장 정확해요.</span></div>
       <div class="msg" id="impMsg"></div>
     </div>
+    <div class="card" id="mkCard">
+      <h2>✍️ 직접 문제 만들기</h2>
+      <p class="hint" style="margin-top:0">드라이브나 파일이 없어도 여기서 문제를 바로 쓰거나 붙여넣어 문제은행에 넣어요. 저장하면 <b>새 시험지 → 출제 범위</b>에 <b>📁 교재 → 단원 → 과</b>로 나타나요. 이미 저장한 자료를 불러와 고칠 수도 있어요.</p>
+      <div class="row"><button id="mkBlank">✍️ 한 문제씩 입력하기</button><button class="sub" id="mkPasteOpen">📋 글로 붙여넣기</button>
+        <select id="mkLoadSel" style="width:auto;max-width:360px"><option value="">— 저장한 자료 불러와 고치기 —</option></select><button class="sub sm" id="mkLoad">불러오기</button></div>
+      <div id="mkPaste" style="display:none;margin-top:10px">
+        <div class="hint" style="margin-top:0">한글·워드·메모장에서 복사해 붙여넣으세요. 줄 맨 앞에 <b>1.</b> 번호, 보기는 <b>① ② ③ ④ ⑤</b>, 맨 끝에 <b>정답</b> 한 줄을 쓰고 그 아래에 <b>1. ③ 2. ① 3. has gone</b>처럼 쓰면 정답까지 들어가요. 정답을 안 써도 나눈 뒤 아래 편집 칸에서 고를 수 있어요.</div>
+        <textarea id="mkText" rows="10" placeholder="[1-2] 다음 빈칸에 알맞은 말을 고르시오.&#10;1. She ______ to school every day.&#10;① go ② goes ③ going ④ gone ⑤ to go&#10;2. They ______ soccer now.&#10;① play ② plays ③ are playing ④ played ⑤ playing&#10;3. 다음 문장을 현재완료로 바꿔 쓰시오.&#10;I lost my key. → I ______ my key.&#10;&#10;정답&#10;1. ② 2. ③ 3. have lost"></textarea>
+        <div class="row" style="margin-top:8px"><button id="mkSplit">✂️ 문항으로 나누기</button><span class="msg" id="mkMsg" style="margin:0"></span></div>
+      </div>
+      <datalist id="bookList"></datalist>
+    </div>
     <div class="card" id="drvCard">
       <h2>📂 구글 드라이브 문제은행 폴더</h2>
       <p class="hint" style="margin-top:0">공유 폴더에 <b>교재 / 단원 / 문제지 + 정답지</b>로 넣어 두면, 여기서 필요한 파일만 골라 가져와요. (「가져옴」은 이미 저장한 파일, 「바뀜」은 저장 뒤 드라이브에서 고친 파일 — 바뀐 파일만 처음부터 체크돼 있어요) 폴더 이름이 그대로 교재·단원이 돼요.</p>
@@ -428,7 +440,7 @@ tr.miss td{color:#A0AAB2}
       $("bankInfo").textContent = "문제은행: 교재 " + j.catalog.length + "권 · " + units + "과 · 문항 " + total + "개" + (j.ai ? " · AI 켜짐(" + (j.ais || []).map(function (a) { return a.label; }).join("·") + ")" : " · AI 꺼짐");
       buildAiSel(j);
       fillClassSelects(); renderList(); buildPeriods(); buildQuarters(); buildBookFilters();
-      var h = (location.hash || "").slice(1); if (h === "hw") { hwOpen(); tab("hw"); } else if (h === "game") { gmLoad(); rkLoad(); tab("game"); } else if (h === "stu") { stOpen(); tab("stu"); } else if (h === "cert") { ctOpen(); tab("cert"); } else if (/^(results|report|import)$/.test(h) || (h === "teachers" && j.me.master)) { if (h === "results") fillResultSelect(); if (h === "teachers") loadTeachers(); tab(h); }
+      var h = (location.hash || "").slice(1); if (h === "hw") { hwOpen(); tab("hw"); } else if (h === "game") { gmLoad(); rkLoad(); tab("game"); } else if (h === "stu") { stOpen(); tab("stu"); } else if (h === "cert") { ctOpen(); tab("cert"); } else if (/^(results|report|import)$/.test(h) || (h === "teachers" && j.me.master)) { if (h === "results") fillResultSelect(); if (h === "teachers") loadTeachers(); if (h === "import") mkFill(); tab(h); }
     });
   }
   $("logout").onclick = function () { lsSet("cm-teacher-code", ""); location.reload(); };
@@ -832,7 +844,7 @@ tr.miss td{color:#A0AAB2}
     window.scrollTo(0, 0);
   }
   Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) {
-    t.onclick = function () { var n = t.getAttribute("data-tab"); if (n === "edit") newPaper(); if (n === "results") fillResultSelect(); if (n === "teachers") loadTeachers(); if (n === "hw") hwOpen(); if (n === "game") { gmLoad(); rkLoad(); } if (n === "stu") stOpen(); if (n === "cert") ctOpen(); tab(n); };
+    t.onclick = function () { var n = t.getAttribute("data-tab"); if (n === "edit") newPaper(); if (n === "import") mkFill(); if (n === "results") fillResultSelect(); if (n === "teachers") loadTeachers(); if (n === "hw") hwOpen(); if (n === "game") { gmLoad(); rkLoad(); } if (n === "stu") stOpen(); if (n === "cert") ctOpen(); tab(n); };
   });
 
   function fillClassSelects() {
@@ -1154,6 +1166,34 @@ tr.miss td{color:#A0AAB2}
     } catch (err) { $("impMsg").innerHTML = '<span class="er">파일을 읽지 못했어요: ' + esc(err.message) + "</span><br>한글(.hwp)이 안 읽히면 한글에서 <b>다른 이름으로 저장 → .hwpx 또는 PDF</b>로 저장해서 올려 주세요."; }
   }
   var TYPES = { mc: "객관식", multi: "모두 고르기", short: "서술형(직접 쓰기)", arrange: "배열" };
+  // ---------- ✍️ 직접 문제 만들기 ----------
+  function blankQ(prev) { return { no: "", type: prev ? prev.type : "mc", lv: prev ? prev.lv : 2, q: prev && prev.type !== "short" ? prev.q : "", sub: "", opts: [], ans: -1, anss: [], answer: "", frame: "", words: [], exp: "", warn: [] }; }
+  function mkMeta() { var last = lsGet("cm-mk-book"); return { book: last || "", chapter: "", unit: "", area: "문법", grade: "", file: "✍️ 직접 입력" }; }
+  function mkAdd(unit) { IMP.push(unit); renderImport(); var cards = $("impUnits").querySelectorAll(".card[data-u]"), c = cards[cards.length - 1]; if (c) { c.scrollIntoView({ behavior: "smooth", block: "start" }); var b = c.querySelector('[data-m="book"]'); if (b && !b.value) b.focus(); } }
+  function mkFill() {
+    var sel = $("mkLoadSel"), books = (DATA.catalog || []).filter(function (b) { return b.custom; });
+    $("bookList").innerHTML = books.map(function (b) { return '<option value="' + esc(b.name.replace(/^📁 /, "")) + '">'; }).join("");
+    sel.innerHTML = '<option value="">— 저장한 자료 불러와 고치기 —</option>' + books.map(function (b) {
+      var opts = []; b.chapters.forEach(function (c) { c.units.forEach(function (u) { if (!u.v) opts.push('<option value="' + esc(u.id) + '">' + esc(c.name + " › " + u.name + " (" + u.n + "문항)") + "</option>"); }); });
+      return opts.length ? '<optgroup label="' + esc(b.name) + '">' + opts.join("") + "</optgroup>" : "";
+    }).join("");
+  }
+  $("mkBlank").onclick = function () { mkAdd({ manual: true, meta: mkMeta(), questions: [blankQ()], text: "", raw: "" }); };
+  $("mkPasteOpen").onclick = function () { var p = $("mkPaste"); p.style.display = p.style.display === "none" ? "" : "none"; if (p.style.display === "") $("mkText").focus(); };
+  $("mkSplit").onclick = function () {
+    var P = window.ImportParser, text = $("mkText").value; if (!text.trim()) { $("mkMsg").innerHTML = '<span class="er">붙여넣은 글이 없어요.</span>'; return; }
+    var lines = text.split(/\r?\n/), sp = P.splitAnswerSection(lines), key = P.parseAnswers(sp.a), qs = P.parseQuestions(sp.q, key);
+    if (qs.length) { mkAdd({ manual: true, meta: mkMeta(), questions: qs, text: "", raw: sp.q.join("\n"), keyText: Object.keys(key).map(function (k) { return k + ". " + key[k]; }).join(" "), keyCount: Object.keys(key).length });
+      $("mkMsg").innerHTML = '<span class="ok">' + qs.length + "문항으로 나눴어요 ✓ 아래에서 교재·단원 이름을 쓰고 확인한 뒤 저장하세요.</span>"; $("mkText").value = ""; }
+    else { mkAdd({ meta: mkMeta(), questions: [], text: text, raw: text }); $("mkMsg").innerHTML = '<span class="er">번호(1.)로 시작하는 문항을 찾지 못했어요.</span> 아래 카드에서 ' + (DATA.ai ? "<b>🤖 AI로 문항 나누기</b>를 누르거나, " : "") + "본문 자료로 저장할 수 있어요."; }
+  };
+  $("mkLoad").onclick = function () {
+    var uid = $("mkLoadSel").value; if (!uid) return; var b = this; b.disabled = true;
+    post({ action: "t_unit_get", uid: uid }).then(function (j) {
+      b.disabled = false; if (!j.ok) { alert(j.msg || "불러오지 못했어요."); return; }
+      mkAdd({ manual: true, replace: true, meta: Object.assign(j.meta, { file: "✏️ " + j.meta.book + " › " + j.meta.unit + " 고치기" }), questions: j.questions, text: j.questions.length ? "" : j.text, raw: "" });
+    });
+  };
   function renderImport() {
     Array.prototype.forEach.call($("impUnits").querySelectorAll(".card[data-u]"), function (c) { if (c.__sync) c.__sync(); }); // 다시 그리기 전에 손본 내용 보존
     var areas = ["문법", "구문", "독해", "교과서", "어휘", "기타"], grades = ["", "초등", "중1", "중2", "중3", "고등"];
@@ -1177,16 +1217,16 @@ tr.miss td{color:#A0AAB2}
       var cnt = {}; u.questions.forEach(function (q) { cnt[q.type] = (cnt[q.type] || 0) + 1; });
       var warn = u.questions.filter(function (q) { return q.warn && q.warn.length; }).length;
       return '<div class="card" data-u="' + ui + '"><h2>' + (u.drive ? "📂 " : "📄 ") + esc(u.meta.file || "자료") + "</h2>" +
-        '<div class="grid"><div><label class="l">교재</label><input data-m="book" value="' + esc(u.meta.book) + '" placeholder="예: Grammar Inside Level 2"></div>' +
+        '<div class="grid"><div><label class="l">교재</label><input data-m="book" list="bookList" value="' + esc(u.meta.book) + '" placeholder="예: Grammar Inside Level 2"></div>' +
         '<div><label class="l">단원(챕터)</label><input data-m="chapter" value="' + esc(u.meta.chapter) + '" placeholder="예: Chapter 02 시제"></div>' +
         '<div><label class="l">과(자료 이름)</label><input data-m="unit" value="' + esc(u.meta.unit) + '" placeholder="예: 추가 문제"></div>' +
         '<div><label class="l">영역</label><select data-m="area">' + areas.map(function (a) { return "<option" + (a === u.meta.area ? " selected" : "") + ">" + a + "</option>"; }).join("") + "</select></div>" +
         '<div><label class="l">학년</label><select data-m="grade">' + grades.map(function (g) { return '<option value="' + g + '"' + (g === (u.meta.grade || "") ? " selected" : "") + ">" + (g || "고르지 않음") + "</option>"; }).join("") + "</select></div></div>" +
         '<div class="chips2">' + Object.keys(cnt).map(function (t) { return '<span class="pill go">' + TYPES[t] + " " + cnt[t] + "</span>"; }).join("") +
         (u.keyCount != null ? '<span class="pill">정답지에서 ' + u.keyCount + "개 읽음</span>" : "") + (warn ? '<span class="pill end">확인 필요 ' + warn + "개</span>" : "") + "</div>" +
-        (u.questions.length < 2 ? '<p class="hint">문항으로 나누지 못했어요. 문제 없는 <b>본문 자료</b>로 저장하면 시험 때 AI가 이 글로 문제를 만들어요. 문제지라면 <b>🤖 AI로 문항 나누기</b>를 눌러 보세요.</p><textarea data-text rows="6">' + esc(u.text) + "</textarea>" : "") +
+        (u.questions.length < 2 && !u.manual ? '<p class="hint">문항으로 나누지 못했어요. 문제 없는 <b>본문 자료</b>로 저장하면 시험 때 AI가 이 글로 문제를 만들어요. 문제지라면 <b>🤖 AI로 문항 나누기</b>를 눌러 보세요.</p><textarea data-text rows="6">' + esc(u.text) + "</textarea>" : "") +
         '<div class="row" style="margin-top:10px">' + (DATA.ai ? '<button class="sm sub" data-act="aiparse">🤖 AI로 문항 나누기</button><button class="sm sub" data-act="aiexp">🧠 빈 해설 AI로 채우기</button>' : "") +
-        '<label><input type="checkbox" data-replace' + (u.replace ? " checked" : "") + '> 같은 과에 이미 올린 문항을 지우고 새로 저장</label><button data-act="save">💾 문제은행에 저장</button><span class="msg" data-msg style="margin:0"></span></div>' +
+        '<button class="sm sub" data-act="addq">➕ 문항 추가</button><label><input type="checkbox" data-replace' + (u.replace ? " checked" : "") + '> 같은 과에 이미 올린 문항을 지우고 새로 저장</label><button data-act="save">💾 문제은행에 저장</button><span class="msg" data-msg style="margin:0"></span></div>' +
         '<div data-qs>' + u.questions.map(function (q, qi) { return qCard(q, qi); }).join("") + "</div></div>";
     }).join("");
     Array.prototype.forEach.call($("impUnits").querySelectorAll(".card[data-u]"), function (c) { if (c.getAttribute("data-vocab")) bindVocab(c); else bindUnit(c); });
@@ -1223,7 +1263,7 @@ tr.miss td{color:#A0AAB2}
       return post({ action: "t_import_save", meta: u.meta, words: u.words, drive: u.drive || [] }).then(function (j) {
         btn.disabled = false;
         if (!j.ok) { msg.innerHTML = '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; return { ok: false, why: j.msg }; }
-        DATA.catalog = j.catalog || DATA.catalog; u.saved = true;
+        DATA.catalog = j.catalog || DATA.catalog; u.saved = true; if (u.manual && u.meta.book) lsSet("cm-mk-book", u.meta.book); mkFill();
         var t = (j.vocab && j.vocab.types) || {}, lab = {}; (DATA.vtypes || []).forEach(function (x) { lab[x.id] = x.label; });
         msg.innerHTML = '<span class="ok">저장했어요 ✓ 단어 ' + (j.vocab ? j.vocab.words : "") + "개로 문제 " + j.n + "개를 만들었어요</span>" + (j.vocab && j.vocab.words < 5 ? ' <span class="hint" style="margin:0">(단어가 5개보다 적으면 고르기 문제의 보기가 줄거나 빠져요. 같은 Day에 단어를 더 넣으면 좋아요)</span>' : "") + " · " + Object.keys(t).map(function (k) { return esc(lab[k] || k) + " " + t[k]; }).join(" · ") + ' · <a href="' + esc(j.url) + '" target="_blank">노션</a>';
         return { ok: true, n: j.n };
@@ -1298,6 +1338,8 @@ tr.miss td{color:#A0AAB2}
       sel.onchange = function () { sync(); var el = sel.closest(".iq"), i = +el.getAttribute("data-q"); el.outerHTML = qCard(u.questions[i], i); bindUnit(card); };
     });
     Array.prototype.forEach.call(card.querySelectorAll('.iq [data-f="use"]'), function (c) { c.onchange = function () { c.closest(".iq").classList.toggle("off", !c.checked); }; });
+    var bAdd = card.querySelector('[data-act="addq"]');
+    if (bAdd) bAdd.onclick = function () { sync(); var last = u.questions[u.questions.length - 1]; u.questions.push(blankQ(last)); u.manual = true; renderImport(); var cs = $("impUnits").querySelectorAll('.card[data-u="' + ui + '"] .iq'); var el = cs[cs.length - 1]; if (el) { el.scrollIntoView({ behavior: "smooth", block: "center" }); var f = el.querySelector('[data-f="q"]'); if (f) f.focus(); } };
     var bAi = card.querySelector('[data-act="aiparse"]');
     if (bAi) bAi.onclick = function () {
       sync(); var src = u.raw || u.text; if (!src) return;
@@ -1347,7 +1389,7 @@ tr.miss td{color:#A0AAB2}
       return post({ action: "t_import_save", meta: u.meta, questions: qs.filter(function (q) { return bad.indexOf(q) < 0; }), text: u.text || "", replace: card.querySelector("[data-replace]").checked, drive: u.drive || [] }).then(function (j) {
         btn.disabled = false;
         if (!j.ok) { msg.innerHTML = '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; return { ok: false, why: j.msg || "저장 실패" }; }
-        DATA.catalog = j.catalog || DATA.catalog; u.saved = true;
+        DATA.catalog = j.catalog || DATA.catalog; u.saved = true; if (u.manual && u.meta.book) lsSet("cm-mk-book", u.meta.book); mkFill();
         msg.innerHTML = '<span class="ok">저장했어요 ✓ 이 과의 문항 ' + j.n + "개" + (j.skipped && j.skipped.length ? " (건너뜀 " + j.skipped.length + "개)" : "") + (bad.length ? " (정답 없는 " + bad.length + "개는 뺐어요)" : "") + '</span> · <a href="' + esc(j.url) + '" target="_blank">노션</a> · 이제 <b>➕ 새 시험지</b>의 출제 범위에 📁 ' + esc(u.meta.book) + "로 보여요.";
         return { ok: true, n: j.n, dropped: bad.length };
       });

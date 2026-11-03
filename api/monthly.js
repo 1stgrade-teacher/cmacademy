@@ -854,6 +854,14 @@ module.exports = async function handler(req, res) {
         units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }));
       return send(200, { ok: true, cls, from, to, students: (ros || []).map((s) => ({ sid: s.id, name: s.name })), records: recs.map((r) => Object.assign(r, { name: names.get(r.sid) || "" })) });
     }
+    if (act === "t_unit_get") { // ✍️ 직접 올린 자료를 불러와 고치기
+      loadCatalog(); await loadCustom(true);
+      const uid = clip(b.uid, 20), d = custom.data.get(uid), u = unitIndex.get(uid);
+      if (!d || !u) return send(404, { error: "nf", msg: "자료를 찾지 못했어요." });
+      if (u.vocab) return send(400, { error: "vocab", msg: "단어장은 엑셀로 다시 올려서 고쳐 주세요." });
+      return send(200, { ok: true, uid, meta: { book: u.book, chapter: u.chapter, unit: u.name, area: u.area, grade: u.grade || "" }, text: d.text || "",
+        questions: d.qs.map((q) => ({ no: "", type: q.type || "mc", q: q.q || "", sub: q.sub || "", opts: q.opts || [], ans: q.ans, anss: q.anss, answer: q.answer || "", frame: q.frame || "", words: q.words || [], exp: q.exp || "", lv: q.lv || 2, warn: [] })) });
+    }
     if (act === "t_import_save") { // 📚 자료 올리기: 검토한 문항(또는 본문)을 한 과로 저장
       const m = b.meta || {};
       const book = clip(m.book, 80), chapter = clip(m.chapter, 80) || "단원", unit = clip(m.unit, 120) || "자료";
