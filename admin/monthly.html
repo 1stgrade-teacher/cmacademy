@@ -296,6 +296,12 @@ tr.miss td{color:#A0AAB2}
         <textarea id="sfBulk" rows="6" placeholder="김서현, 중1, 청명중, 010-1234-5678&#10;박민준, 중1, 청명중"></textarea>
         <div class="row" style="margin-top:8px"><button class="sub" id="sfBulkGo">📋 한꺼번에 추가</button><span class="msg" id="sfBulkMsg" style="margin:0"></span></div>
       </details>
+      <details style="margin-top:12px" id="phDet"><summary style="cursor:pointer;font-weight:700">📞 이미 있는 학생에게 학부모 연락처만 한꺼번에 넣기</summary>
+        <div class="hint">엑셀에서 <b>이름</b> 칸과 <b>연락처</b> 칸을 드래그해 복사한 뒤 아래에 붙여넣으세요. (칸 순서는 이름 → 연락처, 같은 이름이 있으면 <b>이름 → 반 → 연락처</b>) 먼저 <b>미리보기</b>로 누구에게 들어가는지 확인하고, 맞으면 <b>적용</b>을 누르세요. 엑셀이 앞의 0을 지운 번호(10-1234-5678)도 알아서 고쳐요. 한 번에 200명까지예요.</div>
+        <textarea id="phText" rows="6" placeholder="김서현&#9;010-1234-5678&#10;박민준&#9;010-2222-3333"></textarea>
+        <div class="row" style="margin-top:8px"><button class="sub" id="phPreview">🔍 미리보기</button><button id="phApply" style="display:none">✅ 적용</button><span class="msg" id="phMsg" style="margin:0"></span></div>
+        <div id="phOut"></div>
+      </details>
     </div>
 
   </section>
@@ -806,6 +812,23 @@ tr.miss td{color:#A0AAB2}
       ST_VIEW.cls = cls; stLoad().then(function () { $("stCls").value = cls; stRenderList(); });
     });
   };
+  function phRows() { return $("phText").value.split(/\r?\n/).map(function (l) { return l.trim(); }).filter(Boolean).map(function (l) { return l.split(/\t|,/).map(function (x) { return x.trim(); }); }); }
+  function phRun(apply) {
+    var rows = phRows(); if (!rows.length) { $("phMsg").innerHTML = '<span class="er">붙여넣은 내용이 없어요.</span>'; return; }
+    if (rows.length > 200) { $("phMsg").innerHTML = '<span class="er">한 번에 200명까지예요. 나눠서 넣어 주세요.</span>'; return; }
+    if (apply && !confirm("미리보기에서 「넣어요/바꿔요」로 나온 학생의 연락처를 저장할까요?")) return;
+    $("phPreview").disabled = $("phApply").disabled = true; $("phMsg").textContent = apply ? "저장하는 중…" : "확인하는 중…";
+    post({ action: "t_phone_bulk", rows: rows, apply: apply }).then(function (j) {
+      $("phPreview").disabled = $("phApply").disabled = false;
+      if (!j.ok) { $("phMsg").innerHTML = '<span class="er">' + esc(j.msg || "처리하지 못했어요.") + "</span>"; return; }
+      var R = j.results, c = function (s) { return R.filter(function (r) { return r.st === s; }).length; }, okN = c("ok"), doneN = c("done"), bad = R.length - okN - doneN - c("same");
+      var lab = { ok: "✅ 넣을 예정", done: "✅ 저장함", same: "＝ 변화 없음", none: "❓ 학생 없음", multi: "⚠ 동명이인", bad: "❌ 번호 오류", skip: "—", fail: "❌ 실패" };
+      $("phOut").innerHTML = '<div style="max-height:320px;overflow:auto;margin-top:8px"><table><tr><th>이름</th><th>반</th><th>연락처</th><th>결과</th></tr>' + R.map(function (r) { return "<tr><td>" + esc(r.name || "") + "</td><td>" + esc(r.cls || "") + "</td><td>" + esc(r.phone || "") + "</td><td>" + (lab[r.st] || "") + " " + esc(r.msg || "") + "</td></tr>"; }).join("") + "</table></div>";
+      if (apply) { $("phApply").style.display = "none"; $("phMsg").innerHTML = '<span class="ok">' + doneN + "명 저장했어요 ✓</span>" + (bad ? ' <span class="er">확인이 필요한 ' + bad + "줄은 위 표를 보세요.</span>" : ""); stLoad().then(stRenderList); }
+      else { $("phApply").style.display = okN ? "" : "none"; $("phMsg").innerHTML = (okN ? '<span class="ok">' + okN + "명에게 넣을 수 있어요.</span>" : '<span class="er">넣을 수 있는 줄이 없어요.</span>') + (bad ? ' <span class="er">확인 필요 ' + bad + "줄</span>" : "") + (okN ? " 맞으면 「적용」을 눌러 주세요." : ""); }
+    });
+  }
+  $("phPreview").onclick = function () { phRun(false); }; $("phApply").onclick = function () { phRun(true); }; $("phText").oninput = function () { $("phApply").style.display = "none"; };
   $("rkLoad").onclick = rkLoad; $("rkCls").onchange = rkLoad; $("rkPer").onchange = rkLoad;
   $("gmReload").onclick = gmLoad; $("gmCopy").onclick = function () { copyText(GM_URL, this); };
 

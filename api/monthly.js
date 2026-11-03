@@ -803,6 +803,31 @@ module.exports = async function handler(req, res) {
       for (const x of list) out.push(Object.assign({ name: clip(x && x.name, 20) }, await saveStudent(x || {}, cl, me)));
       return send(200, { ok: true, results: out });
     }
+    if (act === "t_phone_bulk") { // 📞 이미 있는 학생에게 학부모 연락처만 한꺼번에 넣기 (apply=false면 미리보기만)
+      const a = await STU().all(); if (!a) return send(502, { error: "notion", msg: "학생 명단을 불러오지 못했어요.", debug: lastErr });
+      const rows = (Array.isArray(b.rows) ? b.rows : []).slice(0, 200), key = (s) => String(s || "").replace(/\s+/g, ""), out = [], todo = [];
+      const normPhone = (s) => { let d = String(s || "").replace(/\D/g, ""); if (/^1[016789]\d{7,8}$/.test(d)) d = "0" + d; return d && /^01[016789]\d{7,8}$/.test(d) ? fmtPhone(d) : null; }; // 엑셀이 앞 0을 지운 번호도 받아 줘요
+      for (const r of rows) {
+        const cells = (Array.isArray(r) ? r : []).map((c) => String(c == null ? "" : c).trim()), name = cells[0] || "";
+        let phone = null, cls = ""; for (const c of cells.slice(1)) { if (phone === null && normPhone(c)) phone = normPhone(c); else if (!cls && a.classes.includes(c)) cls = c; }
+        if (!name) { out.push({ name: "", st: "skip", msg: "이름이 없어요." }); continue; }
+        if (!phone) { out.push({ name, st: "bad", msg: "휴대폰 번호(010…)를 찾지 못했어요." }); continue; }
+        let m = a.students.filter((s) => key(s.name) === key(name) && (!cls || s.cls === cls));
+        if (m.length > 1) { const act2 = m.filter((s) => s.status !== "휴원" && s.status !== "퇴원"); if (act2.length) m = act2; }
+        if (!m.length) { out.push({ name, phone, st: "none", msg: "이 이름의 학생이 없어요." }); continue; }
+        if (m.length > 1) { out.push({ name, phone, st: "multi", msg: "같은 이름이 " + m.length + "명이에요. 이름 옆에 반 이름도 적어 주세요. (" + m.map((s) => s.cls).join(", ") + ")" }); continue; }
+        const s = m[0]; if (s.phone === phone) { out.push({ name, cls: s.cls, phone, st: "same", msg: "이미 같은 번호예요." }); continue; }
+        out.push({ name, cls: s.cls, phone, old: s.phone || "", st: "ok", msg: s.phone ? "번호를 바꿔요 (" + s.phone + " → " + phone + ")" : "새로 넣어요" }); todo.push({ i: out.length - 1, id: s.id, phone });
+      }
+      if (b.apply) {
+        for (let i = 0; i < todo.length; i += 5) {
+          const rs = await Promise.all(todo.slice(i, i + 5).map((t) => notion("pages/" + id32(t.id), "PATCH", { properties: { "학부모 연락처": { phone_number: t.phone } } })));
+          rs.forEach((x, k) => { const o = out[todo[i + k].i]; if (x) o.st = "done"; else { o.st = "fail"; o.msg = "저장하지 못했어요."; } });
+        }
+        stuCls.t = 0;
+      }
+      return send(200, { ok: true, applied: !!b.apply, results: out, total: rows.length });
+    }
     if (act === "t_pin_reset") { // 🔑 학생 번호 초기화: 본인번호를 지우면 다음 접속 때 새로 정해요
       const id = clip(b.id, 60), pg = await notion("pages/" + id32(id), "GET");
       if (!pg || normId(pg.parent && pg.parent.database_id) !== normId(STUDENT_DB())) return send(404, { error: "input", msg: "학생을 찾지 못했어요." });
