@@ -3,7 +3,7 @@
 // - 어떤 오류가 나도 사이트가 멈추지 않도록, 오류 시에는 그냥 통과시킵니다.
 export const config = { matcher: "/((?!api/|_vercel/).*)" };
 
-const OPEN = ["/gate.html", "/manifest.json", "/favicon-32.png", "/apple-touch-icon.png", "/icon-192.png", "/icon-512.png", "/icon-maskable-512.png"];
+const OPEN = ["/gate.html", "/learn-check.js", "/manifest.json", "/favicon-32.png", "/apple-touch-icon.png", "/icon-192.png", "/icon-512.png", "/icon-maskable-512.png"];
 
 function pass() {
   return new Response(null, { headers: { "x-middleware-next": "1" } });

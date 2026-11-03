@@ -354,7 +354,28 @@ function verdictOf(score, coverage) {
   return "🟡 보통";
 }
 
+// 같은 선생님이 운영하는 다른 사이트에서도 학습 인증을 쓸 수 있게 허용 (환경변수 REPORT_PARTNERS 로 더 추가 가능: 쉼표로 구분)
+function partnerHosts() {
+  return ["1topmaker.vercel.app"].concat(String(process.env.REPORT_PARTNERS || "").split(",").map((x) => x.trim()).filter(Boolean));
+}
+function partnerOrigin(req) {
+  const origin = req.headers.origin || "";
+  if (!origin) return "";
+  let oh = "";
+  try { oh = new URL(origin).host; } catch (e) { return ""; }
+  return partnerHosts().indexOf(oh) >= 0 ? origin : "";
+}
+
 module.exports = async function handler(req, res) {
+  const partner = partnerOrigin(req);
+  if (partner) {
+    res.setHeader("Access-Control-Allow-Origin", partner);
+    res.setHeader("Vary", "Origin");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    res.setHeader("Access-Control-Max-Age", "86400");
+  }
+  if (req.method === "OPTIONS") { res.statusCode = partner ? 204 : 403; return res.end(); }
   if (req.method === "GET" && /[?&]check=1\b/.test(req.url || "")) {
     // 점검용: 학생별 기록 DB에 연결되는지 확인 (비밀 값은 보여 주지 않음)
     lastNotionErr = null;
@@ -379,11 +400,12 @@ module.exports = async function handler(req, res) {
   if (origin) {
     let oh = "";
     try { oh = new URL(origin).host; } catch (e) {}
-    if (oh !== host) return sendJson(res, 403, { error: "origin", msg: "이 사이트에서만 쓸 수 있어요." });
+    if (oh !== host && !partner) return sendJson(res, 403, { error: "origin", msg: "이 사이트에서만 쓸 수 있어요." });
   }
   if (process.env.REPORT_OFF === "1") return sendJson(res, 503, { error: "off", msg: "학습 인증이 잠시 꺼져 있어요." });
 
-  if (!siteOk(req)) return sendJson(res, 401, { error: "site", msg: "입장 코드가 필요해요. 페이지를 새로고침해 주세요." });
+  // 다른 사이트에서 온 요청에는 이 사이트의 입장 쿠키가 없으므로 확인을 건너뜀 (본인번호 로그인으로 보호)
+  if (!partner && !siteOk(req)) return sendJson(res, 401, { error: "site", msg: "입장 코드가 필요해요. 페이지를 새로고침해 주세요." });
   const b = await readBody(req);
   const code = process.env.CHAT_CODE;
   if (code && String(b.code || "").trim() !== code) return sendJson(res, 401, { error: "code", msg: "입장 코드가 맞지 않아요. 선생님께 받은 코드를 넣어 주세요." });
