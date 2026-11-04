@@ -385,6 +385,31 @@ button:focus-visible,
 }
 .section-label:first-of-type { margin-top: 24px; }
 
+/* ---- 메인 하단: 일등급쌤의 또 다른 페이지 링크 ---- */
+.sister-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 40px;
+  padding: 14px 18px;
+  background: var(--amber-bg);
+  border: 1px solid var(--amber-highlight);
+  border-left: 5px solid var(--amber);
+  border-radius: 12px;
+  color: var(--ink);
+  text-decoration: none;
+  transition: transform .15s, box-shadow .15s;
+}
+.sister-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(227, 154, 45, .25);
+}
+.sister-link .sl-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.sister-link .sl-eyebrow { font-size: 12px; font-weight: 600; color: var(--amber-ink); }
+.sister-link .sl-title { font-size: 15.5px; font-weight: 700; }
+.sister-link .sl-arrow { font-size: 20px; font-weight: 700; color: var(--amber-ink); transition: transform .15s; }
+.sister-link:hover .sl-arrow { transform: translateX(4px); }
+
 footer {
   margin-top: 48px;
   font-size: 12.5px;
