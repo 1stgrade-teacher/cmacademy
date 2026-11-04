@@ -22,7 +22,13 @@
   var PASS_COVERAGE = 0.8;   // 이만큼 보면 '다 봤다'로 봄
   var QUIZ_TOTAL = 10;       // 확인 문제 총 문항 수 (강의 속 문제 + 부족하면 AI 출제)
   var MAX_ARRANGE = 3;       // 그중 '어구 배열(터치)' 문제 최대 개수
-  var API = "/api/report";
+  // 다른 사이트(예: 1topmaker)에서 불러와도 이 학원 서버(cmacademy)로 기록이 모이도록, 이 파일이 있는 서버 주소를 씀
+  var BASE = "";
+  try {
+    var me = document.currentScript && document.currentScript.src;
+    if (me) { var o = new URL(me, location.href).origin; if (o !== location.origin) BASE = o; }
+  } catch (e) {}
+  var API = BASE + "/api/report";
   var LS_ME = "cm-learn-me";           // (예전 방식: 이름을 기기에 저장 → 공용 태블릿 문제로 더는 쓰지 않고 지움)
   var SS_SESS = "cm-learn-sess";       // 이번 접속 동안만 기억(탭을 닫으면 사라짐)
   var IDLE_MS = 10 * 60 * 1000;        // 이 시간 동안 손대지 않으면 자동으로 로그아웃
@@ -469,8 +475,11 @@
   function pageInfo() {
     var segs = PATH.split("/").filter(Boolean).map(function (x) { try { return decodeURIComponent(x); } catch (e) { return x; } });
     var area = segs[0] || "기타";
+    // 1topmaker(고등) 사이트의 폴더 이름도 같은 영역으로 묶음
+    var ALIAS = { "고등교과서": "교과서", "모의고사": "독해", "EBS자료": "독해", "고등부교재": "독해" };
+    if (ALIAS[area]) area = ALIAS[area];
     if (["문법", "독해", "구문", "교과서"].indexOf(area) < 0) area = "기타";
-    var title = (document.title || "").replace(/\s*[—-]\s*(AI ?강의|청명학원 문화본원).*$/, "").trim();
+    var title = (document.title || "").replace(/\s*[—-]\s*(AI ?강의|청명학원 문화본원|일등급샘 고등영어 아카이브).*$/, "").trim();
     var t2 = title.split(/\s+—\s+/);
     if (t2.length === 2) title = t2[1] + " · " + t2[0];
     return { area: area, book: segs.slice(1, -1).join(" › "), title: title || segs[segs.length - 1] || "강의", url: location.href.split("#")[0] };
@@ -483,7 +492,7 @@
     if (info.area === "교과서") return Promise.resolve(bookName); // 교과서는 경로(학년›출판사›과)가 더 알아보기 쉬움
     return fetch("./index.html", { cache: "force-cache" }).then(function (r) { return r.ok ? r.text() : ""; }).then(function (h) {
       var m = h.match(/<title>([^<]+)<\/title>/i);
-      if (m) { var t = m[1].replace(/\s*[-—|]\s*청명학원 문화본원.*$/, "").trim(); if (t) bookName = t; }
+      if (m) { var t = m[1].replace(/\s*[-—|]\s*(청명학원 문화본원|일등급샘 고등영어 아카이브).*$/, "").trim(); if (t) bookName = t; }
       return bookName;
     }).catch(function () { return bookName; });
   }
