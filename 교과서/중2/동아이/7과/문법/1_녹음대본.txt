@@ -1,0 +1,80 @@
+[강의 녹음 대본] 목적격 관계대명사, 목적어는 한 번만!
+
+음성 파일 폴더 이름: 문법_Lesson_7_-_Point_A_목적격_관계대명사_audio
+강의 HTML 파일과 같은 위치에 이 폴더를 만들고, 아래 번호대로 음성 파일을 넣어 주세요.
+
+────────────────────────
+1.mp3   (슬라이드 1)
+안녕하세요, 여러분. 오늘은 목적격 관계대명사를 배워 볼 거예요. 관계대명사가 문장에서 목적어 역할을 하면서 두 문장을 이어 주는 아주 중요한 문법이에요. 우리가 자주 쓰는 예문으로 쉽게 이해해 봐요.
+
+────────────────────────
+2.mp3   (슬라이드 2)
+목적격 관계대명사는 두 가지 일을 동시에 해요. 첫째, 관계대명사절 안에서 목적어 역할을 해요. 둘째, 앞 문장과 뒤 문장을 이어 주는 접속사 역할도 하죠. 그리고 관계대명사절 전체는 앞에 있는 선행사를 꾸며 주는 형용사 역할을 해요.
+
+────────────────────────
+3.mp3   (슬라이드 2)
+첫 번째 예문이에요. I ate the sandwich that Brian gave to me. 나는 Brian이 나에게 준 샌드위치를 먹었다는 뜻이에요. 여기서 that은 Brian gave to me 안에서 목적어 역할을 하면서 sandwich를 꾸며 주죠.
+
+────────────────────────
+4.mp3   (슬라이드 2)
+A rain check was a ticket that people got for a future game. 우천 교환권은 사람들이 미래의 경기를 위해 받는 표였다는 뜻이에요. that 뒤에 people got for a future game이 와서 ticket을 꾸며 주고, that은 got의 목적어 역할을 해요.
+
+────────────────────────
+5.mp3   (슬라이드 2)
+I want to eat the cake which my mother baked. 나는 나의 어머니가 구운 케이크를 먹고 싶다는 뜻이에요. which가 my mother baked 안에서 목적어 역할을 하면서 cake를 꾸며 주는 걸 볼 수 있어요.
+
+────────────────────────
+6.mp3   (슬라이드 2)
+관계대명사절을 볼 때는 먼저 선행사가 무엇인지 찾아보세요. 선행사를 알면 뒤에 오는 절이 무엇을 꾸미는지 쉽게 이해할 수 있어요.
+
+────────────────────────
+7.mp3   (슬라이드 3)
+목적격 관계대명사는 선행사에 따라 골라 써요. 선행사가 사람이면 whom, who, that을 쓸 수 있어요. 선행사가 동물이나 사물이면 which나 that을 써요. that은 사람과 사물 모두에 쓸 수 있어서 아주 자주 나와요.
+
+────────────────────────
+8.mp3   (슬라이드 3)
+The teacher whom I respect is very kind. 내가 존경하는 선생님은 매우 친절하다는 뜻이에요. 선행사 teacher가 사람이므로 whom을 써서 I respect의 목적어 역할을 하게 했어요.
+
+────────────────────────
+9.mp3   (슬라이드 3)
+She likes the bike which her father bought for her. 그녀는 그녀의 아버지가 그녀에게 사 준 자전거를 좋아한다는 뜻이에요. 선행사 bike가 사물이므로 which를 썼고, which는 bought의 목적어 역할을 해요.
+
+────────────────────────
+10.mp3   (슬라이드 3)
+I have a friend whom everyone trusts. 나는 모두가 신뢰하는 친구가 있다는 뜻이에요. 선행사 friend가 사람이라서 whom을 썼고, whom은 trusts의 목적어 역할을 해요.
+
+────────────────────────
+11.mp3   (슬라이드 3)
+The movie which I watched last night was exciting. 어젯밤에 내가 봤던 영화는 흥미진진했다는 뜻이에요. 선행사 movie가 사물이라서 which를 썼고, which는 watched의 목적어 역할을 해요.
+
+────────────────────────
+12.mp3   (슬라이드 3)
+that은 사람과 사물 모두에 쓸 수 있어서 아주 편리해요. 그래도 선행사가 사람인지 사물인지 먼저 확인하고 알맞은 관계대명사를 고르는 습관을 들여 보세요.
+
+────────────────────────
+13.mp3   (슬라이드 4)
+목적격 관계대명사를 쓸 때 가장 많이 하는 실수가 목적어를 두 번 쓰는 거예요. 관계대명사가 이미 절 안에서 목적어 역할을 하니까, 동사 뒤에 목적어를 또 쓰면 안 돼요. 그래서 This is the book which I bought yesterday는 맞지만, bought 뒤에 it을 넣으면 틀린 문장이 돼요.
+
+────────────────────────
+14.mp3   (슬라이드 4)
+This is the book which I bought yesterday. 이것은 내가 어제 산 책이라는 뜻이에요. which가 bought의 목적어 역할을 하니까 bought 뒤에 it을 또 쓰면 안 돼요.
+
+────────────────────────
+15.mp3   (슬라이드 4)
+관계대명사 뒤 문장을 볼 때 동사 뒤에 목적어가 또 있는지 꼭 확인하세요. 같은 목적어를 두 번 쓰면 틀린 문장이 되니까 조심해야 해요.
+
+────────────────────────
+16.mp3   (슬라이드 5)
+This is the book which I bought it yesterday는 틀린 문장이에요. which가 이미 bought의 목적어 역할을 하니까 it을 또 쓰면 안 돼요. 그래서 This is the book which I bought yesterday라고 해야 맞아요.
+
+────────────────────────
+17.mp3   (슬라이드 5)
+I ate the sandwich that Brian gave it to me도 자주 하는 실수예요. that이 gave의 목적어 역할을 하니까 it을 또 쓰면 안 돼요. 그래서 I ate the sandwich that Brian gave to me라고 해요.
+
+────────────────────────
+18.mp3   (슬라이드 5)
+She likes the bike whom her father bought for her는 틀린 문장이에요. bike는 사물이니까 whom이 아니라 which를 써야 해요. 그래서 She likes the bike which her father bought for her가 맞아요.
+
+────────────────────────
+19.mp3   (슬라이드 6)
+오늘은 목적격 관계대명사에 대해 배웠어요. 목적격 관계대명사는 절 안에서 목적어 역할을 하면서 두 문장을 이어 주는 접속사 역할도 했죠. 선행사가 사람이면 whom, who, that을 쓰고, 동물이나 사물이면 which, that을 써요. 마지막으로 관계대명사가 이미 목적어 역할을 하니까 목적어를 또 쓰지 않는 것, 꼭 기억해 주세요.
