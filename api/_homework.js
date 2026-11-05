@@ -90,7 +90,7 @@ module.exports = function (ctx) {
     const hw = readHw(hp);
     if (!hw.active || hw.cls !== who.cls) return { status: 403, msg: "우리 반 과제가 아니에요." };
     if (hw.hidden) return { status: 403, msg: "아직 열리지 않은 과제예요. " + Number(hw.show.slice(5, 7)) + "/" + Number(hw.show.slice(8, 10)) + "부터 낼 수 있어요." };
-    const files = (Array.isArray(b.files) ? b.files : []).filter((f) => f && /^[0-9a-f-]{32,36}$/i.test(String(f.fid))).slice(0, 5);
+    const files = (Array.isArray(b.files) ? b.files : []).filter((f) => f && /^[0-9a-f-]{32,36}$/i.test(String(f.fid))).slice(0, 100); // 노션 파일 칸 최대 100개
     if (!files.length) return { status: 400, msg: "사진을 한 장 이상 올려 주세요." };
     const late = hw.due && Date.parse(hw.due) < Date.now();
     const props = {
