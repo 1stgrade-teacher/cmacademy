@@ -15,9 +15,26 @@ module.exports = function (ctx) {
   const dueLabel = (iso) => { if (!iso) return ""; const s = kst(iso), d = new Date(Date.parse(iso) + 9 * 3600e3); return Number(s.slice(5, 7)) + "/" + Number(s.slice(8, 10)) + "(" + "일월화수목금토"[d.getUTCDay()] + ") " + s.slice(11, 16); };
   const dueOf = (p) => { const d = P.date(p, "마감"); if (!d || !d.start) return null; return /T/.test(d.start) ? d.start : d.start + "T23:59:00+09:00"; };
 
+  // 🗓 공개일: 이 날 0시(한국 시간)부터 학생에게 보여요. 비어 있으면 바로 보여요. (월간 계획으로 미리 넣어 둔 과제가 한꺼번에 보이지 않게)
+  const showOf = (p) => { const d = P.date(p, "공개일"); return d && d.start ? String(d.start).slice(0, 10) : ""; };
+  const shownAt = (show) => (show ? Date.parse(show + "T00:00:00+09:00") : 0);
+  const isDay = (s) => /^\d{4}-\d{2}-\d{2}$/.test(s || "");
   function readHw(p) {
-    const due = dueOf(p);
-    return { id: normId(p.id), url: p.url, title: P.title(p, "과제명"), cls: P.text(p, "반"), desc: P.text(p, "설명"), due, dueKst: due ? kst(due) : "", dueLabel: dueLabel(due), active: P.chk(p, "사용"), notify: P.chk(p, "알림 보내기"), done: P.chk(p, "알림 처리"), teacher: P.text(p, "만든 선생님"), past: !!due && Date.parse(due) <= Date.now() };
+    const due = dueOf(p), show = showOf(p);
+    return { id: normId(p.id), url: p.url, title: P.title(p, "과제명"), cls: P.text(p, "반"), desc: P.text(p, "설명"), due, dueKst: due ? kst(due) : "", dueLabel: dueLabel(due), active: P.chk(p, "사용"), notify: P.chk(p, "알림 보내기"), done: P.chk(p, "알림 처리"), teacher: P.text(p, "만든 선생님"), past: !!due && Date.parse(due) <= Date.now(), show, hidden: !!show && shownAt(show) > Date.now() };
+  }
+  // 노션 📸 과제 DB에 '공개일'(날짜) 칸이 없으면 한 번 만들어요. 못 만들면 공개일 없이 저장해요.
+  let showProp = null;
+  async function ensureShowProp() {
+    if (showProp !== null) return showProp;
+    const d = await notion("databases/" + HW_DB(), "GET", null, 2);
+    if (!d) return false; // 다음에 다시 확인
+    if (d.properties && d.properties["공개일"]) return (showProp = d.properties["공개일"].type === "date");
+    const u = await notion("databases/" + HW_DB(), "PATCH", { properties: { "공개일": { date: {} } } }, 2);
+    return (showProp = !!(u && u.properties && u.properties["공개일"]));
+  }
+  function hwProps(b, title, cls, due) {
+    return { "과제명": { title: rt(title) }, "반": { rich_text: rt(cls) }, "마감": { date: { start: due } }, "설명": { rich_text: rt(clip(b.desc, 1500)) }, "사용": { checkbox: b.active !== false }, "알림 보내기": { checkbox: !!b.notify } };
   }
   function readSub(p) {
     const files = ((p.properties["사진"] || {}).files || []).map((f) => ({ name: f.name, url: (f.file && f.file.url) || (f.external && f.external.url) || "" })).filter((f) => f.url);
@@ -49,7 +66,7 @@ module.exports = function (ctx) {
   async function studentList(who) {
     const rows = await queryAll(HW_DB(), { filter: { and: [{ property: "반", rich_text: { equals: who.cls } }, { property: "사용", checkbox: { equals: true } }] }, sorts: [{ property: "마감", direction: "descending" }] }, 2);
     if (!rows) return null;
-    const list = rows.map(readHw).filter((h) => h.due && Date.parse(h.due) > Date.now() - 21 * 864e5).slice(0, 20);
+    const list = rows.map(readHw).filter((h) => h.due && !h.hidden && Date.parse(h.due) > Date.now() - 21 * 864e5).slice(0, 20);
     const mine = await queryAll(SUB_DB(), { filter: { property: "학생", relation: { contains: uuid(who.sid) } } }, 2);
     const by = new Map((mine || []).map(readSub).map((s) => [s.hw, s]));
     return list.sort((a, b) => (a.past - b.past) || (a.past ? Date.parse(b.due) - Date.parse(a.due) : Date.parse(a.due) - Date.parse(b.due)))
@@ -79,14 +96,21 @@ module.exports = function (ctx) {
     const f = cls ? { filter: { property: "반", rich_text: { equals: cls } } } : {};
     const rows = await queryAll(HW_DB(), Object.assign(f, { sorts: [{ property: "마감", direction: "descending" }] }), 2);
     if (!rows) return null;
-    const list = rows.map(readHw).slice(0, 40);
+    // 2주 넘게 남은 과제는 위 🗓 달력에서 봐요 (미리 넣어 둔 한 달 치가 목록을 채우지 않게)
+    const list = rows.map(readHw).filter((h) => !h.due || Date.parse(h.due) < Date.now() + 14 * 864e5).slice(0, 40);
     const counts = await Promise.all(list.slice(0, 20).map((h) => subsOf(h.id)));
     return list.map((h, i) => { const s = (counts[i] || []).map(readSub); return Object.assign(h, { nSub: s.filter((x) => x.status === "제출").length, nLate: s.filter((x) => x.status === "지각 제출").length, nMiss: s.filter((x) => x.status === "미제출").length, counted: i < 20 }); });
   }
   async function teacherSave(me, b) {
     const title = clip(b.title, 120), cls = clip(b.cls, 40), due = toNotionDue(b.due);
     if (!title || !cls || !due) return { status: 400, msg: "과제명·반·마감 날짜와 시간을 넣어 주세요." };
-    const props = { "과제명": { title: rt(title) }, "반": { rich_text: rt(cls) }, "마감": { date: { start: due } }, "설명": { rich_text: rt(clip(b.desc, 1500)) }, "사용": { checkbox: b.active !== false }, "알림 보내기": { checkbox: !!b.notify } };
+    const props = hwProps(b, title, cls, due);
+    let warn = "";
+    if (b.showFrom !== undefined) { // 수정 화면에서 공개일을 바꿀 때만
+      const show = isDay(b.showFrom) ? b.showFrom : "";
+      if (await ensureShowProp()) props["공개일"] = { date: show ? { start: show } : null };
+      else if (show) warn = "노션 📸 과제 DB에 「공개일」(날짜) 칸을 만들지 못해 바로 보이게 저장했어요.";
+    }
     let pg;
     if (b.id) {
       const old = await notion("pages/" + id32(b.id), "GET");
@@ -97,7 +121,39 @@ module.exports = function (ctx) {
       props["만든 선생님"] = { rich_text: rt(me.name) }; props["알림 처리"] = { checkbox: false };
       pg = await notion("pages", "POST", { parent: { database_id: HW_DB() }, properties: props });
     }
-    return pg ? { status: 200, hw: readHw(pg) } : { status: 502, msg: "저장하지 못했어요.", debug: getLastErr() };
+    return pg ? { status: 200, hw: readHw(pg), warn } : { status: 502, msg: "저장하지 못했어요.", debug: getLastErr() };
+  }
+
+  // ---------- 🗓 월간 계획 ----------
+  // 한 달(한국 시간 기준) 마감 과제 목록. 경계 시간대가 어긋나지 않게 앞뒤 하루씩 넓게 읽고 여기서 거릅니다.
+  async function teacherMonth(cls, ym) {
+    if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(ym || "")) return { status: 400, msg: "달을 다시 골라 주세요." };
+    const y = +ym.slice(0, 4), m = +ym.slice(5, 7);
+    const from = new Date(Date.UTC(y, m - 1, 1) - 864e5).toISOString().slice(0, 10), to = new Date(Date.UTC(y, m, 1) + 864e5).toISOString().slice(0, 10);
+    const and = [{ property: "마감", date: { on_or_after: from } }, { property: "마감", date: { before: to } }];
+    if (cls) and.push({ property: "반", rich_text: { equals: cls } });
+    const rows = await queryAll(HW_DB(), { filter: { and }, sorts: [{ property: "마감", direction: "ascending" }] }, 3);
+    if (!rows) return { status: 502, msg: "과제 목록을 읽지 못했어요.", debug: getLastErr() };
+    return { status: 200, list: rows.map(readHw).filter((h) => h.dueKst.slice(0, 7) === ym) };
+  }
+  // 여러 과제를 한 번에 만들기 (월간 계획 저장). items: [{ cls, title, due:"YYYY-MM-DDTHH:MM", desc, notify, showFrom:"YYYY-MM-DD"|"" }]
+  async function teacherBulk(me, items) {
+    items = (Array.isArray(items) ? items : []).slice(0, 80);
+    if (!items.length) return { status: 400, msg: "저장할 과제가 없어요." };
+    const bad = items.findIndex((x) => !clip(x && x.title, 120) || !clip(x && x.cls, 40) || !toNotionDue(x && x.due));
+    if (bad >= 0) return { status: 400, msg: (bad + 1) + "번째 줄: 과제명·반·마감 날짜와 시간을 넣어 주세요." };
+    const wantShow = items.some((x) => isDay(x.showFrom)), canShow = wantShow ? await ensureShowProp() : false;
+    const out = new Array(items.length);
+    for (let s = 0; s < items.length; s += 5) {
+      await Promise.all(items.slice(s, s + 5).map(async (x, k) => {
+        const props = hwProps(Object.assign({}, x, { active: true }), clip(x.title, 120), clip(x.cls, 40), toNotionDue(x.due));
+        props["만든 선생님"] = { rich_text: rt(me.name) }; props["알림 처리"] = { checkbox: false };
+        if (canShow && isDay(x.showFrom)) props["공개일"] = { date: { start: x.showFrom } };
+        const pg = await notion("pages", "POST", { parent: { database_id: HW_DB() }, properties: props });
+        out[s + k] = pg ? { ok: true, hw: readHw(pg) } : { ok: false, msg: (getLastErr() || {}).msg || "저장 실패" };
+      }));
+    }
+    return { status: 200, results: out, saved: out.filter((r) => r.ok).length, warn: wantShow && !canShow ? "노션 📸 과제 DB에 「공개일」(날짜) 칸을 만들지 못해 모두 바로 보이게 저장했어요. 노션에서 이 이름의 날짜 칸을 만들어 주세요." : "" };
   }
   async function teacherDetail(id) {
     const hp = await notion("pages/" + id32(id), "GET");
@@ -137,5 +193,5 @@ module.exports = function (ctx) {
     return { ok: true, checked: due.length, mode: N.mode(), report };
   }
 
-  return { studentList, studentSubmit, uploadPhoto, teacherList, teacherSave, teacherDetail, cron, HW_DB, SUB_DB, _t: { toNotionDue, dueLabel, readHw } };
+  return { studentList, studentSubmit, uploadPhoto, teacherList, teacherSave, teacherDetail, teacherMonth, teacherBulk, cron, HW_DB, SUB_DB, _t: { toNotionDue, dueLabel, readHw } };
 };

@@ -845,7 +845,9 @@ module.exports = async function handler(req, res) {
       return send(fail ? 502 : 200, { ok: !fail, books: gameBooks(true), msg: fail ? "일부를 바꾸지 못했어요. 노션 📚 직접 올린 문항에 '게임 숨김' 칸이 있는지 확인해 주세요." : "", debug: fail ? lastErr : undefined });
     }
     if (act === "t_hw_list") { const l = await HW().teacherList(clip(b.cls, 40)); return l ? send(200, { ok: true, list: l, mode: require("./_notify.js").mode() }) : send(502, { error: "notion", msg: "과제 목록을 읽지 못했어요. 🩺 점검을 눌러 보세요.", debug: lastErr }); }
-    if (act === "t_hw_save") { const r = await HW().teacherSave(me, b.hw || {}); return r.status === 200 ? send(200, { ok: true, hw: r.hw }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_hw_save") { const r = await HW().teacherSave(me, b.hw || {}); return r.status === 200 ? send(200, { ok: true, hw: r.hw, warn: r.warn }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_hw_month") { const r = await HW().teacherMonth(clip(b.cls, 40), String(b.ym || "")); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_hw_bulk") { const r = await HW().teacherBulk(me, b.items); return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg }); }
     if (act === "t_hw_detail") { const r = await HW().teacherDetail(clip(b.id, 60)); return r ? send(200, Object.assign({ ok: true }, r)) : send(404, { error: "nf", msg: "과제를 찾지 못했어요." }); }
     if (act === "t_hw_check") { const r = await HW().cron({ only: clip(b.id, 60) || undefined }); return send(200, r); }
     if (act === "t_hw_template") { const N2 = require("./_notify.js"); return send(200, { ok: true, template: N2.TEMPLATE, sample: N2.fill({ 학원: N2.ACADEMY(), 학생: "김민준", 과제: "Day 3 단어 쓰기", 마감: "11/5(목) 21:00" }), mode: N2.mode() }); }
