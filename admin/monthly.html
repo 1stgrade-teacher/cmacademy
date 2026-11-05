@@ -69,6 +69,18 @@ tr.miss td{color:#A0AAB2}
 #printArea{display:none}
 .drop{border:2px dashed #9BD3D0;border-radius:14px;padding:22px;text-align:center;cursor:pointer;background:var(--ac-soft);line-height:1.8}
 .drop.on{background:var(--ac-bg);border-color:var(--ac)}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin-top:10px}
+.cal .wh{font-size:12px;font-weight:700;color:var(--muted);text-align:center;padding:2px 0}.cal .wh.su{color:var(--red)}
+.cal .cd{min-height:80px;border:1px solid var(--line);border-radius:8px;padding:4px;cursor:pointer;display:flex;flex-direction:column;gap:3px;background:#fff;min-width:0}
+.cal .cd:hover{background:var(--ac-soft)}.cal .cd.td{border-color:var(--ac);box-shadow:inset 0 0 0 1px var(--ac)}.cal .cd.old{background:#F7F9F9;cursor:default}.cal .cd.old:hover{background:#F7F9F9}
+.cal .dn{font-size:12px;font-weight:700;color:var(--muted)}.cal .su .dn{color:var(--red)}
+.cc{display:block;font-size:11.5px;line-height:1.3;padding:2px 5px;border-radius:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.cc.s{background:#E3F0FF;color:#1F5FA8}.cc.w{background:#EEF1F3;color:var(--muted)}.cc.d{background:#F1F3F4;color:#8A96A0}.cc.n{background:var(--amber-bg);color:var(--amber);border:1px dashed #E0B060}.cc.x{text-decoration:line-through}
+.hint .cc{display:inline-block;cursor:default}
+@media (max-width:640px){.cal{gap:2px}.cal .cd{padding:2px;min-height:64px}.cal .cd .cc{white-space:normal;word-break:break-all;font-size:10px;line-height:1.2;padding:1px 2px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}}
+details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-top:10px}details.mpd>summary{cursor:pointer;font-weight:700;color:var(--ac-ink);font-size:14.5px}
+.wk{display:flex;gap:6px;flex-wrap:wrap}.wk label{display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:8px;padding:5px 9px;font-size:14px;cursor:pointer}
+#mpDrafts input{padding:6px 7px;font-size:14px}#mpDrafts td{padding:4px 3px}
 .iq{border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px}
 .iq.off{opacity:.45}.iq.warn{border-color:#F0B37E;background:#FFFBF5}
 .iq .hd{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
@@ -118,6 +130,7 @@ tr.miss td{color:#A0AAB2}
     <button class="tab" data-tab="game">🎮 단어 게임</button>
     <button class="tab" data-tab="stu">🧑‍🎓 학생</button>
     <button class="tab" data-tab="cert">📺 학습 인증</button>
+    <button class="tab" data-tab="pm" id="tabPm">💬 학부모</button>
     <button class="tab" data-tab="teachers" id="tabTeachers" style="display:none">👩‍🏫 선생님</button>
   </div>
 
@@ -306,7 +319,47 @@ tr.miss td{color:#A0AAB2}
 
   </section>
 
+  <section id="v-pm" style="display:none">
+    <div class="card">
+      <div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">💬 학부모 상담</h2><div class="row" style="margin:0"><select id="pmCls" style="width:auto"><option value="">모든 반</option></select><button class="sub sm" id="pmReload">새로고침</button></div></div>
+      <div class="hint">부모님이 학부모 앱의 「💬 상담」에 남긴 글이에요. 안 읽은 글이 있는 학생이 맨 위에 와요. 답장하면 부모님 앱에 바로 보여요. (카톡 알림은 가지 않으니, 급한 답은 전화로 해 주세요)</div>
+      <div id="pmList"><p class="hint">불러오는 중…</p></div>
+    </div>
+    <div class="card" id="pmThreadCard" style="display:none"><div id="pmThread"></div></div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">👪 학부모 앱 링크</h2><div class="row" style="margin:0"><select id="plCls" style="width:auto"></select><button class="sub sm" id="plLoad">링크 불러오기</button></div></div>
+      <div class="hint">학생마다 <b>부모님 전용 링크</b>가 하나씩 있어요. 부모님은 로그인 없이 이 링크로 <b>우리 아이만의 학부모 앱</b>을 열어 과제·제출 사진, 시험 성적, 분석 리포트, 인강 학습 인증, 단어 게임을 보고 선생님께 상담 글을 남길 수 있어요. 처음 열 때 「홈 화면에 추가」 안내가 나와요. (선생님만 보는 상담 메모·연락처는 보이지 않아요) <b>링크를 아는 사람은 누구나 볼 수 있으니</b> 단톡방 말고 부모님께 1:1로 보내 주세요. 링크가 새어 나갔으면 <b>새 링크로 바꾸기</b>를 누르면 예전 링크는 바로 막혀요.</div>
+      <div id="plOut"></div>
+    </div>
+  </section>
   <section id="v-hw" style="display:none">
+    <div class="card" id="mpCard">
+      <div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">🗓 월간 과제 계획</h2><div class="row" style="margin:0;align-items:center"><select id="mpCls" style="width:auto"></select><button class="sub sm" id="mpPrev" title="지난달">◀</button><b id="mpYm" style="min-width:96px;text-align:center"></b><button class="sub sm" id="mpNext" title="다음 달">▶</button><button class="sub sm" id="mpToday">이번 달</button></div></div>
+      <div class="hint">달력에서 <b>날짜를 누르면</b> 그날 마감인 과제가 아래 목록에 들어가요. 한 달 치를 넣고 <b>💾 모두 저장</b>을 누르면, 마감 시간이 지날 때마다 안 낸 학생의 학부모님께 자동으로 알림(카카오 알림톡, 안 되면 문자)이 가요. 이미 저장한 과제를 누르면 아래 수정 칸에서 고칠 수 있어요.</div>
+      <div class="cal" id="mpCal"><p class="hint">불러오는 중…</p></div>
+      <div class="hint"><span class="cc s">학생에게 보임</span> <span class="cc w">공개 전</span> <span class="cc d">마감 지남</span> <span class="cc n">새로 넣을 과제 (누르면 빠져요)</span></div>
+      <details class="mpd" id="mpRepDet">
+        <summary>🔁 요일 반복으로 한 달 채우기</summary>
+        <div class="hint" style="margin-top:4px">고른 요일마다 이 달(오늘 이후)에 과제를 넣어요. 과제명에 <b>{n}</b>을 쓰면 1, 2, 3… 번호가, <b>{날짜}</b>를 쓰면 11/3처럼 날짜가 들어가요.</div>
+        <div class="wk" id="mpWk" style="margin-top:8px"></div>
+        <div class="grid" style="margin-top:8px">
+          <div style="grid-column:span 2"><label class="l">과제명 형식</label><input id="mpPat" placeholder="예: Day {n} 단어 3번씩 쓰기"></div>
+          <div><label class="l">시작 번호</label><input id="mpStart" type="number" min="0" value="1"></div>
+          <div><label class="l">마감 시간</label><input id="mpTime" type="time" value="21:00"></div>
+        </div>
+        <label class="l" style="margin-top:8px">설명 (학생에게 보여요, 비워도 돼요)</label><input id="mpDesc" placeholder="예: 공책에 3번씩 쓰고 사진 올리기">
+        <div class="row" style="margin-top:8px"><label><input type="checkbox" id="mpSkip" checked> 이미 과제가 있는 날은 건너뛰기</label><button class="sub" id="mpFill">이 달에 채우기</button></div>
+      </details>
+      <details class="mpd">
+        <summary>📋 엑셀에서 붙여넣기</summary>
+        <div class="hint" style="margin-top:4px">엑셀에서 <b>날짜 → 과제명 → 설명(선택) → 마감 시간(선택)</b> 순서의 칸을 드래그해 복사한 뒤 붙여넣으세요. 날짜는 <b>11/3</b>, <b>11월 3일</b>, <b>2026-11-03</b>, 그냥 <b>3</b>(이 달 3일) 모두 돼요. 시간을 비우면 위 「마감 시간」을 써요.</div>
+        <textarea id="mpPaste" rows="5" placeholder="11/3&#9;Day 1 단어 3번씩 쓰기&#9;교재 12~13쪽&#10;11/5&#9;Day 2 단어 3번씩 쓰기"></textarea>
+        <div class="row" style="margin-top:8px"><button class="sub" id="mpParse">목록에 넣기</button><span class="msg" id="mpPasteMsg" style="margin:0"></span></div>
+      </details>
+      <div id="mpDrafts"></div>
+      <div class="row" style="margin-top:10px;align-items:center"><label class="l" style="margin:0">학생에게 보이기</label><select id="mpShow" style="width:auto"><option value="0">마감 당일 0시부터</option><option value="1">마감 1일 전부터</option><option value="2">마감 2일 전부터</option><option value="3">마감 3일 전부터</option><option value="7">마감 7일 전부터</option><option value="">바로 (모두 보이기)</option></select><label><input type="checkbox" id="mpNotify" checked> 마감까지 안 내면 학부모님께 알림 보내기</label></div>
+      <div class="row" style="margin-top:10px"><button id="mpSave" disabled>💾 모두 저장</button><button class="sub" id="mpClear" style="display:none">목록 비우기</button><span class="msg" id="mpMsg" style="margin:0"></span></div>
+    </div>
     <div class="card">
       <h2 id="hwFormTitle">📸 새 과제</h2>
       <div class="grid">
@@ -315,6 +368,7 @@ tr.miss td{color:#A0AAB2}
         <div><label class="l">마감 (날짜·시간)</label><input id="hwDue" type="datetime-local"></div>
       </div>
       <label class="l" style="margin-top:10px">설명 (학생에게 보여요)</label><textarea id="hwDesc" rows="2" placeholder="예: 공책에 3번씩 쓰고 한 페이지씩 사진 찍어 올리기"></textarea>
+      <div class="grid" style="margin-top:10px"><div><label class="l">학생에게 보이는 날 (비우면 바로)</label><input id="hwShow" type="date"></div></div>
       <div class="row" style="margin-top:10px"><label><input type="checkbox" id="hwNotify" checked> 마감까지 안 내면 학부모님께 알림톡 보내기</label><label><input type="checkbox" id="hwActive" checked> 학생에게 보이기</label></div>
       <div class="row" style="margin-top:10px"><button id="hwSave">💾 과제 저장</button><button class="sub" id="hwNew">새로 쓰기</button><span class="msg" id="hwMsg" style="margin:0"></span></div>
       <div class="hint" id="hwLink"></div>
@@ -322,6 +376,7 @@ tr.miss td{color:#A0AAB2}
     <div class="card">
       <div class="row" style="justify-content:space-between"><h2 style="margin:0">과제 목록</h2><div class="row" style="margin:0"><select id="hwFilter" style="width:auto"><option value="">모든 반</option></select><button class="sub sm" id="hwReload">새로고침</button><button class="sub sm" id="hwCheck" title="마감이 지난 과제를 지금 바로 확인해서 미제출 기록·알림을 보내요">⏰ 지금 마감 확인</button></div></div>
       <div class="hint" id="hwMode"></div>
+      <div class="hint">2주 넘게 남은 과제는 위 🗓 달력에서 보여요.</div>
       <div id="hwList"><p class="hint">불러오는 중…</p></div>
     </div>
     <div class="card" id="hwDetailCard" style="display:none"><div id="hwDetail"></div></div>
@@ -444,9 +499,9 @@ tr.miss td{color:#A0AAB2}
       $("contact").value = j.me.contact || lsGet("cm-report-contact"); $("repUrl").value = j.me.reportUrl || "";
       var total = j.catalog.reduce(function (s, b) { return s + b.n; }, 0), units = j.catalog.reduce(function (s, b) { return s + b.chapters.reduce(function (a, c) { return a + c.units.length; }, 0); }, 0);
       $("bankInfo").textContent = "문제은행: 교재 " + j.catalog.length + "권 · " + units + "과 · 문항 " + total + "개" + (j.ai ? " · AI 켜짐(" + (j.ais || []).map(function (a) { return a.label; }).join("·") + ")" : " · AI 꺼짐");
-      buildAiSel(j);
+      buildAiSel(j); pmBadge();
       fillClassSelects(); renderList(); buildPeriods(); buildQuarters(); buildBookFilters();
-      var h = (location.hash || "").slice(1); if (h === "hw") { hwOpen(); tab("hw"); } else if (h === "game") { gmLoad(); rkLoad(); tab("game"); } else if (h === "stu") { stOpen(); tab("stu"); } else if (h === "cert") { ctOpen(); tab("cert"); } else if (/^(results|report|import)$/.test(h) || (h === "teachers" && j.me.master)) { if (h === "results") fillResultSelect(); if (h === "teachers") loadTeachers(); if (h === "import") mkFill(); tab(h); }
+      var h = (location.hash || "").slice(1); if (h === "hw") { hwOpen(); tab("hw"); } else if (h === "game") { gmLoad(); rkLoad(); tab("game"); } else if (h === "stu") { stOpen(); tab("stu"); } else if (h === "cert") { ctOpen(); tab("cert"); } else if (h === "pm") { pmOpen(); tab("pm"); } else if (/^(results|report|import)$/.test(h) || (h === "teachers" && j.me.master)) { if (h === "results") fillResultSelect(); if (h === "teachers") loadTeachers(); if (h === "import") mkFill(); tab(h); }
     });
   }
   $("logout").onclick = function () { lsSet("cm-teacher-code", ""); location.reload(); };
@@ -466,21 +521,23 @@ tr.miss td{color:#A0AAB2}
   function hwForm(h) {
     HW_EDIT = h || null; $("hwFormTitle").textContent = h ? "✏️ 과제 수정 · " + h.title : "📸 새 과제";
     $("hwCls").value = h ? h.cls : (lsGet("cm-teacher-cls") || $("hwCls").value); $("hwTitle").value = h ? h.title : ""; $("hwDue").value = h ? h.dueKst : hwDefaultDue();
-    $("hwDesc").value = h ? h.desc : ""; $("hwNotify").checked = h ? h.notify : true; $("hwActive").checked = h ? h.active : true; $("hwMsg").textContent = ""; hwLinkHint();
+    $("hwDesc").value = h ? h.desc : ""; $("hwShow").value = h ? (h.show || "") : ""; $("hwNotify").checked = h ? h.notify : true; $("hwActive").checked = h ? h.active : true; $("hwMsg").textContent = ""; hwLinkHint();
   }
   function hwLinkHint() { var c = $("hwCls").value; $("hwLink").innerHTML = c ? '학생 링크: <b>' + esc(location.origin + "/과제/?c=" + c) + '</b> <button class="sm sub" id="hwCopy">링크 복사</button>' : ""; var b = $("hwCopy"); if (b) b.onclick = function () { var t = location.origin + "/과제/?c=" + encodeURIComponent(c); (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { b.textContent = "✓ 복사됨"; }, function () { prompt("복사해서 단톡방에 보내세요", t); }); }; }
   function hwOpen() {
     var opts = (DATA.classes || []).filter(function (c) { return c !== "신입 반배정"; }).map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
     if (!$("hwCls").options.length) { $("hwCls").innerHTML = opts; $("hwFilter").innerHTML = '<option value="">모든 반</option>' + opts; hwForm(null); }
-    hwLoad();
+    if (!$("plCls").options.length) { $("plCls").innerHTML = opts; var lc2 = lsGet("cm-teacher-cls"); if (lc2 && (DATA.classes || []).indexOf(lc2) >= 0) $("plCls").value = lc2; }
+    if (!$("mpCls").options.length) { $("mpCls").innerHTML = opts; var lc = lsGet("cm-teacher-cls"); if (lc && (DATA.classes || []).indexOf(lc) >= 0) $("mpCls").value = lc; MP.cls = $("mpCls").value; }
+    hwLoad(); mpLoad();
   }
   $("hwCls").onchange = hwLinkHint; $("hwNew").onclick = function () { hwForm(null); };
   $("hwReload").onclick = hwLoad; $("hwFilter").onchange = hwLoad;
   $("hwSave").onclick = function () {
-    var b = this, hw = { id: HW_EDIT && HW_EDIT.id, cls: $("hwCls").value, title: $("hwTitle").value.trim(), due: $("hwDue").value, desc: $("hwDesc").value.trim(), notify: $("hwNotify").checked, active: $("hwActive").checked };
+    var b = this, hw = { id: HW_EDIT && HW_EDIT.id, cls: $("hwCls").value, title: $("hwTitle").value.trim(), due: $("hwDue").value, desc: $("hwDesc").value.trim(), showFrom: $("hwShow").value || "", notify: $("hwNotify").checked, active: $("hwActive").checked };
     if (!hw.title || !hw.due) { $("hwMsg").innerHTML = '<span class="er">과제명과 마감을 넣어 주세요.</span>'; return; }
     b.disabled = true; $("hwMsg").textContent = "저장하는 중…"; lsSet("cm-teacher-cls", hw.cls);
-    post({ action: "t_hw_save", hw: hw }).then(function (j) { b.disabled = false; if (!j.ok) { $("hwMsg").innerHTML = '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; return; } $("hwMsg").innerHTML = '<span class="ok">저장했어요 ✓ 학생 화면 「과제 제출」에 바로 보여요.</span>'; HW_EDIT = j.hw; hwLoad(); });
+    post({ action: "t_hw_save", hw: hw }).then(function (j) { b.disabled = false; if (!j.ok) { $("hwMsg").innerHTML = '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; return; } $("hwMsg").innerHTML = '<span class="ok">저장했어요 ✓ ' + (j.hw && j.hw.hidden ? "학생 화면에는 " + esc(mpMd(j.hw.show)) + "부터 보여요." : "학생 화면 「과제 제출」에 바로 보여요.") + "</span>" + (j.warn ? ' <span class="er">' + esc(j.warn) + "</span>" : ""); HW_EDIT = j.hw; hwLoad(); mpLoad(); });
   };
   $("hwCheck").onclick = function () {
     var b = this; b.disabled = true; b.textContent = "확인하는 중…";
@@ -499,13 +556,232 @@ tr.miss td{color:#A0AAB2}
       HW_LIST = j.list; if (!keepMode) $("hwMode").textContent = HW_MODE[j.mode] || "";
       if (!j.list.length) { $("hwList").innerHTML = '<p class="hint">아직 과제가 없어요. 위에서 첫 과제를 만들어 보세요.</p>'; return; }
       $("hwList").innerHTML = '<div class="tw"><table><thead><tr><th>반</th><th>과제</th><th>마감</th><th>제출</th><th>늦게</th><th>미제출</th><th>상태</th><th></th></tr></thead><tbody>' + j.list.map(function (h, i) {
-        var st = !h.active ? "숨김" : !h.past ? "진행 중" : h.done ? "마감 확인 끝" + (h.notify ? " · 알림" : "") : "마감 확인 대기";
+        var st = !h.active ? "숨김" : h.hidden ? "공개 전 (" + mpMd(h.show) + "부터)" : !h.past ? "진행 중" : h.done ? "마감 확인 끝" + (h.notify ? " · 알림" : "") : "마감 확인 대기";
         return "<tr><td>" + esc(h.cls) + "</td><td><b>" + esc(h.title) + "</b></td><td>" + esc(h.dueLabel) + "</td><td class=num>" + (h.counted ? h.nSub : "-") + "</td><td class=num>" + (h.counted ? h.nLate : "-") + "</td><td class=num>" + (h.counted ? h.nMiss : "-") + "</td><td>" + st + '</td><td><button class="sm sub" data-hwd="' + i + '">보기</button> <button class="sm sub" data-hwe="' + i + '">수정</button></td></tr>';
       }).join("") + "</tbody></table></div>";
       Array.prototype.forEach.call($("hwList").querySelectorAll("[data-hwe]"), function (b) { b.onclick = function () { hwForm(HW_LIST[+b.getAttribute("data-hwe")]); window.scrollTo(0, 0); }; });
       Array.prototype.forEach.call($("hwList").querySelectorAll("[data-hwd]"), function (b) { b.onclick = function () { hwDetail(HW_LIST[+b.getAttribute("data-hwd")]); }; });
     });
   }
+  // ---------- 💬 학부모 상담 ----------
+  var PM = { list: [], cur: null };
+  function pmBadge() { post({ action: "t_pm_inbox" }).then(function (j) { if (!j.ok) return; PM.list = j.list; var t = $("tabPm"); t.textContent = "💬 학부모" + (j.unread ? " (" + j.unread + ")" : ""); t.style.fontWeight = j.unread ? "800" : ""; }); }
+  function pmOpen() {
+    var opts = (DATA.classes || []).filter(function (c) { return c !== "신입 반배정"; }).map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
+    if ($("pmCls").options.length < 2) $("pmCls").innerHTML = '<option value="">모든 반</option>' + opts;
+    if (!$("plCls").options.length) { $("plCls").innerHTML = opts; var lc = lsGet("cm-teacher-cls"); if (lc && (DATA.classes || []).indexOf(lc) >= 0) $("plCls").value = lc; }
+    pmLoad();
+  }
+  function pmTime(at) { return at ? at.slice(5, 16).replace("T", " ").replace("-", "/") : ""; }
+  function pmLoad() {
+    $("pmList").innerHTML = '<p class="hint">불러오는 중…</p>';
+    post({ action: "t_pm_inbox" }).then(function (j) {
+      if (!j.ok) { $("pmList").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; }
+      PM.list = j.list; var t = $("tabPm"); t.textContent = "💬 학부모" + (j.unread ? " (" + j.unread + ")" : ""); t.style.fontWeight = j.unread ? "800" : "";
+      var cls = $("pmCls").value, L = j.list.filter(function (x) { return !cls || x.cls === cls; });
+      if (!L.length) { $("pmList").innerHTML = '<p class="hint">아직 부모님이 남긴 글이 없어요. 아래에서 학부모 앱 링크를 부모님께 보내 보세요.</p>'; return; }
+      $("pmList").innerHTML = '<div class="tw"><table><thead><tr><th>학생</th><th>반</th><th>마지막 글</th><th>시각</th><th></th></tr></thead><tbody>' + L.map(function (x) {
+        return "<tr" + (x.unread ? ' style="background:#FFF6E5"' : "") + "><td><b>" + esc(x.name) + "</b>" + (x.unread ? ' <span class="pill end">새 글 ' + x.unread + "</span>" : "") + "</td><td>" + esc(x.cls) + '</td><td style="max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (x.lastFrom === "선생님" ? "↩ " : "") + esc(x.last) + "</td><td>" + esc(pmTime(x.lastAt)) + '</td><td><button class="sm" data-pmo="' + esc(x.sid) + '">' + (x.unread ? "읽고 답장" : "열기") + "</button></td></tr>";
+      }).join("") + "</tbody></table></div>";
+      Array.prototype.forEach.call($("pmList").querySelectorAll("[data-pmo]"), function (b) { b.onclick = function () { pmThread(b.getAttribute("data-pmo")); }; });
+    });
+  }
+  function pmThread(sid) {
+    var x = PM.list.filter(function (y) { return y.sid === sid; })[0] || { sid: sid, name: "", cls: "" }; PM.cur = x;
+    $("pmThreadCard").style.display = ""; $("pmThread").innerHTML = '<p class="hint">불러오는 중…</p>'; $("pmThreadCard").scrollIntoView({ behavior: "smooth" });
+    post({ action: "t_pm_thread", sid: sid }).then(function (j) {
+      if (!j.ok) { $("pmThread").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; }
+      $("pmThread").innerHTML = "<h2>💬 " + esc(x.name) + ' 학부모님 <span class="hint" style="font-size:14px">' + esc(x.cls) + "</span></h2>" +
+        '<div style="display:flex;flex-direction:column;gap:8px;max-height:460px;overflow:auto;padding:4px" id="pmBox">' + j.msgs.map(function (m) {
+          var me = m.from === "선생님";
+          return '<div style="max-width:80%;align-self:' + (me ? "flex-end" : "flex-start") + ";background:" + (me ? "var(--ac-bg)" : "#fff") + ';border:1px solid var(--line);border-radius:12px;padding:9px 12px;white-space:pre-wrap;line-height:1.55;font-size:14.5px"><b style="font-size:12.5px;color:var(--muted)">' + (me ? "🧑‍🏫 " + esc(m.teacher || "선생님") : "👪 학부모") + "</b>\n" + esc(m.text) + '<div class="hint" style="margin:2px 0 0">' + esc(pmTime(m.at)) + "</div></div>";
+        }).join("") + "</div>" +
+        '<label class="l" style="margin-top:10px">답장</label><textarea id="pmText" rows="3" maxlength="1500" placeholder="부모님께 보낼 답장"></textarea><div class="row" style="margin-top:8px"><button id="pmSend">답장 보내기</button><span class="msg" id="pmMsg" style="margin:0"></span></div>';
+      var bx = $("pmBox"); bx.scrollTop = bx.scrollHeight;
+      $("pmSend").onclick = function () {
+        var v = $("pmText").value.trim(), b = this; if (!v) return; b.disabled = true; $("pmMsg").textContent = "보내는 중…";
+        post({ action: "t_pm_send", sid: sid, cls: x.cls, text: v }).then(function (r) { b.disabled = false; if (!r.ok) { $("pmMsg").innerHTML = '<span class="er">' + esc(r.msg || "보내지 못했어요.") + "</span>"; return; } pmThread(sid); pmLoad(); });
+      };
+      pmLoad();
+    });
+  }
+  $("pmReload").onclick = pmLoad; $("pmCls").onchange = pmLoad;
+
+  // ---------- 👪 부모님 사진 보기 링크 ----------
+  var PL = [];
+  function plUrl(k) { return location.origin + "/parent.html?k=" + k; }
+  function plCopy(t, b, label) { (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { b.textContent = "✓ 복사됨"; setTimeout(function () { b.textContent = label; }, 1500); }, function () { prompt("복사해서 부모님께 보내세요", t); }); }
+  function plDraw() {
+    if (!PL.length) { $("plOut").innerHTML = '<p class="hint">이 반에 학생이 없어요.</p>'; return; }
+    $("plOut").innerHTML = '<div class="row" style="margin-top:8px"><button class="sm sub" id="plAll">📋 반 전체 복사 (이름 + 링크)</button></div><div class="tw"><table><thead><tr><th>이름</th><th>부모님 링크</th><th></th></tr></thead><tbody>' + PL.map(function (x, i) {
+      return "<tr><td><b>" + esc(x.name) + '</b></td><td style="max-width:360px;word-break:break-all;font-size:12.5px;color:var(--muted)">' + (x.k ? esc(plUrl(x.k)) : '<span class="er">만들지 못했어요</span>') + '</td><td style="white-space:nowrap"><button class="sm" data-plc="' + i + '"' + (x.k ? "" : " disabled") + '>링크 복사</button> <a class="sm" style="font-size:13px" target="_blank" rel="noopener" href="' + (x.k ? esc(plUrl(x.k)) : "#") + '">열어 보기</a> <button class="sm warn" data-plr="' + i + '">새 링크로 바꾸기</button></td></tr>';
+    }).join("") + "</tbody></table></div>";
+    $("plAll").onclick = function () { plCopy(PL.filter(function (x) { return x.k; }).map(function (x) { return x.name + " 학생 과제 보기: " + plUrl(x.k); }).join("\n"), this, "📋 반 전체 복사 (이름 + 링크)"); };
+    Array.prototype.forEach.call($("plOut").querySelectorAll("[data-plc]"), function (b) { b.onclick = function () { var x = PL[+b.getAttribute("data-plc")]; plCopy(plUrl(x.k), b, "링크 복사"); }; });
+    Array.prototype.forEach.call($("plOut").querySelectorAll("[data-plr]"), function (b) {
+      b.onclick = function () {
+        var x = PL[+b.getAttribute("data-plr")]; if (!confirm(x.name + " 학생의 부모님 링크를 새로 만들까요?\n예전 링크는 바로 열리지 않게 돼요. 새 링크를 부모님께 다시 보내 주세요.")) return;
+        b.disabled = true; b.textContent = "바꾸는 중…";
+        post({ action: "t_parent_reset", sid: x.sid }).then(function (j) { if (!j.ok) { b.disabled = false; b.textContent = "새 링크로 바꾸기"; alert(j.msg || "바꾸지 못했어요."); return; } x.k = j.k; plDraw(); });
+      };
+    });
+  }
+  $("plLoad").onclick = function () {
+    var b = this; b.disabled = true; $("plOut").innerHTML = '<p class="hint">불러오는 중… (처음엔 링크를 만드느라 조금 걸려요)</p>';
+    post({ action: "t_parent_links", cls: $("plCls").value }).then(function (j) { b.disabled = false; if (!j.ok) { $("plOut").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; } PL = j.list; plDraw(); });
+  };
+  $("plCls").onchange = function () { $("plOut").innerHTML = ""; };
+
+  // ---------- 🗓 월간 과제 계획 ----------
+  var MP = { ym: "", cls: "", saved: [], drafts: [] }, MP_WD = "일월화수목금토";
+  function mpToday() { return new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10); }
+  function mpMd(s) { return s ? Number(s.slice(5, 7)) + "/" + Number(s.slice(8, 10)) : ""; }
+  function mpDow(s) { return new Date(s + "T00:00:00Z").getUTCDay(); }
+  function mpAddDays(s, n) { return new Date(Date.parse(s + "T00:00:00Z") + n * 864e5).toISOString().slice(0, 10); }
+  function mpDays(ym) { return new Date(Date.UTC(+ym.slice(0, 4), +ym.slice(5, 7), 0)).getUTCDate(); }
+  function mpTitle(pat, n, day) { return String(pat || "").replace(/\{n\}/g, n).replace(/\{날짜\}/g, mpMd(day)); }
+  function mpSavedOn(day) { return MP.saved.filter(function (h) { return h.dueKst.slice(0, 10) === day; }); }
+  function mpDraftOn(day) { return MP.drafts.filter(function (d) { return d.date === day; }); }
+  (function () { // 요일 고르기 + 지난번 설정 기억
+    var keep = (lsGet("cm-mp-wk") || "").split(",");
+    $("mpWk").innerHTML = [1, 2, 3, 4, 5, 6, 0].map(function (w) { return '<label><input type="checkbox" value="' + w + '"' + (keep.indexOf(String(w)) >= 0 ? " checked" : "") + "> " + MP_WD[w] + "</label>"; }).join("");
+    if (lsGet("cm-mp-pat")) $("mpPat").value = lsGet("cm-mp-pat");
+    if (lsGet("cm-mp-time")) $("mpTime").value = lsGet("cm-mp-time");
+    var sv = lsGet("cm-mp-show"); $("mpShow").value = sv !== null && sv !== undefined && sv !== "" ? sv : "2"; if (sv === "now") $("mpShow").value = "";
+  })();
+  function mpLoad() {
+    if (!$("mpCls").options.length) return;
+    if (!MP.ym) MP.ym = mpToday().slice(0, 7);
+    MP.cls = $("mpCls").value; var ym = MP.ym, cls = MP.cls;
+    $("mpYm").textContent = ym.slice(0, 4) + "년 " + Number(ym.slice(5, 7)) + "월";
+    mpRender(true);
+    post({ action: "t_hw_month", cls: cls, ym: ym }).then(function (j) {
+      if (ym !== MP.ym || cls !== MP.cls) return; // 그사이 달·반을 바꿨으면 버려요
+      if (!j.ok) { $("mpCal").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; }
+      MP.saved = j.list || []; mpRender();
+    });
+  }
+  function mpRender(loading) {
+    var ym = MP.ym, today = mpToday(), first = mpDow(ym + "-01"), n = mpDays(ym), h = "";
+    for (var w = 0; w < 7; w++) h += '<div class="wh' + (w === 0 ? " su" : "") + '">' + MP_WD[w] + "</div>";
+    for (var b = 0; b < first; b++) h += "<div></div>";
+    for (var d = 1; d <= n; d++) {
+      var day = ym + "-" + hwPad(d), old = day < today;
+      h += '<div class="cd' + (day === today ? " td" : "") + (old ? " old" : "") + (mpDow(day) === 0 ? " su" : "") + '" data-day="' + day + '"' + (old ? "" : ' title="눌러서 ' + mpMd(day) + ' 마감 과제 넣기"') + '><span class="dn">' + d + "</span>";
+      if (!loading) {
+        mpSavedOn(day).forEach(function (s) { var k = MP.saved.indexOf(s), c = s.past ? "d" : s.hidden ? "w" : "s"; h += '<span class="cc ' + c + (s.active ? "" : " x") + '" data-mps="' + k + '" title="' + esc(s.dueKst.slice(11, 16) + " · " + s.title + (s.hidden ? " (" + mpMd(s.show) + "부터 보임)" : "") + (s.active ? "" : " (숨김)") + " — 눌러서 고치기") + '">' + esc(s.title) + "</span>"; });
+        mpDraftOn(day).forEach(function (x) { h += '<span class="cc n" data-mpx="' + MP.drafts.indexOf(x) + '" title="' + esc(x.time + " · " + x.title + " — 눌러서 빼기") + '">' + esc(x.title || "(과제명)") + "</span>"; });
+      }
+      h += "</div>";
+    }
+    $("mpCal").innerHTML = h;
+    Array.prototype.forEach.call($("mpCal").querySelectorAll(".cd"), function (c) {
+      c.onclick = function (e) {
+        var t = e.target, s = t.getAttribute && t.getAttribute("data-mps"), x = t.getAttribute && t.getAttribute("data-mpx");
+        if (s !== null && s !== undefined) { hwForm(MP.saved[+s]); $("hwFormTitle").scrollIntoView({ behavior: "smooth" }); return; }
+        if (x !== null && x !== undefined) { MP.drafts.splice(+x, 1); mpRender(); mpDrafts(); return; }
+        if (c.classList.contains("old")) return;
+        mpAdd(c.getAttribute("data-day"));
+      };
+    });
+  }
+  function mpNextN() { var st = parseInt($("mpStart").value, 10); st = isNaN(st) ? 1 : st; return st + MP.drafts.filter(function (d) { return d.pat; }).length; }
+  function mpAdd(day, o) {
+    o = o || {}; var pat = $("mpPat").value.trim();
+    MP.drafts.push({ date: day, time: o.time || $("mpTime").value || "21:00", title: o.title != null ? o.title : (pat ? mpTitle(pat, mpNextN(), day) : ""), desc: o.desc != null ? o.desc : $("mpDesc").value.trim(), pat: o.title == null && !!pat && /\{n\}/.test(pat) });
+    MP.drafts.sort(function (a, b) { return (a.date + a.time).localeCompare(b.date + b.time); });
+    if (!o.quiet) { mpRender(); mpDrafts(); }
+  }
+  function mpDrafts() {
+    var L = MP.drafts;
+    $("mpSave").disabled = !L.length; $("mpSave").textContent = L.length ? "💾 " + L.length + "개 모두 저장" : "💾 모두 저장"; $("mpClear").style.display = L.length ? "" : "none";
+    if (!L.length) { $("mpDrafts").innerHTML = ""; return; }
+    var other = L.filter(function (d) { return d.date.slice(0, 7) !== MP.ym; }).length;
+    $("mpDrafts").innerHTML = '<h3 style="margin:14px 0 4px;font-size:15px">새로 넣을 과제 ' + L.length + "개 · 반: " + esc(MP.cls) + (other ? ' <span class="hint">(다른 달 ' + other + "개 포함)</span>" : "") + '</h3><div class="hint" style="margin-top:0">여기서 바로 고칠 수 있어요. 휴일처럼 빼야 하는 날은 ✕를 누르세요.' + (L.some(function (d) { return d.pat; }) ? ' <button class="sm sub" id="mpRenum">날짜 순서로 번호 다시 매기기</button>' : "") + '</div><div class="tw"><table><thead><tr><th>날짜</th><th>마감</th><th>과제명</th><th>설명</th><th></th></tr></thead><tbody>' + L.map(function (d, i) {
+      return '<tr><td style="min-width:132px"><input type="date" data-mi="' + i + '" data-k="date" value="' + esc(d.date) + '"><div class="hint" style="margin:0">' + MP_WD[mpDow(d.date)] + '요일</div></td><td style="min-width:96px"><input type="time" data-mi="' + i + '" data-k="time" value="' + esc(d.time) + '"></td><td style="min-width:190px"><input data-mi="' + i + '" data-k="title" value="' + esc(d.title) + '" placeholder="과제명"></td><td style="min-width:160px"><input data-mi="' + i + '" data-k="desc" value="' + esc(d.desc) + '" placeholder="(선택)"></td><td><button class="sm warn" data-mdel="' + i + '" title="빼기">✕</button></td></tr>';
+    }).join("") + "</tbody></table></div>";
+    Array.prototype.forEach.call($("mpDrafts").querySelectorAll("[data-mi]"), function (el) {
+      el.oninput = function () { var d = MP.drafts[+el.getAttribute("data-mi")], k = el.getAttribute("data-k"); d[k] = el.value; if (k === "title") d.pat = false; };
+      el.onchange = function () { var k = el.getAttribute("data-k"); if (k === "date" || k === "time") { MP.drafts.sort(function (a, b) { return (a.date + a.time).localeCompare(b.date + b.time); }); mpDrafts(); } mpRender(); };
+    });
+    Array.prototype.forEach.call($("mpDrafts").querySelectorAll("[data-mdel]"), function (b) { b.onclick = function () { MP.drafts.splice(+b.getAttribute("data-mdel"), 1); mpRender(); mpDrafts(); }; });
+    var rn = $("mpRenum"); if (rn) rn.onclick = function () { var pat = $("mpPat").value.trim(), st = parseInt($("mpStart").value, 10), k = 0; st = isNaN(st) ? 1 : st; if (!/\{n\}/.test(pat)) { alert("위 「과제명 형식」에 {n}을 넣어 주세요."); return; } MP.drafts.forEach(function (d) { if (d.pat) { d.title = mpTitle(pat, st + k, d.date); k++; } }); mpRender(); mpDrafts(); };
+  }
+  function mpShiftMonth(n) { var y = +MP.ym.slice(0, 4), m = +MP.ym.slice(5, 7) - 1 + n; MP.ym = new Date(Date.UTC(y, m, 1)).toISOString().slice(0, 7); MP.saved = []; mpLoad(); mpDrafts(); }
+  $("mpPrev").onclick = function () { mpShiftMonth(-1); }; $("mpNext").onclick = function () { mpShiftMonth(1); };
+  $("mpToday").onclick = function () { MP.ym = mpToday().slice(0, 7); MP.saved = []; mpLoad(); mpDrafts(); };
+  $("mpCls").onchange = function () {
+    if (MP.drafts.length && !confirm("아직 저장하지 않은 과제 " + MP.drafts.length + "개가 있어요. 「" + $("mpCls").value + "」 과제로 바꿔서 저장할까요?\n(취소를 누르면 반을 바꾸지 않아요)")) { $("mpCls").value = MP.cls; return; }
+    lsSet("cm-teacher-cls", $("mpCls").value); MP.saved = []; mpLoad(); mpDrafts();
+  };
+  $("mpFill").onclick = function () {
+    var wk = Array.prototype.filter.call($("mpWk").querySelectorAll("input"), function (i) { return i.checked; }).map(function (i) { return +i.value; });
+    if (!wk.length) { alert("요일을 하나 이상 골라 주세요."); return; }
+    if (!$("mpPat").value.trim()) { alert("과제명 형식을 넣어 주세요. 예: Day {n} 단어 3번씩 쓰기"); $("mpPat").focus(); return; }
+    lsSet("cm-mp-wk", wk.join(",")); lsSet("cm-mp-pat", $("mpPat").value.trim()); lsSet("cm-mp-time", $("mpTime").value);
+    var today = mpToday(), n = mpDays(MP.ym), add = 0, skip = 0;
+    for (var d = 1; d <= n; d++) {
+      var day = MP.ym + "-" + hwPad(d);
+      if (day < today || wk.indexOf(mpDow(day)) < 0) continue;
+      if ($("mpSkip").checked && (mpSavedOn(day).length || mpDraftOn(day).length)) { skip++; continue; }
+      mpAdd(day, { quiet: true }); add++;
+    }
+    mpRender(); mpDrafts();
+    $("mpMsg").innerHTML = add ? '<span class="ok">' + add + "개를 넣었어요." + (skip ? " (이미 과제가 있는 " + skip + "일은 건너뜀)" : "") + " 아래 목록에서 확인하고 저장하세요.</span>" : '<span class="er">넣을 날이 없어요. (오늘 이후 날짜만 넣어요' + (skip ? ", 이미 과제가 있는 " + skip + "일은 건너뜀" : "") + ")</span>";
+  };
+  function mpParseDay(s) {
+    s = String(s || "").trim(); var y = +MP.ym.slice(0, 4), m, d, r;
+    if ((r = /^(\d{4})\s*[-./년]\s*(\d{1,2})\s*[-./월]\s*(\d{1,2})/.exec(s))) { y = +r[1]; m = +r[2]; d = +r[3]; }
+    else if ((r = /^(\d{1,2})\s*[/.\-월]\s*(\d{1,2})\s*일?/.exec(s))) { m = +r[1]; d = +r[2]; if (m < +MP.ym.slice(5, 7) - 6) y++; }
+    else if ((r = /^(\d{1,2})\s*일?$/.exec(s))) { m = +MP.ym.slice(5, 7); d = +r[1]; }
+    else return "";
+    if (m < 1 || m > 12 || d < 1 || d > 31) return "";
+    var out = y + "-" + hwPad(m) + "-" + hwPad(d);
+    return new Date(out + "T00:00:00Z").getUTCDate() === d ? out : "";
+  }
+  $("mpParse").onclick = function () {
+    var lines = $("mpPaste").value.split(/\r?\n/), add = 0, bad = [], old = 0, today = mpToday();
+    lines.forEach(function (ln, i) {
+      if (!ln.trim()) return;
+      var c = ln.indexOf("\t") >= 0 ? ln.split("\t") : (function () { var r = /^(\S+(?:\s*월\s*\d{1,2}\s*일)?)\s+(.*)$/.exec(ln.trim()); return r ? [r[1], r[2]] : [ln]; })();
+      var day = mpParseDay(c[0]), title = String(c[1] || "").trim(), tm = String(c[3] || "").trim();
+      if (!day || !title) { if (i > 0 || day) bad.push(i + 1); return; } // 첫 줄이 제목 줄이면 조용히 건너뛰어요
+      if (day < today) { old++; return; }
+      if (!/^\d{1,2}:\d{2}$/.test(tm)) tm = ""; else tm = hwPad(+tm.split(":")[0]) + ":" + tm.split(":")[1];
+      mpAdd(day, { title: title, desc: String(c[2] || "").trim(), time: tm || undefined, quiet: true }); add++;
+    });
+    mpRender(); mpDrafts();
+    $("mpPasteMsg").innerHTML = (add ? '<span class="ok">' + add + "개를 넣었어요.</span> " : "") + (old ? '<span class="er">지난 날짜 ' + old + "개는 뺐어요.</span> " : "") + (bad.length ? '<span class="er">' + bad.slice(0, 8).join(", ") + "번째 줄은 날짜나 과제명을 못 읽었어요.</span>" : "") + (!add && !old && !bad.length ? '<span class="er">붙여넣은 내용이 없어요.</span>' : "");
+    if (add) $("mpPaste").value = "";
+  };
+  $("mpClear").onclick = function () { if (!confirm("저장하지 않은 과제 " + MP.drafts.length + "개를 목록에서 지울까요?")) return; MP.drafts = []; mpRender(); mpDrafts(); $("mpMsg").textContent = ""; };
+  $("mpShow").onchange = function () { lsSet("cm-mp-show", $("mpShow").value === "" ? "now" : $("mpShow").value); };
+  $("mpSave").onclick = function () {
+    var btn = this, cls = MP.cls, sv = $("mpShow").value, now = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 16), notify = $("mpNotify").checked;
+    if (!cls) { alert("반을 골라 주세요."); return; }
+    var noTitle = MP.drafts.filter(function (d) { return !String(d.title || "").trim(); }).length; if (noTitle) { $("mpMsg").innerHTML = '<span class="er">과제명이 빈 줄이 ' + noTitle + "개 있어요.</span>"; return; }
+    var badT = MP.drafts.filter(function (d) { return !/^\d{4}-\d{2}-\d{2}$/.test(d.date) || !/^\d{2}:\d{2}$/.test(d.time); }).length; if (badT) { $("mpMsg").innerHTML = '<span class="er">날짜나 마감 시간이 빈 줄이 ' + badT + "개 있어요.</span>"; return; }
+    var past = MP.drafts.filter(function (d) { return d.date + "T" + d.time <= now; }).length; if (past) { $("mpMsg").innerHTML = '<span class="er">마감이 이미 지난 과제가 ' + past + "개 있어요. 저장하면 곧바로 미제출 알림이 갈 수 있어서 저장하지 않았어요. 날짜를 고치거나 ✕로 빼 주세요.</span>"; return; }
+    if (!confirm("「" + cls + "」 과제 " + MP.drafts.length + "개를 저장할까요?\n" + (notify ? "마감까지 안 낸 학생은 학부모님께 알림이 가요." : "학부모 알림은 보내지 않아요."))) return;
+    lsSet("cm-mp-show", sv === "" ? "now" : sv);
+    var items = MP.drafts.map(function (d) { return { cls: cls, title: String(d.title).trim(), due: d.date + "T" + d.time, desc: String(d.desc || "").trim(), notify: notify, showFrom: sv === "" ? "" : mpAddDays(d.date, -(+sv)), _d: d }; });
+    var done = 0, fail = 0, warn = "", i = 0; btn.disabled = true;
+    (function next() {
+      if (i >= items.length) {
+        btn.disabled = false; MP.drafts = MP.drafts.filter(function (d) { return d._fail; }); MP.drafts.forEach(function (d) { delete d._fail; });
+        $("mpMsg").innerHTML = (done ? '<span class="ok">' + done + "개를 저장했어요 ✓</span> " : "") + (fail ? '<span class="er">' + fail + "개는 저장하지 못했어요. 목록에 남겨 뒀으니 다시 눌러 주세요.</span> " : "") + (warn ? '<span class="er">' + esc(warn) + "</span>" : "");
+        mpDrafts(); mpLoad(); hwLoad(true); return;
+      }
+      var part = items.slice(i, i + 40); i += 40;
+      $("mpMsg").textContent = "저장하는 중… " + Math.min(i, items.length) + " / " + items.length;
+      post({ action: "t_hw_bulk", items: part.map(function (x) { return { cls: x.cls, title: x.title, due: x.due, desc: x.desc, notify: x.notify, showFrom: x.showFrom }; }) }).then(function (j) {
+        if (!j.ok || !j.results) { part.forEach(function (x) { x._d._fail = true; }); fail += part.length; if (j.msg) warn = j.msg; }
+        else { j.results.forEach(function (r, k) { if (r && r.ok) done++; else { part[k]._d._fail = true; fail++; } }); if (j.warn) warn = j.warn; }
+        next();
+      });
+    })();
+  };
+
   // ---------- 🎮 단어 게임: 단어장 보이기/숨기기 · 링크 ----------
   var GM_URL = location.origin + "/어휘/";
   function copyText(t, b) { (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { var o = b.textContent; b.textContent = "✓ 복사됨"; setTimeout(function () { b.textContent = o; }, 1500); }, function () { prompt("복사해서 단톡방에 보내세요", t); }); }
@@ -607,7 +883,7 @@ tr.miss td{color:#A0AAB2}
     var opts = DATA.classes.map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
     var keep = function (id, html) { var el = $(id), v = el.value; el.innerHTML = html; if (v && DATA.classes.indexOf(v) >= 0) el.value = v; };
     keep("sfCls", opts); keep("stMoveCls", opts);
-    $("hwCls").innerHTML = ""; $("rkCls").innerHTML = '<option value="">학원 전체</option>'; $("ctCls").innerHTML = ""; // 다음에 열 때 새 반 목록으로
+    $("hwCls").innerHTML = ""; $("mpCls").innerHTML = ""; $("plCls").innerHTML = ""; $("rkCls").innerHTML = '<option value="">학원 전체</option>'; $("ctCls").innerHTML = ""; // 다음에 열 때 새 반 목록으로
     $("sfGrade").innerHTML = '<option value="">선택 안 함</option>' + GR.map(function (g) { return "<option>" + g + "</option>"; }).join("");
     var stc = $("stCls"), sv = stc.value || ST_VIEW.cls;
     stc.innerHTML = DATA.classes.map(function (c) { var n = STU.students.filter(function (x) { return x.cls === c && isActive(x); }).length; return '<option value="' + esc(c) + '">' + esc(c) + " (" + n + ")</option>"; }).join("") + (STU.students.some(function (x) { return DATA.classes.indexOf(x.cls) < 0; }) ? '<option value="__none">반 없음·기타</option>' : "");
@@ -861,13 +1137,13 @@ tr.miss td{color:#A0AAB2}
   // ---------- 탭 ----------
   function tab(name) {
     Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) { t.classList.toggle("on", t.getAttribute("data-tab") === name); });
-    ["list", "edit", "results", "report", "teachers", "import", "hw", "game", "stu", "cert"].forEach(function (n) { $("v-" + n).style.display = n === name ? "" : "none"; });
+    ["list", "edit", "results", "report", "teachers", "import", "hw", "game", "stu", "cert", "pm"].forEach(function (n) { $("v-" + n).style.display = n === name ? "" : "none"; });
     $("contactCard").style.display = name === "results" || name === "report" ? "" : "none";
     try { history.replaceState(null, "", "#" + name); } catch (e) {}
     window.scrollTo(0, 0);
   }
   Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) {
-    t.onclick = function () { var n = t.getAttribute("data-tab"); if (n === "edit") newPaper(); if (n === "import") mkFill(); if (n === "results") fillResultSelect(); if (n === "teachers") loadTeachers(); if (n === "hw") hwOpen(); if (n === "game") { gmLoad(); rkLoad(); } if (n === "stu") stOpen(); if (n === "cert") ctOpen(); tab(n); };
+    t.onclick = function () { var n = t.getAttribute("data-tab"); if (n === "edit") newPaper(); if (n === "import") mkFill(); if (n === "results") fillResultSelect(); if (n === "teachers") loadTeachers(); if (n === "hw") hwOpen(); if (n === "game") { gmLoad(); rkLoad(); } if (n === "stu") stOpen(); if (n === "cert") ctOpen(); if (n === "pm") pmOpen(); tab(n); };
   });
 
   function fillClassSelects() {

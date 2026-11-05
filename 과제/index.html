@@ -36,6 +36,18 @@
   .addshot{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;aspect-ratio:1;border:2px dashed var(--accent-light);border-radius:10px;color:var(--accent-ink);font:700 14px var(--font);cursor:pointer;background:var(--accent-soft)}
   .addshot span{font-size:28px}
   .done{text-align:center;padding:26px 18px}.done .big{font-size:46px}
+  .seg{display:flex;gap:6px;margin-top:12px}.seg button{flex:1;border:1.5px solid var(--border-strong);background:var(--card);border-radius:10px;padding:10px;font:700 15px var(--font);color:var(--ink);cursor:pointer}.seg button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .mnav{display:flex;align-items:center;justify-content:space-between;gap:8px}.mnav b{font-size:17px}.mnav button{border:0;background:var(--accent-bg);color:var(--accent-ink);border-radius:8px;padding:8px 12px;font:700 15px var(--font);cursor:pointer}
+  .cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;margin-top:10px}
+  .cal .wh{font-size:12px;font-weight:700;color:var(--muted);text-align:center}.cal .wh.su{color:#C0392B}
+  .cal .cd{min-height:60px;border:1px solid var(--border);border-radius:8px;padding:3px;display:flex;flex-direction:column;gap:2px;cursor:pointer;min-width:0;background:var(--card)}
+  .cal .cd.td{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}.cal .cd.sel{background:var(--accent-soft)}
+  .cal .dn{font-size:12px;font-weight:700;color:var(--muted)}.cal .su .dn{color:#C0392B}
+  .ch{font-size:10.5px;line-height:1.2;padding:1px 3px;border-radius:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:keep-all;overflow-wrap:anywhere}
+  .ch.go{background:#E3F0FF;color:#1F5FA8}.ch.ok{background:#DFF5E8;color:#1E7A45}.ch.late{background:#FFF1D6;color:#8A5A00}.ch.miss{background:#FDE3E1;color:#A2342A}.ch.lock{background:#EEF1F3;color:#6B7883}
+  .ch.more{background:none;color:var(--muted);padding:0 3px}
+  .lg{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.lg .ch{display:inline-block;font-size:12px;padding:2px 6px}
+  .hw.lock{cursor:default;background:#F7F9FA}.hw.lock .t{color:var(--muted)}.tag.lock{background:#EEF1F3;color:#6B7883}
 </style>
 </head>
 <body>
@@ -98,7 +110,7 @@
         go.disabled = false;
         if (j.needSet) { stu.hasPin = false; stepPin(stu); return; }
         if (!j.token) { er.textContent = j.msg || "확인하지 못했어요."; return; }
-        ME = { token: j.token, name: j.name, cls: j.cls, exp: Date.now() + 3.8 * 3600 * 1000 }; ss.set("cm-monthly-me", ME); showList();
+        ME = { token: j.token, name: j.name, cls: j.cls, exp: Date.now() + 3.8 * 3600 * 1000 }; ss.set("cm-monthly-me", ME); showMain();
       });
     };
     p1.onkeydown = function (e) { if (e.key === "Enter") go.click(); };
@@ -119,18 +131,71 @@
     var h = Math.floor(ms / 3600e3), d = Math.floor(h / 24);
     return d >= 1 ? d + "일 " + (h % 24) + "시간 남음" : h >= 1 ? h + "시간 " + Math.floor(ms / 60000) % 60 + "분 남음" : Math.max(1, Math.floor(ms / 60000)) + "분 남음 ⏰";
   }
+  // 📋 목록 / 🗓 달력 (고른 쪽을 이 기기에서 기억)
+  var VIEW = (function () { try { return localStorage.getItem("cm-hw-view") === "cal" ? "cal" : "list"; } catch (e) { return "list"; } })();
+  function viewBar() { return '<div class="seg"><button data-v="list"' + (VIEW === "list" ? ' class="on"' : "") + '>📋 목록</button><button data-v="cal"' + (VIEW === "cal" ? ' class="on"' : "") + ">🗓 달력</button></div>"; }
+  function bindView() { Array.prototype.forEach.call(app.querySelectorAll(".seg button"), function (b) { b.onclick = function () { VIEW = b.getAttribute("data-v"); try { localStorage.setItem("cm-hw-view", VIEW); } catch (e) {} showMain(); }; }); }
+  function showMain() { if (VIEW === "cal") showCal(); else showList(); }
+  function hwRow(h, i, key) {
+    if (h.hidden) return '<div class="hw lock"><div class="b"><div class="t">🔒 ' + esc(h.title) + '</div><div class="m">마감 ' + esc(h.dueLabel) + "</div></div>" + '<span class="tag lock">' + esc(md(h.show)) + "에 열려요</span></div>";
+    return '<div class="hw" data-' + key + '="' + i + '"><div class="b"><div class="t">' + esc(h.title) + '</div><div class="m">마감 ' + esc(h.dueLabel) + " · " + (h.status ? esc(h.status) + (h.n ? " (사진 " + h.n + "장)" : "") : esc(left(h.due))) + "</div></div>" + tagOf(h) + "</div>";
+  }
   function showList() {
-    app.innerHTML = whoBar() + '<div class="box"><p class="sub">과제를 불러오는 중…</p></div>'; bindWho();
+    app.innerHTML = whoBar() + viewBar() + '<div class="box"><p class="sub">과제를 불러오는 중…</p></div>'; bindWho(); bindView();
     post({ action: "s_hw_list", token: ME.token }).then(function (j) {
+      if (VIEW !== "list") return;
       if (j.relogin) { logout(); stepCls(j.msg); return; }
-      if (!j.ok) { app.innerHTML = whoBar() + '<div class="box"><p class="err">' + esc(j.msg || "과제 목록을 불러오지 못했어요.") + "</p></div>"; bindWho(); return; }
+      if (!j.ok) { app.innerHTML = whoBar() + viewBar() + '<div class="box"><p class="err">' + esc(j.msg || "과제 목록을 불러오지 못했어요.") + "</p></div>"; bindWho(); bindView(); return; }
       LIST = j.list;
-      app.innerHTML = whoBar() + (LIST.length ? LIST.map(function (h, i) {
-        return '<div class="hw" data-i="' + i + '"><div class="b"><div class="t">' + esc(h.title) + '</div><div class="m">마감 ' + esc(h.dueLabel) + " · " + (h.status ? esc(h.status) + (h.n ? " (사진 " + h.n + "장)" : "") : esc(left(h.due))) + "</div></div>" + tagOf(h) + "</div>";
-      }).join("") : '<div class="box"><p class="sub">지금 낼 과제가 없어요. 선생님이 과제를 내면 여기에 나와요.</p></div>');
-      bindWho();
-      Array.prototype.forEach.call(app.querySelectorAll(".hw"), function (el) { el.onclick = function () { showHw(LIST[+el.getAttribute("data-i")]); }; });
+      app.innerHTML = whoBar() + viewBar() + (LIST.length ? LIST.map(function (h, i) { return hwRow(h, i, "i"); }).join("") : '<div class="box"><p class="sub">지금 낼 과제가 없어요. 선생님이 과제를 내면 여기에 나와요. 앞으로 나올 과제는 🗓 달력에서 볼 수 있어요.</p></div>');
+      bindWho(); bindView();
+      Array.prototype.forEach.call(app.querySelectorAll(".hw[data-i]"), function (el) { el.onclick = function () { showHw(LIST[+el.getAttribute("data-i")]); }; });
     });
+  }
+
+  // ================= 🗓 달력 =================
+  var WD = "일월화수목금토", pad = function (n) { return ("0" + n).slice(-2); };
+  var today = function () { return new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10); };
+  var CAL = { ym: "", list: [], sel: "" };
+  function md(s) { return s ? Number(s.slice(5, 7)) + "/" + Number(s.slice(8, 10)) : ""; }
+  function chOf(h) { return h.hidden ? "lock" : h.status === "제출" ? "ok" : h.status === "지각 제출" ? "late" : h.past ? "miss" : "go"; }
+  function showCal(shift) {
+    if (!CAL.ym) { CAL.ym = today().slice(0, 7); CAL.sel = today(); CAL.auto = true; }
+    if (shift) { var y = +CAL.ym.slice(0, 4), m = +CAL.ym.slice(5, 7) - 1 + shift; CAL.ym = new Date(Date.UTC(y, m, 1)).toISOString().slice(0, 7); CAL.sel = CAL.ym === today().slice(0, 7) ? today() : CAL.ym + "-01"; CAL.auto = true; }
+    var ym = CAL.ym;
+    app.innerHTML = whoBar() + viewBar() + '<div class="box"><div class="mnav"><button id="cp" aria-label="지난달">◀</button><b>' + ym.slice(0, 4) + "년 " + Number(ym.slice(5, 7)) + '월</b><button id="cn" aria-label="다음 달">▶</button></div><div id="calg"><p class="sub" style="margin-top:10px">달력을 불러오는 중…</p></div></div><div id="dayl"></div>';
+    bindWho(); bindView();
+    document.getElementById("cp").onclick = function () { showCal(-1); }; document.getElementById("cn").onclick = function () { showCal(1); };
+    post({ action: "s_hw_cal", token: ME.token, ym: ym }).then(function (j) {
+      if (VIEW !== "cal" || ym !== CAL.ym) return;
+      if (j.relogin) { logout(); stepCls(j.msg); return; }
+      if (!j.ok) { document.getElementById("calg").innerHTML = '<p class="err">' + esc(j.msg || "달력을 불러오지 못했어요.") + "</p>"; return; }
+      CAL.list = j.list.slice().sort(function (a, b) { return a.due.localeCompare(b.due); });
+      if (CAL.auto) { // 처음 열 때: 고른 날(오늘) 이후 과제가 있는 첫날을 보여 줘요
+        var nx = CAL.list.filter(function (x) { return x.due.slice(0, 10) >= CAL.sel; })[0]; if (nx) CAL.sel = nx.due.slice(0, 10); CAL.auto = false;
+      }
+      drawCal();
+    });
+  }
+  function drawCal() {
+    var ym = CAL.ym, first = new Date(ym + "-01T00:00:00Z").getUTCDay(), n = new Date(Date.UTC(+ym.slice(0, 4), +ym.slice(5, 7), 0)).getUTCDate(), t = today(), h = "";
+    for (var w = 0; w < 7; w++) h += '<div class="wh' + (w ? "" : " su") + '">' + WD[w] + "</div>";
+    for (var b = 0; b < first; b++) h += "<div></div>";
+    for (var d = 1; d <= n; d++) {
+      var day = ym + "-" + pad(d), its = CAL.list.filter(function (x) { return x.due.slice(0, 10) === day; });
+      h += '<div class="cd' + (day === t ? " td" : "") + (day === CAL.sel ? " sel" : "") + ((first + d - 1) % 7 === 0 ? " su" : "") + '" data-day="' + day + '"><span class="dn">' + d + "</span>" +
+        its.slice(0, 2).map(function (x) { return '<span class="ch ' + chOf(x) + '">' + esc(x.title) + "</span>"; }).join("") + (its.length > 2 ? '<span class="ch more">+' + (its.length - 2) + "</span>" : "") + "</div>";
+    }
+    document.getElementById("calg").innerHTML = '<div class="cal">' + h + '</div><div class="lg"><span class="ch go">낼 과제</span><span class="ch ok">제출함</span><span class="ch late">늦게 냄</span><span class="ch miss">미제출</span><span class="ch lock">🔒 아직 안 열림</span></div>';
+    Array.prototype.forEach.call(document.querySelectorAll("#calg .cd"), function (c) { c.onclick = function () { CAL.sel = c.getAttribute("data-day"); CAL.auto = false; drawCal(); }; });
+    drawDay();
+  }
+  function drawDay() {
+    var day = CAL.sel, its = CAL.list.filter(function (x) { return x.due.slice(0, 10) === day; }), el = document.getElementById("dayl");
+    if (!el) return;
+    el.innerHTML = '<div class="box" style="padding:12px 16px"><h2 style="margin:0">' + md(day) + "(" + WD[new Date(day + "T00:00:00Z").getUTCDay()] + ") 마감 과제</h2>" + (its.length ? "" : '<p class="sub" style="margin-top:6px">이날 마감인 과제가 없어요.</p>') + "</div>" + its.map(function (x, i) { return hwRow(x, i, "k"); }).join("") +
+      (its.some(function (x) { return x.hidden; }) ? '<p class="sub" style="margin-top:8px">🔒 과제는 열리는 날부터 설명을 보고 낼 수 있어요.</p>' : "");
+    Array.prototype.forEach.call(el.querySelectorAll(".hw[data-k]"), function (r) { r.onclick = function () { showHw(its[+r.getAttribute("data-k")]); }; });
   }
 
   // ================= 사진 올리기 =================
@@ -148,6 +213,7 @@
       img.src = url;
     });
   }
+  var MAXSHOT = 100; // 노션 한 칸에 넣을 수 있는 최대 개수
   function b64(blob) { return new Promise(function (ok) { var r = new FileReader(); r.onload = function () { ok(String(r.result).split(",")[1]); }; r.readAsDataURL(blob); }); }
   function showHw(h) {
     var shots = [];
@@ -158,51 +224,61 @@
       (h.past ? '<p class="err">마감이 지났어요. 지금 내면 「늦게 제출」로 기록돼요.</p>' : "") +
       '<div class="shots" id="shots"></div><input type="file" id="pick" accept="image/*" multiple style="display:none">' +
       '<textarea class="f" id="memo" rows="2" style="margin-top:12px" placeholder="선생님께 한마디 (안 써도 돼요)"></textarea>' +
-      '<p class="err" id="er"></p><div class="row"><button class="btn" id="send" disabled>사진 제출하기</button><button class="btn ghost" id="bk">목록으로</button></div></div>';
+      '<p class="err" id="er"></p><div class="row"><button class="btn" id="send" disabled>사진 제출하기</button><button class="btn ghost" id="bk">← 돌아가기</button></div></div>';
     bindWho();
     var box = document.getElementById("shots"), pick = document.getElementById("pick"), er = document.getElementById("er"), send = document.getElementById("send");
     function draw() {
-      box.innerHTML = shots.map(function (s, i) { return '<div class="shot"><img src="' + s.url + '" alt="사진 ' + (i + 1) + '"><button data-x="' + i + '" aria-label="빼기">×</button></div>'; }).join("") + (shots.length < 5 ? '<label class="addshot" for="pick"><span>📷</span>' + (shots.length ? "더 찍기" : "사진 찍기·고르기") + "</label>" : "");
+      box.innerHTML = shots.map(function (s, i) { return '<div class="shot"><img src="' + s.url + '" alt="사진 ' + (i + 1) + '"><button data-x="' + i + '" aria-label="빼기">×</button></div>'; }).join("") + (shots.length < MAXSHOT ? '<label class="addshot" for="pick"><span>📷</span>' + (shots.length ? "더 찍기" : "사진 찍기·고르기") + "</label>" : "");
       Array.prototype.forEach.call(box.querySelectorAll("[data-x]"), function (b) { b.onclick = function () { shots.splice(+b.getAttribute("data-x"), 1); draw(); }; });
       send.disabled = !shots.length;
     }
     draw();
     pick.onchange = function () {
-      var files = Array.prototype.slice.call(pick.files || []).slice(0, 5 - shots.length); pick.value = ""; er.textContent = "";
+      var files = Array.prototype.slice.call(pick.files || []).slice(0, MAXSHOT - shots.length); pick.value = ""; er.textContent = ""; if ((pick.files || []).length > files.length) er.textContent = "사진은 한 번에 " + MAXSHOT + "장까지 낼 수 있어요.";
       (function next() {
         if (!files.length) { draw(); return; }
         var f = files.shift();
         shrink(f).then(function (blob) { shots.push({ blob: blob, url: URL.createObjectURL(blob) }); draw(); next(); }, function (e) { er.textContent = e.message; next(); });
       })();
     };
-    document.getElementById("bk").onclick = showList;
+    document.getElementById("bk").onclick = showMain;
     send.onclick = function () {
       if (!shots.length) return;
-      send.disabled = true; er.textContent = ""; var ids = [], i = 0;
-      (function up() {
-        if (i >= shots.length) {
-          send.textContent = "제출하는 중…";
-          post({ action: "s_hw_submit", token: ME.token, id: h.id, files: ids, memo: document.getElementById("memo").value }).then(function (j) {
-            if (j.relogin) { logout(); stepCls(j.msg); return; }
-            if (!j.ok) { send.disabled = false; send.textContent = "다시 제출하기"; er.textContent = j.msg || "제출하지 못했어요."; return; }
-            app.innerHTML = whoBar() + '<div class="box done"><div class="big">' + (j.late ? "🙂" : "🎉") + "</div><h2>" + (j.late ? "늦었지만 제출했어요" : "제출 완료!") + '</h2><p class="sub">「' + esc(h.title) + "」 사진 " + j.n + "장을 선생님께 보냈어요." + (j.late ? "<br>다음엔 마감 전에 내요!" : "") + '</p><div class="row" style="justify-content:center"><button class="btn" id="bk2">과제 목록으로</button></div></div>';
-            bindWho(); document.getElementById("bk2").onclick = showList;
-          });
-          return;
-        }
-        send.textContent = "사진 올리는 중… (" + (i + 1) + "/" + shots.length + ")";
-        b64(shots[i].blob).then(function (data) {
-          return post({ action: "s_hw_upload", token: ME.token, name: "hw" + (i + 1) + ".jpg", type: shots[i].blob.type || "image/jpeg", b64: data });
-        }).then(function (j) {
+      send.disabled = true; er.textContent = "";
+      // 사진은 3장씩 함께 올려요. 이미 올린 사진은 다시 누를 때 건너뛰어요. (순서는 그대로)
+      var todo = shots.filter(function (s) { return !s.fid; }), done = shots.length - todo.length, stop = false, run = 0;
+      function finish() {
+        send.textContent = "제출하는 중…";
+        post({ action: "s_hw_submit", token: ME.token, id: h.id, files: shots.map(function (s) { return { fid: s.fid, name: s.name }; }), memo: document.getElementById("memo").value }).then(function (j) {
           if (j.relogin) { logout(); stepCls(j.msg); return; }
-          if (!j.ok) { send.disabled = false; send.textContent = "다시 제출하기"; er.textContent = j.msg || "사진을 올리지 못했어요."; return; }
-          ids.push({ fid: j.fid, name: j.name }); i++; up();
+          if (!j.ok) { send.disabled = false; send.textContent = "다시 제출하기"; er.textContent = j.msg || "제출하지 못했어요."; return; }
+          app.innerHTML = whoBar() + '<div class="box done"><div class="big">' + (j.late ? "🙂" : "🎉") + "</div><h2>" + (j.late ? "늦었지만 제출했어요" : "제출 완료!") + '</h2><p class="sub">「' + esc(h.title) + "」 사진 " + j.n + "장을 선생님께 보냈어요." + (j.late ? "<br>다음엔 마감 전에 내요!" : "") + '</p><div class="row" style="justify-content:center"><button class="btn" id="bk2">과제로 돌아가기</button></div></div>';
+          bindWho(); document.getElementById("bk2").onclick = showMain;
         });
-      })();
+      }
+      function fail(msg) { if (stop) return; stop = true; send.disabled = false; send.textContent = "다시 제출하기 (올라간 " + done + "장은 그대로)"; er.textContent = msg || "사진을 올리지 못했어요."; }
+      function one(s, tries) {
+        return b64(s.blob).then(function (data) { return post({ action: "s_hw_upload", token: ME.token, name: "hw" + (shots.indexOf(s) + 1) + ".jpg", type: s.blob.type || "image/jpeg", b64: data }); })
+          .then(function (j) { if (!j.ok && !j.relogin && tries < 2) return one(s, tries + 1); return j; });
+      }
+      function pump() {
+        if (stop) return;
+        if (!todo.length && !run) { finish(); return; }
+        while (run < 3 && todo.length) (function (s) {
+          run++;
+          one(s, 1).then(function (j) {
+            run--;
+            if (j.relogin) { stop = true; logout(); stepCls(j.msg); return; }
+            if (!j.ok) { fail(j.msg); return; }
+            s.fid = j.fid; s.name = j.name; done++; if (!stop) send.textContent = "사진 올리는 중… (" + done + "/" + shots.length + ")"; pump();
+          });
+        })(todo.shift());
+      }
+      send.textContent = "사진 올리는 중… (" + done + "/" + shots.length + ")"; pump();
     };
   }
 
-  if (ME && (!CLS || ME.cls === CLS)) showList(); else { if (ME) logout(); if (CLS) stepName(); else stepCls(); }
+  if (ME && (!CLS || ME.cls === CLS)) showMain(); else { if (ME) logout(); if (CLS) stepName(); else stepCls(); }
 })();
 </script>
 </body>

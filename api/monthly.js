@@ -524,6 +524,9 @@ function siteOk(req) {
   const m = String(req.headers.cookie || "").match(/(?:^|;\s*)cm_site=([0-9a-f]{64})/);
   return !!m && m[1] === crypto.createHmac("sha256", site).update("cmacademy-site-v1").digest("hex");
 }
+const pFails = new Map(); // 👪 부모 링크를 틀리게 여러 번 열면 10분 쉬기
+function pLocked(ip) { const e = pFails.get(ip); return !!e && Date.now() - e.t < 600000 && e.n >= 20; }
+function pFail(ip) { const e = pFails.get(ip); if (!e || Date.now() - e.t >= 600000) pFails.set(ip, { n: 1, t: Date.now() }); else e.n++; if (pFails.size > 3000) pFails.clear(); }
 const pinFails = new Map();
 function pinLocked(id) { const e = pinFails.get(id); return !!e && Date.now() - e.t < 600000 && e.n >= 5; }
 function pinFail(id) { const e = pinFails.get(id); if (!e || Date.now() - e.t >= 600000) pinFails.set(id, { n: 1, t: Date.now() }); else e.n++; if (pinFails.size > 3000) pinFails.clear(); }
@@ -659,7 +662,8 @@ async function studentClasses() {
   return stuCls.list;
 }
 let _game = null; const GAME = () => _game || (_game = require("./_game.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, getLastErr: () => lastErr }));
-const HW = () => _hw || (_hw = require("./_homework.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, getLastErr: () => lastErr }));
+const HW = () => _hw || (_hw = require("./_homework.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, STUDENT_DB, getLastErr: () => lastErr }));
+let _par = null; const PAR = () => _par || (_par = require("./_parent.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, EXAM_DB, CERT_DB: () => id32(process.env.NOTION_DB_ID || "d6164dec4d2e461aa2f102de18814b7d"), GAME_DB: () => id32(process.env.NOTION_GAME_DB_ID || "3ef113187ca24388b1a68de4cc535144"), HW, getLastErr: () => lastErr }));
 let _rep = null;
 function reporter() {
   if (!_rep) _rep = require("./_report.js")({ uuid, teacherFor, notion, queryAll, P, clip, normId, id32, unitIndex, unitData, askAI, EXAM_DB, STUDENT_DB, getPaper });
@@ -669,6 +673,11 @@ function reporter() {
 module.exports = async function handler(req, res) {
   const send = (code, obj) => sendTo(res, code, obj);
   const tcode = String(process.env.TEACHER_CODE || "").trim();
+  if (req.method === "GET" && /[?&]pm=/.test(req.url || "")) { // 👪 학부모 앱 홈 화면 설치 정보
+    const k = new URL(req.url, "http://x").searchParams.get("pm") || "";
+    res.statusCode = 200; res.setHeader("Content-Type", "application/manifest+json; charset=utf-8"); res.setHeader("Cache-Control", "private, max-age=3600");
+    return res.end(JSON.stringify(PAR().manifest(k)));
+  }
   if (req.method === "GET") return send(200, { ok: true, ready: !!process.env.NOTION_TOKEN && process.env.MONTHLY_OFF !== "1", bank: !!loadCatalog(), ai: aiOn(), ais: AI.list().map((x) => x.id), teacher: !!tcode, drive: drive.configured() });
   if (req.method !== "POST") return send(405, { error: "method" });
   const origin = req.headers.origin || "", host = req.headers["x-forwarded-host"] || req.headers.host || "";
@@ -683,7 +692,7 @@ module.exports = async function handler(req, res) {
     if (sec && String(b.secret || "") !== sec) return send(401, { error: "secret" });
     try { return send(200, await HW().cron()); } catch (e) { return send(500, { ok: false, msg: clip(e && e.message, 200) }); }
   }
-  if (!/^(classes|roster|login|s_list)$/.test(act)) await loadCustom();
+  if (!/^(classes|roster|login|s_list|p_\w+)$/.test(act)) await loadCustom();
   lastErr = null;
 
   // =================== 선생님 ===================
@@ -845,7 +854,14 @@ module.exports = async function handler(req, res) {
       return send(fail ? 502 : 200, { ok: !fail, books: gameBooks(true), msg: fail ? "일부를 바꾸지 못했어요. 노션 📚 직접 올린 문항에 '게임 숨김' 칸이 있는지 확인해 주세요." : "", debug: fail ? lastErr : undefined });
     }
     if (act === "t_hw_list") { const l = await HW().teacherList(clip(b.cls, 40)); return l ? send(200, { ok: true, list: l, mode: require("./_notify.js").mode() }) : send(502, { error: "notion", msg: "과제 목록을 읽지 못했어요. 🩺 점검을 눌러 보세요.", debug: lastErr }); }
-    if (act === "t_hw_save") { const r = await HW().teacherSave(me, b.hw || {}); return r.status === 200 ? send(200, { ok: true, hw: r.hw }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_hw_save") { const r = await HW().teacherSave(me, b.hw || {}); return r.status === 200 ? send(200, { ok: true, hw: r.hw, warn: r.warn }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_pm_inbox") { const a = await STU().all(); const r = await PAR().inbox(a ? a.students : []); return r.status === 200 ? send(200, { ok: true, list: r.list, unread: r.unread }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_pm_thread") { const r = await PAR().teacherThread(clip(b.sid, 60)); return r.status === 200 ? send(200, { ok: true, msgs: r.msgs }) : send(r.status, { ok: false, msg: r.msg }); }
+    if (act === "t_pm_send") { const r = await PAR().teacherSend(me, clip(b.sid, 60), clip(b.cls, 40), clip(b.text, 1500)); return r.status === 200 ? send(200, { ok: true, msg: r.msg }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_parent_links") { const r = await HW().parentLinks(clip(b.cls, 40)); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_parent_reset") { const r = await HW().parentReset(clip(b.sid, 60)); return r.status === 200 ? send(200, { ok: true, k: r.k }) : send(r.status, { ok: false, msg: r.msg }); }
+    if (act === "t_hw_month") { const r = await HW().teacherMonth(clip(b.cls, 40), String(b.ym || "")); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_hw_bulk") { const r = await HW().teacherBulk(me, b.items); return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg }); }
     if (act === "t_hw_detail") { const r = await HW().teacherDetail(clip(b.id, 60)); return r ? send(200, Object.assign({ ok: true }, r)) : send(404, { error: "nf", msg: "과제를 찾지 못했어요." }); }
     if (act === "t_hw_check") { const r = await HW().cron({ only: clip(b.id, 60) || undefined }); return send(200, r); }
     if (act === "t_hw_template") { const N2 = require("./_notify.js"); return send(200, { ok: true, template: N2.TEMPLATE, sample: N2.fill({ 학원: N2.ACADEMY(), 학생: "김민준", 과제: "Day 3 단어 쓰기", 마감: "11/5(목) 21:00" }), mode: N2.mode() }); }
@@ -1084,11 +1100,29 @@ module.exports = async function handler(req, res) {
     return send(200, { ok: true, token: signToken({ sid, name, cls: PLACE_CLS(), exp: Date.now() + 4 * 3600 * 1000 }), name, cls: PLACE_CLS(), grade });
   }
 
+  if (act === "p_hw") { // 👪 부모님 전용 링크로 아이의 과제 사진 보기 (링크 = 학생 + 비밀 키)
+    const ip = String((req.headers["x-forwarded-for"] || "").split(",")[0]).trim() || "x";
+    if (pLocked(ip)) return send(429, { ok: false, msg: "잠시 뒤 다시 열어 주세요." });
+    const r = await HW().parentView(String(b.k || ""));
+    if (r.status === 403 || r.status === 404) pFail(ip);
+    return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg });
+  }
+
+  if (/^p_(home|report|send)$/.test(act)) { // 👪 학부모 앱
+    const ip = String((req.headers["x-forwarded-for"] || "").split(",")[0]).trim() || "x";
+    if (pLocked(ip)) return send(429, { ok: false, msg: "잠시 뒤 다시 열어 주세요." });
+    const k = String(b.k || "");
+    const r = act === "p_home" ? await PAR().home(k) : act === "p_report" ? await PAR().reportPage(k, b.pid) : await PAR().parentSend(k, clip(b.text, 1500));
+    if (r.status === 403 || r.status === 404) pFail(ip);
+    return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg });
+  }
+
   const who = readToken(b.token);
   if (!who) return send(401, { error: "login", relogin: true, msg: "본인 확인이 끝났어요. 이름과 번호를 다시 확인해 주세요." });
 
   // 📸 사진 과제 (학생)
   if (act === "s_hw_list") { const l = await HW().studentList(who); return l ? send(200, { ok: true, list: l, name: who.name, cls: who.cls }) : send(502, { error: "notion", msg: "과제 목록을 불러오지 못했어요." }); }
+  if (act === "s_hw_cal") { const r = await HW().studentMonth(who, String(b.ym || "")); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg || "달력을 불러오지 못했어요." }); }
   if (act === "s_hw_upload") { const r = await HW().uploadPhoto(b.name, String(b.type || ""), b.b64); return r.error ? send(400, { ok: false, msg: r.error }) : send(200, { ok: true, fid: r.fid, name: r.name }); }
   if (act === "s_hw_submit") { const r = await HW().studentSubmit(who, b); return r.status === 200 ? send(200, Object.assign({ ok: true }, r)) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
 
