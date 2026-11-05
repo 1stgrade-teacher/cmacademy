@@ -1,0 +1,92 @@
+[강의 녹음 대본] 가주어 it로 긴 주어를 똑똑하게!
+
+음성 파일 폴더 이름: 문법_Lesson_8_-_Point_A_가주어_it_audio
+강의 HTML 파일과 같은 위치에 이 폴더를 만들고, 아래 번호대로 음성 파일을 넣어 주세요.
+
+────────────────────────
+1.mp3   (슬라이드 1)
+안녕하세요, 여러분. 오늘은 가주어 it을 배워 볼 거예요. 주어가 길어질 때 문장을 어떻게 더 자연스럽게 만들 수 있는지 함께 알아보죠. 예문을 읽고 간단한 문제도 직접 풀어 볼 거예요.
+
+────────────────────────
+2.mp3   (슬라이드 2)
+영어에서는 주어가 너무 길면 문장이 읽기 어려워요. 그래서 주어로 쓰인 to부정사구가 길 때는 그 부분을 뒤로 보내요. 대신 주어 자리에는 구체적인 뜻이 없는 it을 놓습니다. 이때 it은 그것이라고 해석하지 않고, 뒤에 있는 to부정사구를 진주어로 해석해요.
+
+────────────────────────
+3.mp3   (슬라이드 2)
+첫 번째 예문은 To learn new languages is interesting.이에요. 뜻은 새로운 언어를 배우는 것은 흥미롭다예요. 주어 자리에 to learn new languages라는 긴 to부정사구가 들어 있어요.
+
+────────────────────────
+4.mp3   (슬라이드 2)
+두 번째 예문은 It is interesting to learn new languages.예요. 뜻은 새로운 언어를 배우는 것은 흥미롭다이고, 앞의 it은 가주어예요. 진짜 주어인 to learn new languages는 뒤로 이동했어요.
+
+────────────────────────
+5.mp3   (슬라이드 2)
+세 번째 예문은 It is helpful to write down your goals.예요. 뜻은 목표를 적어 두는 것은 도움이 된다예요. 여기서도 it은 가주어이고, to write down your goals가 진주어로 해석돼요.
+
+────────────────────────
+6.mp3   (슬라이드 2)
+가주어 it을 그것이라고 해석하면 뜻이 어색해져요. 뒤에 있는 to부정사구를 주어처럼 생각하고 해석해 보세요.
+
+────────────────────────
+7.mp3   (슬라이드 3)
+가주어 it이 있는 문장은 it is 뒤에 형용사가 오고 그다음에 to부정사구가 와요. 해석할 때는 뒤의 to부정사구를 주어처럼 먼저 생각하면 쉬워요. 예를 들어 It is hard to understand your explanation은 네 설명을 이해하는 것이 어렵다는 뜻이에요. 즉 가주어 it은 그것이 아니라 뒤의 to부정사구를 대신하는 역할을 해요.
+
+────────────────────────
+8.mp3   (슬라이드 3)
+첫 번째 예문은 It is hard to understand your explanation.이에요. 뜻은 네 설명을 이해하기 어려워예요. to understand your explanation이 진주어이고, 그것을 이해하는 것이 어렵다는 의미예요.
+
+────────────────────────
+9.mp3   (슬라이드 3)
+두 번째 예문은 It is not safe to share your personal information with AI.예요. 뜻은 당신의 개인 정보를 AI와 공유하는 것은 안전하지 않습니다예요. not safe는 안전하지 않다는 뜻이고, to share 이하가 진주어로 해석돼요.
+
+────────────────────────
+10.mp3   (슬라이드 3)
+세 번째 예문은 It is very important to study every day.예요. 뜻은 매일 공부하는 것은 매우 중요하다예요. very important 뒤에 있는 to study every day가 진주어로 해석돼요.
+
+────────────────────────
+11.mp3   (슬라이드 3)
+네 번째 예문은 It is fun to play outside with friends.예요. 뜻은 친구들과 밖에서 노는 것은 재미있다예요. fun 뒤에 있는 to play outside with friends가 진주어로 해석돼요.
+
+────────────────────────
+12.mp3   (슬라이드 3)
+진주어인 to부정사구는 보통 문장 뒤쪽에 놓여요. 앞의 it은 그 자리를 채워 주는 가주어라고 기억해 주세요.
+
+────────────────────────
+13.mp3   (슬라이드 4)
+It is hard understand your explanation은 to가 빠져서 틀린 문장이에요. 진주어로 쓰는 to부정사구에는 to를 꼭 붙여서 It is hard to understand your explanation이라고 해야 합니다.
+
+────────────────────────
+14.mp3   (슬라이드 4)
+It is not safe sharing your personal information with AI는 sharing이 아니라 to share를 써야 해요. 이 문장에서는 가주어 it 뒤에 to부정사구가 진주어로 와서 It is not safe to share your personal information with AI가 맞아요.
+
+────────────────────────
+15.mp3   (슬라이드 4)
+It very important to study every day는 is가 빠져서 틀린 문장이에요. 가주어 it 뒤에는 be동사 is를 넣어서 It is very important to study every day라고 해야 합니다.
+
+────────────────────────
+16.mp3   (슬라이드 5)
+다음 문장을 가주어 it을 사용해 바꿔 써 보세요. To eat fresh vegetables is healthy. 잠시 멈추고 직접 풀어 보세요.
+
+────────────────────────
+18.mp3   (슬라이드 5)
+정답은 It is healthy to eat fresh vegetables.예요. 신선한 채소를 먹는 것은 건강에 좋다는 뜻이죠. to eat fresh vegetables를 뒤로 보내고 주어 자리에 it을 두면 자연스러운 문장이 돼요.
+
+────────────────────────
+19.mp3   (슬라이드 6)
+다음 문장을 가주어 it을 사용해 바꿔 써 보세요. To watch TV all day is boring. 잠시 멈추고 직접 풀어 보세요.
+
+────────────────────────
+21.mp3   (슬라이드 6)
+정답은 It is boring to watch TV all day.예요. 하루 종일 TV를 보는 것은 지루하다는 뜻이에요. 긴 to부정사구는 뒤로 보내고 앞에는 가주어 it을 써 주세요.
+
+────────────────────────
+22.mp3   (슬라이드 7)
+다음 문장을 가주어 it을 사용해 바꿔 써 보세요. To wake up early is hard. 잠시 멈추고 직접 풀어 보세요.
+
+────────────────────────
+24.mp3   (슬라이드 7)
+정답은 It is hard to wake up early.예요. 일찍 일어나는 것은 어렵다는 뜻이죠. to wake up early를 뒤로 보내고 주어 자리에 it을 두면 됩니다.
+
+────────────────────────
+25.mp3   (슬라이드 8)
+오늘은 가주어 it을 배웠어요. 주어로 쓰인 to부정사구가 길면 뒤로 보내고, 주어 자리에는 뜻이 없는 it을 놓는다고 기억해 주세요. 해석할 때는 뒤의 to부정사구를 진주어로 생각하면 됩니다. 예문과 문제를 다시 보면서 가주어 it 문장을 직접 만들어 보세요. 수고했어요.
