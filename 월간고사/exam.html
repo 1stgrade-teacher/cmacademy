@@ -81,6 +81,7 @@
   .rv .x{font-size:13.5px;color:var(--muted);margin-top:4px;line-height:1.6;background:#FAFBFB;border-radius:8px;padding:8px 10px}
   .ok{color:#1F7A4A}.no{color:#C0392B}
   @media (max-width:560px){.prog{flex-basis:70px}.box{padding:16px}.q{padding:15px}}
+  .au{display:flex;align-items:center;gap:8px;background:var(--accent-soft,#F3FAFA);border-radius:10px;padding:8px 10px;margin:4px 0 10px}.au audio{flex:1;min-width:0;height:40px}
 </style>
 </head>
 <body>
@@ -246,14 +247,16 @@
     function save() { ls.set("cm-monthly-run:" + PID, run); }
     app.innerHTML = '<div class="bar"><span class="ttl">' + esc(run.paper.title) + '</span><span class="prog"><i id="pg"></i></span><span class="timer" id="tm">' + (run.deadline ? "" : "0/" + total) + "</span></div>" +
       Q.map(function (q, i) {
-        var h = '<div class="q" id="q' + i + '"><div class="qh"><span class="qn">' + q.n + '</span><div><div class="qt">' + fmt(q.q) + (q.type === "multi" ? ' <span style="color:#A2342A">(정답 모두 고르기)</span>' : "") + "</div>" + (q.unit ? '<div class="qu">' + esc(q.unit) + "</div>" : "") + "</div></div>";
+        var h = '<div class="q" id="q' + i + '"><div class="qh"><span class="qn">' + q.n + '</span><div><div class="qt">' + fmt(q.q) + (q.type === "multi" ? ' <span style="color:#A2342A">(정답 모두 고르기)</span>' : "") + "</div>" + (q.unit && q.unit !== "단원" ? '<div class="qu">' + esc(q.unit) + "</div>" : "") + "</div></div>";
         if (q.sub) h += '<div class="qs">' + fmt(q.sub) + "</div>";
+        if (q.audio) h += '<div class="au">🎧 <audio controls preload="none" controlsList="nodownload" src="' + esc(q.audio) + '" aria-label="' + q.n + '번 듣기"></audio></div>'; // 🎧 듣기시험
         if (q.type === "mc" || q.type === "multi") h += '<div class="opts">' + q.opts.map(function (o, k) { return '<button class="opt" data-i="' + i + '" data-k="' + k + '"><b>' + NUM[k] + "</b><span>" + fmt(o) + "</span></button>"; }).join("") + "</div>";
         else if (q.type === "short") h += '<input class="sa" data-i="' + i + '" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="' + esc(q.hint || "답을 쓰세요 (빈칸에 들어갈 말만 써도 돼요)") + '">';
         else h += '<div class="built" id="b' + i + '"></div><div class="chips" id="c' + i + '"></div><button class="reset" data-reset="' + i + '">처음부터 다시 배열</button>';
         return h + "</div>";
       }).join("") +
       '<div class="foot"><span class="info" id="left"></span><button class="btn" id="submit">제출하기</button></div>';
+    Array.prototype.forEach.call(app.querySelectorAll(".au audio"), function (a) { a.addEventListener("play", function () { Array.prototype.forEach.call(app.querySelectorAll(".au audio"), function (o) { if (o !== a) o.pause(); }); }); }); // 한 번에 하나만 재생
     Q.forEach(function (q, i) { if (q.type === "arrange") paintArrange(i); else if (q.type === "short") paintShort(i); else paintMc(i); });
     Array.prototype.forEach.call(app.querySelectorAll(".opt"), function (b) {
       b.onclick = function () {
