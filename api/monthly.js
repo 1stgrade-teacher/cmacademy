@@ -28,7 +28,7 @@ const CUSTOM_DB = () => id32(process.env.NOTION_CUSTOM_DB_ID || "f75d764be3d04c9
 const TEACHER_DB = () => id32(process.env.NOTION_TEACHER_DB_ID || "63a6527837024ddaa3d256b0cb243304");
 const MASTER_NAME = () => String(process.env.TEACHER_NAME || "일등급샘").trim();
 const PIN_PROP = "본인번호";
-const KINDS = ["월간평가", "분기평가", "주간평가", "단어시험", "반배정시험"];
+const KINDS = ["월간평가", "분기평가", "주간평가", "단어시험", "듣기시험", "반배정시험"];
 const PLACE_CLS = () => String(process.env.PLACE_CLASS || "신입 반배정").trim(); // 신입생이 스스로 등록되는 반
 const GRADES = ["초4", "초5", "초6", "중1", "중2", "중3"]; // 학원 시험 학년
 // 반배정 추천 기준: 줄마다 "중1: 90 중1 사관반, 70 중1 S반, 0 중1 I반" (학년 없이 "80 중2 일등급반, 0 중2 S반"도 됨)
@@ -413,16 +413,23 @@ function pick(pool, count, level, rnd) {
   return got;
 }
 // 시험지를 만들고, 학생에게 보낼 문제(정답 없음)와 서버만 여는 답안 열쇠를 함께 만든다
-function buildSheet(picked, rnd) {
-  const T = (t) => shuffle(picked.filter((q) => (q.type || "mc") === t), rnd);
-  const ordered = T("mc").concat(T("multi"), T("arrange"), T("short"));
+// 🎧 듣기시험: 고른 회차의 문제를 원래 순서대로 (음성 번호와 맞게), AI 변형 없이, 보기 순서도 그대로
+const isListen = (pp, uids) => (pp && pp.kind === "듣기시험") || (uids.length > 0 && uids.every((u) => (unitIndex.get(u) || {}).area === "듣기"));
+function listenPick(uids, exclude, count) {
+  const ex = new Set(exclude || []), out = [];
+  uids.forEach((u) => { const d = unitData(u); if (d) d.qs.filter((q) => !ex.has(q.id) && q.type === "mc").forEach((q) => out.push(Object.assign({ u }, q))); });
+  return out.slice(0, count || 100);
+}
+function buildSheet(picked, rnd, keep) {
+  const T = (t) => (keep ? picked.filter((q) => (q.type || "mc") === t) : shuffle(picked.filter((q) => (q.type || "mc") === t), rnd));
+  const ordered = keep ? picked.slice() : T("mc").concat(T("multi"), T("arrange"), T("short"));
   const view = [], key = [];
   ordered.forEach((q, i) => {
     const u = unitIndex.get(q.u) || {};
     const k = { id: q.id, u: q.u, t: q.type, q: clip(q.q, 300), sub: clip(q.sub, 700), exp: clip(q.exp, 300), unit: clip(u.name, 80), ch: clip(u.chapter, 60), book: clip(u.book, 40) };
     if (q.type === "mc") {
-      const ord = shuffle(q.opts.map((_, j) => j), rnd); const opts = ord.map((j) => q.opts[j]);
-      view.push({ n: i + 1, type: "mc", q: q.q, sub: q.sub, opts, unit: u.chapter });
+      const ord = keep ? q.opts.map((_, j) => j) : shuffle(q.opts.map((_, j) => j), rnd); const opts = ord.map((j) => q.opts[j]);
+      view.push(Object.assign({ n: i + 1, type: "mc", q: q.q, sub: q.sub, opts, unit: u.chapter }, q.audio ? { audio: q.audio } : {}));
       Object.assign(k, { a: ord.indexOf(q.ans), opts: opts.map((o) => clip(o, 120)), answer: clip(q.opts[q.ans], 200) });
     } else if (q.type === "multi") {
       const ord = shuffle(q.opts.map((_, j) => j), rnd); const opts = ord.map((j) => q.opts[j]);
@@ -489,6 +496,7 @@ function attemptSummary(p) {
   return { score: P.num(p, "점수"), total: P.num(p, "만점"), pct: P.formula(p, "환산점수"), grade: P.sel(p, "종합 평가"), date: (P.date(p, "시험일") || {}).start || "", comment: P.text(p, "코멘트") };
 }
 async function makeSheet(pp, uids, sid) {
+  if (isListen(pp, uids)) { const picked = listenPick(uids, pp.cfg.exclude, pp.count); return { picked, have: picked.length, keep: true }; }
   const opt = aiOpt(pp.cfg);
   if (opt) { const pickSeed = pp.mode === "fixed" ? (pp.cfg.seed || pp.id) : (pp.cfg.seed || pp.id) + "|" + sid + "|" + uids.join(","); const r = await composeSheet(pp, uids, pickSeed, opt); return { picked: r.picked, have: r.have }; }
   const pool = await poolFor(uids, pp.cfg.exclude, pp.cfg.vtypes);
@@ -662,7 +670,9 @@ async function studentClasses() {
   return stuCls.list;
 }
 let _game = null; const GAME = () => _game || (_game = require("./_game.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, getLastErr: () => lastErr }));
-const HW = () => _hw || (_hw = require("./_homework.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, STUDENT_DB, getLastErr: () => lastErr }));
+const HW = () => _hw || (_hw = require("./_homework.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, STUDENT_DB, listenUnit, getLastErr: () => lastErr }));
+// 🎧 받아쓰기 숙제용: 듣기 회차의 문항별 음성 + 대본
+function listenUnit(uid) { const d = unitData(uid); if (!d || d.area !== "듣기") return null; const items = (d.qs || []).filter((q) => q.script).map((q) => ({ id: q.id, audio: q.audio || "", script: q.script })); return items.length ? { name: d.name, book: d.book, items } : null; }
 let _par = null; const PAR = () => _par || (_par = require("./_parent.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, EXAM_DB, CERT_DB: () => id32(process.env.NOTION_DB_ID || "d6164dec4d2e461aa2f102de18814b7d"), GAME_DB: () => id32(process.env.NOTION_GAME_DB_ID || "3ef113187ca24388b1a68de4cc535144"), HW, getLastErr: () => lastErr }));
 let _rep = null;
 function reporter() {
@@ -740,6 +750,11 @@ module.exports = async function handler(req, res) {
       const uids = (Array.isArray(b.units) ? b.units : []).filter((u) => unitIndex.has(u)).slice(0, 300);
       if (!uids.length) return send(400, { error: "input", msg: "과를 하나 이상 골라 주세요." });
       const pp = { id: "preview", count: num(b.count, 5, 100, 20), level: num(b.level, 1, 3, 2), mode: b.mode === "choice" ? "choice" : "fixed", cfg: { seed: clip(b.seed, 40) || "preview", exclude: (b.exclude || []).slice(0, 500), vtypes: (Array.isArray(b.vtypes) ? b.vtypes : []).filter((t) => V.VT_IDS.includes(t)), ai: b.ai && typeof b.ai === "object" ? b.ai : undefined } };
+      if (isListen({ kind: b.kind }, uids)) { // 🎧 듣기: 순서대로 그대로
+        const picked = listenPick(uids, pp.cfg.exclude, pp.count), all = listenPick(uids, [], 1000);
+        return send(200, { ok: true, listen: true, stats: uids.map((u) => ({ u, name: unitIndex.get(u).name, bank: (unitData(u) || { qs: [] }).qs.filter((q) => q.type === "mc").length, ai: 0 })), total: all.length, range: rangeText(uids),
+          items: picked.map((q) => ({ id: q.id, type: q.type, lv: q.lv, ai: false, kind: q.kind || "", q: q.q, sub: q.sub, opts: q.opts, ans: q.ans, answer: q.answer, exp: q.exp, audio: q.audio || "", unit: (unitIndex.get(q.u) || {}).name })) });
+      }
       const opt = aiOpt(pp.cfg);
       if (opt) {
         const r = await composeSheet(pp, uids, pp.cfg.seed, opt);
@@ -855,6 +870,7 @@ module.exports = async function handler(req, res) {
     }
     if (act === "t_hw_list") { const l = await HW().teacherList(clip(b.cls, 40)); return l ? send(200, { ok: true, list: l, mode: require("./_notify.js").mode() }) : send(502, { error: "notion", msg: "과제 목록을 읽지 못했어요. 🩺 점검을 눌러 보세요.", debug: lastErr }); }
     if (act === "t_hw_save") { const r = await HW().teacherSave(me, b.hw || {}); return r.status === 200 ? send(200, { ok: true, hw: r.hw, warn: r.warn }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_dict_preview") { const r = HW().dictPreview(clip(b.u, 40), b.r); return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg }); }
     if (act === "t_pm_inbox") { const a = await STU().all(); const r = await PAR().inbox(a ? a.students : []); return r.status === 200 ? send(200, { ok: true, list: r.list, unread: r.unread }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
     if (act === "t_pm_thread") { const r = await PAR().teacherThread(clip(b.sid, 60)); return r.status === 200 ? send(200, { ok: true, msgs: r.msgs }) : send(r.status, { ok: false, msg: r.msg }); }
     if (act === "t_pm_send") { const r = await PAR().teacherSend(me, clip(b.sid, 60), clip(b.cls, 40), clip(b.text, 1500)); return r.status === 200 ? send(200, { ok: true, msg: r.msg }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
@@ -1122,6 +1138,8 @@ module.exports = async function handler(req, res) {
 
   // 📸 사진 과제 (학생)
   if (act === "s_hw_list") { const l = await HW().studentList(who); return l ? send(200, { ok: true, list: l, name: who.name, cls: who.cls }) : send(502, { error: "notion", msg: "과제 목록을 불러오지 못했어요." }); }
+  if (act === "s_dict") { const r = await HW().studentDict(who, clip(b.id, 60)); return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg }); }
+  if (act === "s_dict_submit") { const r = await HW().studentDictSubmit(who, { id: clip(b.id, 60), answers: (Array.isArray(b.answers) ? b.answers : []).slice(0, 600).map((x) => clip(x, 60)) }); return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg }); }
   if (act === "s_hw_cal") { const r = await HW().studentMonth(who, String(b.ym || "")); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg || "달력을 불러오지 못했어요." }); }
   if (act === "s_hw_upload") { const r = await HW().uploadPhoto(b.name, String(b.type || ""), b.b64); return r.error ? send(400, { ok: false, msg: r.error }) : send(200, { ok: true, fid: r.fid, name: r.name }); }
   if (act === "s_hw_submit") { const r = await HW().studentSubmit(who, b); return r.status === 200 ? send(200, Object.assign({ ok: true }, r)) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
@@ -1156,9 +1174,9 @@ module.exports = async function handler(req, res) {
       uids = [...new Set((Array.isArray(b.units) ? b.units : []).filter((u) => { const x = unitIndex.get(u); return x && (allowU.has(u) || allowB.has(x.bid)); }))].slice(0, 80);
       if (!uids.length) return send(400, { error: "input", msg: "공부한 교재와 과를 골라 주세요." });
     }
-    const { picked } = await makeSheet(pp, uids, who.sid);
-    if (picked.length < Math.min(5, pp.count)) return send(409, { error: "few", msg: "고른 범위에 문제가 부족해요. 과를 더 골라 주세요." });
-    const sheet = buildSheet(picked, rngOf((pp.cfg.seed || pp.id) + "|" + who.sid + "|" + Date.now()));
+    const { picked, keep } = await makeSheet(pp, uids, who.sid);
+    if (picked.length < Math.min(keep ? 1 : 5, pp.count)) return send(409, { error: "few", msg: "고른 범위에 문제가 부족해요. 과를 더 골라 주세요." });
+    const sheet = buildSheet(picked, rngOf((pp.cfg.seed || pp.id) + "|" + who.sid + "|" + Date.now()), keep);
     const t0 = Date.now(), dl = pp.minutes ? t0 + pp.minutes * 60000 : 0;
     const key = seal({ sid: who.sid, pid: pp.id, t0, dl, units: uids, items: sheet.key });
     return send(200, { ok: true, paper: pub(pp), questions: sheet.view, key, t0, deadline: dl, range: pp.mode === "choice" ? rangeText(uids) : pp.range });

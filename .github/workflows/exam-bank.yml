@@ -8,6 +8,7 @@ on:
       - "구문/**.html"
       - "독해/**.html"
       - "교과서/**.html"
+      - "듣기/**.html"
       - "tools/build-exam-bank.mjs"
   workflow_dispatch:
 permissions:

@@ -48,6 +48,11 @@
   .ch.more{background:none;color:var(--muted);padding:0 3px}
   .lg{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.lg .ch{display:inline-block;font-size:12px;padding:2px 6px}
   .hw.lock{cursor:default;background:#F7F9FA}.hw.lock .t{color:var(--muted)}.tag.lock{background:#EEF1F3;color:#6B7883}
+  .dq .dqh{display:flex;align-items:center;gap:10px;margin-bottom:6px}.dq audio{flex:1;min-width:0;height:40px}
+  .dl{font-size:16.5px;line-height:2.2;margin:2px 0}
+  input.bl{border:0;border-bottom:2px solid var(--accent);background:var(--accent-soft);border-radius:4px 4px 0 0;padding:2px 4px;font:600 16px var(--font);color:var(--ink);text-align:center;max-width:60vw}
+  input.bl.ok{border-color:#1E7A45;background:#DFF5E8}input.bl.no{border-color:#A2342A;background:#FDE3E1;text-decoration:line-through}
+  .fix{color:#1E7A45;font-weight:800;margin-left:4px}
 </style>
 </head>
 <body>
@@ -138,7 +143,7 @@
   function showMain() { if (VIEW === "cal") showCal(); else showList(); }
   function hwRow(h, i, key) {
     if (h.hidden) return '<div class="hw lock"><div class="b"><div class="t">🔒 ' + esc(h.title) + '</div><div class="m">마감 ' + esc(h.dueLabel) + "</div></div>" + '<span class="tag lock">' + esc(md(h.show)) + "에 열려요</span></div>";
-    return '<div class="hw" data-' + key + '="' + i + '"><div class="b"><div class="t">' + esc(h.title) + '</div><div class="m">마감 ' + esc(h.dueLabel) + " · " + (h.status ? esc(h.status) + (h.n ? " (사진 " + h.n + "장)" : "") : esc(left(h.due))) + "</div></div>" + tagOf(h) + "</div>";
+    return '<div class="hw" data-' + key + '="' + i + '"><div class="b"><div class="t">' + esc(h.title) + '</div><div class="m">마감 ' + esc(h.dueLabel) + " · " + (h.dict ? "🎧 받아쓰기 · " : "") + (h.status ? esc(h.status) + (h.score ? " " + esc(h.score) : h.n ? " (사진 " + h.n + "장)" : "") : esc(left(h.due))) + "</div></div>" + tagOf(h) + "</div>";
   }
   function showList() {
     app.innerHTML = whoBar() + viewBar() + '<div class="box"><p class="sub">과제를 불러오는 중…</p></div>'; bindWho(); bindView();
@@ -149,7 +154,7 @@
       LIST = j.list;
       app.innerHTML = whoBar() + viewBar() + (LIST.length ? LIST.map(function (h, i) { return hwRow(h, i, "i"); }).join("") : '<div class="box"><p class="sub">지금 낼 과제가 없어요. 선생님이 과제를 내면 여기에 나와요. 앞으로 나올 과제는 🗓 달력에서 볼 수 있어요.</p></div>');
       bindWho(); bindView();
-      Array.prototype.forEach.call(app.querySelectorAll(".hw[data-i]"), function (el) { el.onclick = function () { showHw(LIST[+el.getAttribute("data-i")]); }; });
+      Array.prototype.forEach.call(app.querySelectorAll(".hw[data-i]"), function (el) { el.onclick = function () { openHw(LIST[+el.getAttribute("data-i")]); }; });
     });
   }
 
@@ -195,7 +200,53 @@
     if (!el) return;
     el.innerHTML = '<div class="box" style="padding:12px 16px"><h2 style="margin:0">' + md(day) + "(" + WD[new Date(day + "T00:00:00Z").getUTCDay()] + ") 마감 과제</h2>" + (its.length ? "" : '<p class="sub" style="margin-top:6px">이날 마감인 과제가 없어요.</p>') + "</div>" + its.map(function (x, i) { return hwRow(x, i, "k"); }).join("") +
       (its.some(function (x) { return x.hidden; }) ? '<p class="sub" style="margin-top:8px">🔒 과제는 열리는 날부터 설명을 보고 낼 수 있어요.</p>' : "");
-    Array.prototype.forEach.call(el.querySelectorAll(".hw[data-k]"), function (r) { r.onclick = function () { showHw(its[+r.getAttribute("data-k")]); }; });
+    Array.prototype.forEach.call(el.querySelectorAll(".hw[data-k]"), function (r) { r.onclick = function () { openHw(its[+r.getAttribute("data-k")]); }; });
+  }
+
+  // ================= 🎧 받아쓰기 숙제 =================
+  function openHw(h) { if (h.dict) showDict(h); else showHw(h); }
+  function showDict(h) {
+    app.innerHTML = whoBar() + '<div class="box"><p class="sub">받아쓰기를 불러오는 중…</p></div>'; bindWho();
+    post({ action: "s_dict", token: ME.token, id: h.id }).then(function (j) {
+      if (j.relogin) { logout(); stepCls(j.msg); return; }
+      if (!j.ok) { app.innerHTML = whoBar() + '<div class="box"><p class="err">' + esc(j.msg || "불러오지 못했어요.") + '</p><div class="row"><button class="btn ghost" id="bk">← 돌아가기</button></div></div>'; bindWho(); document.getElementById("bk").onclick = showMain; return; }
+      var done = h.status === "제출" || h.status === "지각 제출", draftKey = "cm-dict:" + h.id, draft = (function () { try { return JSON.parse(localStorage.getItem(draftKey) || "{}"); } catch (e) { return {}; } })();
+      var html = whoBar() + '<div class="box"><h2>' + (/^🎧/.test(j.title) ? "" : "🎧 ") + esc(j.title) + '</h2><p class="sub">마감 <b>' + esc(j.dueLabel) + "</b> · " + esc(left(j.due)) + " · 빈칸 " + j.blanks + "개</p>" + (j.desc ? '<div class="desc">' + esc(j.desc) + "</div>" : "") +
+        '<p class="sub" style="margin-top:8px">▶ 음성을 들으며 빈칸에 들리는 단어를 써요. 몇 번이든 다시 들어도 돼요. 대문자·마침표는 신경 쓰지 않아도 돼요.' + (done ? "<br><b>이미 냈어요 (" + esc(h.score || "") + ").</b> 다시 풀면 연습이고, 기록은 처음 낸 점수예요." : "") + (j.past && !done ? '</p><p class="err">마감이 지났어요. 지금 내면 「늦게 제출」로 기록돼요.' : "") + "</p></div>";
+      j.items.forEach(function (it) {
+        html += '<div class="box dq"><div class="dqh"><b>' + it.n + '번</b>' + (it.audio ? '<audio controls preload="none" controlsList="nodownload" src="' + esc(it.audio) + '"></audio>' : "") + "</div>" + it.lines.map(function (l) {
+          return '<p class="dl">' + (l.sp ? "<b>" + esc(l.sp) + ":</b> " : "") + l.parts.map(function (p) {
+            if (typeof p === "string") return esc(p);
+            return esc(p.pre) + '<input class="bl" data-b="' + p.b + '" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="width:' + Math.max(4.2, Math.min(12, p.len * 0.72 + 1.6)) + 'em" value="' + esc(draft[p.b] || "") + '" aria-label="빈칸 ' + (p.b + 1) + '">' + esc(p.post);
+          }).join("") + "</p>";
+        }).join("") + "</div>";
+      });
+      html += '<p class="err" id="er"></p><div class="row"><button class="btn" id="send">' + (done ? "다시 풀고 채점하기 (연습)" : "제출하고 채점하기") + '</button><button class="btn ghost" id="bk">← 돌아가기</button></div>';
+      app.innerHTML = html; bindWho();
+      Array.prototype.forEach.call(app.querySelectorAll(".dq audio"), function (a) { a.addEventListener("play", function () { Array.prototype.forEach.call(app.querySelectorAll(".dq audio"), function (o) { if (o !== a) o.pause(); }); }); });
+      var ins = Array.prototype.slice.call(app.querySelectorAll("input.bl"));
+      ins.forEach(function (x, i) {
+        x.oninput = function () { draft[x.getAttribute("data-b")] = x.value; try { localStorage.setItem(draftKey, JSON.stringify(draft)); } catch (e) {} };
+        x.onkeydown = function (e) { if (e.key === "Enter") { e.preventDefault(); if (ins[i + 1]) ins[i + 1].focus(); } };
+      });
+      document.getElementById("bk").onclick = showMain;
+      document.getElementById("send").onclick = function () {
+        var b = this, ans = []; ins.forEach(function (x) { ans[+x.getAttribute("data-b")] = x.value; });
+        var empty = ans.filter(function (x) { return !String(x || "").trim(); }).length;
+        if (empty && !confirm("빈칸 " + empty + "개를 아직 안 썼어요. 그래도 낼까요?")) return;
+        b.disabled = true; b.textContent = "채점하는 중…";
+        post({ action: "s_dict_submit", token: ME.token, id: h.id, answers: ans }).then(function (r) {
+          if (r.relogin) { logout(); stepCls(r.msg); return; }
+          if (!r.ok) { b.disabled = false; b.textContent = "다시 제출하기"; document.getElementById("er").textContent = r.msg || "제출하지 못했어요."; return; }
+          try { localStorage.removeItem(draftKey); } catch (e) {}
+          ins.forEach(function (x) { var k = +x.getAttribute("data-b"), ok = r.res[k]; x.readOnly = true; x.classList.add(ok ? "ok" : "no"); if (!ok) { var c = document.createElement("span"); c.className = "fix"; c.textContent = r.key[k]; x.insertAdjacentElement("afterend", c); } });
+          var top = document.createElement("div"); top.className = "box done";
+          top.innerHTML = '<div class="big">' + (r.pct >= 80 ? "🎉" : r.pct >= 50 ? "🙂" : "💪") + "</div><h2>" + r.right + " / " + r.total + " (" + r.pct + "%)</h2>" + '<p class="sub">' + (r.practice ? "연습으로 채점했어요. 기록은 처음 낸 점수(" + esc(r.first) + ")예요." : r.late ? "늦었지만 제출했어요. 선생님께 기록이 전해졌어요." : "제출 완료! 선생님께 기록이 전해졌어요.") + "<br>틀린 빈칸 옆 초록 글씨가 정답이에요. 음성을 다시 들으며 확인해 보세요.</p>";
+          app.insertBefore(top, app.children[1]); window.scrollTo(0, 0);
+          b.textContent = "과제로 돌아가기"; b.disabled = false; b.onclick = showMain;
+        });
+      };
+    });
   }
 
   // ================= 사진 올리기 =================

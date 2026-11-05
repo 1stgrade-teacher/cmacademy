@@ -156,14 +156,14 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       <h2 id="editTitle">새 시험지</h2>
       <div class="grid">
         <div><label class="l">반</label><select id="eCls"></select></div>
-        <div><label class="l">종류</label><select id="eKind"><option>월간평가</option><option>분기평가</option><option>주간평가</option><option>단어시험</option><option>반배정시험</option></select></div>
+        <div><label class="l">종류</label><select id="eKind"><option>월간평가</option><option>분기평가</option><option>주간평가</option><option>단어시험</option><option>듣기시험</option><option>반배정시험</option></select></div>
         <div><label class="l">시기</label><select id="ePeriod"></select></div>
         <div style="grid-column:span 2"><label class="l">시험명</label><input id="eTitle" placeholder="자동으로 채워져요"></div>
       </div>
       <div class="grid" style="margin-top:12px">
         <div><label class="l">출제 방식</label><div class="seg"><label><input type="radio" name="mode" value="fixed" checked>선생님 지정</label><label><input type="radio" name="mode" value="choice">학생 선택</label></div></div>
         <div><label class="l">난이도</label><div class="seg"><label><input type="radio" name="lv" value="1">기본</label><label><input type="radio" name="lv" value="2" checked>표준</label><label><input type="radio" name="lv" value="3">심화</label></div></div>
-        <div><label class="l">문항 수</label><input id="eCount" type="number" min="5" max="100" value="20"></div>
+        <div><label class="l">문항 수</label><input id="eCount" type="number" min="1" max="100" value="20"></div>
         <div><label class="l">제한시간(분, 0=없음)</label><input id="eMin" type="number" min="0" max="180" value="30"></div>
       </div>
       <div class="grid" style="margin-top:12px">
@@ -184,6 +184,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         <b>📒 단어 문제 유형</b> <span class="hint" style="margin:0">고른 유형만 섞어서 내요. 한 단어는 한 번만 나와요.</span>
         <div id="vtList" class="row" style="flex-wrap:wrap;gap:6px 14px;margin-top:8px"></div>
       </div>
+      <div id="listenHint" class="hint" style="display:none;margin-top:10px;padding:10px 12px;border:1px dashed #9BD3D0;border-radius:10px;background:var(--ac-soft)">🎧 <b>듣기시험</b>: 위에서 「듣기」 영역의 회차를 고르세요. 문제는 <b>원래 순서대로</b>(음성 번호와 같게) 나오고, 보기 순서도 섞지 않으며, AI 변형은 쓰지 않아요. 학생은 문제마다 ▶ 음성을 들으며 풀고, 제출하면 바로 채점돼 시험 기록에 「듣기시험」으로 쌓여요. 문항 수는 회차의 문항 수(예: 17~20)로 맞춰 주세요.</div>
       <div id="aiBox" style="margin-top:12px;padding:10px 12px;border:1px dashed #C9B6E8;border-radius:10px;background:#FBF8FF">
         <b>🧠 AI 활용 출제</b> <span class="hint" style="margin:0">기본은 선생님 자료의 문제를 그대로 내요.</span>
         <div class="grid" style="margin-top:8px">
@@ -367,6 +368,13 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         <div style="grid-column:span 2"><label class="l">과제명</label><input id="hwTitle" placeholder="예: Day 3 단어 3번씩 쓰기"></div>
         <div><label class="l">마감 (날짜·시간)</label><input id="hwDue" type="datetime-local"></div>
       </div>
+      <div class="grid" style="margin-top:10px"><div><label class="l">종류</label><select id="hwType"><option value="">📷 사진 과제</option><option value="dict">🎧 받아쓰기 (온라인)</option></select></div></div>
+      <div id="hwDictBox" style="display:none;margin-top:10px;padding:10px 12px;border:1px dashed #9BD3D0;border-radius:10px;background:var(--ac-soft)">
+        <div class="hint" style="margin-top:0">🎧 듣기 회차의 대화 대본에서 <b>빈칸을 자동으로</b> 만들어요. 학생은 과제 페이지에서 음성을 들으며 빈칸을 채우고, 내면 바로 채점돼요. 처음 낸 점수가 기록되고, 마감까지 안 내면 다른 과제처럼 학부모님께 알림이 가요.</div>
+        <div class="grid" style="margin-top:8px"><div style="grid-column:span 2"><label class="l">듣기 회차</label><select id="hwDictU"></select></div><div><label class="l">빈칸 비율</label><select id="hwDictR"><option value="0.2">적게 (20%)</option><option value="0.3" selected>보통 (30%)</option><option value="0.4">많이 (40%)</option><option value="0.5">아주 많이 (50%)</option></select></div></div>
+        <div class="row" style="margin-top:8px"><button class="sub sm" id="hwDictPv">👀 빈칸 미리보기</button><span class="hint" id="hwDictInfo" style="margin:0"></span></div>
+        <div id="hwDictOut"></div>
+      </div>
       <label class="l" style="margin-top:10px">설명 (학생에게 보여요)</label><textarea id="hwDesc" rows="2" placeholder="예: 공책에 3번씩 쓰고 한 페이지씩 사진 찍어 올리기"></textarea>
       <div class="grid" style="margin-top:10px"><div><label class="l">학생에게 보이는 날 (비우면 바로)</label><input id="hwShow" type="date"></div></div>
       <div class="row" style="margin-top:10px"><label><input type="checkbox" id="hwNotify" checked> 마감까지 안 내면 학부모님께 알림톡 보내기</label><label><input type="checkbox" id="hwActive" checked> 학생에게 보이기</label></div>
@@ -521,7 +529,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   function hwForm(h) {
     HW_EDIT = h || null; $("hwFormTitle").textContent = h ? "✏️ 과제 수정 · " + h.title : "📸 새 과제";
     $("hwCls").value = h ? h.cls : (lsGet("cm-teacher-cls") || $("hwCls").value); $("hwTitle").value = h ? h.title : ""; $("hwDue").value = h ? h.dueKst : hwDefaultDue();
-    $("hwDesc").value = h ? h.desc : ""; $("hwShow").value = h ? (h.show || "") : ""; $("hwNotify").checked = h ? h.notify : true; $("hwActive").checked = h ? h.active : true; $("hwMsg").textContent = ""; hwLinkHint();
+    $("hwDesc").value = h ? h.desc : ""; $("hwShow").value = h ? (h.show || "") : ""; hwDictFill(); $("hwType").value = h && h.dict ? "dict" : ""; if (h && h.dict) { $("hwDictU").value = h.dict.u; $("hwDictR").value = String(h.dict.r); } hwTypeUi(); $("hwNotify").checked = h ? h.notify : true; $("hwActive").checked = h ? h.active : true; $("hwMsg").textContent = ""; hwLinkHint();
   }
   function hwLinkHint() { var c = $("hwCls").value; $("hwLink").innerHTML = c ? '학생 링크: <b>' + esc(location.origin + "/과제/?c=" + c) + '</b> <button class="sm sub" id="hwCopy">링크 복사</button>' : ""; var b = $("hwCopy"); if (b) b.onclick = function () { var t = location.origin + "/과제/?c=" + encodeURIComponent(c); (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { b.textContent = "✓ 복사됨"; }, function () { prompt("복사해서 단톡방에 보내세요", t); }); }; }
   function hwOpen() {
@@ -534,7 +542,9 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   $("hwCls").onchange = hwLinkHint; $("hwNew").onclick = function () { hwForm(null); };
   $("hwReload").onclick = hwLoad; $("hwFilter").onchange = hwLoad;
   $("hwSave").onclick = function () {
-    var b = this, hw = { id: HW_EDIT && HW_EDIT.id, cls: $("hwCls").value, title: $("hwTitle").value.trim(), due: $("hwDue").value, desc: $("hwDesc").value.trim(), showFrom: $("hwShow").value || "", notify: $("hwNotify").checked, active: $("hwActive").checked };
+    var b = this, hw = { id: HW_EDIT && HW_EDIT.id, cls: $("hwCls").value, title: $("hwTitle").value.trim(), due: $("hwDue").value, desc: $("hwDesc").value.trim(), showFrom: $("hwShow").value || "", notify: $("hwNotify").checked, active: $("hwActive").checked, dict: $("hwType").value === "dict" ? { u: $("hwDictU").value, r: +$("hwDictR").value } : null };
+    if (hw.dict && !hw.dict.u) { $("hwMsg").innerHTML = '<span class="er">듣기 회차를 골라 주세요. (「듣기」 영역에 대본이 든 회차가 있어야 해요)</span>'; return; }
+    if (hw.dict && !hw.title) { hw.title = "받아쓰기 · " + ($("hwDictU").selectedOptions[0] || {}).textContent; $("hwTitle").value = hw.title; }
     if (!hw.title || !hw.due) { $("hwMsg").innerHTML = '<span class="er">과제명과 마감을 넣어 주세요.</span>'; return; }
     b.disabled = true; $("hwMsg").textContent = "저장하는 중…"; lsSet("cm-teacher-cls", hw.cls);
     post({ action: "t_hw_save", hw: hw }).then(function (j) { b.disabled = false; if (!j.ok) { $("hwMsg").innerHTML = '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; return; } $("hwMsg").innerHTML = '<span class="ok">저장했어요 ✓ ' + (j.hw && j.hw.hidden ? "학생 화면에는 " + esc(mpMd(j.hw.show)) + "부터 보여요." : "학생 화면 「과제 제출」에 바로 보여요.") + "</span>" + (j.warn ? ' <span class="er">' + esc(j.warn) + "</span>" : ""); HW_EDIT = j.hw; hwLoad(); mpLoad(); });
@@ -557,7 +567,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       if (!j.list.length) { $("hwList").innerHTML = '<p class="hint">아직 과제가 없어요. 위에서 첫 과제를 만들어 보세요.</p>'; return; }
       $("hwList").innerHTML = '<div class="tw"><table><thead><tr><th>반</th><th>과제</th><th>마감</th><th>제출</th><th>늦게</th><th>미제출</th><th>상태</th><th></th></tr></thead><tbody>' + j.list.map(function (h, i) {
         var st = !h.active ? "숨김" : h.hidden ? "공개 전 (" + mpMd(h.show) + "부터)" : !h.past ? "진행 중" : h.done ? "마감 확인 끝" + (h.notify ? " · 알림" : "") : "마감 확인 대기";
-        return "<tr><td>" + esc(h.cls) + "</td><td><b>" + esc(h.title) + "</b></td><td>" + esc(h.dueLabel) + "</td><td class=num>" + (h.counted ? h.nSub : "-") + "</td><td class=num>" + (h.counted ? h.nLate : "-") + "</td><td class=num>" + (h.counted ? h.nMiss : "-") + "</td><td>" + st + '</td><td><button class="sm sub" data-hwd="' + i + '">보기</button> <button class="sm sub" data-hwe="' + i + '">수정</button></td></tr>';
+        return "<tr><td>" + esc(h.cls) + "</td><td><b>" + (h.dict ? "🎧 " : "") + esc(h.title) + "</b></td><td>" + esc(h.dueLabel) + "</td><td class=num>" + (h.counted ? h.nSub : "-") + "</td><td class=num>" + (h.counted ? h.nLate : "-") + "</td><td class=num>" + (h.counted ? h.nMiss : "-") + "</td><td>" + st + '</td><td><button class="sm sub" data-hwd="' + i + '">보기</button> <button class="sm sub" data-hwe="' + i + '">수정</button></td></tr>';
       }).join("") + "</tbody></table></div>";
       Array.prototype.forEach.call($("hwList").querySelectorAll("[data-hwe]"), function (b) { b.onclick = function () { hwForm(HW_LIST[+b.getAttribute("data-hwe")]); window.scrollTo(0, 0); }; });
       Array.prototype.forEach.call($("hwList").querySelectorAll("[data-hwd]"), function (b) { b.onclick = function () { hwDetail(HW_LIST[+b.getAttribute("data-hwd")]); }; });
@@ -631,6 +641,23 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     post({ action: "t_parent_links", cls: $("plCls").value }).then(function (j) { b.disabled = false; if (!j.ok) { $("plOut").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; } PL = j.list; plDraw(); });
   };
   $("plCls").onchange = function () { $("plOut").innerHTML = ""; };
+
+  // ---------- 🎧 받아쓰기 숙제 만들기 ----------
+  function hwDictFill() {
+    if ($("hwDictU").options.length) return;
+    var o = []; (DATA.catalog || []).filter(function (b) { return b.area === "듣기"; }).forEach(function (b) { b.chapters.forEach(function (c) { c.units.forEach(function (u) { o.push('<option value="' + esc(u.id) + '">' + esc(b.name + " › " + (c.name && c.name !== "단원" ? c.name + " › " : "") + u.name) + "</option>"); }); }); });
+    $("hwDictU").innerHTML = o.length ? o.join("") : '<option value="">(아직 「듣기」 회차가 없어요)</option>';
+  }
+  function hwTypeUi() { var on = $("hwType").value === "dict"; $("hwDictBox").style.display = on ? "" : "none"; if (on) hwDictFill(); }
+  $("hwType").onchange = hwTypeUi;
+  $("hwDictPv").onclick = function () {
+    var u = $("hwDictU").value; if (!u) return; $("hwDictInfo").textContent = "만드는 중…";
+    post({ action: "t_dict_preview", u: u, r: +$("hwDictR").value }).then(function (j) {
+      if (!j.ok) { $("hwDictInfo").innerHTML = '<span class="er">' + esc(j.msg || "만들지 못했어요.") + "</span>"; return; }
+      $("hwDictInfo").textContent = "빈칸 " + j.key.length + "개 (예시 · 실제 과제는 과제마다 빈칸 위치가 조금 달라요)";
+      $("hwDictOut").innerHTML = j.items.map(function (it) { return '<div style="margin-top:8px;font-size:14px;line-height:1.9"><b>' + it.n + "번</b> " + (it.audio ? '<audio controls preload="none" src="' + esc(it.audio) + '" style="height:32px;vertical-align:middle;max-width:260px"></audio>' : "") + it.lines.map(function (l) { return "<div>" + (l.sp ? "<b>" + esc(l.sp) + ":</b> " : "") + l.parts.map(function (p) { return typeof p === "string" ? esc(p) : esc(p.pre) + '<span style="background:#FFF1D8;border-bottom:2px solid #E39A2D;padding:0 4px;color:#8A5A00;font-weight:700">' + esc(j.key[p.b]) + "</span>" + esc(p.post); }).join("") + "</div>"; }).join("") + "</div>"; }).join("");
+    });
+  };
 
   // ---------- 🗓 월간 과제 계획 ----------
   var MP = { ym: "", cls: "", saved: [], drafts: [] }, MP_WD = "일월화수목금토";
@@ -1201,7 +1228,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   var VT = null; // null = 모든 유형
   function vocabSelected() { var ids = SEL; return DATA.catalog.some(function (b) { return b.chapters.some(function (c) { return c.units.some(function (u) { return u.v && (ids[u.id] || SELB[b.id]); }); }); }); }
   function vtUi() {
-    $("aiBox").style.display = $("eKind").value === "단어시험" ? "none" : "";
+    $("aiBox").style.display = /단어시험|듣기시험/.test($("eKind").value) ? "none" : ""; $("listenHint").style.display = $("eKind").value === "듣기시험" ? "" : "none"; if ($("eKind").value === "듣기시험" && F.area !== "듣기" && DATA.catalog.some(function (b) { return b.area === "듣기"; })) { F.area = "듣기"; buildBookFilters(); renderBooks(); }
     var show = $("eKind").value === "단어시험" || vocabSelected(); $("vtBox").style.display = show ? "" : "none"; if (!show) return;
     var cnt = {}; DATA.catalog.forEach(function (b) { b.chapters.forEach(function (c) { c.units.forEach(function (u) { if (u.v && (SEL[u.id] || SELB[b.id])) Object.keys(u.v).forEach(function (t) { cnt[t] = (cnt[t] || 0) + u.v[t]; }); }); }); });
     var any = Object.keys(cnt).length;
@@ -1275,7 +1302,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     $("reseed").style.display = ch ? "none" : "";
   }
   function buildBookFilters() {
-    var areas = ["", "문법", "구문", "독해", "교과서", "어휘"].filter(function (a) { return !a || DATA.catalog.some(function (b) { return b.area === a; }); }), grades = [""].concat(DATA.catalog.map(function (b) { return b.grade; }).filter(function (g, i, a) { return g && a.indexOf(g) === i; }));
+    var areas = ["", "문법", "구문", "독해", "교과서", "어휘", "듣기"].filter(function (a) { return !a || DATA.catalog.some(function (b) { return b.area === a; }); }), grades = [""].concat(DATA.catalog.map(function (b) { return b.grade; }).filter(function (g, i, a) { return g && a.indexOf(g) === i; }));
     $("areaF").innerHTML = areas.map(function (a) { return '<button class="sm tab' + (a === F.area ? " on" : "") + '" data-a="' + a + '">' + (a || "전체 영역") + "</button>"; }).join("");
     $("gradeF").innerHTML = grades.map(function (g) { return '<button class="sm tab' + (g === F.grade ? " on" : "") + '" data-g="' + g + '">' + (g || "전체 학년") + "</button>"; }).join("");
     Array.prototype.forEach.call($("areaF").children, function (b) { b.onclick = function () { F.area = b.getAttribute("data-a"); buildBookFilters(); renderBooks(); }; });
@@ -1363,7 +1390,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     $("pvInfo").textContent = "만드는 중…"; $("pvBtn").disabled = true;
     var seed = EDIT && !RESEED ? (EDIT.cfg.seed || EDIT.id) : (PV_SEED = PV_SEED || Math.random().toString(36).slice(2, 10));
     var aiS = aiSend(); if (aiS.variant || aiS.extra) $("pvInfo").textContent = "🧠 AI가 문제를 만드는 중… (처음엔 30초~1분 걸려요)";
-    post({ action: "t_preview", units: units.slice(0, 300), count: +$("eCount").value, level: level(), exclude: EXCL, seed: seed, vtypes: vtSend(), mode: mode(), ai: aiS }).then(function (j) {
+    post({ action: "t_preview", kind: $("eKind").value, units: units.slice(0, 300), count: +$("eCount").value, level: level(), exclude: EXCL, seed: seed, vtypes: vtSend(), mode: mode(), ai: aiS }).then(function (j) {
       $("pvBtn").disabled = false;
       if (!j.ok) { $("pvInfo").textContent = j.msg || "미리보기를 만들지 못했어요."; return; }
       var empty = j.stats.filter(function (s) { return !s.bank && !s.ai; });
@@ -1378,6 +1405,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       $("pv").innerHTML = '<div class="hint">초록 글씨가 정답이에요. 마음에 안 드는 문제는 <b>빼기</b>를 누른 뒤 다시 미리보기 하면 다른 문제로 바뀌어요.' + (EXCL.length ? " (뺀 문제 " + EXCL.length + "개 · <a href='#' id='unex'>모두 되살리기</a>)" : "") + "</div>" +
         j.items.map(function (q, i) {
           var body = '<div class="tg">' + esc(q.ch) + " › " + esc(q.unit) + '<span class="lv lv' + q.lv + '">' + lvN[q.lv] + "</span>" + (q.kind === "AI 변형" ? ' <span class="lv" style="background:#EFE6FF;color:#5B2DA0">🧠 AI 변형</span>' : q.ai ? ' <span class="lv" style="background:#EFE6FF;color:#5B2DA0">🧠 AI 새 문제</span>' : "") + (q.custom ? ' <span class="lv lv1">📁 직접 올림</span>' : "") + (q.vt ? ' <span class="lv lv1">📒 ' + esc(((DATA.vtypes || []).filter(function (t) { return t.id === q.vt; })[0] || {}).label || q.vt) + "</span>" : "") + "</div><div><b>" + fmt(q.q) + "</b></div>" + (q.sub ? '<div class="sb">' + fmt(q.sub) + "</div>" : "");
+          if (q.audio) body += '<audio controls preload="none" src="' + esc(q.audio) + '" style="width:100%;max-width:420px;margin:6px 0;display:block"></audio>';
           if (q.type === "mc" || q.type === "multi") body += q.opts.map(function (o, k) { var c = q.type === "mc" ? k === q.ans : (q.anss || []).indexOf(k) >= 0; return '<div class="op' + (c ? " c" : "") + '">' + "①②③④⑤⑥"[k] + " " + fmt(o) + "</div>"; }).join("") + (q.type === "multi" ? '<div class="tg">(모두 고르기)</div>' : "");
           else if (q.type === "short") body += '<div class="op c">정답: ' + fmt(q.answer) + '</div><div class="tg">이렇게 써도 정답: ' + esc((q.accept || []).join(" | ")) + (q.vt === "mwrite" ? (DATA.ai ? " · 🤖 이 밖의 사전 뜻·비슷한 뜻은 AI가 확인해서 정답 처리" : " · (AI 키가 없어서 단어장 뜻과 같을 때만 정답)") : "") + "</div>";
           else body += '<div class="op">조각: ' + esc(q.words.join(" / ")) + '</div><div class="op c">정답: ' + esc(q.answer) + "</div>";

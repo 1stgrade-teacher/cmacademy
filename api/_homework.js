@@ -4,7 +4,7 @@
 const N = require("./_notify.js");
 
 module.exports = function (ctx) {
-  const { notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, STUDENT_DB, getLastErr } = ctx;
+  const { notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, STUDENT_DB, listenUnit, getLastErr } = ctx;
   const crypto = require("crypto");
   const HW_DB = () => id32(process.env.NOTION_HW_DB_ID || "284584e0b6d64f2297137ffdcb2b6298");
   const SUB_DB = () => id32(process.env.NOTION_HWSUB_DB_ID || "f81f921219e94f6cb1afd0b9c58338df");
@@ -22,7 +22,17 @@ module.exports = function (ctx) {
   const isDay = (s) => /^\d{4}-\d{2}-\d{2}$/.test(s || "");
   function readHw(p) {
     const due = dueOf(p), show = showOf(p);
-    return { id: normId(p.id), url: p.url, title: P.title(p, "과제명"), cls: P.text(p, "반"), desc: P.text(p, "설명"), due, dueKst: due ? kst(due) : "", dueLabel: dueLabel(due), active: P.chk(p, "사용"), notify: P.chk(p, "알림 보내기"), done: P.chk(p, "알림 처리"), teacher: P.text(p, "만든 선생님"), past: !!due && Date.parse(due) <= Date.now(), show, hidden: !!show && shownAt(show) > Date.now() };
+    return { id: normId(p.id), url: p.url, title: P.title(p, "과제명"), cls: P.text(p, "반"), desc: P.text(p, "설명"), due, dueKst: due ? kst(due) : "", dueLabel: dueLabel(due), active: P.chk(p, "사용"), notify: P.chk(p, "알림 보내기"), done: P.chk(p, "알림 처리"), teacher: P.text(p, "만든 선생님"), past: !!due && Date.parse(due) <= Date.now(), show, hidden: !!show && shownAt(show) > Date.now(), dict: dictOf(p) };
+  }
+  // 🎧 받아쓰기 숙제: '받아쓰기' 칸에 {"u": 듣기 회차 id, "r": 빈칸 비율} — 비어 있으면 사진 과제
+  function dictOf(p) { try { const j = JSON.parse(P.text(p, "받아쓰기") || "null"); return j && j.u ? { u: String(j.u), r: Math.min(0.6, Math.max(0.1, +j.r || 0.3)) } : null; } catch (e) { return null; } }
+  const propOk = {};
+  async function ensureProp(db, name, def) { // 칸이 없으면 한 번 만들기
+    const key = db + "|" + name; if (propOk[key]) return true;
+    const d = await notion("databases/" + db, "GET", null, 2); if (!d) return false;
+    if (d.properties && d.properties[name]) return (propOk[key] = true);
+    const u = await notion("databases/" + db, "PATCH", { properties: { [name]: def } }, 2);
+    return (propOk[key] = !!(u && u.properties && u.properties[name]));
   }
   // 노션 📸 과제 DB에 '공개일'(날짜) 칸이 없으면 한 번 만들어요. 못 만들면 공개일 없이 저장해요.
   let showProp = null;
@@ -39,7 +49,7 @@ module.exports = function (ctx) {
   }
   function readSub(p) {
     const files = ((p.properties["사진"] || {}).files || []).map((f) => ({ name: f.name, url: (f.file && f.file.url) || (f.external && f.external.url) || "" })).filter((f) => f.url);
-    return { id: normId(p.id), url: p.url, sid: P.rel(p, "학생")[0] || "", hw: P.rel(p, "과제")[0] || "", status: P.sel(p, "상태"), at: (P.date(p, "제출 시각") || {}).start || "", memo: P.text(p, "학생 메모"), notice: P.text(p, "알림 결과"), checked: P.chk(p, "선생님 확인"), files };
+    return { id: normId(p.id), url: p.url, sid: P.rel(p, "학생")[0] || "", hw: P.rel(p, "과제")[0] || "", status: P.sel(p, "상태"), at: (P.date(p, "제출 시각") || {}).start || "", memo: P.text(p, "학생 메모"), notice: P.text(p, "알림 결과"), checked: P.chk(p, "선생님 확인"), files, score: P.text(p, "받아쓰기 결과") };
   }
   const subsOf = (hwId) => queryAll(SUB_DB(), { filter: { property: "과제", relation: { contains: uuid(hwId) } } }, 3);
 
@@ -71,7 +81,7 @@ module.exports = function (ctx) {
     const mine = await queryAll(SUB_DB(), { filter: { property: "학생", relation: { contains: uuid(who.sid) } } }, 2);
     const by = new Map((mine || []).map(readSub).map((s) => [s.hw, s]));
     return list.sort((a, b) => (a.past - b.past) || (a.past ? Date.parse(b.due) - Date.parse(a.due) : Date.parse(a.due) - Date.parse(b.due)))
-      .map((h) => { const s = by.get(h.id); return { id: h.id, title: h.title, desc: h.desc, due: h.dueKst, dueLabel: h.dueLabel, past: h.past, status: s ? s.status : "", at: s && s.at ? kst(s.at) : "", n: s ? s.files.length : 0 }; });
+      .map((h) => { const s = by.get(h.id); return { id: h.id, title: h.title, desc: h.desc, due: h.dueKst, dueLabel: h.dueLabel, past: h.past, status: s ? s.status : "", at: s && s.at ? kst(s.at) : "", n: s ? s.files.length : 0, dict: !!h.dict, score: s ? s.score : "" }; });
   }
   // 🗓 학생 달력: 이 달 우리 반 과제. 공개 전 과제는 제목·마감만 (설명·번호 없이 → 열기 전엔 낼 수 없어요)
   async function studentMonth(who, ym) {
@@ -82,7 +92,7 @@ module.exports = function (ctx) {
     const by = new Map((mine || []).map(readSub).map((s) => [s.hw, s]));
     return { status: 200, list: list.map((h) => {
       if (h.hidden) return { hidden: true, title: h.title, due: h.dueKst, dueLabel: h.dueLabel, show: h.show };
-      const s = by.get(h.id); return { id: h.id, title: h.title, desc: h.desc, due: h.dueKst, dueLabel: h.dueLabel, past: h.past, status: s ? s.status : "", at: s && s.at ? kst(s.at) : "", n: s ? s.files.length : 0 };
+      const s = by.get(h.id); return { id: h.id, title: h.title, desc: h.desc, due: h.dueKst, dueLabel: h.dueLabel, past: h.past, status: s ? s.status : "", at: s && s.at ? kst(s.at) : "", n: s ? s.files.length : 0, dict: !!h.dict, score: s ? s.score : "" };
     }) };
   }
   async function studentSubmit(who, b) {
@@ -91,6 +101,7 @@ module.exports = function (ctx) {
     const hw = readHw(hp);
     if (!hw.active || hw.cls !== who.cls) return { status: 403, msg: "우리 반 과제가 아니에요." };
     if (hw.hidden) return { status: 403, msg: "아직 열리지 않은 과제예요. " + Number(hw.show.slice(5, 7)) + "/" + Number(hw.show.slice(8, 10)) + "부터 낼 수 있어요." };
+    if (hw.dict) return { status: 400, msg: "받아쓰기 숙제는 화면에서 듣고 빈칸을 채워 내요." };
     const files = (Array.isArray(b.files) ? b.files : []).filter((f) => f && /^[0-9a-f-]{32,36}$/i.test(String(f.fid))).slice(0, 100); // 노션 파일 칸 최대 100개
     if (!files.length) return { status: 400, msg: "사진을 한 장 이상 올려 주세요." };
     const late = hw.due && Date.parse(hw.due) < Date.now();
@@ -125,6 +136,11 @@ module.exports = function (ctx) {
       if (await ensureShowProp()) props["공개일"] = { date: show ? { start: show } : null };
       else if (show) warn = "노션 📸 과제 DB에 「공개일」(날짜) 칸을 만들지 못해 바로 보이게 저장했어요.";
     }
+    if (b.dict !== undefined) { // 🎧 받아쓰기 숙제로 저장 (빈 값이면 사진 과제)
+      const d = b.dict && b.dict.u ? { u: clip(b.dict.u, 40), r: Math.min(0.6, Math.max(0.1, +b.dict.r || 0.3)) } : null;
+      if (d && !(listenUnit && listenUnit(d.u))) return { status: 400, msg: "받아쓰기로 쓸 듣기 회차를 찾지 못했어요. 다시 골라 주세요." };
+      if (d || b.id) { if (await ensureProp(HW_DB(), "받아쓰기", { rich_text: {} })) props["받아쓰기"] = { rich_text: rt(d ? JSON.stringify(d) : "") }; else if (d) return { status: 502, msg: "노션 📸 과제 DB에 「받아쓰기」 칸을 만들지 못했어요." }; }
+    }
     let pg;
     if (b.id) {
       const old = await notion("pages/" + id32(b.id), "GET");
@@ -137,6 +153,66 @@ module.exports = function (ctx) {
     }
     return pg ? { status: 200, hw: readHw(pg), warn } : { status: 502, msg: "저장하지 못했어요.", debug: getLastErr() };
   }
+
+  // ---------- 🎧 받아쓰기 숙제 ----------
+  // 듣기 회차의 대본(.g-script)에서 빈칸을 만들어요. 같은 과제는 늘 같은 빈칸 (과제 id로 섞기).
+  const STOP = new Set("the a an and or but so to of in on at by for with from is am are was were be been do does did have has had i you he she it we they me him her us them my your his its our their this that these those there here not no yes oh okay ok can will would could should what when where who how why".split(" "));
+  function rng(seed) { let h = 2166136261; for (const c of String(seed)) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 100000) / 100000; }; }
+  const normW = (w) => String(w || "").toLowerCase().replace(/[‘’`´]/g, "'").replace(/[^a-z0-9']/g, "").replace(/^'+|'+$/g, "");
+  function dictBuild(hwId, d) {
+    const u = listenUnit && listenUnit(d.u); if (!u) return null;
+    const R = rng(hwId + "|" + d.u), items = [], key = [];
+    u.items.forEach((it, qi) => {
+      const lines = String(it.script || "").split(/\n+/).map((x) => x.trim()).filter(Boolean).map((ln) => {
+        const m = /^([A-Z][A-Za-z]{0,10}\s?\d?)\s*:\s*(.*)$/.exec(ln); return { sp: m ? m[1] : "", text: m ? m[2] : ln };
+      });
+      const toks = lines.map((l) => l.text.split(/(\s+)/)); // 낱말 + 띄어쓰기 (빈칸 후보: 3글자 이상, 쉬운 기능어·줄임말(it's, I'll) 제외)
+      const cand = [];
+      toks.forEach((tk, li) => tk.forEach((w, wi) => { const core = w.replace(/^[^A-Za-z0-9']+|[^A-Za-z0-9']+$/g, ""); if (core.length >= 3 && /[A-Za-z]/.test(core) && core.indexOf("'") < 0 && !STOP.has(core.toLowerCase())) cand.push([li, wi]); }));
+      const want = Math.max(1, Math.round(cand.length * d.r)), chosen = new Set();
+      const pool = cand.slice(); while (chosen.size < want && pool.length) { const k = Math.floor(R() * pool.length); chosen.add(pool[k].join(",")); pool.splice(k, 1); }
+      items.push({ n: qi + 1, audio: it.audio, lines: lines.map((l, li) => ({ sp: l.sp, parts: toks[li].map((w, wi) => {
+        if (!chosen.has(li + "," + wi)) return w;
+        const mm = /^([^A-Za-z0-9']*)(.*?)([^A-Za-z0-9']*)$/.exec(w); key.push(mm[2]);
+        return { b: key.length - 1, pre: mm[1], post: mm[3], len: mm[2].length };
+      }) })) });
+    });
+    return { name: u.name, items, key };
+  }
+  async function dictGet(who, id) {
+    const hp = await notion("pages/" + id32(id), "GET");
+    if (!hp || normId(hp.parent && hp.parent.database_id) !== normId(HW_DB())) return { status: 404, msg: "과제를 찾지 못했어요." };
+    const hw = readHw(hp);
+    if (!hw.active || (who && hw.cls !== who.cls)) return { status: 403, msg: "우리 반 과제가 아니에요." };
+    if (who && hw.hidden) return { status: 403, msg: "아직 열리지 않은 과제예요." };
+    if (!hw.dict) return { status: 400, msg: "받아쓰기 숙제가 아니에요." };
+    const d = dictBuild(hw.id, hw.dict); if (!d) return { status: 404, msg: "듣기 회차를 찾지 못했어요. 선생님께 알려 주세요." };
+    return { status: 200, hw, d };
+  }
+  async function studentDict(who, id) {
+    const r = await dictGet(who, id); if (r.status !== 200) return r;
+    return { status: 200, title: r.hw.title, desc: r.hw.desc, dueLabel: r.hw.dueLabel, due: r.hw.dueKst, past: r.hw.past, name: r.d.name, items: r.d.items, blanks: r.d.key.length };
+  }
+  async function studentDictSubmit(who, b) {
+    const r = await dictGet(who, b.id); if (r.status !== 200) return r;
+    const ans = Array.isArray(b.answers) ? b.answers : [], key = r.d.key;
+    const res = key.map((k, i) => normW(ans[i]) === normW(k));
+    const right = res.filter(Boolean).length, pct = key.length ? Math.round((right / key.length) * 100) : 0;
+    const late = r.hw.due && Date.parse(r.hw.due) < Date.now();
+    const label = right + "/" + key.length + " (" + pct + "%)";
+    const props = { "상태": sel(late ? "지각 제출" : "제출"), "제출 시각": { date: { start: new Date().toISOString() } } };
+    if (await ensureProp(SUB_DB(), "받아쓰기 결과", { rich_text: {} })) props["받아쓰기 결과"] = { rich_text: rt(label) };
+    const wrong = key.map((k, i) => (res[i] ? null : k + "←" + clip(String(ans[i] || "(빈칸)"), 30))).filter(Boolean);
+    props["학생 메모"] = { rich_text: rt(clip("🎧 받아쓰기 " + label + (wrong.length ? " · 틀린 곳: " + wrong.join(", ") : " · 모두 맞음"), 1900)) };
+    const ex = (await subsOf(r.hw.id) || []).map((p) => ({ p, s: readSub(p) })).find((x) => x.s.sid === normId(who.sid));
+    // 처음 제출한 점수가 기록이에요. 이미 낸 뒤 다시 풀면 연습(기록은 그대로). 미제출로 기록된 뒤 늦게 내면 지각 제출로 기록.
+    if (ex && ex.s.score && /제출/.test(ex.s.status) && ex.s.status !== "미제출") return { status: 200, practice: true, first: ex.s.score, right, total: key.length, pct, res, key };
+    const pg = ex ? await notion("pages/" + normId(ex.p.id), "PATCH", { properties: props })
+      : await notion("pages", "POST", { parent: { database_id: SUB_DB() }, properties: Object.assign({ "제목": { title: rt(who.name + " · " + r.hw.title) }, "과제": { relation: [{ id: uuid(r.hw.id) }] }, "학생": { relation: [{ id: uuid(who.sid) }] } }, props) });
+    if (!pg) return { status: 502, msg: "제출하지 못했어요. 다시 해 주세요.", debug: getLastErr() };
+    return { status: 200, late, right, total: key.length, pct, res, key };
+  }
+  function dictPreview(u, ratio) { const d = dictBuild("preview|" + u, { u, r: Math.min(0.6, Math.max(0.1, +ratio || 0.3)) }); return d ? { status: 200, name: d.name, items: d.items, key: d.key } : { status: 404, msg: "듣기 회차를 찾지 못했어요." }; }
 
   // ---------- 🗓 월간 계획 ----------
   // 한 달(한국 시간 기준) 마감 과제 목록. 경계 시간대가 어긋나지 않게 앞뒤 하루씩 넓게 읽고 여기서 거릅니다.
@@ -237,7 +313,7 @@ module.exports = function (ctx) {
     const by = new Map(subs.map(readSub).map((s) => [s.hw, s]));
     return hws.map(readHw).filter((h) => h.due && !h.hidden && Date.parse(h.due) > Date.now() - 62 * 864e5).sort((x, y) => Date.parse(y.due) - Date.parse(x.due)).slice(0, 40).map((h) => {
       const s = by.get(h.id);
-      return { title: h.title, desc: h.desc, due: h.dueKst, dueLabel: h.dueLabel, past: h.past, status: s ? s.status : h.past ? "미제출" : "", at: s && s.at ? kst(s.at) : "", memo: s ? s.memo : "", checked: s ? s.checked : false, photos: s ? s.files.map((f) => f.url) : [] };
+      return { dict: !!h.dict, score: s ? s.score : "", title: h.title, desc: h.desc, due: h.dueKst, dueLabel: h.dueLabel, past: h.past, status: s ? s.status : h.past ? "미제출" : "", at: s && s.at ? kst(s.at) : "", memo: s ? s.memo : "", checked: s ? s.checked : false, photos: s ? s.files.map((f) => f.url) : [] };
     });
   }
 
@@ -269,5 +345,5 @@ module.exports = function (ctx) {
     return { ok: true, checked: due.length, mode: N.mode(), report };
   }
 
-  return { studentList, studentMonth, studentSubmit, uploadPhoto, teacherList, teacherSave, teacherDetail, teacherMonth, teacherBulk, parentLinks, parentReset, parentView, hwForStudent, cron, HW_DB, SUB_DB, _t: { toNotionDue, dueLabel, readHw } };
+  return { studentList, studentMonth, studentSubmit, uploadPhoto, teacherList, teacherSave, teacherDetail, teacherMonth, teacherBulk, studentDict, studentDictSubmit, dictPreview, parentLinks, parentReset, parentView, hwForStudent, cron, HW_DB, SUB_DB, _t: { toNotionDue, dueLabel, readHw } };
 };

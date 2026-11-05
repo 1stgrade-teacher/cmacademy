@@ -14,7 +14,7 @@ import { parse } from "node-html-parser";
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 const OUT = path.join(ROOT, "exam-bank");
-const AREAS = ["문법", "구문", "독해", "교과서"];
+const AREAS = ["문법", "구문", "독해", "교과서", "듣기"];
 const SKIP_DIR = /^(_보관|node_modules|\.git|.*_audio|.*_scripts)$/;
 const SKIP_FILE = /^(index|preview|key)\.html$|^_/;
 
@@ -103,7 +103,7 @@ function chunkSentence(words) {
   });
   return out;
 }
-function extractQuestions(htmls) {
+function extractQuestions(htmls, fileRel) {
   const qs = [];
   for (const raw of htmls) {
     if (raw.indexOf("g-q") < 0) continue;
@@ -112,11 +112,16 @@ function extractQuestions(htmls) {
     if (!qEl) continue;
     const sub = d.querySelector(".g-qs"), kind = d.querySelector(".g-kind"), ansEl = d.querySelector(".g-ans .a"), expEl = d.querySelector(".g-exp");
     const answer = ansEl ? clean(ansEl.textContent) : "";
+    // 🎧 듣기: 문항 음성(data-audio 또는 <audio src>)과 대본(.g-script) — 듣기 형식 규칙 참고
+    const au = qEl.getAttribute("data-audio") || ((d.querySelector("[data-audio]") || {}).getAttribute || (() => ""))("data-audio") || ((d.querySelector("audio[src], source[src]") || {}).getAttribute || (() => ""))("src") || "";
+    const scEl = d.querySelector(".g-script");
     const item = {
       kind: kind ? clean(kind.textContent) : "", q: clean(qEl.textContent),
       sub: sub ? sub.textContent.replace(/[ \t]+/g, " ").replace(/\n{2,}/g, "\n").trim() : "",
       exp: expEl ? clean(expEl.textContent) : "", answer,
     };
+    if (au && fileRel) item.audio = /^(https?:)?\/\//.test(au) || au.startsWith("/") ? au : "/" + path.posix.normalize(path.posix.join(path.posix.dirname(fileRel), au));
+    if (scEl) item.script = scEl.querySelectorAll("p, li, div.ln").length ? scEl.querySelectorAll("p, li, div.ln").map((x) => clean(x.textContent)).filter(Boolean).join("\n") : scEl.textContent.split(/\n+/).map(clean).filter(Boolean).join("\n");
     const opts = d.querySelectorAll(".g-opt");
     if (opts.length >= 2) {
       const list = []; let ok = -1;
@@ -213,7 +218,14 @@ for (const area of AREAS) {
     const html = read(f);
     if (html.indexOf("lecturePlayer") < 0 && html.indexOf("var D") < 0 && html.indexOf("var A") < 0 && html.indexOf("g-q") < 0) continue;
     const strs = [];
-    lectureData(html).forEach((d) => collectStrings(d, "", strs));
+    const datas = lectureData(html);
+    // 🎧 듣기: 슬라이드 대사 중 "hl":"listen" 인 것의 음성(audioDir/n.mp3)을 그 슬라이드 문제의 음성으로 → html에 data-audio로 붙여 둠
+    datas.forEach((d) => { if (d && Array.isArray(d.slides) && d.audioDir) d.slides.forEach((sl) => {
+      if (!sl || typeof sl.html !== "string" || sl.html.indexOf("g-q") < 0 || /data-audio=/.test(sl.html)) return;
+      const lg = (sl.segs || []).find((x) => x && x.hl === "listen" && x.n != null);
+      if (lg) sl.html = sl.html.replace(/class=(["'])g-q\1/, (m) => m + ' data-audio="./' + String(d.audioDir).replace(/^\.?\//, "") + "/" + lg.n + '.mp3"');
+    }); });
+    datas.forEach((d) => collectStrings(d, "", strs));
     const slideHtml = [], texts = [], seen = new Set();
     strs.forEach((x) => {
       if (["u", "hl", "brand", "reveal"].includes(x.k)) return;
@@ -223,7 +235,7 @@ for (const area of AREAS) {
       if (t.length < 4 || seen.has(t)) return;
       seen.add(t); texts.push(t);
     });
-    const qs = extractQuestions(slideHtml);
+    const qs = extractQuestions(slideHtml, rel(f));
     // 확인 문제가 없는 강의도 '과'로 넣어 둠 → 시험 때 AI가 강의 내용으로 문제를 보충
     let text = texts.join("\n");
     if (text.length < 200) text = clean(parse(html.replace(/<(script|style)[\s\S]*?<\/\1>/gi, " ")).textContent);
