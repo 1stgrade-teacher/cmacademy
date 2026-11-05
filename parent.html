@@ -2,79 +2,289 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
-<title>우리 아이 과제 - 청명학원</title>
+<meta name="theme-color" content="#0E8A8C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="청명 학부모">
+<title>청명 학부모</title>
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="/style.css">
 <style>
-  /* 👪 부모님 전용: 링크(학생 + 비밀 키)로 아이의 과제와 제출 사진을 봐요. 로그인 없음 · 입장 코드 없이 열림 */
+  /* 👪 학부모 앱: 부모님 전용 링크(학생 + 비밀 키)로 우리 아이 학습 상태만 봐요. 로그인 없음 · 입장 코드 없이 열림 */
+  body{padding-bottom:40px}
   .box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-top:12px}
   .sub{color:var(--muted);font-size:14px;line-height:1.6;margin:0}
   .err{color:#A2342A;font-size:15px;line-height:1.6;margin:0}
-  .sum{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-  .sum div{flex:1;min-width:84px;background:var(--accent-soft);border-radius:10px;padding:10px 12px}.sum b{display:block;font-size:12.5px;color:var(--muted)}.sum span{font-size:22px;font-weight:800;color:var(--accent-ink)}
-  .hw .top{display:flex;gap:10px;align-items:flex-start}.hw .t{flex:1;min-width:0;font-weight:700;font-size:16.5px;line-height:1.4}
-  .hw .m{font-size:13.5px;color:var(--muted);margin-top:4px;line-height:1.5}
+  .kid{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 2px}
+  .kid h1{margin:0;font-size:24px;color:var(--accent-ink)}.kid .c{color:var(--muted);font-size:14px}
+  .kid select{border:1.5px solid var(--border-strong);border-radius:8px;padding:6px 8px;font:600 14px var(--font);background:#fff}
+  .lnk{border:0;background:none;color:var(--accent-ink);font:600 13.5px var(--font);text-decoration:underline;cursor:pointer;padding:0}
+  .tabs{position:sticky;top:0;z-index:5;display:flex;gap:6px;overflow-x:auto;padding:10px 0;background:var(--page);-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tabs button{flex:0 0 auto;position:relative;border:1.5px solid var(--border-strong);background:var(--card);border-radius:999px;padding:8px 14px;font:700 14.5px var(--font);color:var(--ink);cursor:pointer}
+  .tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .dot{position:absolute;top:-2px;right:-2px;width:10px;height:10px;border-radius:50%;background:#E5483E;border:2px solid var(--page)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+  .stat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;cursor:pointer}
+  .stat h3{margin:0 0 6px;font-size:14px;color:var(--muted)}.stat .big{font-size:26px;font-weight:800;color:var(--accent-ink);line-height:1.2}.stat .m{font-size:13px;color:var(--muted);margin-top:4px;line-height:1.5}
+  .sec{font-weight:800;color:var(--ink);font-size:16px;margin:18px 0 0}
+  .row{display:flex;gap:10px;align-items:flex-start}.row .t{flex:1;min-width:0;font-weight:700;font-size:16px;line-height:1.4}
+  .m2{font-size:13.5px;color:var(--muted);margin-top:4px;line-height:1.55}
   .tag{flex:0 0 auto;font:700 12.5px var(--font);padding:5px 9px;border-radius:8px;background:var(--accent-bg);color:var(--accent-ink);white-space:nowrap}
-  .tag.ok{background:#DFF5E8;color:#1E7A45}.tag.late{background:#FFF1D6;color:#8A5A00}.tag.miss{background:#FDE3E1;color:#A2342A}
+  .tag.ok{background:#DFF5E8;color:#1E7A45}.tag.late,.tag.mid{background:#FFF1D6;color:#8A5A00}.tag.miss,.tag.bad{background:#FDE3E1;color:#A2342A}.tag.gray{background:#EEF1F3;color:#5F6E7C}
   .desc{white-space:pre-wrap;background:#F7F9FA;border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.6;margin-top:8px;color:#3A4651}
-  .memo{font-size:14px;margin-top:8px;color:#3A4651}
   .shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px;margin-top:10px}
   .shots button{aspect-ratio:1;border:0;padding:0;border-radius:10px;overflow:hidden;background:#EEF1F3;cursor:zoom-in}
   .shots img{width:100%;height:100%;object-fit:cover;display:block}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}.chips button{border:1.5px solid var(--border-strong);background:#fff;border-radius:999px;padding:6px 12px;font:600 13.5px var(--font);cursor:pointer}.chips button.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent-ink)}
+  .score{font-size:22px;font-weight:800;color:var(--accent-ink)}.score small{font-size:14px;color:var(--muted);font-weight:600}
+  .btn{border:0;border-radius:10px;background:var(--accent);color:#fff;font:700 15px var(--font);padding:11px 16px;cursor:pointer}
+  .btn.ghost{background:var(--accent-bg);color:var(--accent-ink)}
+  .more{display:block;width:100%;margin-top:12px;border:1.5px solid var(--border-strong);background:var(--card);border-radius:10px;padding:12px;font:700 15px var(--font);color:var(--accent-ink);cursor:pointer}
+  .chart{margin-top:10px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:8px}
+  /* 상담 */
+  .chat{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+  .bub{max-width:84%;padding:10px 13px;border-radius:14px;font-size:15px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
+  .bub.me{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+  .bub.tc{align-self:flex-start;background:#fff;border:1px solid var(--border);border-bottom-left-radius:4px}
+  .bub .w{display:block;font-size:12px;opacity:.75;margin-top:4px}
+  .send{position:sticky;bottom:0;background:var(--page);padding:10px 0 4px;display:flex;gap:8px;align-items:flex-end}
+  .send textarea{flex:1;border:1.5px solid var(--border-strong);border-radius:12px;padding:10px 12px;font:500 16px var(--font);resize:none;min-height:46px;max-height:140px}
+  /* 리포트 */
+  .rep h3{font-size:19px;margin:20px 0 6px;color:var(--ink)}.rep h4{font-size:17px;margin:16px 0 4px}.rep h5{font-size:15.5px;margin:12px 0 4px}
+  .rep p{margin:6px 0;line-height:1.7;font-size:15px}.rep ul,.rep ol{margin:6px 0;padding-left:22px;line-height:1.7;font-size:15px}
+  .rep blockquote{margin:8px 0;padding:6px 12px;border-left:3px solid var(--accent-light);color:#3A4651}
+  .rep .call{display:flex;gap:10px;background:#F4F7F8;border-radius:10px;padding:10px 12px;margin:8px 0}.rep .call>span{font-size:18px}
+  .rep .tw{overflow-x:auto;margin:8px 0}.rep table{border-collapse:collapse;font-size:14px;min-width:100%}.rep td,.rep th{border:1px solid var(--border);padding:6px 8px;vertical-align:top;text-align:left}.rep th{background:#F4F7F8}
+  .rep img{max-width:100%;border-radius:8px;margin:6px 0}.rep hr{border:0;border-top:1px solid var(--border);margin:14px 0}
+  .rep details{margin:6px 0}.rep summary{cursor:pointer;font-weight:600}
+  .c-red{color:#C0392B}.c-blue{color:#1F5FA8}.c-green{color:#1E7A45}.c-orange{color:#B05A00}.c-purple{color:#6B3FA0}.c-gray{color:#6B7883}.c-brown{color:#7A5236}.c-pink{color:#B03A72}.c-yellow{color:#8A6D00}
+  .bg-red{background:#FDE3E1}.bg-blue{background:#E3F0FF}.bg-green{background:#DFF5E8}.bg-orange{background:#FFEBD6}.bg-purple{background:#F1E6FA}.bg-gray{background:#EEF1F3}.bg-brown{background:#F3E8DF}.bg-pink{background:#FBE4EF}.bg-yellow{background:#FFF5CC}
+  /* 사진 크게 보기 */
   .lb{position:fixed;inset:0;background:rgba(10,20,25,.92);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:50;padding:12px}
   .lb.on{display:flex}.lb img{max-width:100%;max-height:82vh;object-fit:contain;border-radius:6px;background:#fff}
   .lb .bar{display:flex;gap:10px;align-items:center;margin-top:12px;color:#fff;font:700 15px var(--font)}
   .lb button{border:0;border-radius:10px;background:rgba(255,255,255,.16);color:#fff;font:700 16px var(--font);padding:10px 16px;cursor:pointer}
-  .more{display:block;width:100%;margin-top:12px;border:1.5px solid var(--border-strong);background:var(--card);border-radius:10px;padding:12px;font:700 15px var(--font);color:var(--accent-ink);cursor:pointer}
+  .inst{background:#FFF8E6;border:1px solid #F2D58A;border-radius:12px;padding:12px 14px;margin-top:10px;font-size:14px;line-height:1.6}
+  .inst b{color:#8A5A00}
 </style>
 </head>
 <body>
-<div class="topbar"><span class="brand"><span class="spark">✳</span>청명학원 문화본원 영어과</span></div>
-<div class="wrap">
-  <div class="hero" style="padding-bottom:4px"><div class="hero-text"><h1 id="hd">👪 우리 아이 과제</h1><p id="hs">불러오는 중…</p></div></div>
+<div class="wrap" style="padding-top:12px">
+  <div id="top"><p class="sub">불러오는 중…</p></div>
+  <div class="tabs" id="tabs" style="display:none"></div>
   <div id="app"></div>
-  <p class="sub" style="margin-top:18px">이 링크는 우리 아이 전용이에요. 다른 분께 전달하지 말아 주세요. 링크를 잃어버리셨거나 새로 받고 싶으시면 담당 선생님께 말씀해 주세요.</p>
-  <footer>&copy; 2026 청명학원 문화본원</footer>
+  <p class="sub" style="margin-top:22px">이 화면은 우리 아이 전용이에요. 링크를 다른 분께 전달하지 말아 주세요. 링크를 새로 받고 싶으시면 담당 선생님께 말씀해 주세요.</p>
+  <footer>&copy; 2026 청명학원 문화본원 영어과</footer>
 </div>
 <div class="lb" id="lb" role="dialog" aria-label="사진 크게 보기"><img id="lbImg" alt=""><div class="bar"><button id="lbP" aria-label="이전 사진">◀</button><span id="lbN"></span><button id="lbN2" aria-label="다음 사진">▶</button><button id="lbX">닫기</button></div></div>
 <script>
 (function () {
-  var app = document.getElementById("app"), K = new URLSearchParams(location.search).get("k") || "";
+  var $ = function (id) { return document.getElementById(id); }, app = $("app");
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
-  function tag(h) { return h.status === "제출" ? '<span class="tag ok">✓ 제출</span>' : h.status === "지각 제출" ? '<span class="tag late">늦게 제출</span>' : h.status === "미제출" ? '<span class="tag miss">미제출</span>' : '<span class="tag">진행 중</span>'; }
-  var LIST = [], SHOW = 10, LB = { list: [], i: 0 };
-  function render(j) {
-    document.getElementById("hd").textContent = "👪 " + j.name + " 학생 과제";
-    document.getElementById("hs").textContent = j.cls + " · 최근 두 달 과제와 제출한 사진이에요.";
-    LIST = j.list;
-    var done = LIST.filter(function (h) { return h.status === "제출"; }).length, late = LIST.filter(function (h) { return h.status === "지각 제출"; }).length, miss = LIST.filter(function (h) { return h.status === "미제출"; }).length;
-    var html = '<div class="sum"><div><b>제출</b><span>' + done + '</span></div><div><b>늦게 제출</b><span>' + late + '</span></div><div><b>미제출</b><span>' + miss + "</span></div></div>";
-    if (!LIST.length) html += '<div class="box"><p class="sub">아직 과제가 없어요.</p></div>';
-    html += LIST.slice(0, SHOW).map(function (h, i) {
-      return '<div class="box hw"><div class="top"><div class="t">' + esc(h.title) + "</div>" + tag(h) + '</div><div class="m">마감 ' + esc(h.dueLabel) + (h.at ? " · 제출 " + esc(h.at.slice(5, 16).replace("T", " ").replace("-", "/")) : "") + (h.checked ? " · ✓ 선생님 확인" : "") + "</div>" +
-        (h.desc ? '<div class="desc">' + esc(h.desc) + "</div>" : "") + (h.memo ? '<div class="memo">💬 아이가 남긴 말: ' + esc(h.memo) + "</div>" : "") +
-        (h.photos.length ? '<div class="shots">' + h.photos.map(function (u, k) { return '<button data-h="' + i + '" data-k="' + k + '" aria-label="사진 ' + (k + 1) + ' 크게 보기"><img loading="lazy" src="' + esc(u) + '" alt="' + esc(h.title) + " 사진 " + (k + 1) + '"></button>'; }).join("") + "</div>" : "") + "</div>";
-    }).join("");
-    if (LIST.length > SHOW) html += '<button class="more" id="more">이전 과제 더 보기 (' + (LIST.length - SHOW) + "개)</button>";
-    app.innerHTML = html;
-    var mb = document.getElementById("more"); if (mb) mb.onclick = function () { SHOW += 10; render(j); };
-    Array.prototype.forEach.call(app.querySelectorAll(".shots button"), function (b) { b.onclick = function () { openLb(LIST[+b.getAttribute("data-h")].photos, +b.getAttribute("data-k")); }; });
+  var ls = { get: function (k, d) { try { var v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }, set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} } };
+  var KRE = /^[0-9a-f]{32}\.[A-Za-z0-9_-]{16,40}$/;
+  function keyFrom(s) { s = String(s || "").trim(); var m = /[?&]k=([0-9a-f]{32}\.[A-Za-z0-9_-]{16,40})/.exec(s); if (m) return m[1]; return KRE.test(s) ? s : ""; }
+  // 자녀 목록 (이 기기에 기억)
+  var KIDS = ls.get("cm-parent-kids", []), K = keyFrom(location.search) || ls.get("cm-parent-cur", "") || (KIDS[0] && KIDS[0].k) || "";
+  if (K && !KIDS.some(function (x) { return x.k === K; })) KIDS.push({ k: K, name: "" });
+  function saveKid(name, cls) { KIDS.forEach(function (x) { if (x.k === K) { x.name = name; x.cls = cls; } }); ls.set("cm-parent-kids", KIDS); ls.set("cm-parent-cur", K); }
+  if (K && location.search.indexOf("k=") >= 0) { try { history.replaceState(null, "", "/parent.html?k=" + K); } catch (e) {} }
+  function setManifest() { var l = document.querySelector('link[rel="manifest"]'); if (!l) { l = document.createElement("link"); l.rel = "manifest"; document.head.appendChild(l); } l.href = "/api/monthly?pm=" + encodeURIComponent(K); }
+  function post(b) {
+    return fetch("/api/monthly", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b) })
+      .then(function (r) { return r.json().catch(function () { return {}; }); }, function () { return { ok: false, msg: "인터넷 연결을 확인해 주세요." }; });
   }
-  function openLb(list, i) { LB.list = list; LB.i = i; drawLb(); document.getElementById("lb").classList.add("on"); }
-  function drawLb() { document.getElementById("lbImg").src = LB.list[LB.i]; document.getElementById("lbN").textContent = (LB.i + 1) + " / " + LB.list.length; }
-  document.getElementById("lbP").onclick = function () { LB.i = (LB.i + LB.list.length - 1) % LB.list.length; drawLb(); };
-  document.getElementById("lbN2").onclick = function () { LB.i = (LB.i + 1) % LB.list.length; drawLb(); };
-  document.getElementById("lbX").onclick = function () { document.getElementById("lb").classList.remove("on"); };
-  document.getElementById("lb").onclick = function (e) { if (e.target.id === "lb") this.classList.remove("on"); };
-  function fail(msg) { document.getElementById("hs").textContent = ""; app.innerHTML = '<div class="box"><p class="err">' + esc(msg) + "</p></div>"; }
-  if (!K) { fail("링크가 올바르지 않아요. 선생님께 받은 링크를 그대로 열어 주세요."); return; }
-  fetch("/api/monthly", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "p_hw", k: K }) })
-    .then(function (r) { return r.json().catch(function () { return {}; }); })
-    .then(function (j) { if (!j.ok) { fail(j.msg || "불러오지 못했어요. 잠시 뒤 다시 열어 주세요."); return; } render(j); }, function () { fail("인터넷 연결을 확인해 주세요."); });
+  var D = null, TAB = "home", SEEN = function () { return ls.get("cm-parent-seen-" + K.slice(0, 32), ""); };
+  var TABS = [["home", "🏠 요약"], ["hw", "📸 과제"], ["exam", "📝 시험"], ["rep", "📄 리포트"], ["cert", "📺 인강"], ["chat", "💬 상담"]];
+  function newReplies() { var s = SEEN(); return D ? D.msgs.filter(function (m) { return m.from === "선생님" && m.at > s; }).length : 0; }
+  function drawTabs() {
+    $("tabs").style.display = "";
+    $("tabs").innerHTML = TABS.map(function (t) { return '<button data-t="' + t[0] + '"' + (TAB === t[0] ? ' class="on"' : "") + ">" + t[1] + (t[0] === "chat" && newReplies() ? '<span class="dot" aria-label="새 답장"></span>' : "") + "</button>"; }).join("");
+    Array.prototype.forEach.call($("tabs").children, function (b) { b.onclick = function () { go(b.getAttribute("data-t")); }; });
+  }
+  function go(t) { TAB = t; drawTabs(); window.scrollTo(0, 0); ({ home: vHome, hw: vHw, exam: vExam, rep: vRep, cert: vCert, chat: vChat })[t](); }
+  function drawTop() {
+    var s = D.student, many = KIDS.length > 1;
+    $("top").innerHTML = '<div class="kid"><h1>👪 ' + esc(s.name) + "</h1>" + '<span class="c">' + esc([s.cls, s.grade, s.school].filter(Boolean).join(" · ")) + "</span>" +
+      (many ? '<select id="kidSel" aria-label="자녀 바꾸기">' + KIDS.map(function (x) { return '<option value="' + esc(x.k) + '"' + (x.k === K ? " selected" : "") + ">" + esc(x.name || "자녀") + "</option>"; }).join("") + "</select>" : "") +
+      '<button class="lnk" id="addKid">＋ 자녀 추가</button></div>' + installTip();
+    if ($("kidSel")) $("kidSel").onchange = function () { K = this.value; ls.set("cm-parent-cur", K); load(); };
+    $("addKid").onclick = function () {
+      var v = prompt("다른 자녀의 링크를 붙여넣어 주세요.\n(선생님께 받은 parent.html?k=… 링크)"); if (v == null) return;
+      var k = keyFrom(v); if (!k) { alert("링크가 올바르지 않아요. 선생님께 받은 링크를 그대로 붙여넣어 주세요."); return; }
+      if (!KIDS.some(function (x) { return x.k === k; })) KIDS.push({ k: k, name: "" }); K = k; ls.set("cm-parent-kids", KIDS); ls.set("cm-parent-cur", K); load();
+    };
+    var x = $("instX"); if (x) x.onclick = function () { ls.set("cm-parent-inst", 1); $("inst").remove(); };
+    var ib = $("instBtn"); if (ib) ib.onclick = function () { if (DEFER) { DEFER.prompt(); DEFER = null; ls.set("cm-parent-inst", 1); $("inst").remove(); } };
+  }
+  // 📲 홈 화면에 추가 안내
+  var DEFER = null; window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); DEFER = e; if (D) drawTop(); });
+  function installTip() {
+    var standalone = (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone;
+    if (standalone || ls.get("cm-parent-inst", 0)) return "";
+    var ua = navigator.userAgent, ios = /iPhone|iPad|iPod/i.test(ua), kakao = /KAKAOTALK/i.test(ua);
+    var how = kakao ? "카카오톡 안에서 열려 있어요. 오른쪽 위 <b>⋮</b>(또는 공유) → <b>다른 브라우저로 열기</b>를 누른 뒤 홈 화면에 추가해 주세요." :
+      ios ? "Safari 아래쪽 <b>공유 버튼(□↑)</b> → <b>홈 화면에 추가</b>를 누르면 앱처럼 열려요." :
+      DEFER ? '<button class="btn" id="instBtn" style="margin-top:6px">📲 홈 화면에 앱 추가</button>' : "브라우저 메뉴 <b>⋮</b> → <b>홈 화면에 추가</b>(또는 앱 설치)를 누르면 앱처럼 열려요.";
+    return '<div class="inst" id="inst">📲 <b>홈 화면에 추가</b>하면 다음부터 아이콘만 눌러 우리 아이 화면을 바로 볼 수 있어요.<br>' + how + ' <button class="lnk" id="instX" style="float:right">닫기</button></div>';
+  }
+
+  // ---------- 화면들 ----------
+  function tagHw(h) { return h.status === "제출" ? '<span class="tag ok">✓ 제출</span>' : h.status === "지각 제출" ? '<span class="tag late">늦게 제출</span>' : h.status === "미제출" ? '<span class="tag miss">미제출</span>' : '<span class="tag">진행 중</span>'; }
+  function tagVerdict(v) { return !v ? "" : /통과/.test(v) ? '<span class="tag ok">' + esc(v) + "</span>" : /재수강/.test(v) ? '<span class="tag bad">' + esc(v) + "</span>" : '<span class="tag mid">' + esc(v) + "</span>"; }
+  function scoreOf(e) { return e.score != null && e.total ? e.score + '<small> / ' + e.total + "점</small>" + (e.pct != null ? ' <small>(' + Math.round(e.pct) + "%)</small>" : "") : e.pct != null ? Math.round(e.pct) + "<small>%</small>" : "-"; }
+  function d30(at) { return at && Date.parse(at.slice(0, 10)) >= Date.now() - 30 * 864e5; }
+  function vHome() {
+    var hw = D.hw, sub = hw.filter(function (h) { return h.status === "제출"; }).length, late = hw.filter(function (h) { return h.status === "지각 제출"; }).length, miss = hw.filter(function (h) { return h.status === "미제출"; }).length, due = sub + late + miss;
+    var c30 = D.certs.filter(function (c) { return d30(c.at); }), avg = function (a, k) { var v = a.map(function (x) { return x[k]; }).filter(function (x) { return x != null; }); return v.length ? Math.round(v.reduce(function (p, q) { return p + q; }, 0) / v.length) : null; };
+    var nr = newReplies(), ex = D.exams.slice(0, 3);
+    app.innerHTML = (nr ? '<div class="box" style="border-color:#E5483E;cursor:pointer" id="nr">💬 <b>선생님 답장 ' + nr + "개</b>가 와 있어요. 눌러서 보기</div>" : "") +
+      '<div class="grid2">' +
+      '<div class="stat" data-go="hw"><h3>📸 과제 (최근 두 달)</h3><div class="big">' + (due ? Math.round((sub + late) / due * 100) + "%" : "-") + '</div><div class="m">제출 ' + sub + " · 늦게 " + late + " · 미제출 " + miss + "</div></div>" +
+      '<div class="stat" data-go="cert"><h3>📺 인강 인증 (30일)</h3><div class="big">' + c30.length + '회</div><div class="m">평균 시청률 ' + (avg(c30, "watch") != null ? avg(c30, "watch") + "%" : "-") + " · 확인 문제 " + (avg(c30, "score") != null ? avg(c30, "score") + "점" : "-") + "</div></div>" +
+      '<div class="stat" data-go="exam"><h3>📝 시험</h3><div class="big">' + D.exams.length + '회</div><div class="m">' + (ex[0] ? esc(ex[0].title) + " " + (ex[0].pct != null ? Math.round(ex[0].pct) + "%" : "") : "아직 기록 없음") + "</div></div>" +
+      '<div class="stat"><h3>🎮 단어 게임 (30일)</h3><div class="big">' + D.game.points + '점</div><div class="m">' + D.game.plays + "판 · " + D.game.days + "일 공부 · 단어 " + D.game.words + "개</div></div>" +
+      "</div>" +
+      '<p class="sec">최근 시험</p>' + (ex.length ? ex.map(examCard).join("") : '<div class="box"><p class="sub">아직 시험 기록이 없어요.</p></div>') +
+      '<p class="sec">다가오는 · 최근 과제</p>' + (hw.length ? hw.slice(0, 3).map(function (h, i) { return hwCard(h, i, true); }).join("") : '<div class="box"><p class="sub">최근 과제가 없어요.</p></div>') +
+      (D.reports.length ? '<p class="sec">최근 리포트</p>' + D.reports.slice(0, 2).map(repRow).join("") : "") +
+      (D.partial ? '<p class="sub" style="margin-top:10px">일부 기록을 불러오지 못했어요. 잠시 뒤 다시 열어 주세요.</p>' : "");
+    bindCommon();
+    Array.prototype.forEach.call(app.querySelectorAll("[data-go]"), function (b) { b.onclick = function () { go(b.getAttribute("data-go")); }; });
+    if ($("nr")) $("nr").onclick = function () { go("chat"); };
+  }
+  function hwCard(h, i, mini) {
+    return '<div class="box"><div class="row"><div class="t">' + esc(h.title) + "</div>" + tagHw(h) + '</div><div class="m2">마감 ' + esc(h.dueLabel) + (h.at ? " · 제출 " + esc(h.at.slice(5, 16).replace("T", " ").replace("-", "/")) : "") + (h.checked ? " · ✓ 선생님 확인" : "") + "</div>" +
+      (!mini && h.desc ? '<div class="desc">' + esc(h.desc) + "</div>" : "") + (h.memo ? '<div class="m2">💬 아이가 남긴 말: ' + esc(h.memo) + "</div>" : "") +
+      (h.photos.length ? '<div class="shots">' + h.photos.slice(0, mini ? 4 : 100).map(function (u, k) { return '<button data-h="' + i + '" data-k="' + k + '" aria-label="사진 ' + (k + 1) + ' 크게 보기"><img loading="lazy" src="' + esc(u) + '" alt="' + esc(h.title) + " 사진 " + (k + 1) + '"></button>'; }).join("") + "</div>" + (mini && h.photos.length > 4 ? '<div class="m2">사진 ' + h.photos.length + "장 · 📸 과제에서 모두 보기</div>" : "") : "") + "</div>";
+  }
+  var SHOW = 10;
+  function vHw() {
+    var hw = D.hw;
+    app.innerHTML = '<p class="sub" style="margin-top:4px">최근 두 달 과제와 아이가 낸 사진이에요. 사진을 누르면 크게 보여요.</p>' + (hw.length ? hw.slice(0, SHOW).map(function (h, i) { return hwCard(h, i); }).join("") : '<div class="box"><p class="sub">최근 과제가 없어요.</p></div>') + (hw.length > SHOW ? '<button class="more" id="more">이전 과제 더 보기 (' + (hw.length - SHOW) + "개)</button>" : "");
+    bindCommon(); if ($("more")) $("more").onclick = function () { SHOW += 10; vHw(); };
+  }
+  function bindCommon() {
+    Array.prototype.forEach.call(app.querySelectorAll(".shots button"), function (b) { b.onclick = function () { openLb(D.hw[+b.getAttribute("data-h")].photos, +b.getAttribute("data-k")); }; });
+    Array.prototype.forEach.call(app.querySelectorAll("[data-rid]"), function (b) { b.onclick = function () { openReport(b.getAttribute("data-rid"), b.getAttribute("data-rt")); }; });
+  }
+  function examCard(e) {
+    return '<div class="box"><div class="row"><div class="t">' + esc(e.title) + '</div><span class="tag gray">' + esc(e.kind || "시험") + '</span></div><div class="m2">' + esc(e.date) + (e.wrong != null ? " · 틀린 문제 " + e.wrong + "개" : "") + "</div>" +
+      '<div class="row" style="align-items:center;margin-top:6px"><div class="score" style="flex:1">' + scoreOf(e) + "</div>" + (e.grade ? '<span class="tag">' + esc(e.grade) + "</span>" : "") + "</div>" +
+      (e.comment ? '<div class="desc">' + esc(e.comment) + "</div>" : "") + (e.rid ? '<button class="btn ghost" style="margin-top:10px" data-rid="' + esc(e.rid) + '" data-rt="' + esc(e.title + " 분석 리포트") + '">📄 분석 리포트 보기</button>' : "") + "</div>";
+  }
+  var KIND = "";
+  function chart(list) { // 같은 종류 시험의 점수(%) 흐름
+    var p = list.filter(function (e) { return e.pct != null; }).slice(0, 12).reverse(); if (p.length < 2) return "";
+    var W = 320, H = 110, x = function (i) { return 18 + i * (W - 36) / (p.length - 1); }, y = function (v) { return 12 + (100 - Math.max(0, Math.min(100, v))) * (H - 30) / 100; };
+    var pts = p.map(function (e, i) { return x(i) + "," + y(e.pct); }).join(" ");
+    return '<div class="chart"><svg viewBox="0 0 ' + W + " " + H + '" width="100%" role="img" aria-label="점수 흐름: ' + esc(p.map(function (e) { return e.date + " " + Math.round(e.pct) + "%"; }).join(", ")) + '"><line x1="18" x2="' + (W - 18) + '" y1="' + y(80) + '" y2="' + y(80) + '" stroke="#DCE7E7" stroke-dasharray="4 4"/><text x="' + (W - 18) + '" y="' + (y(80) - 4) + '" font-size="10" text-anchor="end" fill="#7A8896">80%</text><polyline points="' + pts + '" fill="none" stroke="#0E8A8C" stroke-width="2.5" stroke-linejoin="round"/>' +
+      p.map(function (e, i) { return '<circle cx="' + x(i) + '" cy="' + y(e.pct) + '" r="3.5" fill="#0E8A8C"/>' + (i === p.length - 1 || i === 0 ? '<text x="' + x(i) + '" y="' + (y(e.pct) - 7) + '" font-size="11" font-weight="700" text-anchor="middle" fill="#0A5F61">' + Math.round(e.pct) + "</text>" : ""); }).join("") +
+      '<text x="18" y="' + (H - 4) + '" font-size="10" fill="#7A8896">' + esc(p[0].date.slice(5).replace("-", "/")) + '</text><text x="' + (W - 18) + '" y="' + (H - 4) + '" font-size="10" text-anchor="end" fill="#7A8896">' + esc(p[p.length - 1].date.slice(5).replace("-", "/")) + "</text></svg></div>";
+  }
+  function vExam() {
+    var kinds = []; D.exams.forEach(function (e) { if (e.kind && kinds.indexOf(e.kind) < 0) kinds.push(e.kind); });
+    var list = D.exams.filter(function (e) { return !KIND || e.kind === KIND; });
+    app.innerHTML = (D.exams.length ? '<div class="chips">' + [""].concat(kinds).map(function (k) { return '<button data-k="' + esc(k) + '"' + (k === KIND ? ' class="on"' : "") + ">" + esc(k || "전체") + "</button>"; }).join("") + "</div>" + (KIND ? chart(list) : "") : "") +
+      (list.length ? list.map(examCard).join("") : '<div class="box"><p class="sub">아직 시험 기록이 없어요.</p></div>');
+    Array.prototype.forEach.call(app.querySelectorAll(".chips button"), function (b) { b.onclick = function () { KIND = b.getAttribute("data-k"); vExam(); }; });
+    bindCommon();
+  }
+  function repRow(r) { return '<div class="box" style="cursor:pointer" data-rid="' + esc(r.id) + '" data-rt="' + esc(r.title) + '"><div class="row"><div class="t">📄 ' + esc(r.title) + '</div><span class="tag">보기 →</span></div>' + (r.at ? '<div class="m2">' + esc(r.at) + "</div>" : "") + "</div>"; }
+  function vRep() {
+    app.innerHTML = '<p class="sub" style="margin-top:4px">선생님이 쓴 월례고사 분석 리포트와 분기 리포트예요.</p>' + (D.reports.length ? D.reports.map(repRow).join("") : '<div class="box"><p class="sub">아직 리포트가 없어요. 선생님이 리포트를 쓰면 여기에 나와요.</p></div>');
+    bindCommon();
+  }
+  function vCert() {
+    app.innerHTML = '<p class="sub" style="margin-top:4px">인강을 보고 낸 「학습 완료 인증」이에요. 시청률은 실제로 본 화면의 비율, 점수는 확인 문제 점수예요.</p>' + (D.certs.length ? D.certs.map(function (c) {
+      return '<div class="box"><div class="row"><div class="t">' + esc(c.lecture || c.book || "인강") + "</div>" + tagVerdict(c.verdict) + '</div><div class="m2">' + esc(c.at.slice(5, 16).replace("T", " ").replace("-", "/")) + " · " + esc([c.area, c.book].filter(Boolean).join(" · ")) + "</div>" +
+        '<div class="m2" style="color:var(--ink)">시청률 <b>' + (c.watch != null ? c.watch + "%" : "-") + "</b> · 확인 문제 <b>" + (c.score != null ? c.score + "점" : "-") + "</b>" + (c.right ? " (" + esc(c.right) + ")" : "") + (c.minutes != null ? " · 집중 " + c.minutes + "분" : "") + (c.understand ? " · 이해도 " + esc(c.understand) : "") + "</div>" +
+        (c.summary ? '<div class="desc">✍️ 한 줄 요약: ' + esc(c.summary) + (c.sumGrade ? " (" + esc(c.sumGrade) + ")" : "") + (c.feedback ? "\n🤖 " + esc(c.feedback) : "") + "</div>" : "") +
+        (c.question ? '<div class="m2">💬 아이 질문: ' + esc(c.question) + (c.checked ? " · ✓ 선생님 확인" : "") + "</div>" : "") + "</div>";
+    }).join("") : '<div class="box"><p class="sub">아직 인강 학습 인증 기록이 없어요.</p></div>');
+  }
+  function vChat() {
+    var last = D.msgs.filter(function (m) { return m.from === "선생님"; }).map(function (m) { return m.at; }).sort().pop(); if (last) ls.set("cm-parent-seen-" + K.slice(0, 32), last); drawTabs();
+    app.innerHTML = '<p class="sub" style="margin-top:4px">' + esc(D.student.name) + " 학생에 대해 궁금한 점을 남겨 주세요. 담당 선생님이 확인하고 답장해 드려요. 급한 일은 학원으로 전화 주세요.</p>" +
+      (D.msgOn ? "" : '<p class="err" style="margin-top:8px">지금은 상담을 불러오지 못했어요. 잠시 뒤 다시 열어 주세요.</p>') +
+      '<div class="chat" id="chat">' + (D.msgs.length ? D.msgs.map(bubble).join("") : '<p class="sub" style="text-align:center;margin:18px 0">아직 나눈 이야기가 없어요.</p>') + "</div>" +
+      '<div class="send"><textarea id="mt" rows="1" maxlength="1500" placeholder="선생님께 남길 말"></textarea><button class="btn" id="ms">보내기</button></div><p class="err" id="me"></p>';
+    var t = $("mt"); t.oninput = function () { t.style.height = "auto"; t.style.height = Math.min(140, t.scrollHeight) + "px"; };
+    $("ms").onclick = function () {
+      var v = t.value.trim(); if (!v) return; var b = this; b.disabled = true; $("me").textContent = "";
+      post({ action: "p_send", k: K, text: v }).then(function (j) { b.disabled = false; if (!j.ok) { $("me").textContent = j.msg || "보내지 못했어요."; return; } D.msgs.push(j.msg); t.value = ""; vChat(); window.scrollTo(0, document.body.scrollHeight); });
+    };
+    window.scrollTo(0, document.body.scrollHeight);
+  }
+  function bubble(m) { var me = m.from === "학부모"; return '<div class="bub ' + (me ? "me" : "tc") + '">' + (me ? "" : "<b>" + esc(m.teacher || "선생님") + "</b>\n") + esc(m.text) + '<span class="w">' + esc(m.at.slice(5, 16).replace("T", " ").replace("-", "/")) + (me && m.read ? " · 선생님 읽음" : "") + "</span></div>"; }
+
+  // ---------- 리포트 보기 (노션 페이지 → 화면) ----------
+  function rx(a) { return (a || []).map(function (t) { var s = esc(t.s).replace(/\n/g, "<br>"); if (t.b) s = "<b>" + s + "</b>"; if (t.i) s = "<i>" + s + "</i>"; if (t.c) { var c = t.c.replace("_background", ""); s = '<span class="' + (/_background$/.test(t.c) ? "bg-" : "c-") + esc(c) + '">' + s + "</span>"; } if (t.h) s = '<a href="' + esc(t.h) + '" target="_blank" rel="noopener">' + s + "</a>"; return s; }).join(""); }
+  function blocks(list) {
+    var h = "", i = 0;
+    while (i < list.length) {
+      var b = list[i];
+      if (b.t === "bulleted_list_item" || b.t === "numbered_list_item") { var tag = b.t === "bulleted_list_item" ? "ul" : "ol", items = ""; while (i < list.length && list[i].t === b.t) { items += "<li>" + rx(list[i].x) + (list[i].k ? blocks(list[i].k) : "") + "</li>"; i++; } h += "<" + tag + ">" + items + "</" + tag + ">"; continue; }
+      if (b.t === "heading_1") h += "<h3>" + rx(b.x) + "</h3>"; else if (b.t === "heading_2") h += "<h4>" + rx(b.x) + "</h4>"; else if (b.t === "heading_3") h += "<h5>" + rx(b.x) + "</h5>";
+      else if (b.t === "paragraph") h += (b.x && b.x.length ? "<p>" + rx(b.x) + "</p>" : "") + (b.k ? blocks(b.k) : "");
+      else if (b.t === "quote") h += "<blockquote>" + rx(b.x) + (b.k ? blocks(b.k) : "") + "</blockquote>";
+      else if (b.t === "callout") h += '<div class="call"><span>' + esc(b.e || "💡") + "</span><div>" + rx(b.x) + (b.k ? blocks(b.k) : "") + "</div></div>";
+      else if (b.t === "to_do") h += "<p>" + (b.ok ? "☑ " : "☐ ") + rx(b.x) + "</p>";
+      else if (b.t === "toggle") h += "<details><summary>" + rx(b.x) + "</summary>" + (b.k ? blocks(b.k) : "") + "</details>";
+      else if (b.t === "divider") h += "<hr>";
+      else if (b.t === "image" && b.src) h += '<img loading="lazy" src="' + esc(b.src) + '" alt="' + esc((b.x || []).map(function (t) { return t.s; }).join("") || "리포트 그림") + '">';
+      else if ((b.t === "bookmark" || b.t === "embed" || b.t === "link_preview") && /^https?:/.test(b.h || "")) h += '<p><a href="' + esc(b.h) + '" target="_blank" rel="noopener">🔗 ' + esc(b.h) + "</a></p>";
+      else if (b.t === "table") h += '<div class="tw"><table>' + (b.k || []).map(function (r, ri) { var c = ri === 0 && b.head ? "th" : "td"; return "<tr>" + (r.cells || []).map(function (x) { return "<" + c + ">" + rx(x) + "</" + c + ">"; }).join("") + "</tr>"; }).join("") + "</table></div>";
+      else if (b.t === "column_list" || b.t === "column" || b.t === "synced_block") h += b.k ? blocks(b.k) : "";
+      else if (b.x && b.x.length) h += "<p>" + rx(b.x) + "</p>";
+      i++;
+    }
+    return h;
+  }
+  function openReport(id, title) {
+    var back = TAB; $("tabs").style.display = "none"; window.scrollTo(0, 0);
+    app.innerHTML = '<button class="btn ghost" id="rb">← 돌아가기</button><div class="box rep"><h3 style="margin-top:0">' + esc(title) + '</h3><p class="sub">불러오는 중… (리포트가 길면 10초쯤 걸려요)</p></div>';
+    $("rb").onclick = function () { go(back); };
+    post({ action: "p_report", k: K, pid: id }).then(function (j) {
+      if (!$("rb")) return;
+      app.innerHTML = '<button class="btn ghost" id="rb">← 돌아가기</button><div class="box rep"><h3 style="margin-top:0">' + esc(j.title || title) + "</h3>" + (j.ok ? blocks(j.blocks) || '<p class="sub">내용이 비어 있어요.</p>' : '<p class="err">' + esc(j.msg || "리포트를 불러오지 못했어요.") + "</p>") + '</div><button class="btn ghost" id="rb2" style="margin-top:12px">← 돌아가기</button>';
+      $("rb").onclick = $("rb2").onclick = function () { go(back); };
+    });
+  }
+
+  // ---------- 사진 크게 보기 ----------
+  var LB = { list: [], i: 0 };
+  function openLb(list, i) { LB.list = list; LB.i = i; drawLb(); $("lb").classList.add("on"); }
+  function drawLb() { $("lbImg").src = LB.list[LB.i]; $("lbN").textContent = (LB.i + 1) + " / " + LB.list.length; }
+  $("lbP").onclick = function () { LB.i = (LB.i + LB.list.length - 1) % LB.list.length; drawLb(); };
+  $("lbN2").onclick = function () { LB.i = (LB.i + 1) % LB.list.length; drawLb(); };
+  $("lbX").onclick = function () { $("lb").classList.remove("on"); };
+  $("lb").onclick = function (e) { if (e.target.id === "lb") this.classList.remove("on"); };
+
+  // ---------- 시작 ----------
+  function fail(msg) {
+    $("tabs").style.display = "none";
+    $("top").innerHTML = '<div class="kid"><h1>👪 청명 학부모</h1></div>';
+    app.innerHTML = '<div class="box"><p class="err">' + esc(msg) + '</p><p class="sub" style="margin-top:10px">선생님께 받은 링크를 아래에 붙여넣어도 돼요.</p><input id="pk" style="width:100%;box-sizing:border-box;margin-top:8px;padding:11px;border:1.5px solid var(--border-strong);border-radius:10px;font:500 15px var(--font)" placeholder="https://…/parent.html?k=…"><button class="btn" id="pkb" style="margin-top:8px">열기</button></div>' +
+      (KIDS.length > 1 ? '<div class="box"><p class="sub">이 기기에 기억된 자녀</p>' + KIDS.filter(function (x) { return x.k !== K; }).map(function (x) { return '<button class="btn ghost" style="margin:6px 6px 0 0" data-kk="' + esc(x.k) + '">' + esc(x.name || "자녀") + "</button>"; }).join("") + "</div>" : "");
+    $("pkb").onclick = function () { var k = keyFrom($("pk").value); if (!k) { alert("링크가 올바르지 않아요."); return; } if (!KIDS.some(function (x) { return x.k === k; })) KIDS.push({ k: k, name: "" }); K = k; ls.set("cm-parent-kids", KIDS); ls.set("cm-parent-cur", K); load(); };
+    Array.prototype.forEach.call(app.querySelectorAll("[data-kk]"), function (b) { b.onclick = function () { K = b.getAttribute("data-kk"); ls.set("cm-parent-cur", K); load(); }; });
+  }
+  function load() {
+    if (!K) { fail("링크를 열어 주세요. 선생님께 받은 우리 아이 전용 링크로 들어올 수 있어요."); return; }
+    setManifest(); $("top").innerHTML = '<p class="sub">불러오는 중…</p>'; app.innerHTML = "";
+    post({ action: "p_home", k: K }).then(function (j) {
+      if (!j.ok) { if (/더 이상|올바르지/.test(j.msg || "")) { KIDS = KIDS.filter(function (x) { return x.k !== K; }); ls.set("cm-parent-kids", KIDS); if (ls.get("cm-parent-cur", "") === K) ls.set("cm-parent-cur", ""); } fail(j.msg || "불러오지 못했어요. 잠시 뒤 다시 열어 주세요."); return; }
+      D = j; saveKid(j.student.name, j.student.cls); document.title = j.student.name + " · 청명 학부모"; SHOW = 10; KIND = "";
+      drawTop(); go(TAB);
+    });
+  }
+  load();
 })();
 </script>
 </body>

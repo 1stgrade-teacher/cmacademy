@@ -130,6 +130,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     <button class="tab" data-tab="game">🎮 단어 게임</button>
     <button class="tab" data-tab="stu">🧑‍🎓 학생</button>
     <button class="tab" data-tab="cert">📺 학습 인증</button>
+    <button class="tab" data-tab="pm" id="tabPm">💬 학부모</button>
     <button class="tab" data-tab="teachers" id="tabTeachers" style="display:none">👩‍🏫 선생님</button>
   </div>
 
@@ -318,6 +319,19 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
 
   </section>
 
+  <section id="v-pm" style="display:none">
+    <div class="card">
+      <div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">💬 학부모 상담</h2><div class="row" style="margin:0"><select id="pmCls" style="width:auto"><option value="">모든 반</option></select><button class="sub sm" id="pmReload">새로고침</button></div></div>
+      <div class="hint">부모님이 학부모 앱의 「💬 상담」에 남긴 글이에요. 안 읽은 글이 있는 학생이 맨 위에 와요. 답장하면 부모님 앱에 바로 보여요. (카톡 알림은 가지 않으니, 급한 답은 전화로 해 주세요)</div>
+      <div id="pmList"><p class="hint">불러오는 중…</p></div>
+    </div>
+    <div class="card" id="pmThreadCard" style="display:none"><div id="pmThread"></div></div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">👪 학부모 앱 링크</h2><div class="row" style="margin:0"><select id="plCls" style="width:auto"></select><button class="sub sm" id="plLoad">링크 불러오기</button></div></div>
+      <div class="hint">학생마다 <b>부모님 전용 링크</b>가 하나씩 있어요. 부모님은 로그인 없이 이 링크로 <b>우리 아이만의 학부모 앱</b>을 열어 과제·제출 사진, 시험 성적, 분석 리포트, 인강 학습 인증, 단어 게임을 보고 선생님께 상담 글을 남길 수 있어요. 처음 열 때 「홈 화면에 추가」 안내가 나와요. (선생님만 보는 상담 메모·연락처는 보이지 않아요) <b>링크를 아는 사람은 누구나 볼 수 있으니</b> 단톡방 말고 부모님께 1:1로 보내 주세요. 링크가 새어 나갔으면 <b>새 링크로 바꾸기</b>를 누르면 예전 링크는 바로 막혀요.</div>
+      <div id="plOut"></div>
+    </div>
+  </section>
   <section id="v-hw" style="display:none">
     <div class="card" id="mpCard">
       <div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">🗓 월간 과제 계획</h2><div class="row" style="margin:0;align-items:center"><select id="mpCls" style="width:auto"></select><button class="sub sm" id="mpPrev" title="지난달">◀</button><b id="mpYm" style="min-width:96px;text-align:center"></b><button class="sub sm" id="mpNext" title="다음 달">▶</button><button class="sub sm" id="mpToday">이번 달</button></div></div>
@@ -366,11 +380,6 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       <div id="hwList"><p class="hint">불러오는 중…</p></div>
     </div>
     <div class="card" id="hwDetailCard" style="display:none"><div id="hwDetail"></div></div>
-    <div class="card">
-      <div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">👪 부모님 사진 보기 링크</h2><div class="row" style="margin:0"><select id="plCls" style="width:auto"></select><button class="sub sm" id="plLoad">링크 불러오기</button></div></div>
-      <div class="hint">학생마다 <b>부모님 전용 링크</b>가 하나씩 있어요. 부모님은 로그인 없이 이 링크로 아이의 최근 두 달 과제·제출 사진·미제출 여부를 볼 수 있어요. <b>링크를 아는 사람은 누구나 볼 수 있으니</b> 단톡방 말고 부모님께 1:1로 보내 주세요. 링크가 새어 나갔으면 <b>새 링크로 바꾸기</b>를 누르면 예전 링크는 바로 막혀요.</div>
-      <div id="plOut"></div>
-    </div>
   </section>
 
   <section id="v-game" style="display:none">
@@ -490,9 +499,9 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       $("contact").value = j.me.contact || lsGet("cm-report-contact"); $("repUrl").value = j.me.reportUrl || "";
       var total = j.catalog.reduce(function (s, b) { return s + b.n; }, 0), units = j.catalog.reduce(function (s, b) { return s + b.chapters.reduce(function (a, c) { return a + c.units.length; }, 0); }, 0);
       $("bankInfo").textContent = "문제은행: 교재 " + j.catalog.length + "권 · " + units + "과 · 문항 " + total + "개" + (j.ai ? " · AI 켜짐(" + (j.ais || []).map(function (a) { return a.label; }).join("·") + ")" : " · AI 꺼짐");
-      buildAiSel(j);
+      buildAiSel(j); pmBadge();
       fillClassSelects(); renderList(); buildPeriods(); buildQuarters(); buildBookFilters();
-      var h = (location.hash || "").slice(1); if (h === "hw") { hwOpen(); tab("hw"); } else if (h === "game") { gmLoad(); rkLoad(); tab("game"); } else if (h === "stu") { stOpen(); tab("stu"); } else if (h === "cert") { ctOpen(); tab("cert"); } else if (/^(results|report|import)$/.test(h) || (h === "teachers" && j.me.master)) { if (h === "results") fillResultSelect(); if (h === "teachers") loadTeachers(); if (h === "import") mkFill(); tab(h); }
+      var h = (location.hash || "").slice(1); if (h === "hw") { hwOpen(); tab("hw"); } else if (h === "game") { gmLoad(); rkLoad(); tab("game"); } else if (h === "stu") { stOpen(); tab("stu"); } else if (h === "cert") { ctOpen(); tab("cert"); } else if (h === "pm") { pmOpen(); tab("pm"); } else if (/^(results|report|import)$/.test(h) || (h === "teachers" && j.me.master)) { if (h === "results") fillResultSelect(); if (h === "teachers") loadTeachers(); if (h === "import") mkFill(); tab(h); }
     });
   }
   $("logout").onclick = function () { lsSet("cm-teacher-code", ""); location.reload(); };
@@ -554,6 +563,50 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       Array.prototype.forEach.call($("hwList").querySelectorAll("[data-hwd]"), function (b) { b.onclick = function () { hwDetail(HW_LIST[+b.getAttribute("data-hwd")]); }; });
     });
   }
+  // ---------- 💬 학부모 상담 ----------
+  var PM = { list: [], cur: null };
+  function pmBadge() { post({ action: "t_pm_inbox" }).then(function (j) { if (!j.ok) return; PM.list = j.list; var t = $("tabPm"); t.textContent = "💬 학부모" + (j.unread ? " (" + j.unread + ")" : ""); t.style.fontWeight = j.unread ? "800" : ""; }); }
+  function pmOpen() {
+    var opts = (DATA.classes || []).filter(function (c) { return c !== "신입 반배정"; }).map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
+    if ($("pmCls").options.length < 2) $("pmCls").innerHTML = '<option value="">모든 반</option>' + opts;
+    if (!$("plCls").options.length) { $("plCls").innerHTML = opts; var lc = lsGet("cm-teacher-cls"); if (lc && (DATA.classes || []).indexOf(lc) >= 0) $("plCls").value = lc; }
+    pmLoad();
+  }
+  function pmTime(at) { return at ? at.slice(5, 16).replace("T", " ").replace("-", "/") : ""; }
+  function pmLoad() {
+    $("pmList").innerHTML = '<p class="hint">불러오는 중…</p>';
+    post({ action: "t_pm_inbox" }).then(function (j) {
+      if (!j.ok) { $("pmList").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; }
+      PM.list = j.list; var t = $("tabPm"); t.textContent = "💬 학부모" + (j.unread ? " (" + j.unread + ")" : ""); t.style.fontWeight = j.unread ? "800" : "";
+      var cls = $("pmCls").value, L = j.list.filter(function (x) { return !cls || x.cls === cls; });
+      if (!L.length) { $("pmList").innerHTML = '<p class="hint">아직 부모님이 남긴 글이 없어요. 아래에서 학부모 앱 링크를 부모님께 보내 보세요.</p>'; return; }
+      $("pmList").innerHTML = '<div class="tw"><table><thead><tr><th>학생</th><th>반</th><th>마지막 글</th><th>시각</th><th></th></tr></thead><tbody>' + L.map(function (x) {
+        return "<tr" + (x.unread ? ' style="background:#FFF6E5"' : "") + "><td><b>" + esc(x.name) + "</b>" + (x.unread ? ' <span class="pill end">새 글 ' + x.unread + "</span>" : "") + "</td><td>" + esc(x.cls) + '</td><td style="max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (x.lastFrom === "선생님" ? "↩ " : "") + esc(x.last) + "</td><td>" + esc(pmTime(x.lastAt)) + '</td><td><button class="sm" data-pmo="' + esc(x.sid) + '">' + (x.unread ? "읽고 답장" : "열기") + "</button></td></tr>";
+      }).join("") + "</tbody></table></div>";
+      Array.prototype.forEach.call($("pmList").querySelectorAll("[data-pmo]"), function (b) { b.onclick = function () { pmThread(b.getAttribute("data-pmo")); }; });
+    });
+  }
+  function pmThread(sid) {
+    var x = PM.list.filter(function (y) { return y.sid === sid; })[0] || { sid: sid, name: "", cls: "" }; PM.cur = x;
+    $("pmThreadCard").style.display = ""; $("pmThread").innerHTML = '<p class="hint">불러오는 중…</p>'; $("pmThreadCard").scrollIntoView({ behavior: "smooth" });
+    post({ action: "t_pm_thread", sid: sid }).then(function (j) {
+      if (!j.ok) { $("pmThread").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; }
+      $("pmThread").innerHTML = "<h2>💬 " + esc(x.name) + ' 학부모님 <span class="hint" style="font-size:14px">' + esc(x.cls) + "</span></h2>" +
+        '<div style="display:flex;flex-direction:column;gap:8px;max-height:460px;overflow:auto;padding:4px" id="pmBox">' + j.msgs.map(function (m) {
+          var me = m.from === "선생님";
+          return '<div style="max-width:80%;align-self:' + (me ? "flex-end" : "flex-start") + ";background:" + (me ? "var(--ac-bg)" : "#fff") + ';border:1px solid var(--line);border-radius:12px;padding:9px 12px;white-space:pre-wrap;line-height:1.55;font-size:14.5px"><b style="font-size:12.5px;color:var(--muted)">' + (me ? "🧑‍🏫 " + esc(m.teacher || "선생님") : "👪 학부모") + "</b>\n" + esc(m.text) + '<div class="hint" style="margin:2px 0 0">' + esc(pmTime(m.at)) + "</div></div>";
+        }).join("") + "</div>" +
+        '<label class="l" style="margin-top:10px">답장</label><textarea id="pmText" rows="3" maxlength="1500" placeholder="부모님께 보낼 답장"></textarea><div class="row" style="margin-top:8px"><button id="pmSend">답장 보내기</button><span class="msg" id="pmMsg" style="margin:0"></span></div>';
+      var bx = $("pmBox"); bx.scrollTop = bx.scrollHeight;
+      $("pmSend").onclick = function () {
+        var v = $("pmText").value.trim(), b = this; if (!v) return; b.disabled = true; $("pmMsg").textContent = "보내는 중…";
+        post({ action: "t_pm_send", sid: sid, cls: x.cls, text: v }).then(function (r) { b.disabled = false; if (!r.ok) { $("pmMsg").innerHTML = '<span class="er">' + esc(r.msg || "보내지 못했어요.") + "</span>"; return; } pmThread(sid); pmLoad(); });
+      };
+      pmLoad();
+    });
+  }
+  $("pmReload").onclick = pmLoad; $("pmCls").onchange = pmLoad;
+
   // ---------- 👪 부모님 사진 보기 링크 ----------
   var PL = [];
   function plUrl(k) { return location.origin + "/parent.html?k=" + k; }
@@ -1084,13 +1137,13 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   // ---------- 탭 ----------
   function tab(name) {
     Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) { t.classList.toggle("on", t.getAttribute("data-tab") === name); });
-    ["list", "edit", "results", "report", "teachers", "import", "hw", "game", "stu", "cert"].forEach(function (n) { $("v-" + n).style.display = n === name ? "" : "none"; });
+    ["list", "edit", "results", "report", "teachers", "import", "hw", "game", "stu", "cert", "pm"].forEach(function (n) { $("v-" + n).style.display = n === name ? "" : "none"; });
     $("contactCard").style.display = name === "results" || name === "report" ? "" : "none";
     try { history.replaceState(null, "", "#" + name); } catch (e) {}
     window.scrollTo(0, 0);
   }
   Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) {
-    t.onclick = function () { var n = t.getAttribute("data-tab"); if (n === "edit") newPaper(); if (n === "import") mkFill(); if (n === "results") fillResultSelect(); if (n === "teachers") loadTeachers(); if (n === "hw") hwOpen(); if (n === "game") { gmLoad(); rkLoad(); } if (n === "stu") stOpen(); if (n === "cert") ctOpen(); tab(n); };
+    t.onclick = function () { var n = t.getAttribute("data-tab"); if (n === "edit") newPaper(); if (n === "import") mkFill(); if (n === "results") fillResultSelect(); if (n === "teachers") loadTeachers(); if (n === "hw") hwOpen(); if (n === "game") { gmLoad(); rkLoad(); } if (n === "stu") stOpen(); if (n === "cert") ctOpen(); if (n === "pm") pmOpen(); tab(n); };
   });
 
   function fillClassSelects() {

@@ -223,17 +223,22 @@ module.exports = function (ctx) {
     if (!key || !sameKey(key, m[2])) return { status: 403, msg: "이 링크는 더 이상 쓰지 않아요. 선생님께 새 링크를 받아 주세요." };
     if (P.sel(p, "상태") === "퇴원") return { status: 403, msg: "이 링크는 더 이상 쓰지 않아요." };
     const name = P.title(p, "이름"), cls = P.sel(p, "반");
+    const list = await hwForStudent(m[1], cls);
+    if (!list) return { status: 502, msg: "과제를 불러오지 못했어요. 잠시 뒤 다시 열어 주세요." };
+    return { status: 200, name, cls, list };
+  }
+  // 한 학생의 최근 두 달 과제 + 제출 사진 (부모님 화면용, 공개 전 과제는 빼요)
+  async function hwForStudent(sid, cls) {
     const [hws, subs] = await Promise.all([
       queryAll(HW_DB(), { filter: { and: [{ property: "반", rich_text: { equals: cls } }, { property: "사용", checkbox: { equals: true } }] }, sorts: [{ property: "마감", direction: "descending" }] }, 2),
-      queryAll(SUB_DB(), { filter: { property: "학생", relation: { contains: uuid(m[1]) } } }, 3),
+      queryAll(SUB_DB(), { filter: { property: "학생", relation: { contains: uuid(sid) } } }, 3),
     ]);
-    if (!hws || !subs) return { status: 502, msg: "과제를 불러오지 못했어요. 잠시 뒤 다시 열어 주세요." };
+    if (!hws || !subs) return null;
     const by = new Map(subs.map(readSub).map((s) => [s.hw, s]));
-    const list = hws.map(readHw).filter((h) => h.due && !h.hidden && Date.parse(h.due) > Date.now() - 62 * 864e5).slice(0, 40).map((h) => {
+    return hws.map(readHw).filter((h) => h.due && !h.hidden && Date.parse(h.due) > Date.now() - 62 * 864e5).sort((x, y) => Date.parse(y.due) - Date.parse(x.due)).slice(0, 40).map((h) => {
       const s = by.get(h.id);
-      return { title: h.title, desc: h.desc, dueLabel: h.dueLabel, past: h.past, status: s ? s.status : h.past ? "미제출" : "", at: s && s.at ? kst(s.at) : "", memo: s ? s.memo : "", checked: s ? s.checked : false, photos: s ? s.files.map((f) => f.url) : [] };
+      return { title: h.title, desc: h.desc, due: h.dueKst, dueLabel: h.dueLabel, past: h.past, status: s ? s.status : h.past ? "미제출" : "", at: s && s.at ? kst(s.at) : "", memo: s ? s.memo : "", checked: s ? s.checked : false, photos: s ? s.files.map((f) => f.url) : [] };
     });
-    return { status: 200, name, cls, list };
   }
 
   // ---------- 마감 확인 + 학부모 알림 ----------
@@ -264,5 +269,5 @@ module.exports = function (ctx) {
     return { ok: true, checked: due.length, mode: N.mode(), report };
   }
 
-  return { studentList, studentMonth, studentSubmit, uploadPhoto, teacherList, teacherSave, teacherDetail, teacherMonth, teacherBulk, parentLinks, parentReset, parentView, cron, HW_DB, SUB_DB, _t: { toNotionDue, dueLabel, readHw } };
+  return { studentList, studentMonth, studentSubmit, uploadPhoto, teacherList, teacherSave, teacherDetail, teacherMonth, teacherBulk, parentLinks, parentReset, parentView, hwForStudent, cron, HW_DB, SUB_DB, _t: { toNotionDue, dueLabel, readHw } };
 };

@@ -663,6 +663,7 @@ async function studentClasses() {
 }
 let _game = null; const GAME = () => _game || (_game = require("./_game.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, getLastErr: () => lastErr }));
 const HW = () => _hw || (_hw = require("./_homework.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, STUDENT_DB, getLastErr: () => lastErr }));
+let _par = null; const PAR = () => _par || (_par = require("./_parent.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, EXAM_DB, CERT_DB: () => id32(process.env.NOTION_DB_ID || "d6164dec4d2e461aa2f102de18814b7d"), GAME_DB: () => id32(process.env.NOTION_GAME_DB_ID || "3ef113187ca24388b1a68de4cc535144"), HW, getLastErr: () => lastErr }));
 let _rep = null;
 function reporter() {
   if (!_rep) _rep = require("./_report.js")({ uuid, teacherFor, notion, queryAll, P, clip, normId, id32, unitIndex, unitData, askAI, EXAM_DB, STUDENT_DB, getPaper });
@@ -672,6 +673,11 @@ function reporter() {
 module.exports = async function handler(req, res) {
   const send = (code, obj) => sendTo(res, code, obj);
   const tcode = String(process.env.TEACHER_CODE || "").trim();
+  if (req.method === "GET" && /[?&]pm=/.test(req.url || "")) { // 👪 학부모 앱 홈 화면 설치 정보
+    const k = new URL(req.url, "http://x").searchParams.get("pm") || "";
+    res.statusCode = 200; res.setHeader("Content-Type", "application/manifest+json; charset=utf-8"); res.setHeader("Cache-Control", "private, max-age=3600");
+    return res.end(JSON.stringify(PAR().manifest(k)));
+  }
   if (req.method === "GET") return send(200, { ok: true, ready: !!process.env.NOTION_TOKEN && process.env.MONTHLY_OFF !== "1", bank: !!loadCatalog(), ai: aiOn(), ais: AI.list().map((x) => x.id), teacher: !!tcode, drive: drive.configured() });
   if (req.method !== "POST") return send(405, { error: "method" });
   const origin = req.headers.origin || "", host = req.headers["x-forwarded-host"] || req.headers.host || "";
@@ -686,7 +692,7 @@ module.exports = async function handler(req, res) {
     if (sec && String(b.secret || "") !== sec) return send(401, { error: "secret" });
     try { return send(200, await HW().cron()); } catch (e) { return send(500, { ok: false, msg: clip(e && e.message, 200) }); }
   }
-  if (!/^(classes|roster|login|s_list)$/.test(act)) await loadCustom();
+  if (!/^(classes|roster|login|s_list|p_\w+)$/.test(act)) await loadCustom();
   lastErr = null;
 
   // =================== 선생님 ===================
@@ -849,6 +855,9 @@ module.exports = async function handler(req, res) {
     }
     if (act === "t_hw_list") { const l = await HW().teacherList(clip(b.cls, 40)); return l ? send(200, { ok: true, list: l, mode: require("./_notify.js").mode() }) : send(502, { error: "notion", msg: "과제 목록을 읽지 못했어요. 🩺 점검을 눌러 보세요.", debug: lastErr }); }
     if (act === "t_hw_save") { const r = await HW().teacherSave(me, b.hw || {}); return r.status === 200 ? send(200, { ok: true, hw: r.hw, warn: r.warn }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_pm_inbox") { const a = await STU().all(); const r = await PAR().inbox(a ? a.students : []); return r.status === 200 ? send(200, { ok: true, list: r.list, unread: r.unread }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_pm_thread") { const r = await PAR().teacherThread(clip(b.sid, 60)); return r.status === 200 ? send(200, { ok: true, msgs: r.msgs }) : send(r.status, { ok: false, msg: r.msg }); }
+    if (act === "t_pm_send") { const r = await PAR().teacherSend(me, clip(b.sid, 60), clip(b.cls, 40), clip(b.text, 1500)); return r.status === 200 ? send(200, { ok: true, msg: r.msg }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
     if (act === "t_parent_links") { const r = await HW().parentLinks(clip(b.cls, 40)); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
     if (act === "t_parent_reset") { const r = await HW().parentReset(clip(b.sid, 60)); return r.status === 200 ? send(200, { ok: true, k: r.k }) : send(r.status, { ok: false, msg: r.msg }); }
     if (act === "t_hw_month") { const r = await HW().teacherMonth(clip(b.cls, 40), String(b.ym || "")); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
@@ -1095,6 +1104,15 @@ module.exports = async function handler(req, res) {
     const ip = String((req.headers["x-forwarded-for"] || "").split(",")[0]).trim() || "x";
     if (pLocked(ip)) return send(429, { ok: false, msg: "잠시 뒤 다시 열어 주세요." });
     const r = await HW().parentView(String(b.k || ""));
+    if (r.status === 403 || r.status === 404) pFail(ip);
+    return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg });
+  }
+
+  if (/^p_(home|report|send)$/.test(act)) { // 👪 학부모 앱
+    const ip = String((req.headers["x-forwarded-for"] || "").split(",")[0]).trim() || "x";
+    if (pLocked(ip)) return send(429, { ok: false, msg: "잠시 뒤 다시 열어 주세요." });
+    const k = String(b.k || "");
+    const r = act === "p_home" ? await PAR().home(k) : act === "p_report" ? await PAR().reportPage(k, b.pid) : await PAR().parentSend(k, clip(b.text, 1500));
     if (r.status === 403 || r.status === 404) pFail(ip);
     return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg });
   }
