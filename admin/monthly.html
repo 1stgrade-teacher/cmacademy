@@ -366,6 +366,11 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       <div id="hwList"><p class="hint">불러오는 중…</p></div>
     </div>
     <div class="card" id="hwDetailCard" style="display:none"><div id="hwDetail"></div></div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">👪 부모님 사진 보기 링크</h2><div class="row" style="margin:0"><select id="plCls" style="width:auto"></select><button class="sub sm" id="plLoad">링크 불러오기</button></div></div>
+      <div class="hint">학생마다 <b>부모님 전용 링크</b>가 하나씩 있어요. 부모님은 로그인 없이 이 링크로 아이의 최근 두 달 과제·제출 사진·미제출 여부를 볼 수 있어요. <b>링크를 아는 사람은 누구나 볼 수 있으니</b> 단톡방 말고 부모님께 1:1로 보내 주세요. 링크가 새어 나갔으면 <b>새 링크로 바꾸기</b>를 누르면 예전 링크는 바로 막혀요.</div>
+      <div id="plOut"></div>
+    </div>
   </section>
 
   <section id="v-game" style="display:none">
@@ -513,6 +518,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   function hwOpen() {
     var opts = (DATA.classes || []).filter(function (c) { return c !== "신입 반배정"; }).map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
     if (!$("hwCls").options.length) { $("hwCls").innerHTML = opts; $("hwFilter").innerHTML = '<option value="">모든 반</option>' + opts; hwForm(null); }
+    if (!$("plCls").options.length) { $("plCls").innerHTML = opts; var lc2 = lsGet("cm-teacher-cls"); if (lc2 && (DATA.classes || []).indexOf(lc2) >= 0) $("plCls").value = lc2; }
     if (!$("mpCls").options.length) { $("mpCls").innerHTML = opts; var lc = lsGet("cm-teacher-cls"); if (lc && (DATA.classes || []).indexOf(lc) >= 0) $("mpCls").value = lc; MP.cls = $("mpCls").value; }
     hwLoad(); mpLoad();
   }
@@ -548,6 +554,31 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       Array.prototype.forEach.call($("hwList").querySelectorAll("[data-hwd]"), function (b) { b.onclick = function () { hwDetail(HW_LIST[+b.getAttribute("data-hwd")]); }; });
     });
   }
+  // ---------- 👪 부모님 사진 보기 링크 ----------
+  var PL = [];
+  function plUrl(k) { return location.origin + "/parent.html?k=" + k; }
+  function plCopy(t, b, label) { (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { b.textContent = "✓ 복사됨"; setTimeout(function () { b.textContent = label; }, 1500); }, function () { prompt("복사해서 부모님께 보내세요", t); }); }
+  function plDraw() {
+    if (!PL.length) { $("plOut").innerHTML = '<p class="hint">이 반에 학생이 없어요.</p>'; return; }
+    $("plOut").innerHTML = '<div class="row" style="margin-top:8px"><button class="sm sub" id="plAll">📋 반 전체 복사 (이름 + 링크)</button></div><div class="tw"><table><thead><tr><th>이름</th><th>부모님 링크</th><th></th></tr></thead><tbody>' + PL.map(function (x, i) {
+      return "<tr><td><b>" + esc(x.name) + '</b></td><td style="max-width:360px;word-break:break-all;font-size:12.5px;color:var(--muted)">' + (x.k ? esc(plUrl(x.k)) : '<span class="er">만들지 못했어요</span>') + '</td><td style="white-space:nowrap"><button class="sm" data-plc="' + i + '"' + (x.k ? "" : " disabled") + '>링크 복사</button> <a class="sm" style="font-size:13px" target="_blank" rel="noopener" href="' + (x.k ? esc(plUrl(x.k)) : "#") + '">열어 보기</a> <button class="sm warn" data-plr="' + i + '">새 링크로 바꾸기</button></td></tr>';
+    }).join("") + "</tbody></table></div>";
+    $("plAll").onclick = function () { plCopy(PL.filter(function (x) { return x.k; }).map(function (x) { return x.name + " 학생 과제 보기: " + plUrl(x.k); }).join("\n"), this, "📋 반 전체 복사 (이름 + 링크)"); };
+    Array.prototype.forEach.call($("plOut").querySelectorAll("[data-plc]"), function (b) { b.onclick = function () { var x = PL[+b.getAttribute("data-plc")]; plCopy(plUrl(x.k), b, "링크 복사"); }; });
+    Array.prototype.forEach.call($("plOut").querySelectorAll("[data-plr]"), function (b) {
+      b.onclick = function () {
+        var x = PL[+b.getAttribute("data-plr")]; if (!confirm(x.name + " 학생의 부모님 링크를 새로 만들까요?\n예전 링크는 바로 열리지 않게 돼요. 새 링크를 부모님께 다시 보내 주세요.")) return;
+        b.disabled = true; b.textContent = "바꾸는 중…";
+        post({ action: "t_parent_reset", sid: x.sid }).then(function (j) { if (!j.ok) { b.disabled = false; b.textContent = "새 링크로 바꾸기"; alert(j.msg || "바꾸지 못했어요."); return; } x.k = j.k; plDraw(); });
+      };
+    });
+  }
+  $("plLoad").onclick = function () {
+    var b = this; b.disabled = true; $("plOut").innerHTML = '<p class="hint">불러오는 중… (처음엔 링크를 만드느라 조금 걸려요)</p>';
+    post({ action: "t_parent_links", cls: $("plCls").value }).then(function (j) { b.disabled = false; if (!j.ok) { $("plOut").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; } PL = j.list; plDraw(); });
+  };
+  $("plCls").onchange = function () { $("plOut").innerHTML = ""; };
+
   // ---------- 🗓 월간 과제 계획 ----------
   var MP = { ym: "", cls: "", saved: [], drafts: [] }, MP_WD = "일월화수목금토";
   function mpToday() { return new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10); }
@@ -799,7 +830,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     var opts = DATA.classes.map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
     var keep = function (id, html) { var el = $(id), v = el.value; el.innerHTML = html; if (v && DATA.classes.indexOf(v) >= 0) el.value = v; };
     keep("sfCls", opts); keep("stMoveCls", opts);
-    $("hwCls").innerHTML = ""; $("mpCls").innerHTML = ""; $("rkCls").innerHTML = '<option value="">학원 전체</option>'; $("ctCls").innerHTML = ""; // 다음에 열 때 새 반 목록으로
+    $("hwCls").innerHTML = ""; $("mpCls").innerHTML = ""; $("plCls").innerHTML = ""; $("rkCls").innerHTML = '<option value="">학원 전체</option>'; $("ctCls").innerHTML = ""; // 다음에 열 때 새 반 목록으로
     $("sfGrade").innerHTML = '<option value="">선택 안 함</option>' + GR.map(function (g) { return "<option>" + g + "</option>"; }).join("");
     var stc = $("stCls"), sv = stc.value || ST_VIEW.cls;
     stc.innerHTML = DATA.classes.map(function (c) { var n = STU.students.filter(function (x) { return x.cls === c && isActive(x); }).length; return '<option value="' + esc(c) + '">' + esc(c) + " (" + n + ")</option>"; }).join("") + (STU.students.some(function (x) { return DATA.classes.indexOf(x.cls) < 0; }) ? '<option value="__none">반 없음·기타</option>' : "");

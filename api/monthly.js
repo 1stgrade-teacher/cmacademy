@@ -524,6 +524,9 @@ function siteOk(req) {
   const m = String(req.headers.cookie || "").match(/(?:^|;\s*)cm_site=([0-9a-f]{64})/);
   return !!m && m[1] === crypto.createHmac("sha256", site).update("cmacademy-site-v1").digest("hex");
 }
+const pFails = new Map(); // 👪 부모 링크를 틀리게 여러 번 열면 10분 쉬기
+function pLocked(ip) { const e = pFails.get(ip); return !!e && Date.now() - e.t < 600000 && e.n >= 20; }
+function pFail(ip) { const e = pFails.get(ip); if (!e || Date.now() - e.t >= 600000) pFails.set(ip, { n: 1, t: Date.now() }); else e.n++; if (pFails.size > 3000) pFails.clear(); }
 const pinFails = new Map();
 function pinLocked(id) { const e = pinFails.get(id); return !!e && Date.now() - e.t < 600000 && e.n >= 5; }
 function pinFail(id) { const e = pinFails.get(id); if (!e || Date.now() - e.t >= 600000) pinFails.set(id, { n: 1, t: Date.now() }); else e.n++; if (pinFails.size > 3000) pinFails.clear(); }
@@ -659,7 +662,7 @@ async function studentClasses() {
   return stuCls.list;
 }
 let _game = null; const GAME = () => _game || (_game = require("./_game.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, getLastErr: () => lastErr }));
-const HW = () => _hw || (_hw = require("./_homework.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, getLastErr: () => lastErr }));
+const HW = () => _hw || (_hw = require("./_homework.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, STUDENT_DB, getLastErr: () => lastErr }));
 let _rep = null;
 function reporter() {
   if (!_rep) _rep = require("./_report.js")({ uuid, teacherFor, notion, queryAll, P, clip, normId, id32, unitIndex, unitData, askAI, EXAM_DB, STUDENT_DB, getPaper });
@@ -846,6 +849,8 @@ module.exports = async function handler(req, res) {
     }
     if (act === "t_hw_list") { const l = await HW().teacherList(clip(b.cls, 40)); return l ? send(200, { ok: true, list: l, mode: require("./_notify.js").mode() }) : send(502, { error: "notion", msg: "과제 목록을 읽지 못했어요. 🩺 점검을 눌러 보세요.", debug: lastErr }); }
     if (act === "t_hw_save") { const r = await HW().teacherSave(me, b.hw || {}); return r.status === 200 ? send(200, { ok: true, hw: r.hw, warn: r.warn }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_parent_links") { const r = await HW().parentLinks(clip(b.cls, 40)); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_parent_reset") { const r = await HW().parentReset(clip(b.sid, 60)); return r.status === 200 ? send(200, { ok: true, k: r.k }) : send(r.status, { ok: false, msg: r.msg }); }
     if (act === "t_hw_month") { const r = await HW().teacherMonth(clip(b.cls, 40), String(b.ym || "")); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
     if (act === "t_hw_bulk") { const r = await HW().teacherBulk(me, b.items); return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg }); }
     if (act === "t_hw_detail") { const r = await HW().teacherDetail(clip(b.id, 60)); return r ? send(200, Object.assign({ ok: true }, r)) : send(404, { error: "nf", msg: "과제를 찾지 못했어요." }); }
@@ -1084,6 +1089,14 @@ module.exports = async function handler(req, res) {
     const sid = normId(pg.id);
     await notion("pages/" + id32(sid), "PATCH", { properties: { [PIN_PROP]: { rich_text: rt(pinHash(pin, sid)) } } });
     return send(200, { ok: true, token: signToken({ sid, name, cls: PLACE_CLS(), exp: Date.now() + 4 * 3600 * 1000 }), name, cls: PLACE_CLS(), grade });
+  }
+
+  if (act === "p_hw") { // 👪 부모님 전용 링크로 아이의 과제 사진 보기 (링크 = 학생 + 비밀 키)
+    const ip = String((req.headers["x-forwarded-for"] || "").split(",")[0]).trim() || "x";
+    if (pLocked(ip)) return send(429, { ok: false, msg: "잠시 뒤 다시 열어 주세요." });
+    const r = await HW().parentView(String(b.k || ""));
+    if (r.status === 403 || r.status === 404) pFail(ip);
+    return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg });
   }
 
   const who = readToken(b.token);

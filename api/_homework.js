@@ -4,7 +4,8 @@
 const N = require("./_notify.js");
 
 module.exports = function (ctx) {
-  const { notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, getLastErr } = ctx;
+  const { notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, STUDENT_DB, getLastErr } = ctx;
+  const crypto = require("crypto");
   const HW_DB = () => id32(process.env.NOTION_HW_DB_ID || "284584e0b6d64f2297137ffdcb2b6298");
   const SUB_DB = () => id32(process.env.NOTION_HWSUB_DB_ID || "f81f921219e94f6cb1afd0b9c58338df");
   const NV = "2022-06-28";
@@ -70,7 +71,7 @@ module.exports = function (ctx) {
     const mine = await queryAll(SUB_DB(), { filter: { property: "학생", relation: { contains: uuid(who.sid) } } }, 2);
     const by = new Map((mine || []).map(readSub).map((s) => [s.hw, s]));
     return list.sort((a, b) => (a.past - b.past) || (a.past ? Date.parse(b.due) - Date.parse(a.due) : Date.parse(a.due) - Date.parse(b.due)))
-      .map((h) => { const s = by.get(h.id); return { id: h.id, title: h.title, desc: h.desc, due: h.dueKst, dueLabel: h.dueLabel, past: h.past, status: s ? s.status : "", at: s ? s.at : "", n: s ? s.files.length : 0 }; });
+      .map((h) => { const s = by.get(h.id); return { id: h.id, title: h.title, desc: h.desc, due: h.dueKst, dueLabel: h.dueLabel, past: h.past, status: s ? s.status : "", at: s && s.at ? kst(s.at) : "", n: s ? s.files.length : 0 }; });
   }
   // 🗓 학생 달력: 이 달 우리 반 과제. 공개 전 과제는 제목·마감만 (설명·번호 없이 → 열기 전엔 낼 수 없어요)
   async function studentMonth(who, ym) {
@@ -81,7 +82,7 @@ module.exports = function (ctx) {
     const by = new Map((mine || []).map(readSub).map((s) => [s.hw, s]));
     return { status: 200, list: list.map((h) => {
       if (h.hidden) return { hidden: true, title: h.title, due: h.dueKst, dueLabel: h.dueLabel, show: h.show };
-      const s = by.get(h.id); return { id: h.id, title: h.title, desc: h.desc, due: h.dueKst, dueLabel: h.dueLabel, past: h.past, status: s ? s.status : "", at: s ? s.at : "", n: s ? s.files.length : 0 };
+      const s = by.get(h.id); return { id: h.id, title: h.title, desc: h.desc, due: h.dueKst, dueLabel: h.dueLabel, past: h.past, status: s ? s.status : "", at: s && s.at ? kst(s.at) : "", n: s ? s.files.length : 0 };
     }) };
   }
   async function studentSubmit(who, b) {
@@ -179,6 +180,62 @@ module.exports = function (ctx) {
     return { hw, rows, mode: N.mode() };
   }
 
+  // ---------- 👪 부모님 전용 링크 ----------
+  // 링크 = /parent.html?k=<학생 id>.<비밀 키>. 키는 학생 DB '부모 링크 키' 칸에 있어요. 새 링크로 바꾸면 예전 링크는 바로 안 열려요.
+  const PKEY = "부모 링크 키";
+  let pkProp = null;
+  async function ensureKeyProp() {
+    if (pkProp) return true;
+    const d = await notion("databases/" + STUDENT_DB(), "GET", null, 2);
+    if (!d) return false;
+    if (d.properties && d.properties[PKEY]) return (pkProp = true);
+    const u = await notion("databases/" + STUDENT_DB(), "PATCH", { properties: { [PKEY]: { rich_text: {} } } }, 2);
+    return (pkProp = !!(u && u.properties && u.properties[PKEY]));
+  }
+  const newKey = () => crypto.randomBytes(15).toString("base64").replace(/\+/g, "-").replace(/\//g, "_");
+  const linkOf = (sid, key) => normId(sid) + "." + key;
+  async function setKey(sid) { const key = newKey(); const pg = await notion("pages/" + id32(sid), "PATCH", { properties: { [PKEY]: { rich_text: rt(key) } } }); return pg ? key : ""; }
+  async function parentLinks(cls) {
+    if (!cls) return { status: 400, msg: "반을 골라 주세요." };
+    if (!(await ensureKeyProp())) return { status: 502, msg: "노션 학생 DB에 「부모 링크 키」 칸을 만들지 못했어요. 노션에서 이 이름의 텍스트 칸을 만들어 주세요.", debug: getLastErr() };
+    const rows = await queryAll(STUDENT_DB(), { filter: { property: "반", select: { equals: cls } }, sorts: [{ property: "이름", direction: "ascending" }] }, 4);
+    if (!rows) return { status: 502, msg: "명단을 읽지 못했어요.", debug: getLastErr() };
+    const list = rows.filter((p) => !["휴원", "퇴원"].includes(P.sel(p, "상태"))).map((p) => ({ sid: normId(p.id), name: P.title(p, "이름"), key: P.text(p, PKEY) }));
+    const need = list.filter((x) => !x.key);
+    for (let i = 0; i < need.length; i += 5) await Promise.all(need.slice(i, i + 5).map(async (x) => { x.key = await setKey(x.sid); }));
+    return { status: 200, list: list.map((x) => ({ sid: x.sid, name: x.name, k: x.key ? linkOf(x.sid, x.key) : "" })) };
+  }
+  async function parentReset(sid) {
+    if (!/^[0-9a-f-]{32,36}$/i.test(sid || "")) return { status: 400, msg: "학생을 다시 골라 주세요." };
+    const p = await notion("pages/" + id32(sid), "GET");
+    if (!p || normId(p.parent && p.parent.database_id) !== normId(STUDENT_DB())) return { status: 404, msg: "학생을 찾지 못했어요." };
+    if (!(await ensureKeyProp())) return { status: 502, msg: "노션 학생 DB에 「부모 링크 키」 칸을 만들지 못했어요." };
+    const key = await setKey(sid);
+    return key ? { status: 200, k: linkOf(sid, key) } : { status: 502, msg: "새 링크를 만들지 못했어요." };
+  }
+  function sameKey(a, b) { const x = Buffer.from(String(a)), y = Buffer.from(String(b)); return x.length === y.length && crypto.timingSafeEqual(x, y); }
+  async function parentView(k) {
+    const m = /^([0-9a-f]{32})\.([A-Za-z0-9_-]{16,40})$/.exec(k || "");
+    if (!m) return { status: 404, msg: "링크가 올바르지 않아요. 선생님께 받은 링크를 그대로 열어 주세요." };
+    const p = await notion("pages/" + m[1], "GET");
+    if (!p || normId(p.parent && p.parent.database_id) !== normId(STUDENT_DB())) return { status: 404, msg: "링크가 올바르지 않아요." };
+    const key = P.text(p, PKEY);
+    if (!key || !sameKey(key, m[2])) return { status: 403, msg: "이 링크는 더 이상 쓰지 않아요. 선생님께 새 링크를 받아 주세요." };
+    if (P.sel(p, "상태") === "퇴원") return { status: 403, msg: "이 링크는 더 이상 쓰지 않아요." };
+    const name = P.title(p, "이름"), cls = P.sel(p, "반");
+    const [hws, subs] = await Promise.all([
+      queryAll(HW_DB(), { filter: { and: [{ property: "반", rich_text: { equals: cls } }, { property: "사용", checkbox: { equals: true } }] }, sorts: [{ property: "마감", direction: "descending" }] }, 2),
+      queryAll(SUB_DB(), { filter: { property: "학생", relation: { contains: uuid(m[1]) } } }, 3),
+    ]);
+    if (!hws || !subs) return { status: 502, msg: "과제를 불러오지 못했어요. 잠시 뒤 다시 열어 주세요." };
+    const by = new Map(subs.map(readSub).map((s) => [s.hw, s]));
+    const list = hws.map(readHw).filter((h) => h.due && !h.hidden && Date.parse(h.due) > Date.now() - 62 * 864e5).slice(0, 40).map((h) => {
+      const s = by.get(h.id);
+      return { title: h.title, desc: h.desc, dueLabel: h.dueLabel, past: h.past, status: s ? s.status : h.past ? "미제출" : "", at: s && s.at ? kst(s.at) : "", memo: s ? s.memo : "", checked: s ? s.checked : false, photos: s ? s.files.map((f) => f.url) : [] };
+    });
+    return { status: 200, name, cls, list };
+  }
+
   // ---------- 마감 확인 + 학부모 알림 ----------
   // 마감이 지난 과제마다: 반 학생 중 제출 줄이 없는 학생 → '미제출' 줄을 만들고, 알림이 켜져 있으면 학부모님께 보내요. 끝나면 '알림 처리' 체크.
   async function cron(opts) {
@@ -207,5 +264,5 @@ module.exports = function (ctx) {
     return { ok: true, checked: due.length, mode: N.mode(), report };
   }
 
-  return { studentList, studentMonth, studentSubmit, uploadPhoto, teacherList, teacherSave, teacherDetail, teacherMonth, teacherBulk, cron, HW_DB, SUB_DB, _t: { toNotionDue, dueLabel, readHw } };
+  return { studentList, studentMonth, studentSubmit, uploadPhoto, teacherList, teacherSave, teacherDetail, teacherMonth, teacherBulk, parentLinks, parentReset, parentView, cron, HW_DB, SUB_DB, _t: { toNotionDue, dueLabel, readHw } };
 };

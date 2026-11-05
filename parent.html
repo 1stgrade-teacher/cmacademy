@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>우리 아이 과제 - 청명학원</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/style.css">
+<style>
+  /* 👪 부모님 전용: 링크(학생 + 비밀 키)로 아이의 과제와 제출 사진을 봐요. 로그인 없음 · 입장 코드 없이 열림 */
+  .box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-top:12px}
+  .sub{color:var(--muted);font-size:14px;line-height:1.6;margin:0}
+  .err{color:#A2342A;font-size:15px;line-height:1.6;margin:0}
+  .sum{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .sum div{flex:1;min-width:84px;background:var(--accent-soft);border-radius:10px;padding:10px 12px}.sum b{display:block;font-size:12.5px;color:var(--muted)}.sum span{font-size:22px;font-weight:800;color:var(--accent-ink)}
+  .hw .top{display:flex;gap:10px;align-items:flex-start}.hw .t{flex:1;min-width:0;font-weight:700;font-size:16.5px;line-height:1.4}
+  .hw .m{font-size:13.5px;color:var(--muted);margin-top:4px;line-height:1.5}
+  .tag{flex:0 0 auto;font:700 12.5px var(--font);padding:5px 9px;border-radius:8px;background:var(--accent-bg);color:var(--accent-ink);white-space:nowrap}
+  .tag.ok{background:#DFF5E8;color:#1E7A45}.tag.late{background:#FFF1D6;color:#8A5A00}.tag.miss{background:#FDE3E1;color:#A2342A}
+  .desc{white-space:pre-wrap;background:#F7F9FA;border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.6;margin-top:8px;color:#3A4651}
+  .memo{font-size:14px;margin-top:8px;color:#3A4651}
+  .shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px;margin-top:10px}
+  .shots button{aspect-ratio:1;border:0;padding:0;border-radius:10px;overflow:hidden;background:#EEF1F3;cursor:zoom-in}
+  .shots img{width:100%;height:100%;object-fit:cover;display:block}
+  .lb{position:fixed;inset:0;background:rgba(10,20,25,.92);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:50;padding:12px}
+  .lb.on{display:flex}.lb img{max-width:100%;max-height:82vh;object-fit:contain;border-radius:6px;background:#fff}
+  .lb .bar{display:flex;gap:10px;align-items:center;margin-top:12px;color:#fff;font:700 15px var(--font)}
+  .lb button{border:0;border-radius:10px;background:rgba(255,255,255,.16);color:#fff;font:700 16px var(--font);padding:10px 16px;cursor:pointer}
+  .more{display:block;width:100%;margin-top:12px;border:1.5px solid var(--border-strong);background:var(--card);border-radius:10px;padding:12px;font:700 15px var(--font);color:var(--accent-ink);cursor:pointer}
+</style>
+</head>
+<body>
+<div class="topbar"><span class="brand"><span class="spark">✳</span>청명학원 문화본원 영어과</span></div>
+<div class="wrap">
+  <div class="hero" style="padding-bottom:4px"><div class="hero-text"><h1 id="hd">👪 우리 아이 과제</h1><p id="hs">불러오는 중…</p></div></div>
+  <div id="app"></div>
+  <p class="sub" style="margin-top:18px">이 링크는 우리 아이 전용이에요. 다른 분께 전달하지 말아 주세요. 링크를 잃어버리셨거나 새로 받고 싶으시면 담당 선생님께 말씀해 주세요.</p>
+  <footer>&copy; 2026 청명학원 문화본원</footer>
+</div>
+<div class="lb" id="lb" role="dialog" aria-label="사진 크게 보기"><img id="lbImg" alt=""><div class="bar"><button id="lbP" aria-label="이전 사진">◀</button><span id="lbN"></span><button id="lbN2" aria-label="다음 사진">▶</button><button id="lbX">닫기</button></div></div>
+<script>
+(function () {
+  var app = document.getElementById("app"), K = new URLSearchParams(location.search).get("k") || "";
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+  function tag(h) { return h.status === "제출" ? '<span class="tag ok">✓ 제출</span>' : h.status === "지각 제출" ? '<span class="tag late">늦게 제출</span>' : h.status === "미제출" ? '<span class="tag miss">미제출</span>' : '<span class="tag">진행 중</span>'; }
+  var LIST = [], SHOW = 10, LB = { list: [], i: 0 };
+  function render(j) {
+    document.getElementById("hd").textContent = "👪 " + j.name + " 학생 과제";
+    document.getElementById("hs").textContent = j.cls + " · 최근 두 달 과제와 제출한 사진이에요.";
+    LIST = j.list;
+    var done = LIST.filter(function (h) { return h.status === "제출"; }).length, late = LIST.filter(function (h) { return h.status === "지각 제출"; }).length, miss = LIST.filter(function (h) { return h.status === "미제출"; }).length;
+    var html = '<div class="sum"><div><b>제출</b><span>' + done + '</span></div><div><b>늦게 제출</b><span>' + late + '</span></div><div><b>미제출</b><span>' + miss + "</span></div></div>";
+    if (!LIST.length) html += '<div class="box"><p class="sub">아직 과제가 없어요.</p></div>';
+    html += LIST.slice(0, SHOW).map(function (h, i) {
+      return '<div class="box hw"><div class="top"><div class="t">' + esc(h.title) + "</div>" + tag(h) + '</div><div class="m">마감 ' + esc(h.dueLabel) + (h.at ? " · 제출 " + esc(h.at.slice(5, 16).replace("T", " ").replace("-", "/")) : "") + (h.checked ? " · ✓ 선생님 확인" : "") + "</div>" +
+        (h.desc ? '<div class="desc">' + esc(h.desc) + "</div>" : "") + (h.memo ? '<div class="memo">💬 아이가 남긴 말: ' + esc(h.memo) + "</div>" : "") +
+        (h.photos.length ? '<div class="shots">' + h.photos.map(function (u, k) { return '<button data-h="' + i + '" data-k="' + k + '" aria-label="사진 ' + (k + 1) + ' 크게 보기"><img loading="lazy" src="' + esc(u) + '" alt="' + esc(h.title) + " 사진 " + (k + 1) + '"></button>'; }).join("") + "</div>" : "") + "</div>";
+    }).join("");
+    if (LIST.length > SHOW) html += '<button class="more" id="more">이전 과제 더 보기 (' + (LIST.length - SHOW) + "개)</button>";
+    app.innerHTML = html;
+    var mb = document.getElementById("more"); if (mb) mb.onclick = function () { SHOW += 10; render(j); };
+    Array.prototype.forEach.call(app.querySelectorAll(".shots button"), function (b) { b.onclick = function () { openLb(LIST[+b.getAttribute("data-h")].photos, +b.getAttribute("data-k")); }; });
+  }
+  function openLb(list, i) { LB.list = list; LB.i = i; drawLb(); document.getElementById("lb").classList.add("on"); }
+  function drawLb() { document.getElementById("lbImg").src = LB.list[LB.i]; document.getElementById("lbN").textContent = (LB.i + 1) + " / " + LB.list.length; }
+  document.getElementById("lbP").onclick = function () { LB.i = (LB.i + LB.list.length - 1) % LB.list.length; drawLb(); };
+  document.getElementById("lbN2").onclick = function () { LB.i = (LB.i + 1) % LB.list.length; drawLb(); };
+  document.getElementById("lbX").onclick = function () { document.getElementById("lb").classList.remove("on"); };
+  document.getElementById("lb").onclick = function (e) { if (e.target.id === "lb") this.classList.remove("on"); };
+  function fail(msg) { document.getElementById("hs").textContent = ""; app.innerHTML = '<div class="box"><p class="err">' + esc(msg) + "</p></div>"; }
+  if (!K) { fail("링크가 올바르지 않아요. 선생님께 받은 링크를 그대로 열어 주세요."); return; }
+  fetch("/api/monthly", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "p_hw", k: K }) })
+    .then(function (r) { return r.json().catch(function () { return {}; }); })
+    .then(function (j) { if (!j.ok) { fail(j.msg || "불러오지 못했어요. 잠시 뒤 다시 열어 주세요."); return; } render(j); }, function () { fail("인터넷 연결을 확인해 주세요."); });
+})();
+</script>
+</body>
+</html>
