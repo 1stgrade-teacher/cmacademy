@@ -72,11 +72,24 @@ module.exports = function (ctx) {
     return list.sort((a, b) => (a.past - b.past) || (a.past ? Date.parse(b.due) - Date.parse(a.due) : Date.parse(a.due) - Date.parse(b.due)))
       .map((h) => { const s = by.get(h.id); return { id: h.id, title: h.title, desc: h.desc, due: h.dueKst, dueLabel: h.dueLabel, past: h.past, status: s ? s.status : "", at: s ? s.at : "", n: s ? s.files.length : 0 }; });
   }
+  // 🗓 학생 달력: 이 달 우리 반 과제. 공개 전 과제는 제목·마감만 (설명·번호 없이 → 열기 전엔 낼 수 없어요)
+  async function studentMonth(who, ym) {
+    const r = await monthRows(who.cls, ym);
+    if (r.status !== 200) return r;
+    const list = r.list.filter((h) => h.active);
+    const mine = list.some((h) => !h.hidden) ? await queryAll(SUB_DB(), { filter: { property: "학생", relation: { contains: uuid(who.sid) } } }, 2) : [];
+    const by = new Map((mine || []).map(readSub).map((s) => [s.hw, s]));
+    return { status: 200, list: list.map((h) => {
+      if (h.hidden) return { hidden: true, title: h.title, due: h.dueKst, dueLabel: h.dueLabel, show: h.show };
+      const s = by.get(h.id); return { id: h.id, title: h.title, desc: h.desc, due: h.dueKst, dueLabel: h.dueLabel, past: h.past, status: s ? s.status : "", at: s ? s.at : "", n: s ? s.files.length : 0 };
+    }) };
+  }
   async function studentSubmit(who, b) {
     const hp = await notion("pages/" + id32(b.id), "GET");
     if (!hp || normId(hp.parent && hp.parent.database_id) !== normId(HW_DB())) return { status: 404, msg: "과제를 찾지 못했어요." };
     const hw = readHw(hp);
     if (!hw.active || hw.cls !== who.cls) return { status: 403, msg: "우리 반 과제가 아니에요." };
+    if (hw.hidden) return { status: 403, msg: "아직 열리지 않은 과제예요. " + Number(hw.show.slice(5, 7)) + "/" + Number(hw.show.slice(8, 10)) + "부터 낼 수 있어요." };
     const files = (Array.isArray(b.files) ? b.files : []).filter((f) => f && /^[0-9a-f-]{32,36}$/i.test(String(f.fid))).slice(0, 5);
     if (!files.length) return { status: 400, msg: "사진을 한 장 이상 올려 주세요." };
     const late = hw.due && Date.parse(hw.due) < Date.now();
@@ -126,7 +139,8 @@ module.exports = function (ctx) {
 
   // ---------- 🗓 월간 계획 ----------
   // 한 달(한국 시간 기준) 마감 과제 목록. 경계 시간대가 어긋나지 않게 앞뒤 하루씩 넓게 읽고 여기서 거릅니다.
-  async function teacherMonth(cls, ym) {
+  async function teacherMonth(cls, ym) { return monthRows(cls, ym); }
+  async function monthRows(cls, ym) {
     if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(ym || "")) return { status: 400, msg: "달을 다시 골라 주세요." };
     const y = +ym.slice(0, 4), m = +ym.slice(5, 7);
     const from = new Date(Date.UTC(y, m - 1, 1) - 864e5).toISOString().slice(0, 10), to = new Date(Date.UTC(y, m, 1) + 864e5).toISOString().slice(0, 10);
@@ -193,5 +207,5 @@ module.exports = function (ctx) {
     return { ok: true, checked: due.length, mode: N.mode(), report };
   }
 
-  return { studentList, studentSubmit, uploadPhoto, teacherList, teacherSave, teacherDetail, teacherMonth, teacherBulk, cron, HW_DB, SUB_DB, _t: { toNotionDue, dueLabel, readHw } };
+  return { studentList, studentMonth, studentSubmit, uploadPhoto, teacherList, teacherSave, teacherDetail, teacherMonth, teacherBulk, cron, HW_DB, SUB_DB, _t: { toNotionDue, dueLabel, readHw } };
 };

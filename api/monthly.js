@@ -1091,6 +1091,7 @@ module.exports = async function handler(req, res) {
 
   // 📸 사진 과제 (학생)
   if (act === "s_hw_list") { const l = await HW().studentList(who); return l ? send(200, { ok: true, list: l, name: who.name, cls: who.cls }) : send(502, { error: "notion", msg: "과제 목록을 불러오지 못했어요." }); }
+  if (act === "s_hw_cal") { const r = await HW().studentMonth(who, String(b.ym || "")); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg || "달력을 불러오지 못했어요." }); }
   if (act === "s_hw_upload") { const r = await HW().uploadPhoto(b.name, String(b.type || ""), b.b64); return r.error ? send(400, { ok: false, msg: r.error }) : send(200, { ok: true, fid: r.fid, name: r.name }); }
   if (act === "s_hw_submit") { const r = await HW().studentSubmit(who, b); return r.status === 200 ? send(200, Object.assign({ ok: true }, r)) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
 
