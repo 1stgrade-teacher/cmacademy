@@ -1,5 +1,5 @@
 {
- "built": "2026-11-06T02:15:35.973Z",
+ "built": "2026-11-06T05:23:40.394Z",
  "books": [
   {
    "id": "bb391852c",
@@ -6067,12 +6067,18 @@
    "grade": "중2",
    "name": "중2 능률 교과서",
    "path": "교과서/중2/능률",
-   "n": 70,
+   "n": 75,
    "chapters": [
     {
      "key": "_",
      "name": "단원",
      "units": [
+      {
+       "id": "ue52b9ad7",
+       "name": "중2 능률 8과 대화문 해설 – 드론이 농부를 돕는 방법과 놀라움 표현하기 — Listen and Check (3)",
+       "n": 5,
+       "lv": 1.8
+      },
       {
        "id": "uaf6dd8da",
        "name": "중2 능률(김) Lesson7 문법1 사역동사 — 일등급샘",
@@ -6293,7 +6299,7 @@
    "grade": "중2",
    "name": "중2 동아윤 교과서",
    "path": "교과서/중2/동아윤",
-   "n": 47,
+   "n": 74,
    "chapters": [
     {
      "key": "5과",
@@ -6377,6 +6383,36 @@
      "key": "7과",
      "name": "Lesson 7",
      "units": [
+      {
+       "id": "u2639f9b0",
+       "name": "듣기 · 중2 동아(윤) 7과 Watch and Talk A-1 — Watch and Talk A-1",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "ua5224844",
+       "name": "듣기 · 중2 동아(윤) 7과 Watch and Talk A-2 — Watch and Talk A-2",
+       "n": 5,
+       "lv": 1.4
+      },
+      {
+       "id": "u00b7dab0",
+       "name": "듣기 · 중2 동아(윤) 7과 Watch and Talk A-3 — Watch and Talk A-3",
+       "n": 5,
+       "lv": 1.8
+      },
+      {
+       "id": "u38db9c33",
+       "name": "듣기 · 중2 동아(윤) 7과 Watch and Talk A-4 — Watch and Talk A-4",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "u03135a39",
+       "name": "듣기 · 중2 동아(윤) 7과 Watch and Talk C — Watch and Talk C",
+       "n": 9,
+       "lv": 1.6
+      },
       {
        "id": "ubdce8cc8",
        "name": "문법 · 가주어 it과 to부정사, 긴 주어를 가볍게! — 일등급샘",
@@ -6465,7 +6501,7 @@
    "grade": "중2",
    "name": "중2 동아이 교과서",
    "path": "교과서/중2/동아이",
-   "n": 0,
+   "n": 22,
    "chapters": [
     {
      "key": "1과",
@@ -6622,6 +6658,36 @@
      "name": "Lesson 7",
      "units": [
       {
+       "id": "u1994ef5a",
+       "name": "듣기 · 중2 동아(이) 7과 Topic 1 > A-1 — Topic 1 > A-1",
+       "n": 5,
+       "lv": 1.8
+      },
+      {
+       "id": "ude06e1b9",
+       "name": "듣기 · 중2 동아(이) 7과 Topic 1 > A-2 — Topic 1 > A-2",
+       "n": 5,
+       "lv": 1.4
+      },
+      {
+       "id": "u7a2b94b1",
+       "name": "듣기 · 중2 동아(이) 7과 Topic 1 > A-3 — Topic 1 > A-3",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "u1841d1d4",
+       "name": "듣기 · 중2 동아(이) 7과 Topic 1 > B — Topic 1 > B",
+       "n": 4,
+       "lv": 1
+      },
+      {
+       "id": "u84e077a9",
+       "name": "듣기 · 중2 동아(이) 7과 Topic 2 > A — Topic 2 > A",
+       "n": 3,
+       "lv": 1
+      },
+      {
        "id": "u7866e46d",
        "name": "문법 · 목적격 관계대명사, 목적어는 한 번만! — 일등급샘",
        "n": 0,
@@ -6709,7 +6775,7 @@
    "grade": "중2",
    "name": "중2 비상김 교과서",
    "path": "교과서/중2/비상김",
-   "n": 15,
+   "n": 32,
    "chapters": [
     {
      "key": "5과",
@@ -6811,6 +6877,30 @@
      "key": "7과",
      "name": "Lesson 7",
      "units": [
+      {
+       "id": "ub60a67d2",
+       "name": "듣기 · 중2 비상(황) 7과 Listen & Choose (1) — Listen & Choose (1)",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u528e1743",
+       "name": "듣기 · 중2 비상(황) 7과 Listen & Choose (2) — Listen & Choose (2)",
+       "n": 5,
+       "lv": 1.2
+      },
+      {
+       "id": "ufd9f9d3d",
+       "name": "듣기 · 중2 비상(황) 7과 Listen & Choose (3) — Listen & Choose (3)",
+       "n": 3,
+       "lv": 2
+      },
+      {
+       "id": "ud062a889",
+       "name": "듣기 · 중2 비상(황) 7과 Watch & Guess — Watch & Guess",
+       "n": 5,
+       "lv": 1.8
+      },
       {
        "id": "ueb3fc410",
        "name": "문법 · 원인과 결과를 잇는 so ~ that 구문 — so that 구문",
