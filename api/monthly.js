@@ -1071,7 +1071,8 @@ module.exports = async function handler(req, res) {
   }
 
   // =================== 학생 ===================
-  if (!siteOk(req)) return send(401, { error: "site", msg: "입장 코드가 필요해요. 페이지를 새로고침해 주세요." });
+  // 👪 학부모 링크(p_*)는 링크 속 비밀 키로 확인하므로 사이트 입장 코드를 묻지 않음
+  if (!/^p_/.test(act) && !siteOk(req)) return send(401, { error: "site", msg: "입장 코드가 필요해요. 페이지를 새로고침해 주세요." });
   if (act === "g_books") { loadCatalog(); await loadCustom(); return send(200, { ok: true, books: gameBooks(false) }); } // 🎮 단어 게임: 단어장 목록 (로그인 없이)
   if (act === "g_score") { // 🏆 게임 한 판 기록
     const me = readToken(b.token, true); if (!me) return send(401, { error: "login", relogin: true, msg: "다시 로그인하면 기록돼요." });
