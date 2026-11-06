@@ -1,5 +1,5 @@
 {
- "built": "2026-11-05T13:02:58.612Z",
+ "built": "2026-11-06T00:34:01.541Z",
  "books": [
   {
    "id": "bb391852c",
@@ -6067,12 +6067,18 @@
    "grade": "중2",
    "name": "중2 능률 교과서",
    "path": "교과서/중2/능률",
-   "n": 10,
+   "n": 53,
    "chapters": [
     {
      "key": "_",
      "name": "단원",
      "units": [
+      {
+       "id": "ua6a68498",
+       "name": "중2 능률 8과 Real-Life Communication — Real-Life Communication",
+       "n": 5,
+       "lv": 1.8
+      },
       {
        "id": "uaf6dd8da",
        "name": "중2 능률(김) Lesson7 문법1 사역동사 — 일등급샘",
@@ -6157,6 +6163,42 @@
      "key": "7과",
      "name": "Lesson 7",
      "units": [
+      {
+       "id": "u6fe68da2",
+       "name": "듣기 · 중2 능률 7과 Listen and Check (1) — A Listen and Check (1)",
+       "n": 9,
+       "lv": 1.9
+      },
+      {
+       "id": "u6ceb0d66",
+       "name": "듣기 · 중2 능률 7과 Listen and Check (2) — A Listen and Check (2)",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "ud8614aba",
+       "name": "듣기 · 중2 능률 7과 Listen and Check (3) — A Listen and Check (3)",
+       "n": 8,
+       "lv": 1.5
+      },
+      {
+       "id": "u1be7137b",
+       "name": "듣기 · 중2 능률 7과 Real-Life Communication — Real-Life Communication",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "u85c531d6",
+       "name": "듣기 · 중2 능률 7과 C Listen Up — C Listen Up",
+       "n": 9,
+       "lv": 1.7
+      },
+      {
+       "id": "ud8f36054",
+       "name": "듣기 · 중2 능률 7과 Listen and Check (2) — A Listen and Check (2)",
+       "n": 4,
+       "lv": 1.5
+      },
       {
        "id": "u30da67d5",
        "name": "문법 · 사역동사 make, let, have 완전 정복 — 일등급샘",
@@ -6562,6 +6604,18 @@
      "name": "Lesson 7",
      "units": [
       {
+       "id": "u7866e46d",
+       "name": "문법 · 목적격 관계대명사, 목적어는 한 번만! — 일등급샘",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u01a1bfde",
+       "name": "문법 · Lesson 7 Point B - 접속사 although — 일등급샘",
+       "n": 0,
+       "lv": null
+      },
+      {
        "id": "u6785890a",
        "name": "본문 · 중2 2학기 기말고사 중2 동아(이) 7과 본문1",
        "n": 0,
@@ -6585,6 +6639,18 @@
      "key": "8과",
      "name": "Lesson 8",
      "units": [
+      {
+       "id": "u2042f9b9",
+       "name": "문법 · 의문사 + to부정사: 무엇을 할지, 어떻게 할지 말하기 — 일등급샘",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u3fdb9764",
+       "name": "문법 · so ~ that ... : 너무 ~해서 …하다 (Lesson 8 Point B) — 일등급샘",
+       "n": 0,
+       "lv": null
+      },
       {
        "id": "u00bae10b",
        "name": "본문 · 중2 2학기 기말고사 중2 동아(이) 8과 본문1",
@@ -6625,7 +6691,7 @@
    "grade": "중2",
    "name": "중2 비상김 교과서",
    "path": "교과서/중2/비상김",
-   "n": 40,
+   "n": 15,
    "chapters": [
     {
      "key": "5과",
@@ -6729,15 +6795,15 @@
      "units": [
       {
        "id": "ueb3fc410",
-       "name": "문법 · so ~ that ... : 원인과 결과를 한 문장에 담는 표현 — 중2 비상(황) 7과 문법1",
-       "n": 7,
-       "lv": 2.4
+       "name": "문법 · 원인과 결과를 잇는 so ~ that 구문 — so that 구문",
+       "n": 4,
+       "lv": 2.3
       },
       {
        "id": "u74f717cf",
-       "name": "문법 · 가주어 it 완벽 정복 — 중2 비상(황) 7과 문법2",
-       "n": 16,
-       "lv": 1.9
+       "name": "문법 · 가주어 it 완전 정복 — 가주어 it",
+       "n": 4,
+       "lv": 2.3
       },
       {
        "id": "u0370a1ec",
@@ -6765,15 +6831,15 @@
      "units": [
       {
        "id": "ubbfb3d98",
-       "name": "문법 · not only A but also B 완벽 정복 — 문법2",
-       "n": 13,
-       "lv": 2.1
+       "name": "문법 · ~뿐만 아니라 …도! not only A but also B 완전 정복 — not only ~ but also...",
+       "n": 4,
+       "lv": 1.8
       },
       {
        "id": "u57809052",
-       "name": "문법 · 간접의문문 완전 정복 — 문법2",
-       "n": 4,
-       "lv": 2
+       "name": "문법 · 간접의문문, 어순만 잡으면 끝! — 간접의문문",
+       "n": 3,
+       "lv": 2.3
       },
       {
        "id": "ufd72e207",
@@ -6987,8 +7053,20 @@
    "grade": "중2",
    "name": "중2 천재이 교과서",
    "path": "교과서/중2/천재이",
-   "n": 0,
+   "n": 20,
    "chapters": [
+    {
+     "key": "_",
+     "name": "단원",
+     "units": [
+      {
+       "id": "u60c3e383",
+       "name": "a few? few? a little? little? - 수량 형용사 한 번에 정리하기 — 일등급샘",
+       "n": 4,
+       "lv": 1
+      }
+     ]
+    },
     {
      "key": "1과",
      "name": "Lesson 1",
@@ -7198,6 +7276,18 @@
      "name": "Lesson 7",
      "units": [
       {
+       "id": "uf491d9e9",
+       "name": "문법 · Lesson 7 Point A - 목적격 관계대명사: who(m), which, that 골라 쓰기 — 일등급샘",
+       "n": 5,
+       "lv": 2
+      },
+      {
+       "id": "ub5ee879c",
+       "name": "문법 · a few, few, a little, little 완벽 구분하기 — 수량형용사",
+       "n": 4,
+       "lv": 1
+      },
+      {
        "id": "u896178f2",
        "name": "본문 · 중2 2학기 기말고사 중2 천재(이) 7과 본문1",
        "n": 0,
@@ -7221,6 +7311,18 @@
      "key": "8과",
      "name": "Lesson 8",
      "units": [
+      {
+       "id": "u1dd9e894",
+       "name": "문법 · 조건의 접속사 if 완전 정복 — 일등급샘",
+       "n": 3,
+       "lv": 2
+      },
+      {
+       "id": "u2a8030f0",
+       "name": "문법 · 가주어 it 하나면 긴 주어가 사라져요! — 일등급샘",
+       "n": 4,
+       "lv": 2.5
+      },
       {
        "id": "u00f74c75",
        "name": "본문 · 중2 2학기 기말고사 중2 천재(이) 8과 본문1",
