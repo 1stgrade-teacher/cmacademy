@@ -1,5 +1,5 @@
 {
- "built": "2026-11-06T00:34:01.541Z",
+ "built": "2026-11-06T02:15:35.973Z",
  "books": [
   {
    "id": "bb391852c",
@@ -6067,18 +6067,12 @@
    "grade": "중2",
    "name": "중2 능률 교과서",
    "path": "교과서/중2/능률",
-   "n": 53,
+   "n": 70,
    "chapters": [
     {
      "key": "_",
      "name": "단원",
      "units": [
-      {
-       "id": "ua6a68498",
-       "name": "중2 능률 8과 Real-Life Communication — Real-Life Communication",
-       "n": 5,
-       "lv": 1.8
-      },
       {
        "id": "uaf6dd8da",
        "name": "중2 능률(김) Lesson7 문법1 사역동사 — 일등급샘",
@@ -6172,8 +6166,8 @@
       {
        "id": "u6ceb0d66",
        "name": "듣기 · 중2 능률 7과 Listen and Check (2) — A Listen and Check (2)",
-       "n": 5,
-       "lv": 1.6
+       "n": 4,
+       "lv": 1.5
       },
       {
        "id": "ud8614aba",
@@ -6192,12 +6186,6 @@
        "name": "듣기 · 중2 능률 7과 C Listen Up — C Listen Up",
        "n": 9,
        "lv": 1.7
-      },
-      {
-       "id": "ud8f36054",
-       "name": "듣기 · 중2 능률 7과 Listen and Check (2) — A Listen and Check (2)",
-       "n": 4,
-       "lv": 1.5
       },
       {
        "id": "u30da67d5",
@@ -6235,6 +6223,36 @@
      "key": "8과",
      "name": "Lesson 8",
      "units": [
+      {
+       "id": "u0f426b7f",
+       "name": "듣기 · 중2 능률 8과 Listen & Check (1) — Listen and Check (1)",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "ue8ad48e5",
+       "name": "듣기 · 중2 능률 8과 Listen & Check (2) — Listen and Check (2)",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "u48ea9e68",
+       "name": "듣기 · 중2 능률 8과 Listen and Check (3) — Listen and Check (3)",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "ub9d0cddc",
+       "name": "듣기 · 중2 능률 8과 Real-Life Communication — Real-Life Communication",
+       "n": 5,
+       "lv": 1.8
+      },
+      {
+       "id": "ueba1e936",
+       "name": "듣기 · 중2 능률 8과 Listen Up — Listen Up",
+       "n": 8,
+       "lv": 1.8
+      },
       {
        "id": "u33448a33",
        "name": "문법 · 가주어 it로 긴 주어를 똑똑하게! — 일등급샘",
