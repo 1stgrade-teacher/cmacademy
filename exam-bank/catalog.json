@@ -1,5 +1,5 @@
 {
- "built": "2026-11-07T07:36:20.236Z",
+ "built": "2026-11-08T07:32:20.898Z",
  "books": [
   {
    "id": "bb391852c",
@@ -5279,7 +5279,7 @@
    "grade": "중1",
    "name": "중1 동아윤 교과서",
    "path": "교과서/중1/동아윤",
-   "n": 54,
+   "n": 104,
    "chapters": [
     {
      "key": "5과",
@@ -5412,6 +5412,36 @@
      "name": "Lesson 8",
      "units": [
       {
+       "id": "ud982a168",
+       "name": "듣기 · 중1 동아(윤) 8과 Watch and Talk A-1 — Watch and Talk A-1",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "u4d44872c",
+       "name": "듣기 · 중1 동아(윤) 8과 Watch and Talk A-2 — Watch and Talk A-2",
+       "n": 5,
+       "lv": 1.8
+      },
+      {
+       "id": "ua7998636",
+       "name": "듣기 · 중1 동아(윤) 8과 Watch and Talk A-3 — Watch and Talk A-3",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "u9b0345ee",
+       "name": "듣기 · 중1 동아(윤) 8과 Watch and Talk A-4 — Watch and Talk A-4",
+       "n": 5,
+       "lv": 2
+      },
+      {
+       "id": "u21f92938",
+       "name": "듣기 · 중1 동아(윤) 8과 Watch and Talk C — Watch and Talk C",
+       "n": 5,
+       "lv": 1.2
+      },
+      {
        "id": "uccc5bc9f",
        "name": "문법 · 4형식 문장 완전 정복! 수여동사와 목적어 순서 — 문법1",
        "n": 6,
@@ -5446,6 +5476,36 @@
        "name": "본문 · 중1 2학기 기말대비 중1 동아(윤) 8과 본문4",
        "n": 0,
        "lv": null
+      },
+      {
+       "id": "uc5ce30a9",
+       "name": "중1 동아(윤) 8과 Watch and Talk A-1 — Watch and Talk A-1",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "u7a8b5857",
+       "name": "중1 동아(윤) 8과 Watch and Talk A-2 — Watch and Talk A-2",
+       "n": 5,
+       "lv": 1.8
+      },
+      {
+       "id": "u33b4b4e4",
+       "name": "중1 동아(윤) 8과 Watch and Talk A-3 — Watch and Talk A-3",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "ub4cf93dd",
+       "name": "중1 동아(윤) 8과 Watch and Talk A-4 — Watch and Talk A-4",
+       "n": 5,
+       "lv": 2
+      },
+      {
+       "id": "u4208659f",
+       "name": "중1 동아(윤) 8과 Watch and Talk C — Watch and Talk C",
+       "n": 5,
+       "lv": 1.2
       }
      ]
     }
