@@ -20,6 +20,16 @@ async function otherTeacherOk(code) {
   return !!(q && (q.results || []).some((p) => ((p.properties["코드"] && p.properties["코드"].rich_text) || []).map((x) => x.plain_text).join("") === h));
 }
 const GRADES = ["우수", "양호", "보통", "노력 필요"];
+// '특이사항'(선생님만 보는 메모) 칸: 시험 기록 DB에 없으면 한 번 만들어 둠
+let noteOk = false;
+async function ensureNoteProp() {
+  if (noteOk) return true;
+  const db = await notion("databases/" + EXAM_DB(), "GET");
+  if (!db) return false;
+  if (db.properties && db.properties["특이사항"]) return (noteOk = true);
+  const up = await notion("databases/" + EXAM_DB(), "PATCH", { properties: { "특이사항": { rich_text: {} } } });
+  return (noteOk = !!up);
+}
 
 const fails = new Map();
 function failed(ip) {
@@ -189,6 +199,7 @@ module.exports = async function handler(req, res) {
       if (dup && dup.results && dup.results.length) return send(200, { ok: false, dup: true, msg: "같은 이름·날짜의 시험 기록이 이미 있어요. 그래도 또 저장할까요?" });
     }
     const mode = b.mode === "온라인" ? "온라인" : "종이";
+    const hasNote = rows.some((r) => clip(r.note, 300)) ? await ensureNoteProp() : false;
     let saved = 0; const failedNames = [];
     for (let i = 0; i < rows.length; i += 3) {
       const part = rows.slice(i, i + 3);
@@ -201,6 +212,7 @@ module.exports = async function handler(req, res) {
           "오답 수": { number: num(r.wrong, 0, 1000) }, "재시험": { checkbox: !!r.retest }, "재시험 점수": { number: num(r.retestScore, 0, 100000) },
           "종합 평가": GRADES.includes(r.grade) ? sel(r.grade) : { select: null }, "코멘트": { rich_text: rt(r.comment) }, "응시 방식": sel(mode),
         };
+        if (hasNote) props["특이사항"] = { rich_text: rt(clip(r.note, 300)) };
         const pg = await notion("pages", "POST", { parent: { database_id: EXAM_DB() }, properties: props });
         return !!pg;
       }));
