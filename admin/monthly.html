@@ -368,7 +368,12 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         <div style="grid-column:span 2"><label class="l">과제명</label><input id="hwTitle" placeholder="예: Day 3 단어 3번씩 쓰기"></div>
         <div><label class="l">마감 (날짜·시간)</label><input id="hwDue" type="datetime-local"></div>
       </div>
-      <div class="grid" style="margin-top:10px"><div><label class="l">종류</label><select id="hwType"><option value="">📷 사진 과제</option><option value="dict">🎧 받아쓰기 (온라인)</option></select></div></div>
+      <div class="grid" style="margin-top:10px"><div><label class="l">대상</label><select id="hwTgt"><option value="">반 전체</option><option value="some">👤 일부 학생만 (추가과제)</option></select></div><div><label class="l">종류</label><select id="hwType"><option value="">📷 사진 과제</option><option value="dict">🎧 받아쓰기 (온라인)</option></select></div></div>
+      <div id="hwTgtBox" style="display:none;margin-top:10px;padding:10px 12px;border:1px dashed #F0B35A;border-radius:10px;background:#FFF8EC">
+        <div class="hint" style="margin-top:0">고른 학생에게만 보이는 <b>추가과제</b>예요. 제출 현황·미제출 알림·학부모 앱도 고른 학생만 해당돼요. (한 번에 25명까지)</div>
+        <div class="row" style="margin-top:6px"><button class="sub sm" id="hwTgtAll">모두 선택</button><button class="sub sm" id="hwTgtNone">모두 해제</button><span class="hint" id="hwTgtN" style="margin:0"></span></div>
+        <div id="hwTgtList" style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px"></div>
+      </div>
       <div id="hwDictBox" style="display:none;margin-top:10px;padding:10px 12px;border:1px dashed #9BD3D0;border-radius:10px;background:var(--ac-soft)">
         <div class="hint" style="margin-top:0">🎧 듣기 회차의 대화 대본에서 <b>빈칸을 자동으로</b> 만들어요. 학생은 과제 페이지에서 음성을 들으며 빈칸을 채우고, 내면 바로 채점돼요. 처음 낸 점수가 기록되고, 마감까지 안 내면 다른 과제처럼 학부모님께 알림이 가요.</div>
         <div class="grid" style="margin-top:8px"><div style="grid-column:span 2"><label class="l">듣기 회차</label><select id="hwDictU"></select></div><div><label class="l">빈칸 비율</label><select id="hwDictR"><option value="0.2">적게 (20%)</option><option value="0.3" selected>보통 (30%)</option><option value="0.4">많이 (40%)</option><option value="0.5">아주 많이 (50%)</option></select></div></div>
@@ -529,7 +534,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   function hwForm(h) {
     HW_EDIT = h || null; $("hwFormTitle").textContent = h ? "✏️ 과제 수정 · " + h.title : "📸 새 과제";
     $("hwCls").value = h ? h.cls : (lsGet("cm-teacher-cls") || $("hwCls").value); $("hwTitle").value = h ? h.title : ""; $("hwDue").value = h ? h.dueKst : hwDefaultDue();
-    $("hwDesc").value = h ? h.desc : ""; $("hwShow").value = h ? (h.show || "") : ""; hwDictFill(); $("hwType").value = h && h.dict ? "dict" : ""; if (h && h.dict) { $("hwDictU").value = h.dict.u; $("hwDictR").value = String(h.dict.r); } hwTypeUi(); $("hwNotify").checked = h ? h.notify : true; $("hwActive").checked = h ? h.active : true; $("hwMsg").textContent = ""; hwLinkHint();
+    $("hwDesc").value = h ? h.desc : ""; $("hwShow").value = h ? (h.show || "") : ""; hwDictFill(); $("hwType").value = h && h.dict ? "dict" : ""; if (h && h.dict) { $("hwDictU").value = h.dict.u; $("hwDictR").value = String(h.dict.r); } hwTypeUi(); HW_TG = (h && h.targets) || []; $("hwTgt").value = HW_TG.length ? "some" : ""; hwTgtUi(); $("hwNotify").checked = h ? h.notify : true; $("hwActive").checked = h ? h.active : true; $("hwMsg").textContent = ""; hwLinkHint();
   }
   function hwLinkHint() { var c = $("hwCls").value; $("hwLink").innerHTML = c ? '학생 링크: <b>' + esc(location.origin + "/과제/?c=" + c) + '</b> <button class="sm sub" id="hwCopy">링크 복사</button>' : ""; var b = $("hwCopy"); if (b) b.onclick = function () { var t = location.origin + "/과제/?c=" + encodeURIComponent(c); (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { b.textContent = "✓ 복사됨"; }, function () { prompt("복사해서 단톡방에 보내세요", t); }); }; }
   function hwOpen() {
@@ -539,10 +544,30 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     if (!$("mpCls").options.length) { $("mpCls").innerHTML = opts; var lc = lsGet("cm-teacher-cls"); if (lc && (DATA.classes || []).indexOf(lc) >= 0) $("mpCls").value = lc; MP.cls = $("mpCls").value; }
     hwLoad(); mpLoad();
   }
-  $("hwCls").onchange = hwLinkHint; $("hwNew").onclick = function () { hwForm(null); };
+  var HW_TG = [], HW_TG_CLS = "";
+  function hwTgtUi() { var on = $("hwTgt").value === "some"; $("hwTgtBox").style.display = on ? "" : "none"; if (on) hwTgtLoad(); }
+  function hwTgtCount() { var n = document.querySelectorAll("#hwTgtList input:checked").length; $("hwTgtN").innerHTML = n ? "<b>" + n + "명</b> 골랐어요" + (n > 25 ? ' <span class="er">25명까지만 돼요</span>' : "") : '<span class="er">학생을 골라 주세요</span>'; }
+  function hwTgtLoad() {
+    var c = $("hwCls").value; if (!c) return;
+    if (HW_TG_CLS !== c) HW_TG = HW_TG_CLS ? [] : HW_TG; HW_TG_CLS = c;
+    $("hwTgtList").innerHTML = '<span class="hint">명단 불러오는 중…</span>';
+    post({ action: "t_students", cls: c }).then(function (j) {
+      if (!j.ok) { $("hwTgtList").innerHTML = '<span class="er">' + esc(j.msg || "명단을 불러오지 못했어요.") + "</span>"; return; }
+      var set = {}; HW_TG.forEach(function (x) { set[String(x).replace(/-/g, "")] = 1; });
+      $("hwTgtList").innerHTML = (j.students || []).map(function (st) { var id = String(st.id).replace(/-/g, ""); return '<label style="display:flex;align-items:center;gap:6px;font-size:15px"><input type="checkbox" value="' + esc(id) + '"' + (set[id] ? " checked" : "") + ' style="width:18px;height:18px">' + esc(st.name) + "</label>"; }).join("") || '<span class="hint">이 반에 학생이 없어요.</span>';
+      document.querySelectorAll("#hwTgtList input").forEach(function (x) { x.onchange = hwTgtCount; }); hwTgtCount();
+    });
+  }
+  $("hwTgt").onchange = hwTgtUi;
+  $("hwTgtAll").onclick = function () { document.querySelectorAll("#hwTgtList input").forEach(function (x) { x.checked = true; }); hwTgtCount(); };
+  $("hwTgtNone").onclick = function () { document.querySelectorAll("#hwTgtList input").forEach(function (x) { x.checked = false; }); hwTgtCount(); };
+  $("hwCls").onchange = function () { hwLinkHint(); if ($("hwTgt").value === "some") { HW_TG = []; hwTgtLoad(); } }; $("hwNew").onclick = function () { hwForm(null); };
   $("hwReload").onclick = hwLoad; $("hwFilter").onchange = hwLoad;
   $("hwSave").onclick = function () {
-    var b = this, hw = { id: HW_EDIT && HW_EDIT.id, cls: $("hwCls").value, title: $("hwTitle").value.trim(), due: $("hwDue").value, desc: $("hwDesc").value.trim(), showFrom: $("hwShow").value || "", notify: $("hwNotify").checked, active: $("hwActive").checked, dict: $("hwType").value === "dict" ? { u: $("hwDictU").value, r: +$("hwDictR").value } : null };
+    var b = this, hw = { id: HW_EDIT && HW_EDIT.id, cls: $("hwCls").value, title: $("hwTitle").value.trim(), due: $("hwDue").value, desc: $("hwDesc").value.trim(), showFrom: $("hwShow").value || "", notify: $("hwNotify").checked, active: $("hwActive").checked, dict: $("hwType").value === "dict" ? { u: $("hwDictU").value, r: +$("hwDictR").value } : null,
+      targets: $("hwTgt").value === "some" ? Array.prototype.map.call(document.querySelectorAll("#hwTgtList input:checked"), function (x) { return x.value; }) : [] };
+    if ($("hwTgt").value === "some" && !hw.targets.length) { $("hwMsg").innerHTML = '<span class="er">추가과제를 받을 학생을 골라 주세요.</span>'; return; }
+    if (hw.targets.length > 25) { $("hwMsg").innerHTML = '<span class="er">추가과제는 한 번에 25명까지 고를 수 있어요.</span>'; return; }
     if (hw.dict && !hw.dict.u) { $("hwMsg").innerHTML = '<span class="er">듣기 회차를 골라 주세요. (「듣기」 영역에 대본이 든 회차가 있어야 해요)</span>'; return; }
     if (hw.dict && !hw.title) { hw.title = "받아쓰기 · " + ($("hwDictU").selectedOptions[0] || {}).textContent; $("hwTitle").value = hw.title; }
     if (!hw.title || !hw.due) { $("hwMsg").innerHTML = '<span class="er">과제명과 마감을 넣어 주세요.</span>'; return; }
@@ -567,7 +592,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       if (!j.list.length) { $("hwList").innerHTML = '<p class="hint">아직 과제가 없어요. 위에서 첫 과제를 만들어 보세요.</p>'; return; }
       $("hwList").innerHTML = '<div class="tw"><table><thead><tr><th>반</th><th>과제</th><th>마감</th><th>제출</th><th>늦게</th><th>미제출</th><th>상태</th><th></th></tr></thead><tbody>' + j.list.map(function (h, i) {
         var st = !h.active ? "숨김" : h.hidden ? "공개 전 (" + mpMd(h.show) + "부터)" : !h.past ? "진행 중" : h.done ? "마감 확인 끝" + (h.notify ? " · 알림" : "") : "마감 확인 대기";
-        return "<tr><td>" + esc(h.cls) + "</td><td><b>" + (h.dict ? "🎧 " : "") + esc(h.title) + "</b></td><td>" + esc(h.dueLabel) + "</td><td class=num>" + (h.counted ? h.nSub : "-") + "</td><td class=num>" + (h.counted ? h.nLate : "-") + "</td><td class=num>" + (h.counted ? h.nMiss : "-") + "</td><td>" + st + '</td><td><button class="sm sub" data-hwd="' + i + '">보기</button> <button class="sm sub" data-hwe="' + i + '">수정</button></td></tr>';
+        return "<tr><td>" + esc(h.cls) + "</td><td>" + (h.targets && h.targets.length ? '<span style="display:inline-block;background:#FFF1D6;color:#8A5300;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:700;margin-right:4px">👤 ' + h.targets.length + "명</span>" : "") + "<b>" + (h.dict ? "🎧 " : "") + esc(h.title) + "</b></td><td>" + esc(h.dueLabel) + "</td><td class=num>" + (h.counted ? h.nSub : "-") + "</td><td class=num>" + (h.counted ? h.nLate : "-") + "</td><td class=num>" + (h.counted ? h.nMiss : "-") + "</td><td>" + st + '</td><td><button class="sm sub" data-hwd="' + i + '">보기</button> <button class="sm sub" data-hwe="' + i + '">수정</button></td></tr>';
       }).join("") + "</tbody></table></div>";
       Array.prototype.forEach.call($("hwList").querySelectorAll("[data-hwe]"), function (b) { b.onclick = function () { hwForm(HW_LIST[+b.getAttribute("data-hwe")]); window.scrollTo(0, 0); }; });
       Array.prototype.forEach.call($("hwList").querySelectorAll("[data-hwd]"), function (b) { b.onclick = function () { hwDetail(HW_LIST[+b.getAttribute("data-hwd")]); }; });

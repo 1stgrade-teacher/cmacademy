@@ -143,7 +143,7 @@
   function showMain() { if (VIEW === "cal") showCal(); else showList(); }
   function hwRow(h, i, key) {
     if (h.hidden) return '<div class="hw lock"><div class="b"><div class="t">🔒 ' + esc(h.title) + '</div><div class="m">마감 ' + esc(h.dueLabel) + "</div></div>" + '<span class="tag lock">' + esc(md(h.show)) + "에 열려요</span></div>";
-    return '<div class="hw" data-' + key + '="' + i + '"><div class="b"><div class="t">' + esc(h.title) + '</div><div class="m">마감 ' + esc(h.dueLabel) + " · " + (h.dict ? "🎧 받아쓰기 · " : "") + (h.status ? esc(h.status) + (h.score ? " " + esc(h.score) : h.n ? " (사진 " + h.n + "장)" : "") : esc(left(h.due))) + "</div></div>" + tagOf(h) + "</div>";
+    return '<div class="hw" data-' + key + '="' + i + '"><div class="b"><div class="t">' + (h.only ? '<span style="display:inline-block;background:#FFF1D6;color:#8A5300;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:800;margin-right:5px;vertical-align:2px">⭐ 나만의 추가과제</span>' : "") + esc(h.title) + '</div><div class="m">마감 ' + esc(h.dueLabel) + " · " + (h.dict ? "🎧 받아쓰기 · " : "") + (h.status ? esc(h.status) + (h.score ? " " + esc(h.score) : h.n ? " (사진 " + h.n + "장)" : "") : esc(left(h.due))) + "</div></div>" + tagOf(h) + "</div>";
   }
   function showList() {
     app.innerHTML = whoBar() + viewBar() + '<div class="box"><p class="sub">과제를 불러오는 중…</p></div>'; bindWho(); bindView();
