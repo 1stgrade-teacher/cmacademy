@@ -160,7 +160,7 @@ module.exports = function (ctx) {
       GAME_DB ? queryAll(GAME_DB(), { filter: { and: [rel, { property: "날짜", date: { on_or_after: since } }] } }, 3) : Promise.resolve([]),
       notion("databases/" + CERT_DB() + "/query", "POST", { filter: { property: "학생 페이지", relation: { contains: uuid(s.id) } }, sorts: [{ property: "제출시각", direction: "descending" }], page_size: 10 }),
     ]);
-    const tests = ((ex && ex.results) || []).map((p) => ({ title: P.title(p, "시험명"), kind: P.sel(p, "종류"), date: (P.date(p, "시험일") || {}).start || "", score: P.num(p, "점수"), total: P.num(p, "만점"), pct: P.formula(p, "환산점수"), grade: P.sel(p, "종합 평가"), url: p.url }));
+    const tests = ((ex && ex.results) || []).map((p) => ({ title: P.title(p, "시험명"), kind: P.sel(p, "종류"), date: (P.date(p, "시험일") || {}).start || "", score: P.num(p, "점수"), total: P.num(p, "만점"), pct: P.formula(p, "환산점수"), grade: P.sel(p, "종합 평가"), wrong: P.num(p, "오답 수"), comment: P.text(p, "코멘트"), note: P.text(p, "특이사항"), url: p.url }));
     const hw = { 제출: 0, "지각 제출": 0, 미제출: 0, recent: [] };
     (subs || []).forEach((p) => { const st = P.sel(p, "상태"); if (hw[st] != null) hw[st]++; });
     hw.recent = (subs || []).sort((a, b) => String(b.created_time || "").localeCompare(String(a.created_time || ""))).slice(0, 6).map((p) => ({ title: P.title(p, "제목"), status: P.sel(p, "상태"), at: ((P.date(p, "제출 시각") || {}).start || "").slice(0, 10) }));

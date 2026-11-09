@@ -159,7 +159,7 @@
     if ($("nr")) $("nr").onclick = function () { go("chat"); };
   }
   function hwCard(h, i, mini) {
-    return '<div class="box"><div class="row"><div class="t">' + (h.dict ? "🎧 " : "") + esc(h.title) + "</div>" + tagHw(h) + '</div><div class="m2">마감 ' + esc(h.dueLabel) + (h.at ? " · 제출 " + esc(h.at.slice(5, 16).replace("T", " ").replace("-", "/")) : "") + (h.checked ? " · ✓ 선생님 확인" : "") + "</div>" +
+    return '<div class="box"><div class="row"><div class="t">' + (h.only ? "⭐ " : "") + (h.dict ? "🎧 " : "") + esc(h.title) + (h.only ? ' <span style="font-size:12px;font-weight:700;color:#8A5300">추가과제</span>' : "") + "</div>" + tagHw(h) + '</div><div class="m2">마감 ' + esc(h.dueLabel) + (h.at ? " · 제출 " + esc(h.at.slice(5, 16).replace("T", " ").replace("-", "/")) : "") + (h.checked ? " · ✓ 선생님 확인" : "") + "</div>" +
       (!mini && h.desc ? '<div class="desc">' + esc(h.desc) + "</div>" : "") + (h.dict ? (h.score ? '<div class="m2" style="color:var(--ink)">🎧 받아쓰기 점수 <b>' + esc(h.score) + "</b></div>" : "") + (h.memo && /틀린 곳/.test(h.memo) ? '<div class="m2">' + esc(h.memo.replace(/^.*?·\s*/, "")) + "</div>" : "") : h.memo ? '<div class="m2">💬 아이가 남긴 말: ' + esc(h.memo) + "</div>" : "") +
       (h.photos.length ? '<div class="shots">' + h.photos.slice(0, mini ? 4 : 100).map(function (u, k) { return '<button data-h="' + i + '" data-k="' + k + '" aria-label="사진 ' + (k + 1) + ' 크게 보기"><img loading="lazy" src="' + esc(u) + '" alt="' + esc(h.title) + " 사진 " + (k + 1) + '"></button>'; }).join("") + "</div>" + (mini && h.photos.length > 4 ? '<div class="m2">사진 ' + h.photos.length + "장 · 📸 과제에서 모두 보기</div>" : "") : "") + "</div>";
   }

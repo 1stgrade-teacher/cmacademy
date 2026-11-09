@@ -22,8 +22,12 @@ module.exports = function (ctx) {
   const isDay = (s) => /^\d{4}-\d{2}-\d{2}$/.test(s || "");
   function readHw(p) {
     const due = dueOf(p), show = showOf(p);
-    return { id: normId(p.id), url: p.url, title: P.title(p, "과제명"), cls: P.text(p, "반"), desc: P.text(p, "설명"), due, dueKst: due ? kst(due) : "", dueLabel: dueLabel(due), active: P.chk(p, "사용"), notify: P.chk(p, "알림 보내기"), done: P.chk(p, "알림 처리"), teacher: P.text(p, "만든 선생님"), past: !!due && Date.parse(due) <= Date.now(), show, hidden: !!show && shownAt(show) > Date.now(), dict: dictOf(p) };
+    return { id: normId(p.id), url: p.url, title: P.title(p, "과제명"), cls: P.text(p, "반"), desc: P.text(p, "설명"), due, dueKst: due ? kst(due) : "", dueLabel: dueLabel(due), active: P.chk(p, "사용"), notify: P.chk(p, "알림 보내기"), done: P.chk(p, "알림 처리"), teacher: P.text(p, "만든 선생님"), past: !!due && Date.parse(due) <= Date.now(), show, hidden: !!show && shownAt(show) > Date.now(), dict: dictOf(p), targets: P.rel(p, TKEY) };
   }
+  // 👤 대상 학생: 비어 있으면 반 전체 과제, 학생을 고르면 그 학생들만 보는 추가과제 (노션 '대상 학생' 관계 칸, 최대 25명)
+  const TKEY = "대상 학생";
+  const forMe = (h, sid) => !h.targets || !h.targets.length || h.targets.includes(normId(sid));
+  const onlyTargets = (h, ros) => (h.targets && h.targets.length ? (ros || []).filter((st) => h.targets.includes(normId(st.id))) : ros);
   // 🎧 받아쓰기 숙제: '받아쓰기' 칸에 {"u": 듣기 회차 id, "r": 빈칸 비율} — 비어 있으면 사진 과제
   function dictOf(p) { try { const j = JSON.parse(P.text(p, "받아쓰기") || "null"); return j && j.u ? { u: String(j.u), r: Math.min(0.6, Math.max(0.1, +j.r || 0.3)) } : null; } catch (e) { return null; } }
   const propOk = {};
@@ -77,29 +81,29 @@ module.exports = function (ctx) {
   async function studentList(who) {
     const rows = await queryAll(HW_DB(), { filter: { and: [{ property: "반", rich_text: { equals: who.cls } }, { property: "사용", checkbox: { equals: true } }] }, sorts: [{ property: "마감", direction: "descending" }] }, 2);
     if (!rows) return null;
-    const list = rows.map(readHw).filter((h) => h.due && !h.hidden && Date.parse(h.due) > Date.now() - 21 * 864e5).slice(0, 20);
+    const list = rows.map(readHw).filter((h) => h.due && !h.hidden && forMe(h, who.sid) && Date.parse(h.due) > Date.now() - 21 * 864e5).slice(0, 20);
     const mine = await queryAll(SUB_DB(), { filter: { property: "학생", relation: { contains: uuid(who.sid) } } }, 2);
     const by = new Map((mine || []).map(readSub).map((s) => [s.hw, s]));
     return list.sort((a, b) => (a.past - b.past) || (a.past ? Date.parse(b.due) - Date.parse(a.due) : Date.parse(a.due) - Date.parse(b.due)))
-      .map((h) => { const s = by.get(h.id); return { id: h.id, title: h.title, desc: h.desc, due: h.dueKst, dueLabel: h.dueLabel, past: h.past, status: s ? s.status : "", at: s && s.at ? kst(s.at) : "", n: s ? s.files.length : 0, dict: !!h.dict, score: s ? s.score : "" }; });
+      .map((h) => { const s = by.get(h.id); return { only: !!(h.targets && h.targets.length), id: h.id, title: h.title, desc: h.desc, due: h.dueKst, dueLabel: h.dueLabel, past: h.past, status: s ? s.status : "", at: s && s.at ? kst(s.at) : "", n: s ? s.files.length : 0, dict: !!h.dict, score: s ? s.score : "" }; });
   }
   // 🗓 학생 달력: 이 달 우리 반 과제. 공개 전 과제는 제목·마감만 (설명·번호 없이 → 열기 전엔 낼 수 없어요)
   async function studentMonth(who, ym) {
     const r = await monthRows(who.cls, ym);
     if (r.status !== 200) return r;
-    const list = r.list.filter((h) => h.active);
+    const list = r.list.filter((h) => h.active && forMe(h, who.sid));
     const mine = list.some((h) => !h.hidden) ? await queryAll(SUB_DB(), { filter: { property: "학생", relation: { contains: uuid(who.sid) } } }, 2) : [];
     const by = new Map((mine || []).map(readSub).map((s) => [s.hw, s]));
     return { status: 200, list: list.map((h) => {
       if (h.hidden) return { hidden: true, title: h.title, due: h.dueKst, dueLabel: h.dueLabel, show: h.show };
-      const s = by.get(h.id); return { id: h.id, title: h.title, desc: h.desc, due: h.dueKst, dueLabel: h.dueLabel, past: h.past, status: s ? s.status : "", at: s && s.at ? kst(s.at) : "", n: s ? s.files.length : 0, dict: !!h.dict, score: s ? s.score : "" };
+      const s = by.get(h.id); return { only: !!(h.targets && h.targets.length), id: h.id, title: h.title, desc: h.desc, due: h.dueKst, dueLabel: h.dueLabel, past: h.past, status: s ? s.status : "", at: s && s.at ? kst(s.at) : "", n: s ? s.files.length : 0, dict: !!h.dict, score: s ? s.score : "" };
     }) };
   }
   async function studentSubmit(who, b) {
     const hp = await notion("pages/" + id32(b.id), "GET");
     if (!hp || normId(hp.parent && hp.parent.database_id) !== normId(HW_DB())) return { status: 404, msg: "과제를 찾지 못했어요." };
     const hw = readHw(hp);
-    if (!hw.active || hw.cls !== who.cls) return { status: 403, msg: "우리 반 과제가 아니에요." };
+    if (!hw.active || hw.cls !== who.cls || !forMe(hw, who.sid)) return { status: 403, msg: "우리 반 과제가 아니에요." };
     if (hw.hidden) return { status: 403, msg: "아직 열리지 않은 과제예요. " + Number(hw.show.slice(5, 7)) + "/" + Number(hw.show.slice(8, 10)) + "부터 낼 수 있어요." };
     if (hw.dict) return { status: 400, msg: "받아쓰기 숙제는 화면에서 듣고 빈칸을 채워 내요." };
     const files = (Array.isArray(b.files) ? b.files : []).filter((f) => f && /^[0-9a-f-]{32,36}$/i.test(String(f.fid))).slice(0, 100); // 노션 파일 칸 최대 100개
@@ -140,6 +144,14 @@ module.exports = function (ctx) {
       const d = b.dict && b.dict.u ? { u: clip(b.dict.u, 40), r: Math.min(0.6, Math.max(0.1, +b.dict.r || 0.3)) } : null;
       if (d && !(listenUnit && listenUnit(d.u))) return { status: 400, msg: "받아쓰기로 쓸 듣기 회차를 찾지 못했어요. 다시 골라 주세요." };
       if (d || b.id) { if (await ensureProp(HW_DB(), "받아쓰기", { rich_text: {} })) props["받아쓰기"] = { rich_text: rt(d ? JSON.stringify(d) : "") }; else if (d) return { status: 502, msg: "노션 📸 과제 DB에 「받아쓰기」 칸을 만들지 못했어요." }; }
+    }
+    if (b.targets !== undefined) { // 👤 대상 학생 (빈 배열 = 반 전체)
+      const ids = (Array.isArray(b.targets) ? b.targets : []).map((x) => normId(String(x))).filter((x) => /^[0-9a-f]{32}$/.test(x));
+      if (ids.length > 25) return { status: 400, msg: "추가과제 대상은 한 번에 25명까지 고를 수 있어요." };
+      if (ids.length || b.id) {
+        if (await ensureProp(HW_DB(), TKEY, { relation: { database_id: uuid(STUDENT_DB()), single_property: {} } })) props[TKEY] = { relation: ids.map((x) => ({ id: uuid(x) })) };
+        else if (ids.length) return { status: 502, msg: "노션 📸 과제 DB에 「대상 학생」 칸을 만들지 못했어요. 노션 연결을 확인해 주세요.", debug: getLastErr() };
+      }
     }
     let pg;
     if (b.id) {
@@ -183,7 +195,7 @@ module.exports = function (ctx) {
     const hp = await notion("pages/" + id32(id), "GET");
     if (!hp || normId(hp.parent && hp.parent.database_id) !== normId(HW_DB())) return { status: 404, msg: "과제를 찾지 못했어요." };
     const hw = readHw(hp);
-    if (!hw.active || (who && hw.cls !== who.cls)) return { status: 403, msg: "우리 반 과제가 아니에요." };
+    if (!hw.active || (who && (hw.cls !== who.cls || !forMe(hw, who.sid)))) return { status: 403, msg: "우리 반 과제가 아니에요." };
     if (who && hw.hidden) return { status: 403, msg: "아직 열리지 않은 과제예요." };
     if (!hw.dict) return { status: 400, msg: "받아쓰기 숙제가 아니에요." };
     const d = dictBuild(hw.id, hw.dict); if (!d) return { status: 404, msg: "듣기 회차를 찾지 못했어요. 선생님께 알려 주세요." };
@@ -250,7 +262,8 @@ module.exports = function (ctx) {
     const hp = await notion("pages/" + id32(id), "GET");
     if (!hp || normId(hp.parent && hp.parent.database_id) !== normId(HW_DB())) return null;
     const hw = readHw(hp);
-    const [ros, subs] = await Promise.all([roster(hw.cls), subsOf(hw.id)]);
+    const [ros0, subs] = await Promise.all([roster(hw.cls), subsOf(hw.id)]);
+    const ros = onlyTargets(hw, ros0);
     const by = new Map((subs || []).map(readSub).map((s) => [s.sid, s]));
     const rows = (ros || []).map((st) => { const s = by.get(st.id); return { sid: st.id, name: st.name, phone: !!N.phone(st.phone), mute: !!st.mute, status: s ? s.status : hw.past ? "미제출" : "", at: s ? s.at : "", memo: s ? s.memo : "", notice: s ? s.notice : "", files: s ? s.files : [], url: s ? s.url : "" }; });
     return { hw, rows, mode: N.mode() };
@@ -311,9 +324,9 @@ module.exports = function (ctx) {
     ]);
     if (!hws || !subs) return null;
     const by = new Map(subs.map(readSub).map((s) => [s.hw, s]));
-    return hws.map(readHw).filter((h) => h.due && !h.hidden && Date.parse(h.due) > Date.now() - 62 * 864e5).sort((x, y) => Date.parse(y.due) - Date.parse(x.due)).slice(0, 40).map((h) => {
+    return hws.map(readHw).filter((h) => h.due && !h.hidden && forMe(h, sid) && Date.parse(h.due) > Date.now() - 62 * 864e5).sort((x, y) => Date.parse(y.due) - Date.parse(x.due)).slice(0, 40).map((h) => {
       const s = by.get(h.id);
-      return { dict: !!h.dict, score: s ? s.score : "", title: h.title, desc: h.desc, due: h.dueKst, dueLabel: h.dueLabel, past: h.past, status: s ? s.status : h.past ? "미제출" : "", at: s && s.at ? kst(s.at) : "", memo: s ? s.memo : "", checked: s ? s.checked : false, photos: s ? s.files.map((f) => f.url) : [] };
+      return { only: !!(h.targets && h.targets.length), dict: !!h.dict, score: s ? s.score : "", title: h.title, desc: h.desc, due: h.dueKst, dueLabel: h.dueLabel, past: h.past, status: s ? s.status : h.past ? "미제출" : "", at: s && s.at ? kst(s.at) : "", memo: s ? s.memo : "", checked: s ? s.checked : false, photos: s ? s.files.map((f) => f.url) : [] };
     });
   }
 
@@ -326,8 +339,9 @@ module.exports = function (ctx) {
     const due = rows.map(readHw).filter((h) => h.due && Date.parse(h.due) <= Date.now() && (!opts.only || h.id === normId(opts.only)));
     for (const hw of due) {
       if (Date.now() - t0 > 40000) { report.push({ title: hw.title, skipped: "시간이 부족해 다음 확인 때 처리" }); continue; }
-      const [ros, subs] = await Promise.all([roster(hw.cls), subsOf(hw.id)]);
-      if (!ros || !subs) { report.push({ title: hw.title, error: "명단/제출 기록을 읽지 못함" }); continue; }
+      const [ros0, subs] = await Promise.all([roster(hw.cls), subsOf(hw.id)]);
+      if (!ros0 || !subs) { report.push({ title: hw.title, error: "명단/제출 기록을 읽지 못함" }); continue; }
+      const ros = onlyTargets(hw, ros0);
       const have = new Set(subs.map(readSub).map((s) => s.sid));
       const miss = ros.filter((st) => !have.has(st.id));
       const targets = hw.notify ? miss.filter((st) => !st.mute && N.phone(st.phone)) : [];

@@ -3,7 +3,7 @@
 <meta name="robots" content="noindex"><title>시험 점수 입력 · 일등급샘</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#F0F8F8;font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;color:#1B2733;padding:14px 12px 90px}
-.wrap{max-width:980px;margin:0 auto}h1{font-size:20px;color:#0A5F61;margin:4px 0 12px}
+.wrap{max-width:1180px;margin:0 auto}h1{font-size:20px;color:#0A5F61;margin:4px 0 12px}
 .card{background:#fff;border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 2px 10px rgba(10,60,62,.08)}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
 label{display:block;font-size:12.5px;color:#5F6E7C;margin-bottom:4px}
@@ -11,7 +11,9 @@ input,select,textarea{width:100%;border:1px solid #CFE5E4;border-radius:9px;padd
 input:focus,select:focus,textarea:focus{outline:none;border-color:#0E8A8C;box-shadow:0 0 0 3px #DDF2F1}
 button{border:0;border-radius:10px;background:#0E8A8C;color:#fff;font-size:15px;font-weight:700;padding:11px 16px;cursor:pointer;font-family:inherit}
 button.sub{background:#EAF3F3;color:#0A5F61}button:disabled{background:#B9CDD0}
-.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:760px}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:980px}
+.res{font-size:13.5px;color:#5F6E7C;white-space:nowrap;min-width:150px}.res b{color:#1B2733}.res.bad{color:#C0392B}
+.qk{padding:6px 12px;font-size:14px}.qk.on{background:#0E8A8C;color:#fff}.nt{min-width:170px}
 th{font-size:12px;color:#5F6E7C;text-align:left;padding:6px 4px;white-space:nowrap}td{padding:4px;vertical-align:middle}
 td.nm{font-weight:700;white-space:nowrap;padding-right:10px}tr.skip td{opacity:.35}
 td input,td select{padding:8px 6px;font-size:15px}td input[type=checkbox]{width:20px;height:20px}
@@ -20,7 +22,7 @@ td input,td select{padding:8px 6px;font-size:15px}td input[type=checkbox]{width:
 .bar .info{font-size:13.5px;color:#5F6E7C}.hint{font-size:12.5px;color:#7A8896;margin-top:6px;line-height:1.5}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.row label{margin:0;display:flex;align-items:center;gap:6px;font-size:13.5px;color:#1B2733}.row input[type=checkbox]{width:18px;height:18px}
 </style></head><body><div class="wrap">
-<h1>📝 시험 점수 입력</h1>
+<h1>📝 시험 결과 입력</h1>
 
 <div class="card" id="login">
   <label>선생님 코드</label>
@@ -35,23 +37,25 @@ td input,td select{padding:8px 6px;font-size:15px}td input[type=checkbox]{width:
       <div><label>반</label><select id="cls"></select></div>
       <div><label>종류</label><select id="kind"><option>단어시험</option><option>듣기시험</option><option>주간평가</option><option>월간평가</option><option>분기평가</option></select></div>
       <div><label>시험일</label><input id="date" type="date"></div>
-      <div><label>만점</label><input id="max" type="number" inputmode="decimal" value="100"></div>
+      <div><label>기록 방식</label><select id="unit"><option value="right">맞은 개수</option><option value="wrong">틀린 개수</option><option value="score">점수</option></select></div>
+      <div><label id="maxLbl">전체 문항 수</label><input id="max" type="number" inputmode="decimal" value="40"></div>
       <div><label>응시 방식</label><select id="mode"><option>종이</option><option>온라인</option></select></div>
     </div>
     <div class="grid" style="margin-top:10px;grid-template-columns:1fr 2fr">
       <div><label>시험 범위</label><input id="range" placeholder="예: Unit 4~5 / 고등베이직 7~8"></div>
       <div><label>시험명 (비워 두면 자동)</label><input id="title" placeholder="자동: 10/29 단어시험 · 범위"></div>
     </div>
+    <div class="row" id="qkRow" style="margin-top:10px"><span class="hint" style="margin:0">문항 수 빠르게 고르기</span><button type="button" class="sub qk" data-n="20">20</button><button type="button" class="sub qk" data-n="25">25</button><button type="button" class="sub qk" data-n="30">30</button><button type="button" class="sub qk" data-n="40">40</button><button type="button" class="sub qk" data-n="50">50</button></div>
     <div class="row" style="margin-top:10px">
-      <label><input type="checkbox" id="autoWrong" checked> 오답 수를 '만점 − 점수'로 자동 계산 (1문항 1점일 때)</label>
+      <label id="autoWrongL"><input type="checkbox" id="autoWrong" checked> 오답 수를 '만점 − 점수'로 자동 계산 (1문항 1점일 때)</label>
       <label><input type="checkbox" id="autoGrade" checked> 종합 평가를 점수로 자동 추천</label>
     </div>
     <div class="row" style="margin-top:10px"><button class="sub" id="loadBtn">명단 불러오기</button><span class="hint" id="rcount"></span></div>
   </div>
 
   <div class="card" id="listCard" style="display:none">
-    <div class="tw"><table><thead><tr><th>이름</th><th>결시</th><th>점수</th><th>오답 수</th><th>재시험</th><th>재시험 점수</th><th>종합 평가</th><th>코멘트</th></tr></thead><tbody id="tb"></tbody></table></div>
-    <div class="hint">점수를 입력하고 Enter를 누르면 다음 학생으로 넘어가요. 결시에 체크하거나 점수를 비워 두면 그 학생은 저장하지 않아요.</div>
+    <div class="tw"><table><thead><tr><th>이름</th><th>결시</th><th id="hIn">맞은 개수</th><th id="hRes">결과</th><th>재시험</th><th id="hRt">재시험 맞은 개수</th><th>종합 평가</th><th>코멘트 <span style="font-weight:400">(학부모 앱에 보여요)</span></th><th>특이사항 <span style="font-weight:400">(선생님만 봐요)</span></th></tr></thead><tbody id="tb"></tbody></table></div>
+    <div class="hint" id="tbHint"></div>
   </div>
 
   <div class="card">
@@ -93,43 +97,85 @@ if(ls(KEY))enter();
 
 function suggest(score,max){var p=max>0?score/max*100:0;return p>=90?"우수":p>=80?"양호":p>=60?"보통":"노력 필요"}
 function maxv(){return parseFloat($("max").value)||0}
+function unit(){return $("unit").value}
+var prevUnit=null; // 기록 방식을 바꾸면 이미 적은 개수를 바꿔 줌 (맞은 ↔ 틀린)
+var UL={right:"맞은 개수",wrong:"틀린 개수",score:"점수"};
+// 입력한 값 → {score(맞은 수 또는 점수), wrong(틀린 수)}
+function calc(v){
+  var m=maxv(),u=unit();if(v===""||isNaN(parseFloat(v)))return null;v=parseFloat(v);
+  if(u==="right")return{score:v,wrong:Math.max(0,m-v),bad:v>m||v<0||v%1!==0};
+  if(u==="wrong")return{score:Math.max(0,m-v),wrong:v,bad:v>m||v<0||v%1!==0};
+  return{score:v,wrong:null,bad:v>m||v<0};
+}
+function setUnit(){
+  var u=unit(),cnt=u!=="score";ls("cm-exam-unit",u);
+  $("maxLbl").textContent=cnt?"전체 문항 수":"만점";
+  $("qkRow").style.display=cnt?"":"none";$("autoWrongL").style.display=cnt?"none":"";
+  if($("hIn")){$("hIn").textContent=UL[u];$("hRes").textContent=cnt?"결과":"오답 수";$("hRt").textContent="재시험 "+UL[u]}
+  $("tbHint").textContent=(cnt?UL[u]+"를 입력하고":"점수를 입력하고")+" Enter를 누르면 다음 학생으로 넘어가요. 결시에 체크하거나 칸을 비워 두면 그 학생은 저장하지 않아요."+(cnt?" 점수는 '맞은 개수/전체 문항 수'로 기록돼요.":"");
+  document.querySelectorAll(".qk").forEach(function(b){b.className="sub qk"+(String(maxv())===b.dataset.n?" on":"")});
+  if(students.length)render();
+}
+function resCell(tr){
+  var r=calc(tr.querySelector(".sc").value),c=tr.querySelector(".res");if(!c)return;
+  if(unit()==="score")return;
+  if(!r){c.className="res";c.textContent="";return}
+  var m=maxv();
+  if(r.bad){c.className="res bad";c.textContent="0~"+m+" 사이 숫자로 적어 주세요";return}
+  c.className="res";c.innerHTML="<b>"+r.score+"/"+m+"</b> · "+r.wrong+"개 틀림 · "+(m?Math.round(r.score/m*1000)/10:0)+"%";
+}
 
 function render(){
+  var cnt=unit()!=="score",keep={},flip=prevUnit&&prevUnit!==unit()&&prevUnit!=="score"&&cnt,m=maxv();prevUnit=unit();
+  function fl(v){return flip&&v!==""&&!isNaN(parseFloat(v))?String(m-parseFloat(v)):v}
+  $("tb").querySelectorAll("tr").forEach(function(tr){keep[tr.dataset.i]={sc:fl(tr.querySelector(".sc").value),ab:tr.querySelector(".ab").checked,rt:tr.querySelector(".rt").checked,rs:fl(tr.querySelector(".rs").value),gr:tr.querySelector(".gr").value,grm:tr.querySelector(".gr").dataset.m,cm:tr.querySelector(".cmt").value,nt:tr.querySelector(".nt").value}});
   $("tb").innerHTML=students.map(function(s,i){
-    return'<tr data-i="'+i+'"><td class="nm">'+esc(s.name)+'</td><td><input type="checkbox" class="ab"></td>'+
-    '<td><input class="n sc" type="number" inputmode="decimal" min="0"></td><td><input class="n wr" type="number" inputmode="numeric" min="0"></td>'+
+    return'<tr data-i="'+i+'"><td class="nm">'+esc(s.name)+'</td><td><input type="checkbox" class="ab" title="결시"></td>'+
+    '<td><input class="n sc" type="number" inputmode="'+(cnt?"numeric":"decimal")+'" min="0" step="'+(cnt?"1":"any")+'"></td>'+
+    (cnt?'<td class="res"></td>':'<td><input class="n wr" type="number" inputmode="numeric" min="0"></td>')+
     '<td><input type="checkbox" class="rt"></td><td><input class="n rs" type="number" inputmode="decimal" min="0"></td>'+
     '<td><select class="gr"><option value=""></option><option>우수</option><option>양호</option><option>보통</option><option>노력 필요</option></select></td>'+
-    '<td><input class="cm cmt" maxlength="200"></td></tr>'}).join("");
+    '<td><input class="cm cmt" maxlength="200" placeholder="예: 철자 실수가 줄었어요"></td>'+
+    '<td><input class="nt" maxlength="300" placeholder="예: 지각 10분, 병결 후 재응시"></td></tr>'}).join("");
   $("listCard").style.display=students.length?"":"none";$("bar").style.display=students.length?"":"none";
   var rows=$("tb").querySelectorAll("tr");
   rows.forEach(function(tr,i){
-    var sc=tr.querySelector(".sc"),wr=tr.querySelector(".wr"),gr=tr.querySelector(".gr"),ab=tr.querySelector(".ab");
+    var sc=tr.querySelector(".sc"),wr=tr.querySelector(".wr"),gr=tr.querySelector(".gr"),ab=tr.querySelector(".ab"),k=keep[i];
+    if(k){sc.value=k.sc;ab.checked=k.ab;tr.querySelector(".rt").checked=k.rt;tr.querySelector(".rs").value=k.rs;gr.value=k.gr;if(k.grm)gr.dataset.m=1;tr.querySelector(".cmt").value=k.cm;tr.querySelector(".nt").value=k.nt;tr.className=k.ab?"skip":""}
     sc.oninput=function(){
-      var v=parseFloat(sc.value);
-      if(!isNaN(v)){
-        if($("autoWrong").checked&&!wr.dataset.m)wr.value=Math.max(0,Math.round((maxv()-v)*100)/100);
-        if($("autoGrade").checked&&!gr.dataset.m)gr.value=suggest(v,maxv());
-      }else{if(!wr.dataset.m)wr.value="";if(!gr.dataset.m)gr.value=""}
-      count();
+      var r=calc(sc.value);
+      if(r&&!r.bad){
+        if(wr&&$("autoWrong").checked&&!wr.dataset.m)wr.value=Math.max(0,Math.round((maxv()-r.score)*100)/100);
+        if($("autoGrade").checked&&!gr.dataset.m)gr.value=suggest(r.score,maxv());
+      }else{if(wr&&!wr.dataset.m)wr.value="";if(!gr.dataset.m)gr.value=""}
+      resCell(tr);count();
     };
-    wr.oninput=function(){wr.dataset.m=1};gr.onchange=function(){gr.dataset.m=1};
+    if(wr)wr.oninput=function(){wr.dataset.m=1};gr.onchange=function(){gr.dataset.m=1};
     ab.onchange=function(){tr.className=ab.checked?"skip":"";count()};
     sc.onkeydown=function(e){if(e.key==="Enter"){e.preventDefault();var n=rows[i+1];if(n)n.querySelector(".sc").focus()}};
+    resCell(tr);
+    if(k&&sc.value!=="")sc.oninput();
   });
   count();
 }
 function collect(){
-  var out=[];
+  var out=[],cnt=unit()!=="score";
   $("tb").querySelectorAll("tr").forEach(function(tr,i){
     if(tr.querySelector(".ab").checked)return;
-    var sc=tr.querySelector(".sc").value;if(sc==="")return;
-    out.push({studentId:students[i].id,name:students[i].name,score:sc,wrong:tr.querySelector(".wr").value,retest:tr.querySelector(".rt").checked,
-      retestScore:tr.querySelector(".rs").value,grade:tr.querySelector(".gr").value,comment:tr.querySelector(".cmt").value});
+    var r=calc(tr.querySelector(".sc").value);if(!r)return;
+    var rs=calc(tr.querySelector(".rs").value);
+    out.push({studentId:students[i].id,name:students[i].name,score:r.score,bad:r.bad,wrong:cnt?r.wrong:tr.querySelector(".wr").value,retest:tr.querySelector(".rt").checked,
+      retestScore:rs?rs.score:"",grade:tr.querySelector(".gr").value,comment:tr.querySelector(".cmt").value,note:tr.querySelector(".nt").value});
   });
   return out;
 }
 function count(){var n=collect().length;$("info").textContent="입력된 학생 "+n+"명 / 전체 "+students.length+"명"}
+$("unit").value=ls("cm-exam-unit")||"right";if(!$("unit").value)$("unit").value="right";
+if($("unit").value==="score")$("max").value="100";
+$("unit").onchange=function(){var cnt=unit()!=="score";if(!cnt&&maxv()<=50)$("max").value="100";if(cnt&&maxv()===100)$("max").value="40";setUnit()};
+$("max").oninput=function(){setUnit()};
+document.querySelectorAll(".qk").forEach(function(b){b.onclick=function(){$("max").value=b.dataset.n;setUnit()}});
+setUnit();
 
 $("loadBtn").onclick=function(){
   var cls=$("cls").value;if(!cls)return;ls("cm-teacher-cls",cls);
@@ -164,12 +210,13 @@ function titleVal(){
 }
 function save(force){
   var rows=collect();
-  if(!rows.length){$("msg").innerHTML='<span class="er">점수를 입력한 학생이 없어요.</span>';return}
-  if(!maxv()){$("msg").innerHTML='<span class="er">만점을 숫자로 적어 주세요.</span>';return}
-  var bad=rows.filter(function(r){return parseFloat(r.score)>maxv()});
+  if(!rows.length){$("msg").innerHTML='<span class="er">입력한 학생이 없어요.</span>';return}
+  if(!maxv()){$("msg").innerHTML='<span class="er">'+(unit()==="score"?"만점":"전체 문항 수")+'을 숫자로 적어 주세요.</span>';return}
+  var bad=rows.filter(function(r){return r.bad});
+  if(bad.length&&unit()!=="score"){$("msg").innerHTML='<span class="er">'+esc(bad.map(function(r){return r.name}).join(", "))+" 학생의 "+UL[unit()]+"가 0~"+maxv()+" 사이가 아니에요. 고친 뒤 저장해 주세요.</span>";return}
   if(bad.length&&!confirm(bad.map(function(r){return r.name}).join(", ")+" 의 점수가 만점보다 커요. 그래도 저장할까요?"))return;
   $("saveBtn").disabled=true;$("saveBtn").textContent="저장 중…";$("msg").textContent="";
-  api({action:"save",force:!!force,cls:$("cls").value,kind:$("kind").value,date:$("date").value,title:titleVal(),range:$("range").value,maxScore:maxv(),mode:$("mode").value,rows:rows}).then(function(j){
+  api({action:"save",force:!!force,cls:$("cls").value,kind:$("kind").value,date:$("date").value,title:titleVal(),range:$("range").value,maxScore:maxv(),mode:$("mode").value,rows:rows.map(function(r){var o=Object.assign({},r);delete o.bad;return o})}).then(function(j){
     $("saveBtn").disabled=false;$("saveBtn").textContent="저장하기";
     if(j.dup){if(confirm(j.msg))save(true);return}
     if(!j.ok){$("msg").innerHTML='<span class="er">'+esc(j.msg||"저장하지 못했어요. 잠시 뒤 다시 해 주세요.")+"</span>";return}
