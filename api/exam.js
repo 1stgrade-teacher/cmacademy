@@ -144,6 +144,58 @@ async function addStudents(cls, names) {
   return { added, skipped };
 }
 
+// ---------- 저장한 시험 기록 읽기 (다시 불러와 고치기) ----------
+const R = {
+  title: (p, k) => ((p.properties[k] && p.properties[k].title) || []).map((x) => x.plain_text).join(""),
+  text: (p, k) => ((p.properties[k] && p.properties[k].rich_text) || []).map((x) => x.plain_text).join(""),
+  num: (p, k) => (p.properties[k] && typeof p.properties[k].number === "number" ? p.properties[k].number : null),
+  sel: (p, k) => (p.properties[k] && p.properties[k].select ? p.properties[k].select.name : ""),
+  chk: (p, k) => !!(p.properties[k] && p.properties[k].checkbox),
+  date: (p, k) => (p.properties[k] && p.properties[k].date ? String(p.properties[k].date.start || "").slice(0, 10) : ""),
+  rel: (p, k) => ((p.properties[k] && p.properties[k].relation) || []).map((x) => x.id),
+};
+const normId = (id) => String(id || "").replace(/-/g, "").toLowerCase();
+async function queryAll(filter, sorts, max) {
+  const out = []; let cursor;
+  for (let i = 0; i < (max || 3); i++) {
+    const q = await notion("databases/" + EXAM_DB() + "/query", "POST", { filter, sorts, page_size: 100, start_cursor: cursor });
+    if (!q) return out.length ? out : null;
+    out.push(...(q.results || []));
+    if (!q.has_more) break; cursor = q.next_cursor;
+  }
+  return out;
+}
+const most = (arr) => { const m = new Map(); arr.forEach((x) => { if (x !== "" && x != null) m.set(x, (m.get(x) || 0) + 1); }); let best = null, n = 0; m.forEach((c, k) => { if (c > n) { n = c; best = k; } }); return best; };
+// 이 반의 최근 시험 목록 (시험명 + 시험일 + 종류로 묶음)
+async function examList(cls) {
+  const pages = await queryAll({ property: "반", select: { equals: cls } }, [{ property: "시험일", direction: "descending" }], 3);
+  if (!pages) return null;
+  const g = new Map();
+  pages.forEach((p) => {
+    const title = R.title(p, "시험명"), date = R.date(p, "시험일"), kind = R.sel(p, "종류"), key = date + "|" + title + "|" + kind;
+    if (!g.has(key)) g.set(key, { title, date, kind, n: 0, maxes: [], ranges: [] });
+    const e = g.get(key); e.n++; e.maxes.push(R.num(p, "만점")); e.ranges.push(R.text(p, "시험 범위"));
+  });
+  return [...g.values()].slice(0, 40).map((e) => ({ title: e.title, date: e.date, kind: e.kind, n: e.n, max: most(e.maxes), range: most(e.ranges) || "", mixed: new Set(e.maxes).size > 1 }));
+}
+// 시험 하나의 학생별 기록
+async function examLoad(cls, title, date, kind) {
+  const and = [{ property: "반", select: { equals: cls } }, { property: "시험명", title: { equals: title } }, { property: "시험일", date: { equals: date } }];
+  if (kind) and.push({ property: "종류", select: { equals: kind } });
+  const pages = await queryAll({ and }, undefined, 2);
+  if (!pages) return null;
+  return pages.map((p) => ({
+    pageId: p.id, studentId: R.rel(p, "학생")[0] || "", score: R.num(p, "점수"), max: R.num(p, "만점"), wrong: R.num(p, "오답 수"),
+    retest: R.chk(p, "재시험"), retestScore: R.num(p, "재시험 점수"), grade: R.sel(p, "종합 평가"), comment: R.text(p, "코멘트"),
+    note: R.text(p, "특이사항"), range: R.text(p, "시험 범위"), kind: R.sel(p, "종류"), mode: R.sel(p, "응시 방식"),
+  }));
+}
+// 고치거나 지울 페이지가 정말 '시험 기록' DB의 것인지 확인
+async function isExamPage(id) {
+  const p = await notion("pages/" + id, "GET");
+  return !!(p && p.parent && normId(p.parent.database_id) === normId(EXAM_DB()) && !p.archived);
+}
+
 module.exports = async function handler(req, res) {
   const send = (code, obj) => sendTo(res, code, obj);
   const code = String(process.env.TEACHER_CODE || "").trim();
@@ -172,6 +224,19 @@ module.exports = async function handler(req, res) {
     if (!list) return send(502, { error: "notion", msg: "명단을 불러오지 못했어요.", debug: lastErr });
     return send(200, { ok: true, students: list });
   }
+  if (act === "list") {
+    const cls = clip(b.cls, 40); if (!cls) return send(400, { error: "input" });
+    const list = await examList(cls);
+    if (!list) return send(502, { error: "notion", msg: "저장한 기록을 불러오지 못했어요.", debug: lastErr });
+    return send(200, { ok: true, exams: list });
+  }
+  if (act === "load") {
+    const cls = clip(b.cls, 40), title = clip(b.title, 150), date = /^\d{4}-\d{2}-\d{2}$/.test(b.date || "") ? b.date : null;
+    if (!cls || !title || !date) return send(400, { error: "input" });
+    const rows = await examLoad(cls, title, date, KINDS.includes(b.kind) ? b.kind : "");
+    if (!rows) return send(502, { error: "notion", msg: "기록을 불러오지 못했어요.", debug: lastErr });
+    return send(200, { ok: true, rows });
+  }
   if (act === "resetPin") {
     const id = clip(b.studentId, 60);
     if (!id) return send(400, { error: "input" });
@@ -190,17 +255,23 @@ module.exports = async function handler(req, res) {
     const cls = clip(b.cls, 40), kind = KINDS.includes(b.kind) ? b.kind : null;
     const title = clip(b.title, 150), date = /^\d{4}-\d{2}-\d{2}$/.test(b.date || "") ? b.date : null;
     const rows = (Array.isArray(b.rows) ? b.rows : []).slice(0, 120);
-    if (!cls || !kind || !title || !date || !rows.length) return send(400, { error: "input", msg: "반·종류·시험명·날짜와 점수를 확인해 주세요." });
+    const removing = b.edit && Array.isArray(b.remove) && b.remove.length;
+    if (!cls || !kind || !title || !date || (!rows.length && !removing)) return send(400, { error: "input", msg: "반·종류·시험명·날짜와 점수를 확인해 주세요." });
     const maxScore = num(b.maxScore, 1, 1000);
     if (!maxScore) return send(400, { error: "input", msg: "만점을 숫자로 적어 주세요." });
-    if (!b.force) { // 같은 시험을 두 번 저장하지 않도록 확인
+    const edit = b.edit && typeof b.edit === "object" ? { title: clip(b.edit.title, 150), date: clip(b.edit.date, 10) } : null; // 불러온 기록을 고치는 중
+    const sameKey = edit && edit.title === title && edit.date === date;
+    if (!b.force && !sameKey) { // 같은 시험을 두 번 저장하지 않도록 확인
       const dup = await notion("databases/" + EXAM_DB() + "/query", "POST", { page_size: 5, filter: { and: [
         { property: "시험명", title: { equals: title } }, { property: "반", select: { equals: cls } }, { property: "시험일", date: { equals: date } } ] } });
       if (dup && dup.results && dup.results.length) return send(200, { ok: false, dup: true, msg: "같은 이름·날짜의 시험 기록이 이미 있어요. 그래도 또 저장할까요?" });
     }
     const mode = b.mode === "온라인" ? "온라인" : "종이";
-    const hasNote = rows.some((r) => clip(r.note, 300)) ? await ensureNoteProp() : false;
-    let saved = 0; const failedNames = [];
+    const hasNote = edit || rows.some((r) => clip(r.note, 300)) ? await ensureNoteProp() : false;
+    let saved = 0, updated = 0, removed = 0; const failedNames = [], ids = {};
+    // 지우기: 불러온 기록 중 이번에 칸을 비우거나 결시로 바꾼 학생
+    const remove = edit ? (Array.isArray(b.remove) ? b.remove : []).map((x) => clip(x, 60)).filter(Boolean).slice(0, 120) : [];
+    for (const id of remove) { if (await isExamPage(id)) { if (await notion("pages/" + id, "PATCH", { archived: true })) removed++; } }
     for (let i = 0; i < rows.length; i += 3) {
       const part = rows.slice(i, i + 3);
       const done = await Promise.all(part.map(async (r) => {
@@ -214,12 +285,20 @@ module.exports = async function handler(req, res) {
           "종합 평가": GRADES.includes(r.grade) ? sel(r.grade) : { select: null }, "코멘트": { rich_text: rt(r.comment) }, "응시 방식": sel(mode),
         };
         if (hasNote) props["특이사항"] = { rich_text: rt(clip(r.note, 300)) };
+        if (edit && r.pageId) { // 기존 기록 고치기
+          const pid = clip(r.pageId, 60);
+          if (!(await isExamPage(pid))) return false;
+          const pg = await notion("pages/" + pid, "PATCH", { properties: props });
+          if (pg) { ids[String(r.studentId)] = pg.id; updated++; }
+          return pg ? "u" : false;
+        }
         const pg = await notion("pages", "POST", { parent: { database_id: EXAM_DB() }, properties: props });
+        if (pg) ids[String(r.studentId)] = pg.id;
         return !!pg;
       }));
       done.forEach((ok, k) => { if (ok) saved++; else failedNames.push(part[k].name || ""); });
     }
-    return send(200, { ok: saved > 0, saved, failed: failedNames, total: rows.length, debug: failedNames.length ? lastErr : undefined });
+    return send(200, { ok: saved > 0 || removed > 0, saved, updated, created: saved - updated, removed, ids, failed: failedNames, total: rows.length, debug: failedNames.length ? lastErr : undefined });
   }
   return send(400, { error: "action" });
 };

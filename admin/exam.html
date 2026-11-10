@@ -13,7 +13,7 @@ button{border:0;border-radius:10px;background:#0E8A8C;color:#fff;font-size:15px;
 button.sub{background:#EAF3F3;color:#0A5F61}button:disabled{background:#B9CDD0}
 .tw{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:980px}
 .res{font-size:13.5px;color:#5F6E7C;white-space:nowrap;min-width:150px}.res b{color:#1B2733}.res.bad{color:#C0392B}
-.qk{padding:6px 12px;font-size:14px}.qk.on{background:#0E8A8C;color:#fff}.nt{min-width:170px}.ow{display:flex;gap:4px;align-items:center}.ow .mx{width:58px}.ow .rg{width:120px}tr.diff td.ow2{background:#FFF7E6}
+.qk{padding:6px 12px;font-size:14px}.qk.on{background:#0E8A8C;color:#fff}.nt{min-width:170px}.ctabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}.ctabs button{padding:7px 12px;font-size:14px;background:#EEF6F6;color:#0E5F61;border:1.5px solid transparent}.ctabs button.on{background:#0E8A8C;color:#fff}.editbar{background:#FFF7E6;border:1.5px solid #F0C36A;border-radius:14px;padding:12px 16px;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-size:14.5px}.editbar b{color:#7A4B00}.ow{display:flex;gap:4px;align-items:center}.ow .mx{width:58px}.ow .rg{width:120px}tr.diff td.ow2{background:#FFF7E6}
 th{font-size:12px;color:#5F6E7C;text-align:left;padding:6px 4px;white-space:nowrap}td{padding:4px;vertical-align:middle}
 td.nm{font-weight:700;white-space:nowrap;padding-right:10px}tr.skip td{opacity:.35}
 td input,td select{padding:8px 6px;font-size:15px}td input[type=checkbox]{width:20px;height:20px}
@@ -33,6 +33,7 @@ td input,td select{padding:8px 6px;font-size:15px}td input[type=checkbox]{width:
 
 <div id="main" style="display:none">
   <div class="card">
+    <div class="ctabs" id="ctabs" title="반을 누르면 그 반 명단이 바로 열려요"></div>
     <div class="grid">
       <div><label>반</label><select id="cls"></select></div>
       <div><label>종류</label><select id="kind"><option>단어시험</option><option>듣기시험</option><option>주간평가</option><option>월간평가</option><option>분기평가</option></select></div>
@@ -51,7 +52,9 @@ td input,td select{padding:8px 6px;font-size:15px}td input[type=checkbox]{width:
       <label><input type="checkbox" id="autoGrade" checked> 종합 평가를 점수로 자동 추천</label>
     </div>
     <div class="row" style="margin-top:10px"><button class="sub" id="loadBtn">명단 불러오기</button><span class="hint" id="rcount"></span></div>
+    <div class="row" id="pastRow" style="margin-top:10px;display:none"><span class="hint" style="margin:0">📂 저장한 기록 고치기</span><select id="pastSel" style="max-width:460px"></select><button class="sub" id="pastBtn">불러오기</button></div>
   </div>
+  <div class="editbar" id="editBar" style="display:none"></div>
 
   <div class="card" id="listCard" style="display:none">
     <div class="tw"><table><thead><tr><th>이름</th><th>결시</th><th>다른 시험지 <span style="font-weight:400">(다를 때만: 문항 수·범위)</span></th><th id="hIn">맞은 개수</th><th id="hRes">결과</th><th>재시험</th><th id="hRt">재시험 맞은 개수</th><th>종합 평가</th><th>코멘트 <span style="font-weight:400">(학부모 앱에 보여요)</span></th><th>특이사항 <span style="font-weight:400">(선생님만 봐요)</span></th></tr></thead><tbody id="tb"></tbody></table></div>
@@ -75,6 +78,10 @@ td input,td select{padding:8px 6px;font-size:15px}td input[type=checkbox]{width:
 </div>
 <script>
 var $=function(i){return document.getElementById(i)},KEY="cm-teacher-code",students=[];
+var EDIT=null;   // 불러온(또는 방금 저장한) 기록을 고치는 중: {title,date,kind,pids:{학생id:페이지id}}
+var dirty=false; // 저장하지 않은 입력이 있는지
+var curCls="", PAST=[];
+function nid(x){return String(x||"").replace(/-/g,"").toLowerCase()}
 function ls(k,v){try{if(v===undefined)return localStorage.getItem(k)||"";if(v==="")localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){return""}}
 function api(body){body.code=ls(KEY);return fetch("/api/exam",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}).then(function(r){return r.json().catch(function(){return{}}).then(function(j){j._s=r.status;return j})})}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
@@ -88,6 +95,10 @@ function enter(){
     $("login").style.display="none";$("main").style.display="";
     var last=ls("cm-teacher-cls");
     $("cls").innerHTML=(j.classes||[]).map(function(c){return"<option"+(c===last?" selected":"")+">"+esc(c)+"</option>"}).join("");
+    curCls=$("cls").value;
+    $("ctabs").innerHTML=(j.classes||[]).map(function(c){return'<button type="button" class="sub" data-c="'+esc(c)+'">'+esc(c)+"</button>"}).join("");
+    $("ctabs").querySelectorAll("button").forEach(function(b){b.onclick=function(){goClass(b.dataset.c)}});
+    paintTabs();
     if(!j.classes||!j.classes.length)$("msg").innerHTML='<span class="er">반 목록을 불러오지 못했어요. 노션 연결을 확인해 주세요.</span>';
   });
 }
@@ -170,7 +181,7 @@ function collect(){
     if(tr.querySelector(".ab").checked)return;
     var m=rowMax(tr),r=calc(tr.querySelector(".sc").value,m);if(!r)return;
     var rs=calc(tr.querySelector(".rs").value,m);
-    out.push({studentId:students[i].id,name:students[i].name,max:m,range:tr.querySelector(".rg").value.trim(),score:r.score,bad:r.bad,wrong:cnt?r.wrong:tr.querySelector(".wr").value,retest:tr.querySelector(".rt").checked,
+    out.push({studentId:students[i].id,pageId:EDIT&&EDIT.pids[nid(students[i].id)]||"",name:students[i].name,max:m,range:tr.querySelector(".rg").value.trim(),score:r.score,bad:r.bad,wrong:cnt?r.wrong:tr.querySelector(".wr").value,retest:tr.querySelector(".rt").checked,
       retestScore:rs?rs.score:"",grade:tr.querySelector(".gr").value,comment:tr.querySelector(".cmt").value,note:tr.querySelector(".nt").value});
   });
   return out;
@@ -183,16 +194,86 @@ $("max").oninput=function(){setUnit()};
 document.querySelectorAll(".qk").forEach(function(b){b.onclick=function(){$("max").value=b.dataset.n;setUnit()}});
 setUnit();
 
-$("loadBtn").onclick=function(){
-  var cls=$("cls").value;if(!cls)return;ls("cm-teacher-cls",cls);
-  $("rcount").textContent="불러오는 중…";
-  api({action:"roster",cls:cls}).then(function(j){
-    if(!j.ok){$("rcount").textContent="";$("msg").innerHTML='<span class="er">'+esc(j.msg||"명단을 불러오지 못했어요.")+"</span>";return}
+function paintTabs(){$("ctabs").querySelectorAll("button").forEach(function(b){b.className="sub"+(b.dataset.c===$("cls").value?" on":"")})}
+// 다른 반으로 이동: 저장 안 한 입력이 있으면 한 번 물어봐요
+function goClass(c){
+  if(c===curCls&&students.length)return;
+  if(dirty&&!confirm("저장하지 않은 입력이 있어요. 저장하지 않고 "+c+"으로 이동할까요?")){$("cls").value=curCls;paintTabs();return}
+  $("cls").value=c;paintTabs();loadRoster();
+}
+$("cls").onchange=function(){goClass(this.value)};
+function clearTable(){$("tb").innerHTML="";prevUnit=unit()}
+function loadRoster(){
+  var cls=$("cls").value;if(!cls)return Promise.resolve(false);ls("cm-teacher-cls",cls);
+  curCls=cls;setEdit(null);clearTable();dirty=false;paintTabs();
+  $("rcount").textContent="불러오는 중…";$("pastRow").style.display="none";
+  return api({action:"roster",cls:cls}).then(function(j){
+    if(cls!==$("cls").value)return false;
+    if(!j.ok){$("rcount").textContent="";$("msg").innerHTML='<span class="er">'+esc(j.msg||"명단을 불러오지 못했어요.")+"</span>";return false}
     students=j.students||[];$("rcount").textContent=students.length?students.length+"명":"이 반에 등록된 학생이 없어요. 아래에서 추가해 주세요.";
     $("msg").textContent="";render();
     $("pinStu").innerHTML=students.map(function(s,i){return'<option value="'+i+'">'+esc(s.name)+'</option>'}).join("");
+    loadPast();return true;
+  });
+}
+$("loadBtn").onclick=function(){if(dirty&&!confirm("저장하지 않은 입력을 지우고 명단을 다시 불러올까요?"))return;loadRoster()};
+
+// ---------- 📂 저장한 기록 다시 불러와 고치기 ----------
+function md(d){var p=String(d).split("-");return p.length===3?parseInt(p[1])+"/"+parseInt(p[2]):d}
+function loadPast(){
+  var cls=$("cls").value;
+  return api({action:"list",cls:cls}).then(function(j){
+    if(cls!==$("cls").value)return;
+    PAST=(j.ok&&j.exams)||[];
+    if(!PAST.length){$("pastRow").style.display="none";return}
+    $("pastSel").innerHTML='<option value="">— 이 반에서 저장한 시험 '+PAST.length+'개 —</option>'+PAST.map(function(e,i){return'<option value="'+i+'">'+esc(md(e.date)+" · "+e.kind+" · "+e.title)+" ("+e.n+"명"+(e.max?" · "+(e.mixed?"문항 수 여러 개":e.max+"문항"):"")+")</option>"}).join("");
+    if(EDIT)PAST.forEach(function(e,i){if(e.title===EDIT.title&&e.date===EDIT.date&&e.kind===EDIT.kind)$("pastSel").value=String(i)});
+    $("pastRow").style.display="";
+  });
+}
+$("pastBtn").onclick=function(){
+  var e=PAST[parseInt($("pastSel").value)];if(!e){$("msg").innerHTML='<span class="er">불러올 시험을 골라 주세요.</span>';return}
+  if(dirty&&!confirm("저장하지 않은 입력이 있어요. 지우고 이 기록을 불러올까요?"))return;
+  var b=$("pastBtn");b.disabled=true;b.textContent="불러오는 중…";
+  api({action:"load",cls:$("cls").value,title:e.title,date:e.date,kind:e.kind}).then(function(j){
+    b.disabled=false;b.textContent="불러오기";
+    if(!j.ok){$("msg").innerHTML='<span class="er">'+esc(j.msg||"기록을 불러오지 못했어요.")+"</span>";return}
+    fillFrom(e,j.rows||[]);
   });
 };
+// 불러온 기록을 화면에 채우기
+function fillFrom(e,rows){
+  $("kind").value=e.kind||$("kind").value;$("date").value=e.date;$("title").value=e.title;$("range").value=e.range||"";
+  if(rows[0]&&rows[0].mode)$("mode").value=rows[0].mode==="온라인"?"온라인":"종이";
+  if(unit()==="score"&&e.max&&e.max<=60){$("unit").value="right"}       // 개수로 기록했던 시험은 개수 방식으로
+  if(e.max)$("max").value=e.max;
+  var by={};rows.forEach(function(r){if(r.studentId)by[nid(r.studentId)]=r});
+  rows.forEach(function(r){if(r.studentId&&!students.some(function(s){return nid(s.id)===nid(r.studentId)}))students.push({id:r.studentId,name:"(지금 명단에 없음)"})});
+  clearTable();setUnit();render();
+  var u=unit(),pids={};
+  $("tb").querySelectorAll("tr").forEach(function(tr,i){
+    var r=by[nid(students[i].id)];if(!r)return;pids[nid(students[i].id)]=r.pageId;
+    var m=r.max||maxv(),cv=function(v){return v==null?"":String(u==="wrong"?Math.max(0,m-v):v)};
+    if(r.max&&r.max!==maxv())tr.querySelector(".mx").value=r.max;
+    if(r.range&&r.range!==(e.range||""))tr.querySelector(".rg").value=r.range;
+    tr.querySelector(".sc").value=cv(r.score);
+    tr.querySelector(".rt").checked=!!r.retest;tr.querySelector(".rs").value=cv(r.retestScore);
+    var gr=tr.querySelector(".gr");gr.value=r.grade||"";gr.dataset.m=1;
+    var wr=tr.querySelector(".wr");if(wr){wr.value=r.wrong==null?"":r.wrong;wr.dataset.m=1}
+    tr.querySelector(".cmt").value=r.comment||"";tr.querySelector(".nt").value=r.note||"";
+    if(tr.querySelector(".sc").value!=="")tr.querySelector(".sc").oninput();else resCell(tr);
+  });
+  setEdit({title:e.title,date:e.date,kind:e.kind,pids:pids});dirty=false;count();
+  $("msg").innerHTML='<span class="ok">📂 '+esc(md(e.date)+" "+e.title)+" 기록 "+rows.length+"명을 불러왔어요. 고친 뒤 저장하면 그 기록이 바뀌어요.</span>";
+}
+function setEdit(ed){
+  EDIT=ed;var bar=$("editBar");
+  if(!ed){bar.style.display="none";return}
+  bar.style.display="";bar.innerHTML='✏️ <span><b>'+esc(md(ed.date)+" · "+ed.title)+'</b> 기록을 고치는 중이에요. 저장하면 새로 만들지 않고 <b>이 기록이 바뀌어요</b>. 칸을 비우거나 결시로 바꾼 학생의 기록은 지워져요.</span><button type="button" class="sub" id="newExam">＋ 새 시험 입력으로</button>';
+  $("newExam").onclick=function(){if(dirty&&!confirm("저장하지 않은 고친 내용이 있어요. 버리고 새 시험을 입력할까요?"))return;setEdit(null);$("title").value="";clearTable();render();dirty=false;$("pastSel").value="";$("msg").textContent=""};
+}
+document.addEventListener("input",function(ev){if(ev.target.closest&&ev.target.closest("#tb"))dirty=true});
+document.addEventListener("change",function(ev){if(ev.target.closest&&ev.target.closest("#tb"))dirty=true});
 $("addBtn").onclick=function(){
   var cls=$("cls").value,names=$("newNames").value.split(/\n|,/).map(function(x){return x.trim()}).filter(Boolean);
   if(!cls||!names.length){$("msg").innerHTML='<span class="er">반을 고르고 이름을 적어 주세요.</span>';return}
@@ -215,18 +296,28 @@ function titleVal(){
   return(d.length===3?parseInt(d[1])+"/"+parseInt(d[2])+" ":"")+$("kind").value+(rg?" · "+rg:"");
 }
 function save(force){
-  var rows=collect();
-  if(!rows.length){$("msg").innerHTML='<span class="er">입력한 학생이 없어요.</span>';return}
-  if(!maxv()){$("msg").innerHTML='<span class="er">'+(unit()==="score"?"만점":"전체 문항 수")+'을 숫자로 적어 주세요.</span>';return}
+  var rows=collect(),remove=[],rmNames=[];
+  if(EDIT){ // 불러온 기록 중 이번에 비었거나 결시인 학생 → 지우기
+    var has={};rows.forEach(function(r){has[nid(r.studentId)]=1});
+    students.forEach(function(s){var pid=EDIT.pids[nid(s.id)];if(pid&&!has[nid(s.id)]){remove.push(pid);rmNames.push(s.name)}});
+  }
+  if(!rows.length&&!remove.length){$("msg").innerHTML='<span class="er">입력한 학생이 없어요.</span>';return}
+  if(remove.length&&!confirm(rmNames.join(", ")+" 학생은 칸이 비었거나 결시예요. 저장했던 기록을 지울까요?"))return;
+  if(rows.length&&!maxv()){$("msg").innerHTML='<span class="er">'+(unit()==="score"?"만점":"전체 문항 수")+'을 숫자로 적어 주세요.</span>';return}
   var bad=rows.filter(function(r){return r.bad});
   if(bad.length&&unit()!=="score"){$("msg").innerHTML='<span class="er">'+esc(bad.map(function(r){return r.name+"(0~"+r.max+")"}).join(", "))+" — "+UL[unit()]+"가 전체 문항 수보다 크거나 0보다 작아요. 고친 뒤 저장해 주세요.</span>";return}
   if(bad.length&&!confirm(bad.map(function(r){return r.name}).join(", ")+" 의 점수가 만점보다 커요. 그래도 저장할까요?"))return;
   $("saveBtn").disabled=true;$("saveBtn").textContent="저장 중…";$("msg").textContent="";
-  api({action:"save",force:!!force,cls:$("cls").value,kind:$("kind").value,date:$("date").value,title:titleVal(),range:$("range").value,maxScore:maxv(),mode:$("mode").value,rows:rows.map(function(r){var o=Object.assign({},r);delete o.bad;o.maxScore=r.max;delete o.max;return o})}).then(function(j){
+  api({action:"save",force:!!force,cls:$("cls").value,kind:$("kind").value,date:$("date").value,title:titleVal(),range:$("range").value,maxScore:maxv()||1,mode:$("mode").value,edit:EDIT?{title:EDIT.title,date:EDIT.date}:undefined,remove:remove,rows:rows.map(function(r){var o=Object.assign({},r);delete o.bad;o.maxScore=r.max;delete o.max;return o})}).then(function(j){
     $("saveBtn").disabled=false;$("saveBtn").textContent="저장하기";
     if(j.dup){if(confirm(j.msg))save(true);return}
     if(!j.ok){$("msg").innerHTML='<span class="er">'+esc(j.msg||"저장하지 못했어요. 잠시 뒤 다시 해 주세요.")+"</span>";return}
-    var m='<span class="ok">✅ '+j.saved+"명 저장 완료! 학생별 페이지에 쌓였어요.</span>";
+    var m=EDIT?'<span class="ok">✅ 고친 내용을 저장했어요 — 바꿈 '+(j.updated||0)+"명"+(j.created?" · 새로 "+j.created+"명":"")+(j.removed?" · 지움 "+j.removed+"명":"")+"</span>"
+      :'<span class="ok">✅ '+j.saved+"명 저장 완료! 학생별 페이지에 쌓였어요. 고칠 게 있으면 그대로 고친 뒤 다시 저장하세요.</span>";
+    // 저장한 뒤에는 '이 기록을 고치는 중'으로: 다시 저장해도 중복으로 쌓이지 않아요
+    var pids={};Object.keys(j.ids||{}).forEach(function(k){pids[nid(k)]=j.ids[k]});
+    if(EDIT)Object.keys(EDIT.pids).forEach(function(k){if(!pids[k]&&remove.indexOf(EDIT.pids[k])<0)pids[k]=EDIT.pids[k]}); // 저장에 실패한 학생의 원래 기록도 계속 고칠 수 있게
+    setEdit({title:titleVal(),date:$("date").value,kind:$("kind").value,pids:pids});dirty=false;loadPast();
     if(j.failed&&j.failed.length)m+='<br><span class="er">저장 못 한 학생: '+esc(j.failed.join(", "))+" — 다시 저장하면 이 학생들은 중복될 수 있으니, 노션에서 직접 확인해 주세요.</span>";
     $("msg").innerHTML=m;window.scrollTo(0,document.body.scrollHeight);
   }).catch(function(){$("saveBtn").disabled=false;$("saveBtn").textContent="저장하기";$("msg").innerHTML='<span class="er">인터넷 연결을 확인해 주세요.</span>'});
