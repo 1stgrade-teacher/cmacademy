@@ -206,9 +206,10 @@ module.exports = async function handler(req, res) {
       const done = await Promise.all(part.map(async (r) => {
         const score = num(r.score, 0, 100000);
         if (!r.studentId || score == null) return false;
+        const rowMax = num(r.maxScore, 1, 1000) || maxScore, rowRange = clip(r.range, 100) || b.range; // 같은 반이라도 학생마다 시험지(문항 수·범위)가 다를 수 있어요
         const props = {
           "시험명": { title: rt(title) }, "학생": { relation: [{ id: String(r.studentId) }] }, "반": sel(cls), "종류": sel(kind),
-          "시험일": { date: { start: date } }, "시험 범위": { rich_text: rt(b.range) }, "점수": { number: score }, "만점": { number: maxScore },
+          "시험일": { date: { start: date } }, "시험 범위": { rich_text: rt(rowRange) }, "점수": { number: score }, "만점": { number: rowMax },
           "오답 수": { number: num(r.wrong, 0, 1000) }, "재시험": { checkbox: !!r.retest }, "재시험 점수": { number: num(r.retestScore, 0, 100000) },
           "종합 평가": GRADES.includes(r.grade) ? sel(r.grade) : { select: null }, "코멘트": { rich_text: rt(r.comment) }, "응시 방식": sel(mode),
         };
