@@ -174,9 +174,9 @@ async function examList(cls) {
   pages.forEach((p) => {
     const title = R.title(p, "시험명"), date = R.date(p, "시험일"), kind = R.sel(p, "종류"), key = date + "|" + title + "|" + kind;
     if (!g.has(key)) g.set(key, { title, date, kind, n: 0, maxes: [], ranges: [] });
-    const e = g.get(key); e.n++; e.maxes.push(R.num(p, "만점")); e.ranges.push(R.text(p, "시험 범위"));
+    const e = g.get(key); e.n++; e.maxes.push(R.num(p, "만점")); e.ranges.push(R.text(p, "시험 범위")); (e.modes = e.modes || []).push(R.sel(p, "응시 방식"));
   });
-  return [...g.values()].slice(0, 40).map((e) => ({ title: e.title, date: e.date, kind: e.kind, n: e.n, max: most(e.maxes), range: most(e.ranges) || "", mixed: new Set(e.maxes).size > 1 }));
+  return [...g.values()].slice(0, 60).map((e) => ({ title: e.title, date: e.date, kind: e.kind, n: e.n, max: most(e.maxes), range: most(e.ranges) || "", mode: most(e.modes) || "종이", mixed: new Set(e.maxes).size > 1 }));
 }
 // 시험 하나의 학생별 기록
 async function examLoad(cls, title, date, kind) {
@@ -189,6 +189,26 @@ async function examLoad(cls, title, date, kind) {
     retest: R.chk(p, "재시험"), retestScore: R.num(p, "재시험 점수"), grade: R.sel(p, "종합 평가"), comment: R.text(p, "코멘트"),
     note: R.text(p, "특이사항"), range: R.text(p, "시험 범위"), kind: R.sel(p, "종류"), mode: R.sel(p, "응시 방식"),
   }));
+}
+// 학생 한 명의 기록 + 이 반 시험 중 그 학생 기록이 빠진 것
+const recOf = (p) => ({
+  pageId: p.id, title: R.title(p, "시험명"), date: R.date(p, "시험일"), kind: R.sel(p, "종류"), cls: R.sel(p, "반"), score: R.num(p, "점수"), max: R.num(p, "만점"),
+  wrong: R.num(p, "오답 수"), retest: R.chk(p, "재시험"), retestScore: R.num(p, "재시험 점수"), grade: R.sel(p, "종합 평가"), comment: R.text(p, "코멘트"),
+  note: R.text(p, "특이사항"), range: R.text(p, "시험 범위"), mode: R.sel(p, "응시 방식"),
+});
+async function studentHistory(sid, cls) {
+  const mine = await queryAll({ property: "학생", relation: { contains: sid } }, [{ property: "시험일", direction: "descending" }], 3);
+  if (!mine) return null;
+  const exams = cls ? (await examList(cls)) || [] : [];
+  const recs = mine.map(recOf), used = new Set(), items = [];
+  exams.forEach((e) => {
+    const i = recs.findIndex((r, k) => !used.has(k) && r.title === e.title && r.date === e.date && r.kind === e.kind);
+    if (i >= 0) used.add(i);
+    items.push({ exam: e, rec: i >= 0 ? recs[i] : null });
+  });
+  recs.forEach((r, k) => { if (!used.has(k)) items.push({ exam: { title: r.title, date: r.date, kind: r.kind, max: r.max, range: r.range, mode: r.mode, n: null, other: r.cls && r.cls !== cls ? r.cls : "" }, rec: r }); });
+  items.sort((a, b) => (a.exam.date < b.exam.date ? 1 : a.exam.date > b.exam.date ? -1 : 0));
+  return items;
 }
 // 고치거나 지울 페이지가 정말 '시험 기록' DB의 것인지 확인
 async function isExamPage(id) {
@@ -236,6 +256,13 @@ module.exports = async function handler(req, res) {
     const rows = await examLoad(cls, title, date, KINDS.includes(b.kind) ? b.kind : "");
     if (!rows) return send(502, { error: "notion", msg: "기록을 불러오지 못했어요.", debug: lastErr });
     return send(200, { ok: true, rows });
+  }
+  if (act === "student") {
+    const sid = clip(b.studentId, 60), cls = clip(b.cls, 40);
+    if (!sid) return send(400, { error: "input" });
+    const items = await studentHistory(sid, cls);
+    if (!items) return send(502, { error: "notion", msg: "기록을 불러오지 못했어요.", debug: lastErr });
+    return send(200, { ok: true, items });
   }
   if (act === "resetPin") {
     const id = clip(b.studentId, 60);
