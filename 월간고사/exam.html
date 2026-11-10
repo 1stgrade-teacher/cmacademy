@@ -92,6 +92,7 @@
 </div>
 <div class="wrap" id="app"><div class="box"><p class="sub">불러오는 중…</p></div></div>
 </div>
+<script src="../letterbox.js"></script>
 <script>
 (function () {
   var API = "/api/monthly", app = document.getElementById("app");
@@ -251,7 +252,8 @@
         if (q.sub) h += '<div class="qs">' + fmt(q.sub) + "</div>";
         if (q.audio) h += '<div class="au">🎧 <audio controls preload="none" controlsList="nodownload" src="' + esc(q.audio) + '" aria-label="' + q.n + '번 듣기"></audio></div>'; // 🎧 듣기시험
         if (q.type === "mc" || q.type === "multi") h += '<div class="opts">' + q.opts.map(function (o, k) { return '<button class="opt" data-i="' + i + '" data-k="' + k + '"><b>' + NUM[k] + "</b><span>" + fmt(o) + "</span></button>"; }).join("") + "</div>";
-        else if (q.type === "short") h += '<input class="sa" data-i="' + i + '" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="' + esc(q.hint || "답을 쓰세요 (빈칸에 들어갈 말만 써도 돼요)") + '">';
+        else if (q.type === "short" && q.box && window.LetterBox) h += '<div class="sabox" data-i="' + i + '" style="margin-top:12px"></div>';
+        else if (q.type === "short") h += '<input class="sa" data-i="' + i + '" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="' + esc(q.hint || "답을 쓰세요 (빈칸에 들어갈 말만 써도 돼요)") + '">';
         else h += '<div class="built" id="b' + i + '"></div><div class="chips" id="c' + i + '"></div><button class="reset" data-reset="' + i + '">처음부터 다시 배열</button>';
         return h + "</div>";
       }).join("") +
@@ -266,10 +268,15 @@
         save(); paintMc(i); status();
       };
     });
+    var LB = {}; // 🔤 글자 칸 문항: 칸마다 한 글자씩 입력해서 휴대폰 키보드의 단어 추천을 막아요
+    Q.forEach(function (q, i) {
+      var host = q.type === "short" && q.box && window.LetterBox ? app.querySelector('.sabox[data-i="' + i + '"]') : null; if (!host) return;
+      LB[i] = LetterBox.create(host, q.box, { value: run.answers[i], onChange: function (v) { if (LB[i].typed()) run.answers[i] = v; else delete run.answers[i]; save(); document.getElementById("q" + i).classList.toggle("done", answered(i)); status(); } });
+    });
     Array.prototype.forEach.call(app.querySelectorAll(".sa"), function (inp) {
       inp.oninput = function () { var i = +inp.getAttribute("data-i"); if (inp.value.trim()) run.answers[i] = inp.value; else delete run.answers[i]; save(); document.getElementById("q" + i).classList.toggle("done", !!inp.value.trim()); status(); };
     });
-    function paintShort(i) { var inp = app.querySelector('.sa[data-i="' + i + '"]'); inp.value = run.answers[i] || ""; document.getElementById("q" + i).classList.toggle("done", !!inp.value.trim()); }
+    function paintShort(i) { var inp = app.querySelector('.sa[data-i="' + i + '"]'); if (!inp) { document.getElementById("q" + i).classList.toggle("done", answered(i)); return; } inp.value = run.answers[i] || ""; document.getElementById("q" + i).classList.toggle("done", !!inp.value.trim()); }
     Array.prototype.forEach.call(app.querySelectorAll("[data-reset]"), function (b) { b.onclick = function () { var i = +b.getAttribute("data-reset"); delete run.answers[i]; save(); paintArrange(i); status(); }; });
     function paintMc(i) {
       var a = run.answers[i];
@@ -285,7 +292,7 @@
       Array.prototype.forEach.call(built.querySelectorAll(".chip"), function (b) { b.onclick = function () { picked.splice(+b.getAttribute("data-k"), 1); if (picked.length) run.answers[i] = picked; else delete run.answers[i]; save(); paintArrange(i); status(); }; });
       document.getElementById("q" + i).classList.toggle("done", picked.length === q.words.length);
     }
-    function answered(i) { var a = run.answers[i], t = Q[i].type; return t === "mc" ? a != null : t === "multi" ? !!a && a.length > 0 : t === "short" ? !!a && !!String(a).trim() : !!a && a.length === Q[i].words.length; }
+    function answered(i) { var a = run.answers[i], t = Q[i].type; return t === "mc" ? a != null : t === "multi" ? !!a && a.length > 0 : t === "short" ? (Q[i].box && window.LetterBox ? !!a && !/_/.test(a) : !!a && !!String(a).trim()) : !!a && a.length === Q[i].words.length; }
     function status() {
       var n = Q.filter(function (_, i) { return answered(i); }).length;
       document.getElementById("pg").style.width = (n / total * 100) + "%";

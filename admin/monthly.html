@@ -237,6 +237,12 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       </div>
       <datalist id="bookList"></datalist>
     </div>
+    <div class="card" id="ctxCard">
+      <h2>🧠 문맥 5지선다 문제 만들기 (AI 예문)</h2>
+      <p class="hint" style="margin-top:0">단어마다 AI가 예문 한 문장을 만들고, 빈칸에 들어갈 단어를 <b>보기 5개 중에서 고르는 문제</b>를 저장해 둬요. AI가 한 번 더 검수해서 <b>정답이 둘 이상인 문제는 버려요</b>. 저장된 문제는 학생 <b>단어 게임의 「🧠 문맥 고르기」</b>와 <b>단어시험 출제(유형 「문맥 5지선다」)</b>에 쓰여요. 키보드 자동완성이 통하지 않는 유형이에요.</p>
+      <div class="row"><select id="ctxSel" style="width:auto;max-width:420px"><option value="">— 단어장(교재 또는 Day) 고르기 —</option></select><button id="ctxGo">🧠 만들기</button><span class="msg" id="ctxMsg" style="margin:0"></span></div>
+      <p class="hint">이미 만든 단어는 건너뛰어요. 단어 8개마다 20~40초쯤 걸려요. 만든 뒤 시험 출제 화면에서 문제를 훑어볼 수 있어요.</p>
+    </div>
     <div class="card" id="drvCard">
       <h2>📂 구글 드라이브 문제은행 폴더</h2>
       <p class="hint" style="margin-top:0">공유 폴더에 <b>교재 / 단원 / 문제지 + 정답지</b>로 넣어 두면, 여기서 필요한 파일만 골라 가져와요. (「가져옴」은 이미 저장한 파일, 「바뀜」은 저장 뒤 드라이브에서 고친 파일 — 바뀐 파일만 처음부터 체크돼 있어요) 폴더 이름이 그대로 교재·단원이 돼요.</p>
@@ -1522,9 +1528,49 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   function blankQ(prev) { return { no: "", type: prev ? prev.type : "mc", lv: prev ? prev.lv : 2, q: prev && prev.type !== "short" ? prev.q : "", sub: "", opts: [], ans: -1, anss: [], answer: "", frame: "", words: [], exp: "", warn: [] }; }
   function mkMeta() { var last = lsGet("cm-mk-book"); return { book: last || "", chapter: "", unit: "", area: "문법", grade: "", file: "✍️ 직접 입력" }; }
   function mkAdd(unit) { IMP.push(unit); renderImport(); var cards = $("impUnits").querySelectorAll(".card[data-u]"), c = cards[cards.length - 1]; if (c) { c.scrollIntoView({ behavior: "smooth", block: "start" }); var b = c.querySelector('[data-m="book"]'); if (b && !b.value) b.focus(); } }
+  // ---------- 🧠 문맥 5지선다 (AI) ----------
+  // uids 의 단어장을 차례로: 한 번에 8단어씩 서버가 만들고 검수해서 저장 → 끝날 때까지 반복
+  function ctxRun(uids, say) {
+    var made = 0, dropped = 0, skip = {}, ui = 0, err = "", tot = uids.length;
+    return new Promise(function (done) {
+      (function next() {
+        if (ui >= uids.length) {
+          say('<span class="ok">🧠 문맥 문제를 ' + made + "개 만들어 저장했어요" + (dropped ? " (정답이 애매해서 빠진 단어 " + dropped + "개 — 다시 누르면 그 단어만 다시 만들어 봐요)" : "") + "</span>");
+          ctxFill(); return done({ made: made, dropped: dropped, err: err });
+        }
+        var uid = uids[ui];
+        post({ action: "t_vocab_ctx", uid: uid, skip: Object.keys(skip) }).then(function (j) {
+          if (!j.ok) { err = j.msg || "만들지 못했어요"; say('<span class="er">' + esc(err) + (j.aiErr && j.aiErr.length ? " · " + esc(j.aiErr.join(" / ")) : "") + "</span>"); ctxFill(); return done({ made: made, dropped: dropped, err: err }); }
+          made += j.made || 0; dropped += j.dropped || 0; (j.tried || []).forEach(function (w) { skip[w] = 1; });
+          if (j.catalog) { DATA.catalog = j.catalog; }
+          say("🧠 AI가 문맥 문제를 만드는 중… " + (tot > 1 ? "(" + (ui + 1) + "/" + tot + "번째 단어장) " : "") + "단어 " + (j.have || 0) + "/" + (j.total || 0) + " · 지금까지 " + made + "개" + (j.used ? " · " + esc(j.used) : ""));
+          if (!j.left) { ui++; skip = {}; } next();
+        });
+      })();
+    });
+  }
+  function ctxFill() {
+    var sel = $("ctxSel"); if (!sel) return; var keep = sel.value, html = '<option value="">— 단어장(교재 또는 Day) 고르기 —</option>';
+    (DATA.catalog || []).forEach(function (b) {
+      var us = []; b.chapters.forEach(function (c) { c.units.forEach(function (u) { if (u.v) us.push({ c: c, u: u }); }); }); if (!us.length) return;
+      var nc = us.filter(function (x) { return (x.u.v.ctx || 0) >= x.u.words; }).length;
+      html += '<optgroup label="' + esc(b.name) + '"><option value="b:' + esc(b.id) + '">📚 ' + esc(b.name) + " 전체 (" + us.length + "개 Day · 문맥 완료 " + nc + "개)</option>" +
+        us.map(function (x) { return '<option value="u:' + esc(x.u.id) + '">' + esc(x.c.name + " › " + x.u.name) + " — 문맥 " + (x.u.v.ctx || 0) + "/" + x.u.words + "</option>"; }).join("") + "</optgroup>";
+    });
+    sel.innerHTML = html; sel.value = keep;
+  }
+  if ($("ctxGo")) $("ctxGo").onclick = function () {
+    var v = $("ctxSel").value, m = $("ctxMsg"), b = this; if (!v) { m.innerHTML = '<span class="er">단어장을 골라 주세요.</span>'; return; }
+    if (!DATA.ai) { m.innerHTML = '<span class="er">AI 키가 없어요. (Vercel 환경 변수)</span>'; return; }
+    var uids = [];
+    (DATA.catalog || []).forEach(function (bk) { bk.chapters.forEach(function (c) { c.units.forEach(function (u) { if (u.v && (v === "u:" + u.id || v === "b:" + bk.id) && (v.charAt(0) === "u" || (u.v.ctx || 0) < u.words)) uids.push(u.id); }); }); });
+    if (!uids.length) { m.innerHTML = '<span class="ok">이미 모두 만들어져 있어요 ✓</span>'; return; }
+    b.disabled = true; ctxRun(uids, function (t) { m.innerHTML = t; }).then(function () { b.disabled = false; });
+  };
   function mkFill() {
     var sel = $("mkLoadSel"), books = (DATA.catalog || []).filter(function (b) { return b.custom; });
     $("bookList").innerHTML = books.map(function (b) { return '<option value="' + esc(b.name.replace(/^📁 /, "")) + '">'; }).join("");
+    ctxFill();
     sel.innerHTML = '<option value="">— 저장한 자료 불러와 고치기 —</option>' + books.map(function (b) {
       var opts = []; b.chapters.forEach(function (c) { c.units.forEach(function (u) { if (!u.v) opts.push('<option value="' + esc(u.id) + '">' + esc(c.name + " › " + u.name + " (" + u.n + "문항)") + "</option>"); }); });
       return opts.length ? '<optgroup label="' + esc(b.name) + '">' + opts.join("") + "</optgroup>" : "";
@@ -1560,7 +1606,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         '<div><label class="l">학년</label><select data-m="grade">' + grades.map(function (g) { return '<option value="' + g + '"' + (g === (u.meta.grade || "") ? " selected" : "") + ">" + (g || "고르지 않음") + "</option>"; }).join("") + "</select></div></div>" +
         '<div class="chips2">' + ["m", "ex", "def", "syn", "ant"].map(function (k) { var h = k === "syn" ? u.words.filter(function (x) { return x.syn || x.ant; }).length : has(k); return k === "ant" ? "" : '<span class="pill' + (h === n ? " go" : h ? "" : " end") + '">' + (k === "syn" ? "동의어·반의어" : VLAB[k]) + " " + h + "/" + n + "</span>"; }).join("") + "</div>" +
         (miss.length ? '<p class="hint">빈 칸이 있으면 그 유형은 그 단어에서 빠져요. ' + (DATA.ai ? "<b>🧠 빈 칸 AI로 채우기</b>로 예문·해석·영영정의·동의어·반의어를 채울 수 있어요. (AI가 쓴 내용은 꼭 훑어보세요)" : "엑셀에서 채워서 다시 올려도 돼요.") + "</p>" : "") +
-        '<div class="row" style="margin-top:8px">' + (DATA.ai && miss.length ? '<button class="sm sub" data-act="vfill">🧠 빈 칸 AI로 채우기</button>' : "") + '<button data-act="save">💾 단어장 저장 (문제 자동 생성)</button><span class="msg" data-msg style="margin:0"></span></div>' +
+        '<div class="row" style="margin-top:8px">' + (DATA.ai && miss.length ? '<button class="sm sub" data-act="vfill">🧠 빈 칸 AI로 채우기</button>' : "") + '<button data-act="save">💾 단어장 저장 (문제 자동 생성)</button>' + (DATA.ai ? '<button class="sm sub" data-act="ctx">🧠 문맥 5지선다 만들기 (AI)</button>' : "") + '<span class="msg" data-msg style="margin:0"></span></div>' +
         '<div style="overflow:auto;max-height:340px;margin-top:10px;border:1px solid var(--line);border-radius:10px"><table class="vt"><tr>' + Object.keys(VLAB).map(function (k) { return "<th>" + VLAB[k] + "</th>"; }).join("") + "</tr>" +
         u.words.map(function (x) { return "<tr>" + Object.keys(VLAB).map(function (k) { return "<td" + (!x[k] && k !== "pos" && k !== "exk" ? ' class="e"' : "") + ">" + esc(x[k] || "") + "</td>"; }).join("") + "</tr>"; }).join("") + "</table></div></div>";
     }
@@ -1615,7 +1661,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       return post({ action: "t_import_save", meta: u.meta, words: u.words, drive: u.drive || [] }).then(function (j) {
         btn.disabled = false;
         if (!j.ok) { msg.innerHTML = '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; return { ok: false, why: j.msg }; }
-        DATA.catalog = j.catalog || DATA.catalog; u.saved = true; if (u.manual && u.meta.book) lsSet("cm-mk-book", u.meta.book); mkFill();
+        DATA.catalog = j.catalog || DATA.catalog; u.saved = true; u.uid = j.uid; if (u.manual && u.meta.book) lsSet("cm-mk-book", u.meta.book); mkFill();
         var t = (j.vocab && j.vocab.types) || {}, lab = {}; (DATA.vtypes || []).forEach(function (x) { lab[x.id] = x.label; });
         msg.innerHTML = '<span class="ok">저장했어요 ✓ 단어 ' + (j.vocab ? j.vocab.words : "") + "개로 문제 " + j.n + "개를 만들었어요</span>" + (j.vocab && j.vocab.words < 5 ? ' <span class="hint" style="margin:0">(단어가 5개보다 적으면 고르기 문제의 보기가 줄거나 빠져요. 같은 Day에 단어를 더 넣으면 좋아요)</span>' : "") + " · " + Object.keys(t).map(function (k) { return esc(lab[k] || k) + " " + t[k]; }).join(" · ") + ' · <a href="' + esc(j.url) + '" target="_blank">노션</a>';
         return { ok: true, n: j.n };
@@ -1623,6 +1669,14 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     }
     card.__save = doSave;
     card.querySelector('[data-act="save"]').onclick = function () { doSave(); };
+    var bc = card.querySelector('[data-act="ctx"]');
+    if (bc) bc.onclick = function () {
+      bc.disabled = true;
+      (u.uid ? Promise.resolve({ ok: true }) : doSave()).then(function (r) {
+        if (!r.ok || !u.uid) { bc.disabled = false; return; }
+        ctxRun([u.uid], function (t) { msg.innerHTML = t; }).then(function () { bc.disabled = false; });
+      });
+    };
   }
   function bindBulk() {
     var say = function (t, cls) { $("bulkMsg").innerHTML = cls ? '<span class="' + cls + '">' + t + "</span>" : esc(t); };
