@@ -1,5 +1,5 @@
 {
- "built": "2026-11-10T00:08:43.619Z",
+ "built": "2026-11-10T00:25:56.685Z",
  "books": [
   {
    "id": "bb391852c",
@@ -5702,7 +5702,7 @@
    ]
   },
   {
-   "id": "bae91dc47",
+   "id": "babf2a81e",
    "area": "교과서",
    "grade": "중1",
    "name": "중1 비상황 교과서",
@@ -5714,19 +5714,19 @@
      "name": "Lesson 5",
      "units": [
       {
-       "id": "u2b4d8f96",
+       "id": "u46a1ed94",
        "name": "문법 · 동명사(Gerund)의 개념과 역할 — AI강의",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u44493699",
+       "id": "uebc04770",
        "name": "문법 · 감각동사와 형용사 — AI강의",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u1ab14054",
+       "id": "u075b37a8",
        "name": "본문 · 중1 비상 5과 본문 전체 — AI 강의",
        "n": 0,
        "lv": null
@@ -5738,19 +5738,19 @@
      "name": "Lesson 6",
      "units": [
       {
-       "id": "u54087f8b",
+       "id": "ud13663bf",
        "name": "문법 · 접속사의 개념과 시간의 부사절 when — AI강의",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u72322bfc",
+       "id": "u68d4a5d5",
        "name": "문법 · 비교구문의 기초와 활용 — AI강의",
        "n": 0,
        "lv": null
       },
       {
-       "id": "ufd3ea801",
+       "id": "uc7e951d4",
        "name": "본문 · 중1 비상 6과 본문 전체 — AI 강의",
        "n": 0,
        "lv": null
@@ -5762,43 +5762,43 @@
      "name": "Lesson 7",
      "units": [
       {
-       "id": "ue7d8422a",
+       "id": "ua88e6fd2",
        "name": "듣기 · 중1 비상(황) 7과 Watch & Present — Watch & Present",
        "n": 5,
        "lv": 1.4
       },
       {
-       "id": "u1283e1a0",
+       "id": "uc713b0ee",
        "name": "듣기 · 중1 비상(황) 7과 Watch & Present 2 — Watch & Present 2",
        "n": 5,
        "lv": 1.4
       },
       {
-       "id": "u1177e110",
+       "id": "uccbea314",
        "name": "문법 · 중1 비상(황) 7과 문법1 to부정사 — to부정사",
        "n": 4,
        "lv": 2.3
       },
       {
-       "id": "u96393d97",
+       "id": "ubdd842d9",
        "name": "문법 · 감탄문 완성하기 — 감탄문",
        "n": 3,
        "lv": 2.3
       },
       {
-       "id": "u0c66b0f1",
+       "id": "uc6b10137",
        "name": "본문 · 중1 2학기 기말대비 중1 비상(황) 7과 본문1",
        "n": 0,
        "lv": null
       },
       {
-       "id": "ub709394d",
+       "id": "ub281ebce",
        "name": "본문 · 중1 2학기 기말대비 중1 비상(황) 7과 본문2",
        "n": 0,
        "lv": null
       },
       {
-       "id": "uecfef31e",
+       "id": "ub5c78dd8",
        "name": "본문 · 중1 2학기 기말대비 중1 비상(황) 7과 본문3",
        "n": 0,
        "lv": null
@@ -5810,31 +5810,31 @@
      "name": "Lesson 8",
      "units": [
       {
-       "id": "u63070533",
+       "id": "ubd2e5b40",
        "name": "문법 · 중1 비상(황) 8과 문법1 부사처럼 쓰이는 to부정사 — 부사처럼 쓰이는 to부정사",
        "n": 4,
        "lv": 1.8
       },
       {
-       "id": "u64fbbea4",
+       "id": "u86b0f04e",
        "name": "문법 · 중1 비상(황) 8과 문법2 접속사 that — 접속사 that",
        "n": 7,
        "lv": 1.9
       },
       {
-       "id": "u1a3cddfd",
+       "id": "u226f8d2f",
        "name": "본문 · 중1 2학기 기말대비 중1 비상(황) 8과 본문1",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u37e7a43b",
+       "id": "uc0af27ae",
        "name": "본문 · 중1 2학기 기말대비 중1 비상(황) 8과 본문2",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u5802544f",
+       "id": "u8d05bbf9",
        "name": "본문 · 중1 비상 8과 본문 전체 — AI 강의",
        "n": 0,
        "lv": null
@@ -6884,7 +6884,7 @@
    ]
   },
   {
-   "id": "ba5cbc710",
+   "id": "b377e85ad",
    "area": "교과서",
    "grade": "중2",
    "name": "중2 비상황 교과서",
@@ -6896,49 +6896,49 @@
      "name": "Lesson 5",
      "units": [
       {
-       "id": "u52422d9d",
+       "id": "uea13a608",
        "name": "문법 · 중2 비상 5과 문법1 — AI강의",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u09be976a",
+       "id": "uec4479d5",
        "name": "문법 · 중2 비상 5과 문법2 — AI강의",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u154b203b",
+       "id": "u34d2663d",
        "name": "본문 · 중2 비상(황) 본문1 — AI 강의",
        "n": 0,
        "lv": null
       },
       {
-       "id": "uf6e546d4",
+       "id": "u18fc62b2",
        "name": "본문 · 중2 비상(황) 본문2 — AI 강의",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u1bda263a",
+       "id": "u29b7869b",
        "name": "본문 · 중2 비상(황) 본문3 — AI 강의",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u1b312ce3",
+       "id": "u0ba1be03",
        "name": "본문 · 중2 비상(황) 본문4 — AI 강의",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u308a3c76",
+       "id": "ud5e84611",
        "name": "본문 · 중2 비상(황) 본문5 — AI 강의",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u495b1205",
+       "id": "u2ca5720d",
        "name": "본문 · 중2 비상(황) 5과 본문전체 — AI 강의",
        "n": 0,
        "lv": null
@@ -6950,37 +6950,37 @@
      "name": "Lesson 6",
      "units": [
       {
-       "id": "u31d7a9d6",
+       "id": "u937cbd53",
        "name": "문법 · 중2 비상 6과 문법1 — AI강의",
        "n": 0,
        "lv": null
       },
       {
-       "id": "ueffca54f",
+       "id": "ufbcc39e8",
        "name": "문법 · 중2 비상 6과 문법1 — AI강의",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u104282e9",
+       "id": "ue7de5cff",
        "name": "본문 · 중2 비상(황) 6과 본문1 — AI 강의",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u2f4c64aa",
+       "id": "u7460fc74",
        "name": "본문 · 중2 비상(황) 6과 본문2 — AI 강의",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u3e0445c2",
+       "id": "u907703f7",
        "name": "본문 · 중2 비상(황) 6과 본문3 — AI 강의",
        "n": 0,
        "lv": null
       },
       {
-       "id": "ud9fc1d5c",
+       "id": "uec2d729d",
        "name": "본문 · 중2 비상(황) 6과 본문4 — AI 강의",
        "n": 0,
        "lv": null
@@ -6992,55 +6992,55 @@
      "name": "Lesson 7",
      "units": [
       {
-       "id": "ub60a67d2",
+       "id": "uc459a38b",
        "name": "듣기 · 중2 비상(황) 7과 Listen & Choose (1) — Listen & Choose (1)",
        "n": 4,
        "lv": 2
       },
       {
-       "id": "u528e1743",
+       "id": "u62ad8c84",
        "name": "듣기 · 중2 비상(황) 7과 Listen & Choose (2) — Listen & Choose (2)",
        "n": 5,
        "lv": 1.2
       },
       {
-       "id": "ufd9f9d3d",
+       "id": "u9c5e075f",
        "name": "듣기 · 중2 비상(황) 7과 Listen & Choose (3) — Listen & Choose (3)",
        "n": 3,
        "lv": 2
       },
       {
-       "id": "ud062a889",
+       "id": "u99b51ac5",
        "name": "듣기 · 중2 비상(황) 7과 Watch & Guess — Watch & Guess",
        "n": 5,
        "lv": 1.8
       },
       {
-       "id": "ueb3fc410",
+       "id": "u28b6637a",
        "name": "문법 · 원인과 결과를 잇는 so ~ that 구문 — so that 구문",
        "n": 4,
        "lv": 2.3
       },
       {
-       "id": "u74f717cf",
+       "id": "ue0ad9fd7",
        "name": "문법 · 가주어 it 완전 정복 — 가주어 it",
        "n": 4,
        "lv": 2.3
       },
       {
-       "id": "u0370a1ec",
+       "id": "u2f94e1a4",
        "name": "본문 · 중2 2학기 기말고사 중2 비상(황) 7과 본문1",
        "n": 0,
        "lv": null
       },
       {
-       "id": "ucc8204f7",
+       "id": "u51b8993d",
        "name": "본문 · 중2 2학기 기말고사 중2 비상(황) 7과 본문2",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u8348ef2d",
+       "id": "uc830bdaa",
        "name": "본문 · 중2 2학기 기말고사 중2 비상(황) 7과 본문3",
        "n": 0,
        "lv": null
@@ -7052,31 +7052,31 @@
      "name": "Lesson 8",
      "units": [
       {
-       "id": "ubbfb3d98",
+       "id": "u8d00fad8",
        "name": "문법 · ~뿐만 아니라 …도! not only A but also B 완전 정복 — not only ~ but also...",
        "n": 4,
        "lv": 1.8
       },
       {
-       "id": "u57809052",
+       "id": "u589769af",
        "name": "문법 · 간접의문문, 어순만 잡으면 끝! — 간접의문문",
        "n": 3,
        "lv": 2.3
       },
       {
-       "id": "ufd72e207",
+       "id": "u697cb14d",
        "name": "본문 · 중2 2학기 기말고사 중2 비상(황) 8과 본문1",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u5e315327",
+       "id": "u0a94b3ec",
        "name": "본문 · 중2 2학기 기말고사 중2 비상(황) 8과 본문2",
        "n": 0,
        "lv": null
       },
       {
-       "id": "uf2ac2c20",
+       "id": "u142668a3",
        "name": "본문 · 중2 2학기 기말고사 중2 비상(황) 8과 본문3",
        "n": 0,
        "lv": null
