@@ -5,13 +5,13 @@ module.exports = function (ctx) {
   const { notion, queryAll, P, rt, sel, clip, uuid, normId, id32, getLastErr } = ctx;
   const DB = () => id32(process.env.NOTION_GAME_DB_ID || "3ef113187ca24388b1a68de4cc535144");
   const DAY_CAP = Number(process.env.GAME_DAY_CAP || 300);
-  const GAMES = { card: "단어 카드", mean: "뜻 맞추기", word: "단어 고르기", spell: "철자 쓰기", listen: "듣고 쓰기", blank: "예문 빈칸", match: "짝 맞추기", speed: "60초 챌린지" };
+  const GAMES = { card: "단어 카드", mean: "뜻 맞추기", word: "단어 고르기", spell: "철자 쓰기", listen: "듣고 쓰기", blank: "예문 빈칸", ctx: "문맥 고르기", match: "짝 맞추기", speed: "60초 챌린지" };
   const NAME2ID = Object.fromEntries(Object.entries(GAMES).map(([k, v]) => [v, k]));
 
-  // 게임별 포인트: 고르기 1점, 쓰기 2점, 카드는 단어 2개에 1점, 짝 맞추기는 짝 1개에 1점
+  // 게임별 포인트: 고르기 1점, 쓰기·문맥 고르기 2점, 카드는 단어 2개에 1점, 짝 맞추기는 짝 1개에 1점
   function points(g, right, total) {
     if (g === "card") return Math.floor(Math.min(total, 100) / 2);
-    if (g === "spell" || g === "listen") return right * 2;
+    if (g === "spell" || g === "listen" || g === "ctx") return right * 2;
     return right;
   }
   const kstDay = (ms) => new Date(ms + 9 * 3600e3).toISOString().slice(0, 10);

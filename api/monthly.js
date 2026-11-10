@@ -17,6 +17,7 @@ const path = require("path");
 const zlib = require("zlib");
 const drive = require("./_drive.js");
 const V = require("./_vocab.js");
+const CTX = require("./_ctx.js");
 
 const NOTION_VER = "2022-06-28";
 const id32 = (s) => String(s || "").replace(/-/g, "").trim();
@@ -437,7 +438,7 @@ function buildSheet(picked, rnd, keep) {
       view.push({ n: i + 1, type: "multi", q: q.q, sub: q.sub, opts, unit: u.chapter });
       Object.assign(k, { a, opts: opts.map((o) => clip(o, 120)), answer: clip(a.map((x) => "①②③④⑤⑥"[x]).join(", ") + " (" + (q.anss || []).map((x) => q.opts[x]).join(" / ") + ")", 300) });
     } else if (q.type === "short") {
-      view.push(Object.assign({ n: i + 1, type: "short", q: q.q, sub: q.sub, unit: u.chapter }, q.vt === "mwrite" ? { hint: "우리말 뜻을 쓰세요" } : q.vt ? { hint: "영어 단어를 쓰세요" } : {}));
+      view.push(Object.assign({ n: i + 1, type: "short", q: q.q, sub: q.sub, unit: u.chapter }, q.vt === "mwrite" ? { hint: "우리말 뜻을 쓰세요" } : q.vt ? Object.assign({ hint: "영어 단어를 쓰세요" }, V.boxShape(q) ? { box: V.boxShape(q) } : {}) : {})); // box: 🔤 글자 칸 모양 (첫 글자만 공개)
       Object.assign(k, { answer: clip(q.answer, 200), accept: (q.accept && q.accept.length ? q.accept : q.vt === "mwrite" ? V.meaningAccept(q.answer) : expandAccept(q.answer)).map((x) => clip(x, 200)), frame: clip(q.frame, 200) });
       if (q.vt === "mwrite") Object.assign(k, { vt: "mwrite", w: clip(q.w || q.sub, 60) });
     } else {
@@ -673,6 +674,7 @@ let _game = null; const GAME = () => _game || (_game = require("./_game.js")({ n
 const HW = () => _hw || (_hw = require("./_homework.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, STUDENT_DB, listenUnit, getLastErr: () => lastErr }));
 // 🎧 받아쓰기 숙제용: 듣기 회차의 문항별 음성 + 대본
 function listenUnit(uid) { const d = unitData(uid); if (!d || d.area !== "듣기") return null; const items = (d.qs || []).filter((q) => q.script).map((q) => ({ id: q.id, audio: q.audio || "", script: q.script })); return items.length ? { name: d.name, book: d.book, items } : null; }
+let _sc = null; const SC = () => _sc || (_sc = require("./_schedule.js")({ notion, queryAll, P, rt, sel, clip, normId, id32, getLastErr: () => lastErr }));
 let _par = null; const PAR = () => _par || (_par = require("./_parent.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, EXAM_DB, CERT_DB: () => id32(process.env.NOTION_DB_ID || "d6164dec4d2e461aa2f102de18814b7d"), GAME_DB: () => id32(process.env.NOTION_GAME_DB_ID || "3ef113187ca24388b1a68de4cc535144"), HW, getLastErr: () => lastErr }));
 let _rep = null;
 function reporter() {
@@ -876,6 +878,10 @@ module.exports = async function handler(req, res) {
     if (act === "t_pm_send") { const r = await PAR().teacherSend(me, clip(b.sid, 60), clip(b.cls, 40), clip(b.text, 1500)); return r.status === 200 ? send(200, { ok: true, msg: r.msg }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
     if (act === "t_parent_links") { const r = await HW().parentLinks(clip(b.cls, 40)); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
     if (act === "t_parent_reset") { const r = await HW().parentReset(clip(b.sid, 60)); return r.status === 200 ? send(200, { ok: true, k: r.k }) : send(r.status, { ok: false, msg: r.msg }); }
+    // 📅 반 일정 (단어시험·평가·휴원 …)
+    if (act === "t_sched_month") { const r = await SC().month(clip(b.cls, 40), String(b.ym || ""), false); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_sched_save") { const r = await SC().save(me && me.name, b.items); return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg, debug: r.debug, failed: r.failed }); }
+    if (act === "t_sched_del") { const r = await SC().del(b.ids); return send(200, { ok: true, removed: r.removed }); }
     if (act === "t_hw_month") { const r = await HW().teacherMonth(clip(b.cls, 40), String(b.ym || "")); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
     if (act === "t_hw_bulk") { const r = await HW().teacherBulk(me, b.items); return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg }); }
     if (act === "t_hw_detail") { const r = await HW().teacherDetail(clip(b.id, 60)); return r ? send(200, Object.assign({ ok: true }, r)) : send(404, { error: "nf", msg: "과제를 찾지 못했어요." }); }
@@ -960,6 +966,11 @@ module.exports = async function handler(req, res) {
       const found = await queryAll(CUSTOM_DB(), { filter: { property: "과ID", rich_text: { equals: uid } } }, 1);
       if (!found) return send(502, { error: "notion", msg: "📚 직접 올린 문항 DB를 읽지 못했어요. 노션 📔 학습리포트 연결을 확인해 주세요.", debug: lastErr });
       let all = qs, oldText = "";
+      if (vocabWords && found[0]) { // 단어장을 다시 올려도 AI로 만든 문맥 문제는 (그 단어가 남아 있으면) 유지
+        let old = []; try { old = JSON.parse(P.text(found[0], "문항") || "[]"); } catch (e) { old = []; }
+        const keys = new Set(vocabWords.map((e) => CTX.mainKey(e.w)));
+        all = qs.concat(old.filter((q) => q.vt === "ctx" && keys.has(CTX.mainKey(q.w))));
+      }
       if (found[0] && !b.replace) { // 같은 과에 더 올리면 기존 문항 뒤에 합침 (같은 문항은 한 번만)
         let old = []; try { old = JSON.parse(P.text(found[0], "문항") || "[]"); } catch (e) { old = []; }
         const seen = new Set(old.map((q) => q.id)); all = old.concat(qs.filter((q) => !seen.has(q.id))); oldText = P.text(found[0], "본문");
@@ -1005,7 +1016,7 @@ module.exports = async function handler(req, res) {
       const NEED = { // DB별로 꼭 있어야 하는 칸 (없으면 저장·기록이 실패해요)
         "시험 기록": [EXAM_DB(), ["시험명", "학생", "시험지", "반", "종류", "시험일", "시험 범위", "점수", "만점", "오답 수", "종합 평가", "코멘트", "응시 방식", "소요시간(분)", "자리비움", "단원 분석", "문항 기록", "분석 리포트"]],
         "학생": [STUDENT_DB(), [PIN_PROP, "반", "학부모 연락처", "알림 끄기"]],
-        "📸 과제": [HW().HW_DB(), ["과제명", "반", "마감", "설명", "사용", "알림 보내기", "알림 처리"]], "📮 과제 제출": [HW().SUB_DB(), ["제목", "과제", "학생", "상태", "사진", "제출 시각", "학생 메모", "알림 결과"]],
+        "📸 과제": [HW().HW_DB(), ["과제명", "반", "마감", "설명", "사용", "알림 보내기", "알림 처리"]], "📮 과제 제출": [HW().SUB_DB(), ["제목", "과제", "학생", "상태", "사진", "제출 시각", "학생 메모", "알림 결과"]], "📅 반 일정": [SC().SCHED_DB(), ["일정명", "반", "날짜", "종류", "범위", "메모", "사용"]],
         "시험지": [PAPER_DB(), []], "AI 문항": [AIQ_DB(), []], "직접 올린 문항": [CUSTOM_DB(), ["과", "교재", "단원", "과ID", "문항", "본문"]], "선생님": [TEACHER_DB(), []],
       };
       const fixConn = "노션에서 「📔 학습리포트」와 「💗 일등급샘 반별 관리페이지」 각각 ⋯ → 연결 → 「cmacademy 학습인증」을 추가해 주세요.";
@@ -1037,6 +1048,29 @@ module.exports = async function handler(req, res) {
         res.push({ id: x.id, label: x.label, model: x.model, ok: !!out && used === x.id, ms: Date.now() - t0, err: used === x.id ? "" : (AI.lastInfo().errors[0] || "응답 없음") });
       }
       return send(200, { ok: true, results: res });
+    }
+    if (act === "t_vocab_ctx") { // 🧠 저장된 단어장에 '문맥 5지선다'(AI 예문) 문제 만들기 — 한 번에 8단어씩, 화면이 반복해서 불러요
+      if (!aiOn()) return send(503, { error: "noai", msg: "AI 키가 없어요." });
+      loadCatalog(); await loadCustom(true);
+      const uid = clip(b.uid, 20), d = custom.data.get(uid), u = unitIndex.get(uid);
+      if (!d || !u || !u.vocab) return send(404, { error: "nf", msg: "단어장을 찾지 못했어요." });
+      const words = V.wordsFrom(d.qs), have = new Set(d.qs.filter((q) => q.vt === "ctx").map((q) => CTX.mainKey(q.w)));
+      const skip = new Set((Array.isArray(b.skip) ? b.skip : []).map((x) => CTX.mainKey(x)));
+      const need = words.filter((e) => !have.has(CTX.mainKey(e.w)) && !skip.has(CTX.mainKey(e.w)));
+      const batch = need.slice(0, 8);
+      if (!batch.length) return send(200, { ok: true, made: 0, tried: [], left: 0, total: words.length, have: have.size });
+      const keyOf = (e) => { const q = d.qs.find((x) => x.w && CTX.mainKey(x.w) === CTX.mainKey(e.w)); return q ? q.w : e.w.toLowerCase(); };
+      const r = await CTX.generate((sys, usr, mt, to, o) => AI.askAI(sys, usr, mt, to, o), batch, uid, keyOf);
+      const used = AI.label(AI.lastInfo().used) + (AI.lastInfo().model ? " · " + AI.lastInfo().model : "");
+      if (r.err && !r.questions.length) return send(200, { ok: false, msg: r.err, used, aiErr: AI.lastInfo().errors });
+      if (r.questions.length) {
+        const all = d.qs.concat(r.questions), allJson = JSON.stringify(all);
+        if (allJson.length > 185000) return send(400, { error: "big", msg: "한 과에 담기엔 문항이 너무 많아요." });
+        const pg = await notion("pages/" + d.pid, "PATCH", { properties: { "문항": { rich_text: rtLong(allJson) }, "문항 수": { number: all.length } } });
+        if (!pg) return send(502, { error: "notion", msg: "저장하지 못했어요.", debug: lastErr });
+        await loadCustom(true);
+      }
+      return send(200, { ok: true, made: r.questions.length, tried: batch.map((e) => e.w), dropped: r.dropped, left: need.length - batch.length, total: words.length, have: have.size + r.questions.length, used, catalog: need.length - batch.length === 0 ? allBooks() : undefined });
     }
     if (act === "t_import_ai" && b.mode === "vocab") { // 📒 단어장 빈 칸(뜻·예문·해석·영영 풀이·동의어·반의어)을 AI로 채우기
       if (!aiOn()) return send(503, { error: "noai", msg: "AI 키가 없어요." });
@@ -1130,6 +1164,7 @@ module.exports = async function handler(req, res) {
     if (pLocked(ip)) return send(429, { ok: false, msg: "잠시 뒤 다시 열어 주세요." });
     const k = String(b.k || "");
     const r = act === "p_home" ? await PAR().home(k) : act === "p_report" ? await PAR().reportPage(k, b.pid) : await PAR().parentSend(k, clip(b.text, 1500));
+    if (act === "p_home" && r.status === 200 && r.student && r.student.cls) { try { r.sched = (await SC().upcoming(r.student.cls, 28)).map(SC().pub); } catch (e) { r.sched = []; } } // 📅 다가오는 반 일정
     if (r.status === 403 || r.status === 404) pFail(ip);
     return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg });
   }
@@ -1138,10 +1173,10 @@ module.exports = async function handler(req, res) {
   if (!who) return send(401, { error: "login", relogin: true, msg: "본인 확인이 끝났어요. 이름과 번호를 다시 확인해 주세요." });
 
   // 📸 사진 과제 (학생)
-  if (act === "s_hw_list") { const l = await HW().studentList(who); return l ? send(200, { ok: true, list: l, name: who.name, cls: who.cls }) : send(502, { error: "notion", msg: "과제 목록을 불러오지 못했어요." }); }
+  if (act === "s_hw_list") { const [l, up] = await Promise.all([HW().studentList(who), SC().upcoming(who.cls, 21).catch(() => [])]); return l ? send(200, { ok: true, list: l, name: who.name, cls: who.cls, sched: (up || []).map(SC().pub) }) : send(502, { error: "notion", msg: "과제 목록을 불러오지 못했어요." }); }
   if (act === "s_dict") { const r = await HW().studentDict(who, clip(b.id, 60)); return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg }); }
   if (act === "s_dict_submit") { const r = await HW().studentDictSubmit(who, { id: clip(b.id, 60), answers: (Array.isArray(b.answers) ? b.answers : []).slice(0, 600).map((x) => clip(x, 60)) }); return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg }); }
-  if (act === "s_hw_cal") { const r = await HW().studentMonth(who, String(b.ym || "")); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg || "달력을 불러오지 못했어요." }); }
+  if (act === "s_hw_cal") { const [r, ev] = await Promise.all([HW().studentMonth(who, String(b.ym || "")), SC().month(who.cls, String(b.ym || ""), true).catch(() => ({}))]); return r.status === 200 ? send(200, { ok: true, list: r.list, sched: ((ev && ev.list) || []).map(SC().pub) }) : send(r.status, { ok: false, msg: r.msg || "달력을 불러오지 못했어요." }); }
   if (act === "s_hw_upload") { const r = await HW().uploadPhoto(b.name, String(b.type || ""), b.b64); return r.error ? send(400, { ok: false, msg: r.error }) : send(200, { ok: true, fid: r.fid, name: r.name }); }
   if (act === "s_hw_submit") { const r = await HW().studentSubmit(who, b); return r.status === 200 ? send(200, Object.assign({ ok: true }, r)) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
 

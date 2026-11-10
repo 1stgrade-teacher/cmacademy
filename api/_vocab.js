@@ -8,6 +8,7 @@
 //   def     영영 풀이 → 단어 고르기       paren  괄호 속 문맥에 맞는 단어 고르기
 //   synmc   동의어·반의어 → 단어 고르기   synw   동의어·반의어 → 단어 쓰기
 //   mwrite  단어 → 우리말 뜻 쓰기: 단어장 뜻과 같으면 바로 정답, 다르면 채점 때 AI가 사전에 있는 뜻·비슷한 뜻인지 확인
+//   ctx     AI가 만든 예문의 빈칸에 문맥상 알맞은 단어 5개 중 고르기 (api/_ctx.js 가 만들고 검수해서 저장)
 // ------------------------------------------------------------------
 const crypto = require("crypto");
 
@@ -19,6 +20,7 @@ const VTYPES = [
   { id: "blank", label: "예문 빈칸 쓰기", need: "예문" },
   { id: "def", label: "영영 풀이 → 단어 고르기", need: "영영정의" },
   { id: "paren", label: "괄호 속 문맥에 맞는 단어", need: "예문" },
+  { id: "ctx", label: "문맥 5지선다 (AI 예문)", need: "AI 문맥 문제 만들기" },
   { id: "synmc", label: "동의어·반의어 → 단어 고르기", need: "동의어/반의어" },
   { id: "synw", label: "동의어·반의어 → 단어 쓰기", need: "동의어/반의어" },
 ];
@@ -59,6 +61,14 @@ function inflect(base, like, ofBase) {
   if (suf === "ly") return /y$/.test(b) ? base.slice(0, -1) + "ily" : base + "ly";
   return cons.test(b) || true ? base : base;
 }
+// 단어 하나의 변화형 후보 (-s, -ed, -ing …), 가장 긴 것부터
+function formsOf(f) {
+  const parts = String(f).toLowerCase().split(/\s+/), base = parts[0], tail = parts.slice(1).join(" "), stem = base.replace(/e$/, ""), ystem = base.replace(/y$/, "i");
+  let forms = [...new Set([base, base + "s", base + "es", base + "d", base + "ed", base + "ing", stem + "ing", stem + "ed", ystem + "es", ystem + "ed", base + base.slice(-1) + "ed", base + base.slice(-1) + "ing", base + "ly", base + "er", base + "est"])];
+  if (tail) forms = forms.map((x) => x + " " + tail); // look for → looking for, looked for …
+  return forms.sort((a, c) => c.length - a.length);
+}
+const isFormOf = (token, w) => altForms(w).some((f) => formsOf(f).includes(String(token).toLowerCase().replace(/\s+/g, " ").trim()));
 // 예문에서 시험 볼 낱말 찾기 → { sent: 빈칸 문장, token: 실제 들어간 모양, plain: 괄호 없는 원래 문장 }
 function findToken(e) {
   if (!e.ex) return null;
@@ -68,10 +78,7 @@ function findToken(e) {
     return { token, sent: e.ex.replace(mk[0], BL).replace(/[\[\]*]/g, ""), plain };
   }
   for (const f of altForms(e.w)) {
-    const parts = f.toLowerCase().split(/\s+/), base = parts[0], tail = parts.slice(1).join(" "), stem = base.replace(/e$/, ""), ystem = base.replace(/y$/, "i");
-    let forms = [...new Set([base, base + "s", base + "es", base + "d", base + "ed", base + "ing", stem + "ing", stem + "ed", ystem + "es", ystem + "ed", base + base.slice(-1) + "ed", base + base.slice(-1) + "ing", base + "ly", base + "er", base + "est"])];
-    if (tail) forms = forms.map((x) => x + " " + tail); // look for → looking for, looked for …
-    forms.sort((a, c) => c.length - a.length);
+    const forms = formsOf(f);
     const re = new RegExp("(^|[^A-Za-z])(" + forms.map(esc).join("|") + ")(?![A-Za-z])", "i");
     const m = e.ex.match(re);
     if (m) { const token = m[2]; return { token, sent: e.ex.replace(re, (all, pre) => pre + BL), plain: e.ex }; }
@@ -164,6 +171,7 @@ function wordsFrom(qs) {
     }
     if (q.vt === "blankmc" && !e.exk) { const l2 = String(q.sub || "").split("\n")[1]; if (l2 && /^\(.*\)$/.test(l2)) e.exk = l2.slice(1, -1); }
     if (q.vt === "def" && !e.def) e.def = q.sub || "";
+    if (q.vt === "ctx" && Array.isArray(q.opts) && q.opts.length >= 3 && q.ans >= 0 && !e.ctx) e.ctx = { s: line1(q.sub), opts: q.opts, ans: q.ans, exp: q.exp || "" }; // 🧠 문맥 고르기 게임용
     if (q.vt === "synmc" || q.vt === "synw") { const l = line1(q.sub), i = l.indexOf(": "); if (i > 0) { const k = /반의어/.test(l.slice(0, i)) ? "ant" : "syn"; if (!e[k]) e[k] = l.slice(i + 2); } }
   });
   return [...map.entries()].map(([k, e]) => Object.assign(e, { w: e.w || k })).filter((e) => e.w && e.m);
@@ -171,4 +179,14 @@ function wordsFrom(qs) {
 // 이 단어장으로 만들 수 있는 유형별 문항 수
 function typeCounts(qs) { const c = {}; (qs || []).forEach((q) => { if (q.vt) c[q.vt] = (c[q.vt] || 0) + 1; }); return c; }
 
-module.exports = { VTYPES, VT_IDS, build, wordsFrom, cleanWord, typeCounts, mwriteOk, mwriteFrom, meaningAccept, _t: { findToken, inflect, koNorm } };
+// 학생 시험 화면용 글자 칸 모양: 첫 글자만 보여 주고 나머지는 "_" (예: look for → "l___ ___"). 정답 표기가 여럿이고 글자 수가 다르면 null (그때는 일반 입력칸)
+function boxShape(q) {
+  if (!q || q.type !== "short" || !/^(spell|blank|synw)$/.test(q.vt || "")) return null;
+  const forms = [q.answer].concat(q.accept || []).map((x) => String(x || "").trim().replace(/\s+/g, " ")).filter(Boolean);
+  if (!forms.length) return null;
+  const shape = (w) => { let first = true; return w.split("").map((c) => (c === " " || !/[A-Za-z]/.test(c) ? c : first ? ((first = false), c) : "_")).join(""); };
+  const sh = shape(forms[0]); if (!/_/.test(sh) || sh.length > 40) return null;
+  return forms.every((f) => shape(f.toLowerCase()) === shape(forms[0].toLowerCase())) ? sh : null;
+}
+
+module.exports = { VTYPES, VT_IDS, build, wordsFrom, cleanWord, typeCounts, mwriteOk, mwriteFrom, meaningAccept, formsOf, isFormOf, mainForm, boxShape, _t: { findToken, inflect, koNorm } };

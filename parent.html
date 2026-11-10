@@ -31,6 +31,9 @@
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
   .stat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;cursor:pointer}
   .stat h3{margin:0 0 6px;font-size:14px;color:var(--muted)}.stat .big{font-size:26px;font-weight:800;color:var(--accent-ink);line-height:1.2}.stat .m{font-size:13px;color:var(--muted);margin-top:4px;line-height:1.5}
+  .ev1{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-top:1px dashed #DDD2FB}.ev1:first-child{border-top:0}
+  .ev1 .d{min-width:64px;font-weight:800;color:#4F35A0;font-size:14px}.ev1 .t{flex:1;font-size:14.5px;line-height:1.45}.ev1 .r{display:block;color:var(--muted);font-size:13px}
+  .ev1 .dd{font-size:12px;font-weight:800;color:#fff;background:#7A5AF8;border-radius:999px;padding:2px 8px;white-space:nowrap}.ev1 .dd.t0{background:#E5484D}
   .sec{font-weight:800;color:var(--ink);font-size:16px;margin:18px 0 0}
   .row{display:flex;gap:10px;align-items:flex-start}.row .t{flex:1;min-width:0;font-weight:700;font-size:16px;line-height:1.4}
   .m2{font-size:13.5px;color:var(--muted);margin-top:4px;line-height:1.55}
@@ -150,6 +153,7 @@
       '<div class="stat" data-go="exam"><h3>📝 시험</h3><div class="big">' + D.exams.length + '회</div><div class="m">' + (ex[0] ? esc(ex[0].title) + " " + (ex[0].pct != null ? Math.round(ex[0].pct) + "%" : "") : "아직 기록 없음") + "</div></div>" +
       '<div class="stat"><h3>🎮 단어 게임 (30일)</h3><div class="big">' + D.game.points + '점</div><div class="m">' + D.game.plays + "판 · " + D.game.days + "일 공부 · 단어 " + D.game.words + "개</div></div>" +
       "</div>" +
+      schedBox(D.sched) +
       '<p class="sec">최근 시험</p>' + (ex.length ? ex.map(examCard).join("") : '<div class="box"><p class="sub">아직 시험 기록이 없어요.</p></div>') +
       '<p class="sec">다가오는 · 최근 과제</p>' + (hw.length ? hw.slice(0, 3).map(function (h, i) { return hwCard(h, i, true); }).join("") : '<div class="box"><p class="sub">최근 과제가 없어요.</p></div>') +
       (D.reports.length ? '<p class="sec">최근 리포트</p>' + D.reports.slice(0, 2).map(repRow).join("") : "") +
@@ -157,6 +161,16 @@
     bindCommon();
     Array.prototype.forEach.call(app.querySelectorAll("[data-go]"), function (b) { b.onclick = function () { go(b.getAttribute("data-go")); }; });
     if ($("nr")) $("nr").onclick = function () { go("chat"); };
+  }
+  // 📅 다가오는 반 일정 (4주): 선생님이 미리 넣어 둔 단어시험·평가·휴원 …
+  function schedBox(L) {
+    if (!L || !L.length) return "";
+    var EVI = { "단어시험": "📝", "단어 외우기": "📖", "듣기시험": "🎧", "주간평가": "🧪", "월간평가": "📊", "분기평가": "🏆", "행사": "🎉", "휴원": "🏖️", "기타": "📌" }, W = "일월화수목금토";
+    var td = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
+    return '<p class="sec">📅 다가오는 일정</p><div class="box" style="background:#F6F2FF;border-color:#DDD2FB">' + L.map(function (e) {
+      var n = Math.round((Date.parse(e.date + "T00:00:00Z") - Date.parse(td + "T00:00:00Z")) / 864e5), dd = n === 0 ? "오늘" : n > 0 ? "D-" + n : "";
+      return '<div class="ev1"><span class="d">' + Number(e.date.slice(5, 7)) + "/" + Number(e.date.slice(8, 10)) + "(" + W[new Date(e.date + "T00:00:00Z").getUTCDay()] + ')</span><span class="t"><b>' + (EVI[e.kind] || "📌") + " " + esc(e.title) + "</b>" + (e.range && e.title.indexOf(e.range) < 0 ? '<span class="r">범위: ' + esc(e.range) + "</span>" : "") + (e.memo ? '<span class="r">' + esc(e.memo) + "</span>" : "") + "</span>" + (dd ? '<span class="dd' + (n === 0 ? " t0" : "") + '">' + dd + "</span>" : "") + "</div>";
+    }).join("") + "</div>";
   }
   function hwCard(h, i, mini) {
     return '<div class="box"><div class="row"><div class="t">' + (h.only ? "⭐ " : "") + (h.dict ? "🎧 " : "") + esc(h.title) + (h.only ? ' <span style="font-size:12px;font-weight:700;color:#8A5300">추가과제</span>' : "") + "</div>" + tagHw(h) + '</div><div class="m2">마감 ' + esc(h.dueLabel) + (h.at ? " · 제출 " + esc(h.at.slice(5, 16).replace("T", " ").replace("-", "/")) : "") + (h.checked ? " · ✓ 선생님 확인" : "") + "</div>" +

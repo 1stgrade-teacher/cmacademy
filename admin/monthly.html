@@ -77,6 +77,7 @@ tr.miss td{color:#A0AAB2}
 .cc{display:block;font-size:11.5px;line-height:1.3;padding:2px 5px;border-radius:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
 .cc.s{background:#E3F0FF;color:#1F5FA8}.cc.w{background:#EEF1F3;color:var(--muted)}.cc.d{background:#F1F3F4;color:#8A96A0}.cc.n{background:var(--amber-bg);color:var(--amber);border:1px dashed #E0B060}.cc.x{text-decoration:line-through}
 .hint .cc{display:inline-block;cursor:default}
+.cc.e{background:#EDE6FF;color:#4F35A0;font-weight:700}.cc.e.off{background:#E9ECEE;color:#5F6B72}.cc.e.x{opacity:.55}.cc.h{background:#F3F5F6;color:#8A96A0;cursor:default;font-size:10.5px}.cc.ne{background:#F6F2FF;color:#4F35A0;border:1px dashed #A48BF0}
 @media (max-width:640px){.cal{gap:2px}.cal .cd{padding:2px;min-height:64px}.cal .cd .cc{white-space:normal;word-break:break-all;font-size:10px;line-height:1.2;padding:1px 2px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}}
 details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-top:10px}details.mpd>summary{cursor:pointer;font-weight:700;color:var(--ac-ink);font-size:14.5px}
 .wk{display:flex;gap:6px;flex-wrap:wrap}.wk label{display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:8px;padding:5px 9px;font-size:14px;cursor:pointer}
@@ -237,6 +238,12 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       </div>
       <datalist id="bookList"></datalist>
     </div>
+    <div class="card" id="ctxCard">
+      <h2>🧠 문맥 5지선다 문제 만들기 (AI 예문)</h2>
+      <p class="hint" style="margin-top:0">단어마다 AI가 예문 한 문장을 만들고, 빈칸에 들어갈 단어를 <b>보기 5개 중에서 고르는 문제</b>를 저장해 둬요. AI가 한 번 더 검수해서 <b>정답이 둘 이상인 문제는 버려요</b>. 저장된 문제는 학생 <b>단어 게임의 「🧠 문맥 고르기」</b>와 <b>단어시험 출제(유형 「문맥 5지선다」)</b>에 쓰여요. 키보드 자동완성이 통하지 않는 유형이에요.</p>
+      <div class="row"><select id="ctxSel" style="width:auto;max-width:420px"><option value="">— 단어장(교재 또는 Day) 고르기 —</option></select><button id="ctxGo">🧠 만들기</button><span class="msg" id="ctxMsg" style="margin:0"></span></div>
+      <p class="hint">이미 만든 단어는 건너뛰어요. 단어 8개마다 20~40초쯤 걸려요. 만든 뒤 시험 출제 화면에서 문제를 훑어볼 수 있어요.</p>
+    </div>
     <div class="card" id="drvCard">
       <h2>📂 구글 드라이브 문제은행 폴더</h2>
       <p class="hint" style="margin-top:0">공유 폴더에 <b>교재 / 단원 / 문제지 + 정답지</b>로 넣어 두면, 여기서 필요한 파일만 골라 가져와요. (「가져옴」은 이미 저장한 파일, 「바뀜」은 저장 뒤 드라이브에서 고친 파일 — 바뀐 파일만 처음부터 체크돼 있어요) 폴더 이름이 그대로 교재·단원이 돼요.</p>
@@ -360,6 +367,29 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       <div id="mpDrafts"></div>
       <div class="row" style="margin-top:10px;align-items:center"><label class="l" style="margin:0">학생에게 보이기</label><select id="mpShow" style="width:auto"><option value="0">마감 당일 0시부터</option><option value="1">마감 1일 전부터</option><option value="2">마감 2일 전부터</option><option value="3">마감 3일 전부터</option><option value="7">마감 7일 전부터</option><option value="">바로 (모두 보이기)</option></select><label><input type="checkbox" id="mpNotify" checked> 마감까지 안 내면 학부모님께 알림 보내기</label></div>
       <div class="row" style="margin-top:10px"><button id="mpSave" disabled>💾 모두 저장</button><button class="sub" id="mpClear" style="display:none">목록 비우기</button><span class="msg" id="mpMsg" style="margin:0"></span></div>
+    </div>
+    <div class="card" id="scCard">
+      <div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">📅 반 일정 <span style="font-weight:500;font-size:14px;color:var(--muted)">단어시험·평가·휴원 미리 알리기</span></h2><div class="row" style="margin:0;align-items:center"><select id="scCls" style="width:auto"></select><button class="sub sm" id="scPrev" title="지난달">◀</button><b id="scYm" style="min-width:96px;text-align:center"></b><button class="sub sm" id="scNext" title="다음 달">▶</button><button class="sub sm" id="scToday">오늘</button></div></div>
+      <div class="hint">달력에서 <b>날짜를 누르면</b> 그날 일정이 아래 목록에 들어가요. 넣어 둔 일정은 학생 <b>과제 페이지의 🗓 달력</b>과 <b>📅 다가오는 일정(3주)</b>, <b>학부모 앱(4주)</b>에 바로 보여요. 저장한 일정을 누르면 고치거나 지울 수 있어요. 회색 글씨는 같은 날 마감인 과제예요.</div>
+      <div class="cal" id="scCal"><p class="hint">불러오는 중…</p></div>
+      <div class="hint"><span class="cc e">저장한 일정</span> <span class="cc e off">휴원</span> <span class="cc ne">새로 넣을 일정</span> <span class="cc h">마감 과제</span></div>
+      <details class="mpd" id="scGenDet" open>
+        <summary>📚 단어 일정 자동으로 만들기</summary>
+        <div class="hint" style="margin-top:4px">단어장의 Day 순서대로, 고른 요일마다 시험 일정을 쭉 넣어요. 일정명에 <b>{범위}</b>를 쓰면 「워드마스터 Day 10~12」처럼, <b>{n}</b>을 쓰면 1, 2, 3… 번호가 들어가요. <b>휴원</b> 일정이 있는 날은 건너뛰어요.</div>
+        <div class="grid" style="margin-top:8px">
+          <div style="grid-column:span 2"><label class="l">단어장</label><select id="scBook"></select></div>
+          <div style="grid-column:span 2"><label class="l">시작 Day</label><select id="scFrom"></select></div>
+          <div><label class="l">한 번에 몇 Day</label><input id="scPer" type="number" min="1" max="20" value="1"></div>
+          <div><label class="l">시작 날짜</label><input id="scStart" type="date"></div>
+          <div><label class="l">횟수 (비우면 단어장 끝까지)</label><input id="scCount" type="number" min="1" max="80" placeholder="끝까지"></div>
+          <div><label class="l">종류</label><select id="scKind"></select></div>
+        </div>
+        <label class="l" style="margin-top:8px">시험 요일</label><div class="wk" id="scWk"></div>
+        <div class="grid" style="margin-top:8px"><div style="grid-column:span 2"><label class="l">일정명 형식</label><input id="scPat" value="{범위} 단어시험"></div><div style="grid-column:span 2"><label class="l">메모 (학생에게 보여요, 선택)</label><input id="scMemo" placeholder="예: 30문항 · 철자까지 정확히"></div></div>
+        <div class="row" style="margin-top:8px"><button class="sub" id="scGen">📅 일정 만들기</button><span class="msg" id="scGenMsg" style="margin:0"></span></div>
+      </details>
+      <div id="scDrafts"></div>
+      <div class="row" style="margin-top:10px"><button id="scSave" disabled>💾 일정 저장</button><button class="sub" id="scClear" style="display:none">목록 비우기</button><span class="msg" id="scMsg" style="margin:0"></span></div>
     </div>
     <div class="card">
       <h2 id="hwFormTitle">📸 새 과제</h2>
@@ -542,7 +572,8 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     if (!$("hwCls").options.length) { $("hwCls").innerHTML = opts; $("hwFilter").innerHTML = '<option value="">모든 반</option>' + opts; hwForm(null); }
     if (!$("plCls").options.length) { $("plCls").innerHTML = opts; var lc2 = lsGet("cm-teacher-cls"); if (lc2 && (DATA.classes || []).indexOf(lc2) >= 0) $("plCls").value = lc2; }
     if (!$("mpCls").options.length) { $("mpCls").innerHTML = opts; var lc = lsGet("cm-teacher-cls"); if (lc && (DATA.classes || []).indexOf(lc) >= 0) $("mpCls").value = lc; MP.cls = $("mpCls").value; }
-    hwLoad(); mpLoad();
+    if (!$("scCls").options.length) { $("scCls").innerHTML = opts + '<option value="전체">전체 (모든 반)</option>'; var lc3 = lsGet("cm-teacher-cls"); if (lc3 && (DATA.classes || []).indexOf(lc3) >= 0) $("scCls").value = lc3; SC.cls = $("scCls").value; scBooks(); }
+    hwLoad(); mpLoad(); scLoad();
   }
   var HW_TG = [], HW_TG_CLS = "";
   function hwTgtUi() { var on = $("hwTgt").value === "some"; $("hwTgtBox").style.display = on ? "" : "none"; if (on) hwTgtLoad(); }
@@ -737,6 +768,161 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       };
     });
   }
+  // ================= 📅 반 일정 =================
+  var SC = { ym: "", cls: "", saved: [], hw: [], drafts: [], del: [] };
+  var SC_KINDS = ["단어시험", "단어 외우기", "듣기시험", "주간평가", "월간평가", "분기평가", "행사", "휴원", "기타"];
+  var SC_EI = { "단어시험": "📝", "단어 외우기": "📖", "듣기시험": "🎧", "주간평가": "🧪", "월간평가": "📊", "분기평가": "🏆", "행사": "🎉", "휴원": "🏖️", "기타": "📌" };
+  (function () {
+    $("scKind").innerHTML = SC_KINDS.map(function (k) { return "<option>" + k + "</option>"; }).join("");
+    var keep = (lsGet("cm-sc-wk") || "2,4").split(",");
+    $("scWk").innerHTML = [1, 2, 3, 4, 5, 6, 0].map(function (w) { return '<label><input type="checkbox" value="' + w + '"' + (keep.indexOf(String(w)) >= 0 ? " checked" : "") + "> " + MP_WD[w] + "</label>"; }).join("");
+    if (lsGet("cm-sc-pat")) $("scPat").value = lsGet("cm-sc-pat");
+    $("scStart").value = mpAddDays(mpToday(), 1);
+  })();
+  function scMonthOf(ym, cls) { return Promise.all([post({ action: "t_sched_month", cls: cls === "전체" ? "" : cls, ym: ym }), cls === "전체" ? Promise.resolve({ ok: true, list: [] }) : post({ action: "t_hw_month", cls: cls, ym: ym })]); }
+  function scLoad() {
+    if (!$("scCls").options.length) return;
+    if (!SC.ym) SC.ym = mpToday().slice(0, 7);
+    SC.cls = $("scCls").value; var ym = SC.ym, cls = SC.cls;
+    $("scYm").textContent = ym.slice(0, 4) + "년 " + Number(ym.slice(5, 7)) + "월";
+    scRender(true);
+    scMonthOf(ym, cls).then(function (r) {
+      if (ym !== SC.ym || cls !== SC.cls) return;
+      if (!r[0].ok) { $("scCal").innerHTML = '<p class="er">' + esc(r[0].msg || "일정을 불러오지 못했어요.") + "</p>"; return; }
+      SC.saved = (r[0].list || []).filter(function (e) { return cls !== "전체" || e.cls === "전체"; }); SC.hw = (r[1] && r[1].list) || []; scRender();
+    });
+  }
+  function scName(e) { return (SC_EI[e.kind] || "📌") + " " + (e.title || "(일정명)"); }
+  function scRender(loading) {
+    var ym = SC.ym, today = mpToday(), first = mpDow(ym + "-01"), n = mpDays(ym), h = "";
+    for (var w = 0; w < 7; w++) h += '<div class="wh' + (w === 0 ? " su" : "") + '">' + MP_WD[w] + "</div>";
+    for (var b = 0; b < first; b++) h += "<div></div>";
+    for (var d = 1; d <= n; d++) {
+      var day = ym + "-" + hwPad(d);
+      h += '<div class="cd' + (day === today ? " td" : "") + (mpDow(day) === 0 ? " su" : "") + '" data-day="' + day + '" title="눌러서 ' + mpMd(day) + ' 일정 넣기"><span class="dn">' + d + "</span>";
+      if (!loading) {
+        SC.saved.forEach(function (e, k) { if (e.date !== day || SC.drafts.some(function (x) { return x.id === e.id; }) || SC.del.indexOf(e.id) >= 0) return; h += '<span class="cc e' + (e.kind === "휴원" ? " off" : "") + (e.active ? "" : " x") + '" data-scs="' + k + '" title="' + esc(e.kind + " · " + e.title + (e.range ? " · " + e.range : "") + (e.cls === "전체" ? " (모든 반)" : "") + " — 눌러서 고치기") + '">' + esc(scName(e)) + "</span>"; });
+        SC.drafts.forEach(function (x, k) { if (x.date === day) h += '<span class="cc ne" data-scx="' + k + '" title="새로 넣을 일정 — 눌러서 빼기">' + esc(scName(x)) + "</span>"; });
+        SC.hw.forEach(function (x) { if (x.dueKst.slice(0, 10) === day) h += '<span class="cc h" title="마감 과제">' + esc(x.title) + "</span>"; });
+      }
+      h += "</div>";
+    }
+    $("scCal").innerHTML = h;
+    Array.prototype.forEach.call($("scCal").querySelectorAll(".cd"), function (c) {
+      c.onclick = function (e) {
+        var t = e.target, s = t.getAttribute && t.getAttribute("data-scs"), x = t.getAttribute && t.getAttribute("data-scx");
+        if (s !== null && s !== undefined) { var ev = SC.saved[+s]; SC.drafts.push({ id: ev.id, date: ev.date, kind: ev.kind, title: ev.title, range: ev.range, memo: ev.memo, all: ev.cls === "전체", active: ev.active }); scSort(); scRender(); scDrafts(); return; }
+        if (x !== null && x !== undefined) { SC.drafts.splice(+x, 1); scRender(); scDrafts(); return; }
+        SC.drafts.push({ date: c.getAttribute("data-day"), kind: lsGet("cm-sc-kind") || "단어시험", title: "", range: "", memo: "", all: SC.cls === "전체" }); scSort(); scRender(); scDrafts();
+        setTimeout(function () { var el = $("scDrafts").querySelector('[data-k="title"][data-new="1"]'); if (el) el.focus(); }, 30);
+      };
+    });
+  }
+  function scSort() { SC.drafts.sort(function (a, b) { return a.date.localeCompare(b.date); }); }
+  function scDrafts() {
+    var L = SC.drafts, nDel = SC.del.length;
+    $("scSave").disabled = !L.length && !nDel; $("scSave").textContent = "💾 일정 " + (L.length ? L.length + "개 저장" : "") + (nDel ? (L.length ? " · " : "") + nDel + "개 지우기" : L.length ? "" : "저장");
+    $("scClear").style.display = L.length || nDel ? "" : "none";
+    if (!L.length) { $("scDrafts").innerHTML = nDel ? '<p class="hint">지울 일정 ' + nDel + "개 — 💾를 누르면 지워져요.</p>" : ""; return; }
+    var lastNew = -1; L.forEach(function (d, i) { if (!d.id && !d.title) lastNew = i; });
+    $("scDrafts").innerHTML = '<h3 style="margin:14px 0 4px;font-size:15px">넣을·고칠 일정 ' + L.length + "개 · 반: " + esc(SC.cls === "전체" ? "전체 (모든 반)" : SC.cls) + '</h3><div class="tw"><table><thead><tr><th>날짜</th><th>종류</th><th>일정명</th><th>범위</th><th>메모</th><th title="모든 반에 보이기">모든 반</th><th></th></tr></thead><tbody>' + L.map(function (d, i) {
+      return '<tr><td style="min-width:132px"><input type="date" data-si="' + i + '" data-k="date" value="' + esc(d.date) + '"><div class="hint" style="margin:0">' + MP_WD[mpDow(d.date)] + "요일" + (d.id ? " · 저장됨" : " · 새 일정") + '</div></td>' +
+        '<td style="min-width:116px"><select data-si="' + i + '" data-k="kind">' + SC_KINDS.map(function (k) { return "<option" + (k === d.kind ? " selected" : "") + ">" + k + "</option>"; }).join("") + "</select></td>" +
+        '<td style="min-width:200px"><input data-si="' + i + '" data-k="title" value="' + esc(d.title) + '" placeholder="예: Day 10~12 단어시험"' + (i === lastNew ? ' data-new="1"' : "") + "></td>" +
+        '<td style="min-width:150px"><input data-si="' + i + '" data-k="range" value="' + esc(d.range) + '" placeholder="(선택) 워드마스터 Day 10~12"></td>' +
+        '<td style="min-width:140px"><input data-si="' + i + '" data-k="memo" value="' + esc(d.memo) + '" placeholder="(선택)"></td>' +
+        '<td style="text-align:center"><input type="checkbox" data-si="' + i + '" data-k="all"' + (d.all ? " checked" : "") + (SC.cls === "전체" ? " disabled" : "") + "></td>" +
+        '<td style="white-space:nowrap"><button class="sm sub" data-sx="' + i + '" title="목록에서 빼기">✕</button>' + (d.id ? ' <button class="sm warn" data-sdel="' + i + '" title="저장한 일정 지우기">🗑</button>' : "") + "</td></tr>";
+    }).join("") + "</tbody></table></div>";
+    Array.prototype.forEach.call($("scDrafts").querySelectorAll("[data-si]"), function (el) {
+      var d = SC.drafts[+el.getAttribute("data-si")], k = el.getAttribute("data-k");
+      el.oninput = function () { d[k] = el.type === "checkbox" ? el.checked : el.value; if (k === "kind") lsSet("cm-sc-kind", el.value); };
+      el.onchange = function () { el.oninput(); if (k === "date") { scSort(); scDrafts(); } scRender(); };
+    });
+    Array.prototype.forEach.call($("scDrafts").querySelectorAll("[data-sx]"), function (b) { b.onclick = function () { SC.drafts.splice(+b.getAttribute("data-sx"), 1); scRender(); scDrafts(); }; });
+    Array.prototype.forEach.call($("scDrafts").querySelectorAll("[data-sdel]"), function (b) { b.onclick = function () { var d = SC.drafts[+b.getAttribute("data-sdel")]; if (!confirm(mpMd(d.date) + " 「" + (d.title || d.kind) + "」 일정을 지울까요? (💾를 눌러야 지워져요)")) return; SC.del.push(d.id); SC.drafts.splice(+b.getAttribute("data-sdel"), 1); scRender(); scDrafts(); }; });
+  }
+  function scShift(n) {
+    var y = +SC.ym.slice(0, 4), m = +SC.ym.slice(5, 7) - 1 + n; SC.ym = new Date(Date.UTC(y, m, 1)).toISOString().slice(0, 7); SC.saved = []; SC.hw = []; scLoad();
+  }
+  $("scPrev").onclick = function () { scShift(-1); }; $("scNext").onclick = function () { scShift(1); };
+  $("scToday").onclick = function () { SC.ym = mpToday().slice(0, 7); scLoad(); };
+  $("scCls").onchange = function () {
+    if ((SC.drafts.length || SC.del.length) && !confirm("저장하지 않은 일정이 있어요. 반을 바꾸면 목록을 비워요. 바꿀까요?")) { $("scCls").value = SC.cls; return; }
+    SC.drafts = []; SC.del = []; scDrafts(); if ($("scCls").value !== "전체") lsSet("cm-teacher-cls", $("scCls").value); scLoad();
+  };
+  $("scClear").onclick = function () { if (!confirm("저장하지 않은 일정 목록을 비울까요?")) return; SC.drafts = []; SC.del = []; scRender(); scDrafts(); $("scMsg").textContent = ""; };
+  $("scSave").onclick = function () {
+    var btn = this, cls = SC.cls;
+    var noT = SC.drafts.filter(function (d) { return !String(d.title || "").trim(); }).length; if (noT) { $("scMsg").innerHTML = '<span class="er">일정명이 빈 줄이 ' + noT + "개 있어요.</span>"; return; }
+    var badD = SC.drafts.filter(function (d) { return !/^\d{4}-\d{2}-\d{2}$/.test(d.date); }).length; if (badD) { $("scMsg").innerHTML = '<span class="er">날짜가 빈 줄이 ' + badD + "개 있어요.</span>"; return; }
+    var items = SC.drafts.map(function (d) { return { id: d.id || "", cls: d.all || cls === "전체" ? "전체" : cls, date: d.date, kind: d.kind, title: String(d.title).trim(), range: String(d.range || "").trim(), memo: String(d.memo || "").trim(), active: d.active !== false }; });
+    var parts = []; for (var i = 0; i < items.length; i += 15) parts.push(items.slice(i, i + 15));
+    var made = 0, upd = 0, failed = [], rm = 0, pi = 0; btn.disabled = true; $("scMsg").textContent = "저장 중…";
+    (function next() {
+      if (pi < parts.length) {
+        $("scMsg").textContent = "저장 중… (" + Math.min((pi + 1) * 15, items.length) + "/" + items.length + ")";
+        return post({ action: "t_sched_save", items: parts[pi] }).then(function (j) { made += j.made || 0; upd += j.updated || 0; if (!j.ok) failed = failed.concat(j.failed && j.failed.length ? j.failed : parts[pi].map(function (x) { return x.date + " " + x.title; })); else failed = failed.concat(j.failed || []); pi++; next(); });
+      }
+      (SC.del.length ? post({ action: "t_sched_del", ids: SC.del }) : Promise.resolve({ removed: 0 })).then(function (j) {
+        rm = j.removed || 0; btn.disabled = false;
+        SC.drafts = SC.drafts.filter(function (d) { return failed.indexOf(d.date + " " + String(d.title).trim()) >= 0; }); SC.del = [];
+        $("scMsg").innerHTML = (made || upd || rm ? '<span class="ok">✅ ' + [made ? "새 일정 " + made + "개" : "", upd ? "고친 일정 " + upd + "개" : "", rm ? "지운 일정 " + rm + "개" : ""].filter(Boolean).join(" · ") + " 저장했어요. 학생 달력에 바로 보여요.</span>" : "") + (failed.length ? ' <span class="er">저장 못 한 일정 ' + failed.length + "개는 목록에 남겨 뒀어요. 다시 💾를 눌러 주세요.</span>" : "");
+        scDrafts(); scLoad();
+      });
+    })();
+  };
+  // ---- 📚 단어 일정 자동으로 만들기 ----
+  function scGeneric(n) { return /^(단어|어휘|단어장|words?|vocab(ulary)?)$/i.test(String(n || "").trim()); }
+  function scUnitsOf(b) {
+    var out = []; (b.chapters || []).forEach(function (c) { (c.units || []).forEach(function (u) { if (u.v) out.push({ id: u.id, label: scGeneric(u.name) || u.name === c.name ? c.name : /\d/.test(u.name) ? u.name : c.name + " " + u.name, full: c.name === u.name ? u.name : c.name + " › " + u.name }); }); });
+    return out;
+  }
+  function scBooks() {
+    var books = (DATA.catalog || []).filter(function (b) { return scUnitsOf(b).length; });
+    $("scBook").innerHTML = books.length ? books.map(function (b) { return '<option value="' + esc(b.id) + '">' + esc(b.name) + " (" + scUnitsOf(b).length + "개 Day)</option>"; }).join("") : '<option value="">올린 단어장이 없어요 (📚 자료 올리기에서 단어장을 올려 주세요)</option>';
+    var lb = lsGet("cm-sc-book"); if (lb && books.some(function (b) { return b.id === lb; })) $("scBook").value = lb;
+    scFromFill();
+  }
+  function scBook() { var id = $("scBook").value, r = null; (DATA.catalog || []).forEach(function (b) { if (b.id === id) r = b; }); return r; }
+  function scFromFill() { var b = scBook(), us = b ? scUnitsOf(b) : []; $("scFrom").innerHTML = us.map(function (u, i) { return '<option value="' + i + '">' + esc(u.full) + "</option>"; }).join(""); }
+  $("scBook").onchange = function () { lsSet("cm-sc-book", $("scBook").value); scFromFill(); };
+  function scRange(a, b) { // "Day 10" ~ "Day 12" → "Day 10~12"
+    if (a === b) return a;
+    var ra = /^(.*?)(\d+)$/.exec(a), rb = /^(.*?)(\d+)$/.exec(b);
+    return ra && rb && ra[1] === rb[1] ? a + "~" + rb[2] : a + " ~ " + b;
+  }
+  $("scGen").onclick = function () {
+    var bk = scBook(); if (!bk) { $("scGenMsg").innerHTML = '<span class="er">단어장을 골라 주세요.</span>'; return; }
+    var us = scUnitsOf(bk), from = +$("scFrom").value || 0, per = Math.max(1, Math.min(20, parseInt($("scPer").value, 10) || 1));
+    var wk = Array.prototype.filter.call($("scWk").querySelectorAll("input"), function (i) { return i.checked; }).map(function (i) { return +i.value; });
+    if (!wk.length) { $("scGenMsg").innerHTML = '<span class="er">시험 요일을 하나 이상 골라 주세요.</span>'; return; }
+    var start = $("scStart").value; if (!/^\d{4}-\d{2}-\d{2}$/.test(start)) { $("scGenMsg").innerHTML = '<span class="er">시작 날짜를 골라 주세요.</span>'; return; }
+    var cnt = parseInt($("scCount").value, 10), need = Math.ceil((us.length - from) / per); cnt = cnt > 0 ? Math.min(cnt, need, 80) : Math.min(need, 80);
+    var pat = $("scPat").value.trim() || "{범위} 단어시험", kind = $("scKind").value, memo = $("scMemo").value.trim(), short = String(bk.name).replace(/^[^0-9A-Za-z가-힣]+/, "").trim();
+    lsSet("cm-sc-wk", wk.join(",")); lsSet("cm-sc-pat", pat);
+    // 휴원 날짜: 시작 달부터 넉 달 치 일정을 읽어서 건너뛰어요
+    var months = []; for (var k = 0; k < 4; k++) { var y = +start.slice(0, 4), m = +start.slice(5, 7) - 1 + k; months.push(new Date(Date.UTC(y, m, 1)).toISOString().slice(0, 7)); }
+    $("scGenMsg").textContent = "만드는 중…";
+    Promise.all(months.map(function (ym) { return post({ action: "t_sched_month", cls: SC.cls === "전체" ? "" : SC.cls, ym: ym }); })).then(function (rs) {
+      var off = {}; rs.forEach(function (j) { (j.list || []).forEach(function (e) { if (e.kind === "휴원" && e.active) off[e.date] = 1; }); });
+      SC.drafts.forEach(function (d) { if (d.kind === "휴원") off[d.date] = 1; });
+      var day = start, made = 0, skipped = 0, guard = 0, ui = from, firstD = "", lastD = "";
+      while (made < cnt && ui < us.length && guard++ < 400) {
+        if (wk.indexOf(mpDow(day)) >= 0) {
+          if (off[day]) skipped++;
+          else {
+            var a = us[ui], z = us[Math.min(us.length - 1, ui + per - 1)], rg = scRange(a.label, z.label);
+            SC.drafts.push({ date: day, kind: kind, title: pat.replace(/\{범위\}/g, short + " " + rg).replace(/\{n\}/g, made + 1).replace(/\{날짜\}/g, mpMd(day)), range: short + " " + rg, memo: memo, all: SC.cls === "전체" });
+            ui += per; made++; if (!firstD) firstD = day; lastD = day;
+          }
+        }
+        day = mpAddDays(day, 1);
+      }
+      scSort(); scRender(); scDrafts();
+      $("scGenMsg").innerHTML = made ? '<span class="ok">일정 ' + made + "개를 넣었어요 (" + mpMd(firstD) + "~" + mpMd(lastD) + ")" + (skipped ? " · 휴원 " + skipped + "일 건너뜀" : "") + ". 아래 목록에서 확인하고 💾를 누르세요.</span>" : '<span class="er">넣을 일정이 없어요. 시작 Day·요일을 확인해 주세요.</span>';
+    });
+  };
   function mpNextN() { var st = parseInt($("mpStart").value, 10); st = isNaN(st) ? 1 : st; return st + MP.drafts.filter(function (d) { return d.pat; }).length; }
   function mpAdd(day, o) {
     o = o || {}; var pat = $("mpPat").value.trim();
@@ -1522,9 +1708,49 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   function blankQ(prev) { return { no: "", type: prev ? prev.type : "mc", lv: prev ? prev.lv : 2, q: prev && prev.type !== "short" ? prev.q : "", sub: "", opts: [], ans: -1, anss: [], answer: "", frame: "", words: [], exp: "", warn: [] }; }
   function mkMeta() { var last = lsGet("cm-mk-book"); return { book: last || "", chapter: "", unit: "", area: "문법", grade: "", file: "✍️ 직접 입력" }; }
   function mkAdd(unit) { IMP.push(unit); renderImport(); var cards = $("impUnits").querySelectorAll(".card[data-u]"), c = cards[cards.length - 1]; if (c) { c.scrollIntoView({ behavior: "smooth", block: "start" }); var b = c.querySelector('[data-m="book"]'); if (b && !b.value) b.focus(); } }
+  // ---------- 🧠 문맥 5지선다 (AI) ----------
+  // uids 의 단어장을 차례로: 한 번에 8단어씩 서버가 만들고 검수해서 저장 → 끝날 때까지 반복
+  function ctxRun(uids, say) {
+    var made = 0, dropped = 0, skip = {}, ui = 0, err = "", tot = uids.length;
+    return new Promise(function (done) {
+      (function next() {
+        if (ui >= uids.length) {
+          say('<span class="ok">🧠 문맥 문제를 ' + made + "개 만들어 저장했어요" + (dropped ? " (정답이 애매해서 빠진 단어 " + dropped + "개 — 다시 누르면 그 단어만 다시 만들어 봐요)" : "") + "</span>");
+          ctxFill(); return done({ made: made, dropped: dropped, err: err });
+        }
+        var uid = uids[ui];
+        post({ action: "t_vocab_ctx", uid: uid, skip: Object.keys(skip) }).then(function (j) {
+          if (!j.ok) { err = j.msg || "만들지 못했어요"; say('<span class="er">' + esc(err) + (j.aiErr && j.aiErr.length ? " · " + esc(j.aiErr.join(" / ")) : "") + "</span>"); ctxFill(); return done({ made: made, dropped: dropped, err: err }); }
+          made += j.made || 0; dropped += j.dropped || 0; (j.tried || []).forEach(function (w) { skip[w] = 1; });
+          if (j.catalog) { DATA.catalog = j.catalog; }
+          say("🧠 AI가 문맥 문제를 만드는 중… " + (tot > 1 ? "(" + (ui + 1) + "/" + tot + "번째 단어장) " : "") + "단어 " + (j.have || 0) + "/" + (j.total || 0) + " · 지금까지 " + made + "개" + (j.used ? " · " + esc(j.used) : ""));
+          if (!j.left) { ui++; skip = {}; } next();
+        });
+      })();
+    });
+  }
+  function ctxFill() {
+    var sel = $("ctxSel"); if (!sel) return; var keep = sel.value, html = '<option value="">— 단어장(교재 또는 Day) 고르기 —</option>';
+    (DATA.catalog || []).forEach(function (b) {
+      var us = []; b.chapters.forEach(function (c) { c.units.forEach(function (u) { if (u.v) us.push({ c: c, u: u }); }); }); if (!us.length) return;
+      var nc = us.filter(function (x) { return (x.u.v.ctx || 0) >= x.u.words; }).length;
+      html += '<optgroup label="' + esc(b.name) + '"><option value="b:' + esc(b.id) + '">📚 ' + esc(b.name) + " 전체 (" + us.length + "개 Day · 문맥 완료 " + nc + "개)</option>" +
+        us.map(function (x) { return '<option value="u:' + esc(x.u.id) + '">' + esc(x.c.name + " › " + x.u.name) + " — 문맥 " + (x.u.v.ctx || 0) + "/" + x.u.words + "</option>"; }).join("") + "</optgroup>";
+    });
+    sel.innerHTML = html; sel.value = keep;
+  }
+  if ($("ctxGo")) $("ctxGo").onclick = function () {
+    var v = $("ctxSel").value, m = $("ctxMsg"), b = this; if (!v) { m.innerHTML = '<span class="er">단어장을 골라 주세요.</span>'; return; }
+    if (!DATA.ai) { m.innerHTML = '<span class="er">AI 키가 없어요. (Vercel 환경 변수)</span>'; return; }
+    var uids = [];
+    (DATA.catalog || []).forEach(function (bk) { bk.chapters.forEach(function (c) { c.units.forEach(function (u) { if (u.v && (v === "u:" + u.id || v === "b:" + bk.id) && (v.charAt(0) === "u" || (u.v.ctx || 0) < u.words)) uids.push(u.id); }); }); });
+    if (!uids.length) { m.innerHTML = '<span class="ok">이미 모두 만들어져 있어요 ✓</span>'; return; }
+    b.disabled = true; ctxRun(uids, function (t) { m.innerHTML = t; }).then(function () { b.disabled = false; });
+  };
   function mkFill() {
     var sel = $("mkLoadSel"), books = (DATA.catalog || []).filter(function (b) { return b.custom; });
     $("bookList").innerHTML = books.map(function (b) { return '<option value="' + esc(b.name.replace(/^📁 /, "")) + '">'; }).join("");
+    ctxFill();
     sel.innerHTML = '<option value="">— 저장한 자료 불러와 고치기 —</option>' + books.map(function (b) {
       var opts = []; b.chapters.forEach(function (c) { c.units.forEach(function (u) { if (!u.v) opts.push('<option value="' + esc(u.id) + '">' + esc(c.name + " › " + u.name + " (" + u.n + "문항)") + "</option>"); }); });
       return opts.length ? '<optgroup label="' + esc(b.name) + '">' + opts.join("") + "</optgroup>" : "";
@@ -1560,7 +1786,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         '<div><label class="l">학년</label><select data-m="grade">' + grades.map(function (g) { return '<option value="' + g + '"' + (g === (u.meta.grade || "") ? " selected" : "") + ">" + (g || "고르지 않음") + "</option>"; }).join("") + "</select></div></div>" +
         '<div class="chips2">' + ["m", "ex", "def", "syn", "ant"].map(function (k) { var h = k === "syn" ? u.words.filter(function (x) { return x.syn || x.ant; }).length : has(k); return k === "ant" ? "" : '<span class="pill' + (h === n ? " go" : h ? "" : " end") + '">' + (k === "syn" ? "동의어·반의어" : VLAB[k]) + " " + h + "/" + n + "</span>"; }).join("") + "</div>" +
         (miss.length ? '<p class="hint">빈 칸이 있으면 그 유형은 그 단어에서 빠져요. ' + (DATA.ai ? "<b>🧠 빈 칸 AI로 채우기</b>로 예문·해석·영영정의·동의어·반의어를 채울 수 있어요. (AI가 쓴 내용은 꼭 훑어보세요)" : "엑셀에서 채워서 다시 올려도 돼요.") + "</p>" : "") +
-        '<div class="row" style="margin-top:8px">' + (DATA.ai && miss.length ? '<button class="sm sub" data-act="vfill">🧠 빈 칸 AI로 채우기</button>' : "") + '<button data-act="save">💾 단어장 저장 (문제 자동 생성)</button><span class="msg" data-msg style="margin:0"></span></div>' +
+        '<div class="row" style="margin-top:8px">' + (DATA.ai && miss.length ? '<button class="sm sub" data-act="vfill">🧠 빈 칸 AI로 채우기</button>' : "") + '<button data-act="save">💾 단어장 저장 (문제 자동 생성)</button>' + (DATA.ai ? '<button class="sm sub" data-act="ctx">🧠 문맥 5지선다 만들기 (AI)</button>' : "") + '<span class="msg" data-msg style="margin:0"></span></div>' +
         '<div style="overflow:auto;max-height:340px;margin-top:10px;border:1px solid var(--line);border-radius:10px"><table class="vt"><tr>' + Object.keys(VLAB).map(function (k) { return "<th>" + VLAB[k] + "</th>"; }).join("") + "</tr>" +
         u.words.map(function (x) { return "<tr>" + Object.keys(VLAB).map(function (k) { return "<td" + (!x[k] && k !== "pos" && k !== "exk" ? ' class="e"' : "") + ">" + esc(x[k] || "") + "</td>"; }).join("") + "</tr>"; }).join("") + "</table></div></div>";
     }
@@ -1615,7 +1841,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       return post({ action: "t_import_save", meta: u.meta, words: u.words, drive: u.drive || [] }).then(function (j) {
         btn.disabled = false;
         if (!j.ok) { msg.innerHTML = '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; return { ok: false, why: j.msg }; }
-        DATA.catalog = j.catalog || DATA.catalog; u.saved = true; if (u.manual && u.meta.book) lsSet("cm-mk-book", u.meta.book); mkFill();
+        DATA.catalog = j.catalog || DATA.catalog; u.saved = true; u.uid = j.uid; if (u.manual && u.meta.book) lsSet("cm-mk-book", u.meta.book); mkFill();
         var t = (j.vocab && j.vocab.types) || {}, lab = {}; (DATA.vtypes || []).forEach(function (x) { lab[x.id] = x.label; });
         msg.innerHTML = '<span class="ok">저장했어요 ✓ 단어 ' + (j.vocab ? j.vocab.words : "") + "개로 문제 " + j.n + "개를 만들었어요</span>" + (j.vocab && j.vocab.words < 5 ? ' <span class="hint" style="margin:0">(단어가 5개보다 적으면 고르기 문제의 보기가 줄거나 빠져요. 같은 Day에 단어를 더 넣으면 좋아요)</span>' : "") + " · " + Object.keys(t).map(function (k) { return esc(lab[k] || k) + " " + t[k]; }).join(" · ") + ' · <a href="' + esc(j.url) + '" target="_blank">노션</a>';
         return { ok: true, n: j.n };
@@ -1623,6 +1849,14 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     }
     card.__save = doSave;
     card.querySelector('[data-act="save"]').onclick = function () { doSave(); };
+    var bc = card.querySelector('[data-act="ctx"]');
+    if (bc) bc.onclick = function () {
+      bc.disabled = true;
+      (u.uid ? Promise.resolve({ ok: true }) : doSave()).then(function (r) {
+        if (!r.ok || !u.uid) { bc.disabled = false; return; }
+        ctxRun([u.uid], function (t) { msg.innerHTML = t; }).then(function () { bc.disabled = false; });
+      });
+    };
   }
   function bindBulk() {
     var say = function (t, cls) { $("bulkMsg").innerHTML = cls ? '<span class="' + cls + '">' + t + "</span>" : esc(t); };

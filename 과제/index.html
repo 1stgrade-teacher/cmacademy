@@ -46,6 +46,12 @@
   .ch{font-size:10.5px;line-height:1.2;padding:1px 3px;border-radius:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:keep-all;overflow-wrap:anywhere}
   .ch.go{background:#E3F0FF;color:#1F5FA8}.ch.ok{background:#DFF5E8;color:#1E7A45}.ch.late{background:#FFF1D6;color:#8A5A00}.ch.miss{background:#FDE3E1;color:#A2342A}.ch.lock{background:#EEF1F3;color:#6B7883}
   .ch.more{background:none;color:var(--muted);padding:0 3px}
+  .ch.ev{background:#EDE6FF;color:#4F35A0;font-weight:700}.ch.ev.off{background:#EEF1F3;color:#5F6B72}
+  .evs{background:#F6F2FF;border:1px solid #DDD2FB;border-radius:var(--radius);padding:12px 16px;margin-top:14px}
+  .evs h3{margin:0 0 6px;font-size:15px;color:#4F35A0}
+  .ev1{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-top:1px dashed #DDD2FB}.ev1:first-of-type{border-top:0}
+  .ev1 .d{min-width:62px;font-weight:800;color:#4F35A0;font-size:14px}.ev1 .t{flex:1;font-size:14.5px;line-height:1.45}.ev1 .r{display:block;color:var(--muted);font-size:13px}
+  .ev1 .dd{font-size:12px;font-weight:800;color:#fff;background:#7A5AF8;border-radius:999px;padding:2px 8px;white-space:nowrap}.ev1 .dd.t0{background:#E5484D}
   .lg{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.lg .ch{display:inline-block;font-size:12px;padding:2px 6px}
   .hw.lock{cursor:default;background:#F7F9FA}.hw.lock .t{color:var(--muted)}.tag.lock{background:#EEF1F3;color:#6B7883}
   .dq .dqh{display:flex;align-items:center;gap:10px;margin-bottom:6px}.dq audio{flex:1;min-width:0;height:40px}
@@ -141,6 +147,20 @@
   function viewBar() { return '<div class="seg"><button data-v="list"' + (VIEW === "list" ? ' class="on"' : "") + '>📋 목록</button><button data-v="cal"' + (VIEW === "cal" ? ' class="on"' : "") + ">🗓 달력</button></div>"; }
   function bindView() { Array.prototype.forEach.call(app.querySelectorAll(".seg button"), function (b) { b.onclick = function () { VIEW = b.getAttribute("data-v"); try { localStorage.setItem("cm-hw-view", VIEW); } catch (e) {} showMain(); }; }); }
   function showMain() { if (VIEW === "cal") showCal(); else showList(); }
+  // 📅 반 일정 (선생님이 미리 넣어 둔 단어시험·평가·휴원 …)
+  var EVI = { "단어시험": "📝", "단어 외우기": "📖", "듣기시험": "🎧", "주간평가": "🧪", "월간평가": "📊", "분기평가": "🏆", "행사": "🎉", "휴원": "🏖️", "기타": "📌" };
+  function evName(e) { return (EVI[e.kind] || "📌") + " " + e.title; }
+  // 달력 칸은 좁아서 짧게: "워드마스터 Day 2~3 단어시험" → "단어 Day 2~3"
+  function evShort(e) {
+    var m = /(Day|DAY|day|Unit|UNIT|unit|Lesson|Chapter|L)\s*\d+(\s*[~\-]\s*\d+)?/.exec(e.title + " " + (e.range || "")), ks = { "단어시험": "단어", "단어 외우기": "외우기", "듣기시험": "듣기", "주간평가": "주간", "월간평가": "월간", "분기평가": "분기" }[e.kind];
+    return m && ks ? ks + " " + m[0].replace(/\s+/g, " ") : e.title;
+  }
+  function dday(day) { var n = Math.round((Date.parse(day + "T00:00:00Z") - Date.parse(today() + "T00:00:00Z")) / 864e5); return n === 0 ? "오늘" : n > 0 ? "D-" + n : ""; }
+  function evRow(e, withDate) {
+    var dd = dday(e.date);
+    return '<div class="ev1">' + (withDate ? '<span class="d">' + md(e.date) + "(" + WD[new Date(e.date + "T00:00:00Z").getUTCDay()] + ")</span>" : "") + '<span class="t"><b>' + esc(evName(e)) + "</b>" + (e.range && e.title.indexOf(e.range) < 0 ? '<span class="r">범위: ' + esc(e.range) + "</span>" : "") + (e.memo ? '<span class="r">' + esc(e.memo) + "</span>" : "") + "</span>" + (dd ? '<span class="dd' + (dd === "오늘" ? " t0" : "") + '">' + dd + "</span>" : "") + "</div>";
+  }
+  function upcomingBox(L) { return L && L.length ? '<div class="evs"><h3>📅 다가오는 일정 <span style="font-weight:500;color:var(--muted);font-size:12.5px">3주 · 더 뒤의 일정은 🗓 달력에서</span></h3>' + L.map(function (e) { return evRow(e, true); }).join("") + "</div>" : ""; }
   function hwRow(h, i, key) {
     if (h.hidden) return '<div class="hw lock"><div class="b"><div class="t">🔒 ' + esc(h.title) + '</div><div class="m">마감 ' + esc(h.dueLabel) + "</div></div>" + '<span class="tag lock">' + esc(md(h.show)) + "에 열려요</span></div>";
     return '<div class="hw" data-' + key + '="' + i + '"><div class="b"><div class="t">' + (h.only ? '<span style="display:inline-block;background:#FFF1D6;color:#8A5300;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:800;margin-right:5px;vertical-align:2px">⭐ 나만의 추가과제</span>' : "") + esc(h.title) + '</div><div class="m">마감 ' + esc(h.dueLabel) + " · " + (h.dict ? "🎧 받아쓰기 · " : "") + (h.status ? esc(h.status) + (h.score ? " " + esc(h.score) : h.n ? " (사진 " + h.n + "장)" : "") : esc(left(h.due))) + "</div></div>" + tagOf(h) + "</div>";
@@ -152,7 +172,7 @@
       if (j.relogin) { logout(); stepCls(j.msg); return; }
       if (!j.ok) { app.innerHTML = whoBar() + viewBar() + '<div class="box"><p class="err">' + esc(j.msg || "과제 목록을 불러오지 못했어요.") + "</p></div>"; bindWho(); bindView(); return; }
       LIST = j.list;
-      app.innerHTML = whoBar() + viewBar() + (LIST.length ? LIST.map(function (h, i) { return hwRow(h, i, "i"); }).join("") : '<div class="box"><p class="sub">지금 낼 과제가 없어요. 선생님이 과제를 내면 여기에 나와요. 앞으로 나올 과제는 🗓 달력에서 볼 수 있어요.</p></div>');
+      app.innerHTML = whoBar() + viewBar() + upcomingBox(j.sched) + (LIST.length ? LIST.map(function (h, i) { return hwRow(h, i, "i"); }).join("") : '<div class="box"><p class="sub">지금 낼 과제가 없어요. 선생님이 과제를 내면 여기에 나와요. 앞으로 나올 과제는 🗓 달력에서 볼 수 있어요.</p></div>');
       bindWho(); bindView();
       Array.prototype.forEach.call(app.querySelectorAll(".hw[data-i]"), function (el) { el.onclick = function () { openHw(LIST[+el.getAttribute("data-i")]); }; });
     });
@@ -161,7 +181,7 @@
   // ================= 🗓 달력 =================
   var WD = "일월화수목금토", pad = function (n) { return ("0" + n).slice(-2); };
   var today = function () { return new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10); };
-  var CAL = { ym: "", list: [], sel: "" };
+  var CAL = { ym: "", list: [], sched: [], sel: "" };
   function md(s) { return s ? Number(s.slice(5, 7)) + "/" + Number(s.slice(8, 10)) : ""; }
   function chOf(h) { return h.hidden ? "lock" : h.status === "제출" ? "ok" : h.status === "지각 제출" ? "late" : h.past ? "miss" : "go"; }
   function showCal(shift) {
@@ -176,8 +196,10 @@
       if (j.relogin) { logout(); stepCls(j.msg); return; }
       if (!j.ok) { document.getElementById("calg").innerHTML = '<p class="err">' + esc(j.msg || "달력을 불러오지 못했어요.") + "</p>"; return; }
       CAL.list = j.list.slice().sort(function (a, b) { return a.due.localeCompare(b.due); });
-      if (CAL.auto) { // 처음 열 때: 고른 날(오늘) 이후 과제가 있는 첫날을 보여 줘요
-        var nx = CAL.list.filter(function (x) { return x.due.slice(0, 10) >= CAL.sel; })[0]; if (nx) CAL.sel = nx.due.slice(0, 10); CAL.auto = false;
+      CAL.sched = (j.sched || []).slice().sort(function (a, b) { return a.date.localeCompare(b.date); });
+      if (CAL.auto) { // 처음 열 때: 고른 날(오늘) 이후 과제나 일정이 있는 첫날을 보여 줘요
+        var days = CAL.list.map(function (x) { return x.due.slice(0, 10); }).concat(CAL.sched.map(function (e) { return e.date; })).filter(function (d) { return d >= CAL.sel; }).sort();
+        if (days[0]) CAL.sel = days[0]; CAL.auto = false;
       }
       drawCal();
     });
@@ -187,18 +209,20 @@
     for (var w = 0; w < 7; w++) h += '<div class="wh' + (w ? "" : " su") + '">' + WD[w] + "</div>";
     for (var b = 0; b < first; b++) h += "<div></div>";
     for (var d = 1; d <= n; d++) {
-      var day = ym + "-" + pad(d), its = CAL.list.filter(function (x) { return x.due.slice(0, 10) === day; });
+      var day = ym + "-" + pad(d), its = CAL.list.filter(function (x) { return x.due.slice(0, 10) === day; }), evs = CAL.sched.filter(function (e) { return e.date === day; });
+      var chips = evs.map(function (e) { return '<span class="ch ev' + (e.kind === "휴원" ? " off" : "") + '" title="' + esc(evName(e)) + '">' + esc(evShort(e)) + "</span>"; }).concat(its.map(function (x) { return '<span class="ch ' + chOf(x) + '">' + esc(x.title) + "</span>"; }));
       h += '<div class="cd' + (day === t ? " td" : "") + (day === CAL.sel ? " sel" : "") + ((first + d - 1) % 7 === 0 ? " su" : "") + '" data-day="' + day + '"><span class="dn">' + d + "</span>" +
-        its.slice(0, 2).map(function (x) { return '<span class="ch ' + chOf(x) + '">' + esc(x.title) + "</span>"; }).join("") + (its.length > 2 ? '<span class="ch more">+' + (its.length - 2) + "</span>" : "") + "</div>";
+        chips.slice(0, 2).join("") + (chips.length > 2 ? '<span class="ch more">+' + (chips.length - 2) + "</span>" : "") + "</div>";
     }
-    document.getElementById("calg").innerHTML = '<div class="cal">' + h + '</div><div class="lg"><span class="ch go">낼 과제</span><span class="ch ok">제출함</span><span class="ch late">늦게 냄</span><span class="ch miss">미제출</span><span class="ch lock">🔒 아직 안 열림</span></div>';
+    document.getElementById("calg").innerHTML = '<div class="cal">' + h + '</div><div class="lg"><span class="ch go">낼 과제</span><span class="ch ok">제출함</span><span class="ch late">늦게 냄</span><span class="ch miss">미제출</span><span class="ch lock">🔒 아직 안 열림</span><span class="ch ev">📅 일정</span></div>';
     Array.prototype.forEach.call(document.querySelectorAll("#calg .cd"), function (c) { c.onclick = function () { CAL.sel = c.getAttribute("data-day"); CAL.auto = false; drawCal(); }; });
     drawDay();
   }
   function drawDay() {
-    var day = CAL.sel, its = CAL.list.filter(function (x) { return x.due.slice(0, 10) === day; }), el = document.getElementById("dayl");
+    var day = CAL.sel, its = CAL.list.filter(function (x) { return x.due.slice(0, 10) === day; }), evs = CAL.sched.filter(function (e) { return e.date === day; }), el = document.getElementById("dayl");
     if (!el) return;
-    el.innerHTML = '<div class="box" style="padding:12px 16px"><h2 style="margin:0">' + md(day) + "(" + WD[new Date(day + "T00:00:00Z").getUTCDay()] + ") 마감 과제</h2>" + (its.length ? "" : '<p class="sub" style="margin-top:6px">이날 마감인 과제가 없어요.</p>') + "</div>" + its.map(function (x, i) { return hwRow(x, i, "k"); }).join("") +
+    el.innerHTML = (evs.length ? '<div class="evs"><h3>📅 ' + md(day) + "(" + WD[new Date(day + "T00:00:00Z").getUTCDay()] + ") 일정</h3>" + evs.map(function (e) { return evRow(e, false); }).join("") + "</div>" : "") +
+      '<div class="box" style="padding:12px 16px"><h2 style="margin:0">' + md(day) + "(" + WD[new Date(day + "T00:00:00Z").getUTCDay()] + ") 마감 과제</h2>" + (its.length ? "" : '<p class="sub" style="margin-top:6px">이날 마감인 과제가 없어요.</p>') + "</div>" + its.map(function (x, i) { return hwRow(x, i, "k"); }).join("") +
       (its.some(function (x) { return x.hidden; }) ? '<p class="sub" style="margin-top:8px">🔒 과제는 열리는 날부터 설명을 보고 낼 수 있어요.</p>' : "");
     Array.prototype.forEach.call(el.querySelectorAll(".hw[data-k]"), function (r) { r.onclick = function () { openHw(its[+r.getAttribute("data-k")]); }; });
   }
