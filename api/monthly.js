@@ -674,6 +674,7 @@ let _game = null; const GAME = () => _game || (_game = require("./_game.js")({ n
 const HW = () => _hw || (_hw = require("./_homework.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, STUDENT_DB, listenUnit, getLastErr: () => lastErr }));
 // 🎧 받아쓰기 숙제용: 듣기 회차의 문항별 음성 + 대본
 function listenUnit(uid) { const d = unitData(uid); if (!d || d.area !== "듣기") return null; const items = (d.qs || []).filter((q) => q.script).map((q) => ({ id: q.id, audio: q.audio || "", script: q.script })); return items.length ? { name: d.name, book: d.book, items } : null; }
+let _sc = null; const SC = () => _sc || (_sc = require("./_schedule.js")({ notion, queryAll, P, rt, sel, clip, normId, id32, getLastErr: () => lastErr }));
 let _par = null; const PAR = () => _par || (_par = require("./_parent.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, EXAM_DB, CERT_DB: () => id32(process.env.NOTION_DB_ID || "d6164dec4d2e461aa2f102de18814b7d"), GAME_DB: () => id32(process.env.NOTION_GAME_DB_ID || "3ef113187ca24388b1a68de4cc535144"), HW, getLastErr: () => lastErr }));
 let _rep = null;
 function reporter() {
@@ -877,6 +878,10 @@ module.exports = async function handler(req, res) {
     if (act === "t_pm_send") { const r = await PAR().teacherSend(me, clip(b.sid, 60), clip(b.cls, 40), clip(b.text, 1500)); return r.status === 200 ? send(200, { ok: true, msg: r.msg }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
     if (act === "t_parent_links") { const r = await HW().parentLinks(clip(b.cls, 40)); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
     if (act === "t_parent_reset") { const r = await HW().parentReset(clip(b.sid, 60)); return r.status === 200 ? send(200, { ok: true, k: r.k }) : send(r.status, { ok: false, msg: r.msg }); }
+    // 📅 반 일정 (단어시험·평가·휴원 …)
+    if (act === "t_sched_month") { const r = await SC().month(clip(b.cls, 40), String(b.ym || ""), false); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_sched_save") { const r = await SC().save(me && me.name, b.items); return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg, debug: r.debug, failed: r.failed }); }
+    if (act === "t_sched_del") { const r = await SC().del(b.ids); return send(200, { ok: true, removed: r.removed }); }
     if (act === "t_hw_month") { const r = await HW().teacherMonth(clip(b.cls, 40), String(b.ym || "")); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
     if (act === "t_hw_bulk") { const r = await HW().teacherBulk(me, b.items); return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg }); }
     if (act === "t_hw_detail") { const r = await HW().teacherDetail(clip(b.id, 60)); return r ? send(200, Object.assign({ ok: true }, r)) : send(404, { error: "nf", msg: "과제를 찾지 못했어요." }); }
@@ -1011,7 +1016,7 @@ module.exports = async function handler(req, res) {
       const NEED = { // DB별로 꼭 있어야 하는 칸 (없으면 저장·기록이 실패해요)
         "시험 기록": [EXAM_DB(), ["시험명", "학생", "시험지", "반", "종류", "시험일", "시험 범위", "점수", "만점", "오답 수", "종합 평가", "코멘트", "응시 방식", "소요시간(분)", "자리비움", "단원 분석", "문항 기록", "분석 리포트"]],
         "학생": [STUDENT_DB(), [PIN_PROP, "반", "학부모 연락처", "알림 끄기"]],
-        "📸 과제": [HW().HW_DB(), ["과제명", "반", "마감", "설명", "사용", "알림 보내기", "알림 처리"]], "📮 과제 제출": [HW().SUB_DB(), ["제목", "과제", "학생", "상태", "사진", "제출 시각", "학생 메모", "알림 결과"]],
+        "📸 과제": [HW().HW_DB(), ["과제명", "반", "마감", "설명", "사용", "알림 보내기", "알림 처리"]], "📮 과제 제출": [HW().SUB_DB(), ["제목", "과제", "학생", "상태", "사진", "제출 시각", "학생 메모", "알림 결과"]], "📅 반 일정": [SC().SCHED_DB(), ["일정명", "반", "날짜", "종류", "범위", "메모", "사용"]],
         "시험지": [PAPER_DB(), []], "AI 문항": [AIQ_DB(), []], "직접 올린 문항": [CUSTOM_DB(), ["과", "교재", "단원", "과ID", "문항", "본문"]], "선생님": [TEACHER_DB(), []],
       };
       const fixConn = "노션에서 「📔 학습리포트」와 「💗 일등급샘 반별 관리페이지」 각각 ⋯ → 연결 → 「cmacademy 학습인증」을 추가해 주세요.";
@@ -1159,6 +1164,7 @@ module.exports = async function handler(req, res) {
     if (pLocked(ip)) return send(429, { ok: false, msg: "잠시 뒤 다시 열어 주세요." });
     const k = String(b.k || "");
     const r = act === "p_home" ? await PAR().home(k) : act === "p_report" ? await PAR().reportPage(k, b.pid) : await PAR().parentSend(k, clip(b.text, 1500));
+    if (act === "p_home" && r.status === 200 && r.student && r.student.cls) { try { r.sched = (await SC().upcoming(r.student.cls, 28)).map(SC().pub); } catch (e) { r.sched = []; } } // 📅 다가오는 반 일정
     if (r.status === 403 || r.status === 404) pFail(ip);
     return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg });
   }
@@ -1167,10 +1173,10 @@ module.exports = async function handler(req, res) {
   if (!who) return send(401, { error: "login", relogin: true, msg: "본인 확인이 끝났어요. 이름과 번호를 다시 확인해 주세요." });
 
   // 📸 사진 과제 (학생)
-  if (act === "s_hw_list") { const l = await HW().studentList(who); return l ? send(200, { ok: true, list: l, name: who.name, cls: who.cls }) : send(502, { error: "notion", msg: "과제 목록을 불러오지 못했어요." }); }
+  if (act === "s_hw_list") { const [l, up] = await Promise.all([HW().studentList(who), SC().upcoming(who.cls, 21).catch(() => [])]); return l ? send(200, { ok: true, list: l, name: who.name, cls: who.cls, sched: (up || []).map(SC().pub) }) : send(502, { error: "notion", msg: "과제 목록을 불러오지 못했어요." }); }
   if (act === "s_dict") { const r = await HW().studentDict(who, clip(b.id, 60)); return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg }); }
   if (act === "s_dict_submit") { const r = await HW().studentDictSubmit(who, { id: clip(b.id, 60), answers: (Array.isArray(b.answers) ? b.answers : []).slice(0, 600).map((x) => clip(x, 60)) }); return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg }); }
-  if (act === "s_hw_cal") { const r = await HW().studentMonth(who, String(b.ym || "")); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg || "달력을 불러오지 못했어요." }); }
+  if (act === "s_hw_cal") { const [r, ev] = await Promise.all([HW().studentMonth(who, String(b.ym || "")), SC().month(who.cls, String(b.ym || ""), true).catch(() => ({}))]); return r.status === 200 ? send(200, { ok: true, list: r.list, sched: ((ev && ev.list) || []).map(SC().pub) }) : send(r.status, { ok: false, msg: r.msg || "달력을 불러오지 못했어요." }); }
   if (act === "s_hw_upload") { const r = await HW().uploadPhoto(b.name, String(b.type || ""), b.b64); return r.error ? send(400, { ok: false, msg: r.error }) : send(200, { ok: true, fid: r.fid, name: r.name }); }
   if (act === "s_hw_submit") { const r = await HW().studentSubmit(who, b); return r.status === 200 ? send(200, Object.assign({ ok: true }, r)) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
 
