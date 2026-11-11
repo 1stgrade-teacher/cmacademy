@@ -11,14 +11,6 @@
   if (window.__cmChat) return;
   window.__cmChat = true;
 
-  // 학습 완료 인증(learn-check.js)도 함께 불러옴 — 강의 HTML은 고칠 필요 없음
-  if (!window.__cmLearnLoad) {
-    window.__cmLearnLoad = true;
-    var lc = document.createElement("script");
-    lc.src = "/learn-check.js"; lc.defer = true;
-    (document.head || document.documentElement).appendChild(lc);
-  }
-
   var API = "/api/chat";
   var LS_CODE = "cm-chat-code";
   var SS_KEY = "cm-chat:" + location.pathname;
@@ -28,6 +20,55 @@
   function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   function ssGet(k) { try { return JSON.parse(sessionStorage.getItem(k) || "null"); } catch (e) { return null; } }
   function ssSet(k, v) { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+
+  // ---------- '문제 풀기'에서 아직 풀지 않은 문제 (AI 조교가 답을 알려 주지 않도록 서버에 함께 보냄) ----------
+  var pqExtra = [];
+  // 예전에 저장한 강의(2.38)는 목록을 알려 주지 않으므로, AI 새 문제를 받아 올 때 함께 기억해 둠
+  if (window.fetch) {
+    var of = window.fetch;
+    window.fetch = function (u) {
+      var p = of.apply(this, arguments);
+      try {
+        if (String(u && u.url ? u.url : u).indexOf("/api/quiz") >= 0 && !window.__cmPQ) {
+          p.then(function (r) {
+            if (r.ok) r.clone().text().then(function (t) {
+              var a = t.indexOf("{"), b = t.lastIndexOf("}");
+              if (a < 0 || b < a) return;
+              var j = JSON.parse(t.slice(a, b + 1));
+              if (j && Array.isArray(j.items)) pqExtra = pqExtra.concat(j.items);
+            }).catch(function () {});
+          }).catch(function () {});
+        }
+      } catch (e) {}
+      return p;
+    };
+  }
+  function pqStr(x) { return x == null ? "" : String(x).replace(/\[\[|\]\]/g, ""); }
+  function pqArr(x) { return Array.isArray(x) ? x : x == null || x === "" ? [] : [x]; }
+  function pqLocked() {
+    try { if (window.__cmPQ && window.__cmPQ.locked) return window.__cmPQ.locked(); } catch (e) {}
+    var L = [];
+    try { var P = window.__LP && window.__LP.D && window.__LP.D.practice; if (P && Array.isArray(P.items)) L = L.concat(P.items); } catch (e) {}
+    return L.concat(pqExtra);
+  }
+  function pqPack(it) {
+    if (!it || typeof it !== "object") return null;
+    var t = String(it.t || it.type || ""), txt = [], ans = [], C = "①②③④⑤⑥⑦⑧";
+    if (t === "choose" || t === "same" || t === "mcq") {
+      var o = pqArr(it.opts || it.options);
+      if (it.ref) txt.push("<보기> " + pqStr(it.ref));
+      o.forEach(function (x, i) { txt.push((C[i] || i + 1) + " " + pqStr(x)); });
+      pqArr(it.ans || it.answer).forEach(function (n) { n = parseInt(n, 10); if (o[n - 1] != null) ans.push((C[n - 1] || n) + " " + pqStr(o[n - 1])); });
+    } else if (t === "fix") { txt.push(pqStr(it.s || it.sentence)); ans = pqArr(it.right).map(pqStr); }
+    else if (t === "bank") { txt.push("<보기> " + pqArr(it.bank).join(", ")); pqArr(it.items).forEach(function (x) { if (x) { txt.push(pqStr(x.s)); ans.push(pqStr(x.a)); } }); }
+    else if (t === "match") { pqArr(it.pairs).forEach(function (x) { if (x) { txt.push(pqStr(x.l) + " / " + pqStr(x.r)); ans.push(pqStr(x.l) + " " + pqStr(x.r)); } }); }
+    else if (t === "scene") { if (it.ex) txt.push("<보기> " + pqStr(it.ex.s)); pqArr(it.items).forEach(function (x) { if (x) { txt.push(pqStr(x.scene) + " " + pqStr(x.pre) + " ____ " + pqStr(x.post) + " " + pqStr(x.hint)); ans = ans.concat(pqArr(x.a).map(pqStr)); } }); }
+    else if (t === "order") { var ch = pqArr(it.chunks).map(pqStr); txt.push(pqStr(it.ko)); txt.push("어구: " + ch.join(" / ")); ans.push(ch.join(" ")); pqArr(it.alts).forEach(function (a) { ans.push(pqStr(a)); }); }
+    else if (t === "ox") { txt.push(pqStr(it.s || it.sentence)); ans = it.ok === true ? ["O"] : ["X"].concat(pqArr(it.right).map(pqStr)); }
+    else return null;
+    return { q: pqStr(it.q || it.question).slice(0, 200), text: txt.join(" | ").slice(0, 700), ans: ans.slice(0, 8).map(function (a) { return a.slice(0, 200); }) };
+  }
+  function pqLockPack() { return pqLocked().map(pqPack).filter(Boolean).slice(-16); }
 
   // ---------- 지금 보고 있는 화면 내용 ----------
   function visibleText(el) {
@@ -40,7 +81,14 @@
     var where = "";
     var el = null;
 
-    var items = document.querySelectorAll(".gl-item");
+    // '문제 풀기' 화면을 보고 있으면 그 문제를 함께 보냄
+    var pqm = document.querySelector(".pq:not([hidden]) .pq-main");
+    if (pqm) {
+      el = pqm;
+      var pill = document.querySelector(".pq:not([hidden]) .pq-pill");
+      where = "문제 풀기 " + (pill ? visibleText(pill) : "");
+    }
+    var items = el ? [] : document.querySelectorAll(".gl-item");
     if (items.length) {
       for (var i = 0; i < items.length; i++) if (items[i].classList.contains("on")) { el = items[i]; where = "슬라이드 " + (i + 1) + " / " + items.length; break; }
     }
@@ -224,7 +272,7 @@
     fetch(API, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ q: q, hist: hist.slice(-6), ctx: ctx, code: lsGet(LS_CODE) }),
+      body: JSON.stringify({ q: q, hist: hist.slice(-6), ctx: ctx, code: lsGet(LS_CODE), lock: pqLockPack() }),
     }).then(function (res) {
       var ct = res.headers.get("content-type") || "";
       if (!res.ok || ct.indexOf("application/json") >= 0) {
