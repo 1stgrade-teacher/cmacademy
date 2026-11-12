@@ -15,9 +15,11 @@ const ACADEMY = () => String(process.env.ACADEMY_NAME || "청명학원").trim();
 const TEMPLATE = "[#{학원}] 과제 미제출 안내\n\n#{학생} 학생이 아래 과제를 마감까지 제출하지 않았습니다.\n\n■ 과제: #{과제}\n■ 마감: #{마감}\n\n가정에서 한 번 확인 부탁드립니다. 문의는 학원으로 연락 주세요.";
 
 const keyOk = () => !!(process.env.SOLAPI_API_KEY && process.env.SOLAPI_API_SECRET);
-const mode = () => (!keyOk() ? "off" : process.env.KAKAO_PFID && process.env.KAKAO_TEMPLATE_ID ? "kakao" : process.env.SOLAPI_FROM ? "sms" : "off");
+// opt: { template: 문구, tplEnv: 템플릿 ID가 든 환경 변수 이름 } — 없으면 과제 미제출 안내
+const tplId = (opt) => String(process.env[(opt && opt.tplEnv) || "KAKAO_TEMPLATE_ID"] || "").trim();
+const mode = (opt) => (!keyOk() ? "off" : process.env.KAKAO_PFID && tplId(opt) ? "kakao" : process.env.SOLAPI_FROM ? "sms" : "off");
 function phone(s) { const d = String(s || "").replace(/\D/g, ""); return /^01[016789]\d{7,8}$/.test(d) ? d : ""; }
-function fill(vars) { return TEMPLATE.replace(/#\{([^}]+)\}/g, (m, k) => (vars[k] != null ? String(vars[k]) : m)); }
+function fill(vars, template) { return String(template || TEMPLATE).replace(/#\{([^}]+)\}/g, (m, k) => (vars[k] != null ? String(vars[k]) : m)); }
 function auth() {
   const date = new Date().toISOString().replace(/\.\d{3}Z$/, "Z"), salt = crypto.randomBytes(16).toString("hex");
   const sig = crypto.createHmac("sha256", String(process.env.SOLAPI_API_SECRET)).update(date + salt).digest("hex");
@@ -25,17 +27,17 @@ function auth() {
 }
 
 // list: [{ to, vars:{학생,과제,마감} }] → [{ ok, how, msg }] (같은 순서)
-async function sendMany(list) {
-  const m = mode();
+async function sendMany(list, opt) {
+  const m = mode(opt), T = (opt && opt.template) || TEMPLATE;
   const prepared = list.map((x) => ({ to: phone(x.to), vars: Object.assign({ 학원: ACADEMY() }, x.vars) }));
-  if (m === "off") return prepared.map((x) => ({ ok: false, how: "off", msg: "발송 설정 전 (보낼 문구: " + fill(x.vars).replace(/\n+/g, " ") + ")" }));
+  if (m === "off") return prepared.map((x) => ({ ok: false, how: "off", msg: "발송 설정 전 (보낼 문구: " + fill(x.vars, T).replace(/\n+/g, " ") + ")" }));
   const out = prepared.map((x) => (x.to ? null : { ok: false, how: m, msg: "연락처 형식이 맞지 않아요" }));
   const msgs = [], idx = [];
   prepared.forEach((x, i) => {
     if (!x.to) return;
-    const text = fill(x.vars), one = { to: x.to, text };
+    const text = fill(x.vars, T), one = { to: x.to, text };
     if (process.env.SOLAPI_FROM) one.from = String(process.env.SOLAPI_FROM).replace(/\D/g, "");
-    if (m === "kakao") { one.type = "ATA"; one.kakaoOptions = { pfId: process.env.KAKAO_PFID, templateId: process.env.KAKAO_TEMPLATE_ID, variables: Object.fromEntries(Object.entries(x.vars).map(([k, v]) => ["#{" + k + "}", String(v)])), disableSms: !process.env.SOLAPI_FROM }; }
+    if (m === "kakao") { one.type = "ATA"; one.kakaoOptions = { pfId: process.env.KAKAO_PFID, templateId: tplId(opt), variables: Object.fromEntries(Object.entries(x.vars).map(([k, v]) => ["#{" + k + "}", String(v)])), disableSms: !process.env.SOLAPI_FROM }; }
     msgs.push(one); idx.push(i);
   });
   for (let s = 0; s < msgs.length; s += 100) {

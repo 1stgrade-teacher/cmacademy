@@ -676,6 +676,8 @@ const HW = () => _hw || (_hw = require("./_homework.js")({ notion, queryAll, P, 
 function listenUnit(uid) { const d = unitData(uid); if (!d || d.area !== "듣기") return null; const items = (d.qs || []).filter((q) => q.script).map((q) => ({ id: q.id, audio: q.audio || "", script: q.script })); return items.length ? { name: d.name, book: d.book, items } : null; }
 let _sc = null; const SC = () => _sc || (_sc = require("./_schedule.js")({ notion, queryAll, P, rt, sel, clip, normId, id32, getLastErr: () => lastErr }));
 let _par = null; const PAR = () => _par || (_par = require("./_parent.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, EXAM_DB, CERT_DB: () => id32(process.env.NOTION_DB_ID || "d6164dec4d2e461aa2f102de18814b7d"), GAME_DB: () => id32(process.env.NOTION_GAME_DB_ID || "3ef113187ca24388b1a68de4cc535144"), HW, getLastErr: () => lastErr }));
+let _plus = null; const PLUS = () => _plus || (_plus = require("./_plus.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, SCHED_DB: () => SC().SCHED_DB(), secret, signToken, readToken, login, getLastErr: () => lastErr }));
+const plusOut = (send, r) => send(r.status || 200, Object.assign({ ok: (r.status || 200) === 200 && r.ok !== false }, r, { status: undefined }));
 let _rep = null;
 function reporter() {
   if (!_rep) _rep = require("./_report.js")({ uuid, teacherFor, notion, queryAll, P, clip, normId, id32, unitIndex, unitData, askAI, EXAM_DB, STUDENT_DB, getPaper });
@@ -690,6 +692,11 @@ module.exports = async function handler(req, res) {
     res.statusCode = 200; res.setHeader("Content-Type", "application/manifest+json; charset=utf-8"); res.setHeader("Cache-Control", "private, max-age=3600");
     return res.end(JSON.stringify(PAR().manifest(k)));
   }
+  if (req.method === "GET" && /[?&]plus_cron=1\b/.test(req.url || "")) { // ⏰ 🏫 플러스 수업 미참여 확인 (Vercel 크론, 1분마다)
+    const cs = String(process.env.CRON_SECRET || "").trim(), au = String(req.headers.authorization || "");
+    if (cs ? au !== "Bearer " + cs : !/vercel-cron/i.test(String(req.headers["user-agent"] || ""))) return send(401, { error: "cron" });
+    return send(200, await PLUS().tick(true));
+  }
   if (req.method === "GET") return send(200, { ok: true, ready: !!process.env.NOTION_TOKEN && process.env.MONTHLY_OFF !== "1", bank: !!loadCatalog(), ai: aiOn(), ais: AI.list().map((x) => x.id), teacher: !!tcode, drive: drive.configured() });
   if (req.method !== "POST") return send(405, { error: "method" });
   const origin = req.headers.origin || "", host = req.headers["x-forwarded-host"] || req.headers.host || "";
@@ -703,6 +710,24 @@ module.exports = async function handler(req, res) {
     const sec = String(process.env.HW_CRON_SECRET || "").trim();
     if (sec && String(b.secret || "") !== sec) return send(401, { error: "secret" });
     try { return send(200, await HW().cron()); } catch (e) { return send(500, { ok: false, msg: clip(e && e.message, 200) }); }
+  }
+  // =================== 🏫 플러스 수업 출결 ===================
+  if (act === "plus_cron") { // GitHub Actions(예비, 5분마다)
+    const sec = String(process.env.HW_CRON_SECRET || "").trim();
+    if (sec && String(b.secret || "") !== sec) return send(401, { error: "secret" });
+    return send(200, await PLUS().tick(true));
+  }
+  if (act === "plus_today" || act === "plus_check") { // 학생: 자습실 화면의 QR·숫자를 맞혀야 쓸 수 있음 (사이트 입장 코드 없이)
+    const ip = String((req.headers["x-forwarded-for"] || "").split(",")[0]).trim() || "x";
+    return plusOut(send, act === "plus_today" ? await PLUS().today(b, ip) : await PLUS().check(b, ip));
+  }
+  if (act === "plus_screen") return plusOut(send, await PLUS().screen(b)); // 자습실 출석 화면
+  if (/^t_plus_\w+$/.test(act)) {
+    const ip = String((req.headers["x-forwarded-for"] || "").split(",")[0]).trim() || "x";
+    if (tBlocked(ip)) return send(429, { error: "limit", msg: "코드를 여러 번 틀렸어요. 10분 뒤에 다시 해 주세요." });
+    const me = await whoTeacher(b.code);
+    if (!me) { tFail(ip); return send(401, { error: "code", msg: "선생님 코드가 맞지 않아요." }); }
+    return plusOut(send, Object.assign({ me: { name: me.name } }, await PLUS().teacher(act, b, me)));
   }
   if (!/^(classes|roster|login|s_list|p_\w+)$/.test(act)) await loadCustom();
   lastErr = null;

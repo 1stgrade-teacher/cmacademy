@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><title>플러스 수업 출결 · 일등급샘</title>
+<link rel="icon" href="/favicon-32.png">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#F0F8F8;font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;color:#1B2733;padding:14px 12px 60px}
+.wrap{max-width:1100px;margin:0 auto}h1{font-size:20px;color:#0A5F61;margin:4px 0 12px}
+.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 2px 10px rgba(10,60,62,.08)}
+label{display:block;font-size:12.5px;color:#5F6E7C;margin-bottom:4px}
+input,select{border:1px solid #CFE5E4;border-radius:9px;padding:9px 10px;font-size:15px;background:#fff;color:#1B2733;font-family:inherit}
+input:focus,select:focus{outline:none;border-color:#0E8A8C;box-shadow:0 0 0 3px #DDF2F1}
+button{border:0;border-radius:10px;background:#0E8A8C;color:#fff;font-size:15px;font-weight:700;padding:10px 15px;cursor:pointer;font-family:inherit}
+button.sub{background:#EAF3F3;color:#0A5F61}button.sm{padding:6px 10px;font-size:13px}button:disabled{background:#B9CDD0}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs button{background:#fff;color:#0A5F61;border:1px solid #CFE5E4}.tabs button.on{background:#0E8A8C;color:#fff;border-color:#0E8A8C}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:760px}
+th{font-size:12px;color:#5F6E7C;text-align:left;padding:7px 6px;white-space:nowrap;border-bottom:1px solid #E3EEEE}td{padding:7px 6px;vertical-align:middle;border-bottom:1px solid #F0F5F5;font-size:14.5px}
+.b{display:inline-block;border-radius:999px;padding:2px 10px;font-size:13px;font-weight:700}
+.b.출석{background:#E3F5EA;color:#1F6E40}.b.지각{background:#FFF3D6;color:#8A5A00}.b.미참여{background:#FDE6E3;color:#B03A2E}.b.면제{background:#EEF1F3;color:#5F6E7C}.b.대기{background:#EAF3F3;color:#0A5F61}.b.확인{background:#F3EAFB;color:#6B3FA0}
+.nt{font-size:12.5px;color:#5F6E7C;max-width:260px;white-space:pre-line}
+.msg{margin-top:8px;font-size:14px;line-height:1.5}.ok{color:#1F6E40}.er{color:#C0392B}.hint{font-size:13px;color:#6B7A88;line-height:1.6}
+.warn{background:#FFF6E0;border:1px solid #F2D58A;color:#7A5300;border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.55;margin-bottom:12px}
+pre{white-space:pre-wrap;background:#F6FAFA;border-radius:10px;padding:12px;font-size:14px;line-height:1.6;font-family:inherit;margin:6px 0}
+.slot{width:200px}.nm{font-weight:700;white-space:nowrap}
+/* ---------- 자습실 출석 화면 ---------- */
+body.scr{background:#0B3B3D;color:#fff;padding:0;overflow:hidden}
+.scr .wrap{display:none}
+#screen{display:none;height:100vh;padding:3vh 3vw;flex-direction:column}
+.scr #screen{display:flex}
+.s-top{display:flex;justify-content:space-between;align-items:center;font-size:2.4vh;opacity:.9;padding-right:16vh}
+.s-top b{font-size:3.4vh}
+.s-main{flex:1;display:flex;align-items:center;justify-content:center;gap:6vw}
+.s-qr{background:#fff;border-radius:3vh;padding:3vh;line-height:0}
+.s-qr svg{width:46vh!important;height:46vh!important;display:block}
+.s-side{text-align:center}
+.s-side .lab{font-size:3vh;opacity:.85}
+.s-pin{font-size:20vh;font-weight:800;letter-spacing:2vh;line-height:1.05;margin:1vh 0;font-variant-numeric:tabular-nums}
+.s-bar{height:1.4vh;background:rgba(255,255,255,.2);border-radius:1vh;overflow:hidden;width:44vh;margin:0 auto}.s-bar i{display:block;height:100%;background:#7FE0DA;width:100%}
+.s-how{margin-top:3vh;font-size:2.5vh;line-height:1.6;opacity:.9}
+.s-board{display:flex;flex-wrap:wrap;gap:1vh;max-height:22vh;overflow:hidden;padding-top:1.5vh;border-top:1px solid rgba(255,255,255,.15)}
+.s-board span{background:rgba(255,255,255,.1);border-radius:1vh;padding:.8vh 1.4vh;font-size:2.3vh}
+.s-board span.출석{background:#2E8B57}.s-board span.지각{background:#B8860B}.s-board span.미참여{background:#A93226}.s-board span.면제{opacity:.5}
+.s-err{position:fixed;left:0;right:0;bottom:0;background:#A93226;color:#fff;text-align:center;padding:1vh;font-size:2.2vh;display:none}
+.s-btn{position:fixed;right:1.5vh;top:1.5vh;background:rgba(255,255,255,.12);font-size:1.8vh;padding:.8vh 1.4vh}
+</style></head><body>
+<div class="wrap">
+<h1>🏫 플러스 수업 출결</h1>
+
+<div class="card" id="login">
+  <label>선생님 코드</label>
+  <div class="row"><input id="tcode" type="password" autocomplete="off" placeholder="선생님 전용 코드" style="max-width:260px"><button id="loginBtn">확인</button></div>
+  <div class="hint">이 코드는 이 기기에 저장돼서 다음부터는 묻지 않아요.</div>
+  <div class="msg er" id="loginMsg"></div>
+</div>
+
+<div id="main" style="display:none">
+  <div id="warn"></div>
+  <div class="tabs" id="tabs">
+    <button data-t="today" class="on">📋 오늘 현황</button><button data-t="time">🕒 시간표</button><button data-t="scr">📺 출석 화면</button><button data-t="tpl">💬 알림 문구</button>
+  </div>
+
+  <div class="card tab" id="t-today">
+    <div class="row" style="margin-bottom:10px">
+      <input type="date" id="bdate"><select id="bcls"><option value="">모든 반</option></select>
+      <button class="sub" id="bload">새로고침</button><button class="sub" id="tick" title="수업 시각 10분이 지난 학생 중 출석이 없는 학생을 지금 확인해요">지금 미참여 확인</button>
+    </div>
+    <div class="tw"><table><thead><tr><th>시각</th><th>이름</th><th>반</th><th>상태</th><th>출석</th><th>방법</th><th>알림 결과 · 메모</th><th>선생님 처리 (알림 없음)</th></tr></thead><tbody id="blist"></tbody></table></div>
+    <div class="msg" id="bmsg"></div>
+    <div class="hint" style="margin-top:8px">· 결석을 미리 연락받았으면 수업 10분 전까지 <b>면제</b>를 누르면 미참여 알림이 가지 않아요. · 반 일정에 <b>휴원</b>으로 넣은 날은 자동으로 면제돼요.<br>· 선생님이 바꾼 상태는 학부모님께 알림이 가지 않아요.</div>
+  </div>
+
+  <div class="card tab" id="t-time" style="display:none">
+    <div class="row" style="margin-bottom:10px"><select id="tcls"><option value="">플러스 수업이 있는 학생 전체</option></select><button class="sub" id="tload">불러오기</button></div>
+    <div class="tw"><table><thead><tr><th>이름</th><th>반</th><th>플러스 수업 (매주)</th><th>빠르게 넣기</th><th>학부모 연락처</th><th></th></tr></thead><tbody id="tlist"></tbody></table></div>
+    <div class="msg" id="tmsg"></div>
+    <div class="hint" style="margin-top:8px">· 요일과 시각을 <b>화 17:00</b>처럼 써요. 일주일에 두 번이면 <b>화 17:00, 목 18:00</b>. 시각은 24시간제(오후 5시 = 17:00)예요.<br>· 칸을 비우고 저장하면 플러스 수업에서 빠져요. · 학부모 연락처는 학생 정보(노션 또는 월간평가 관리 화면)에서 넣어요.</div>
+  </div>
+
+  <div class="card tab" id="t-scr" style="display:none">
+    <h3 style="margin:0 0 8px">📺 자습실 출석 화면 켜기</h3>
+    <p class="hint">자습실 모니터·TV·태블릿에서 이 페이지를 열고 아래 버튼을 누르면, 그 기기가 <b>출석 화면</b>이 돼요. 30초마다 바뀌는 QR과 숫자 4자리, 오늘 출석 현황이 떠요.<br>
+    화면을 켜 두면 1분마다 미참여 확인도 함께 해요. (화면이 꺼져 있어도 서버가 따로 확인해요)</p>
+    <div class="row"><button id="scrOn">이 기기를 출석 화면으로 쓰기</button><button class="sub" id="scrOpen">출석 화면 열기</button></div>
+    <div class="msg" id="smsg"></div>
+    <h3 style="margin:18px 0 8px">📱 학생은 이렇게 출석해요</h3>
+    <p class="hint">① 휴대폰이 있는 학생: 카메라로 화면의 QR을 찍기 → 이름 확인 → 본인번호<br>
+    ② 휴대폰이 없는 학생: 자습실 공용 태블릿에서 아래 주소를 열어 두고, 화면의 숫자 4자리 → 반 → 이름 → 본인번호<br>
+    <b id="padUrl"></b> &nbsp;<button class="sub sm" id="copyPad">주소 복사</button></p>
+  </div>
+
+  <div class="card tab" id="t-tpl" style="display:none">
+    <div id="tplBox" class="hint">불러오는 중…</div>
+  </div>
+  <div class="row"><button class="sub sm" id="logout">로그아웃</button></div>
+</div>
+</div>
+
+<!-- 자습실 출석 화면 -->
+<div id="screen">
+  <div class="s-top"><div><b>🏫 플러스 수업 출석</b></div><div id="sNow"></div></div>
+  <div class="s-main">
+    <div class="s-qr" id="sQr"></div>
+    <div class="s-side">
+      <div class="lab">휴대폰이 없으면 태블릿에 이 숫자를</div>
+      <div class="s-pin" id="sPin">····</div>
+      <div class="s-bar"><i id="sBar"></i></div>
+      <div class="s-how">📱 카메라로 QR을 찍거나<br>📝 공용 태블릿에 숫자 4자리를 넣고<br>본인번호로 출석해요</div>
+    </div>
+  </div>
+  <div class="s-board" id="sBoard"></div>
+  <button class="s-btn" id="fs">전체 화면</button>
+  <div class="s-err" id="sErr"></div>
+</div>
+
+<script src="/admin/qrcode.js"></script>
+<script>
+(function () {
+  var API = "/api/monthly", CODE = "", LS_T = "cm-teacher-code", LS_S = "cm-plus-screen";
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function lsGet(k) { try { return localStorage.getItem(k) || ""; } catch (e) { return ""; } }
+  function lsSet(k, v) { try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); } catch (e) {} }
+  function post(b) {
+    if (CODE && !b.screen) b.code = CODE;
+    return fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { j._s = r.status; return j; }); })
+      .catch(function () { return { _s: 0, msg: "인터넷 연결을 확인해 주세요." }; });
+  }
+  var kday = function () { return new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10); };
+  var DAYS = "일월화수목금토";
+  function msg(id, t, ok) { var el = $(id); el.className = "msg " + (ok ? "ok" : "er"); el.textContent = t || ""; }
+
+  // =================== 자습실 출석 화면 ===================
+  if (/[?&]screen=1/.test(location.search)) {
+    document.body.className = "scr";
+    var tok = lsGet(LS_S), lastQr = "", lastBoard = 0, nextAt = 0, timer = null;
+    function err(t) { $("sErr").style.display = t ? "block" : "none"; $("sErr").textContent = t || ""; }
+    if (!tok) { err("이 기기는 아직 출석 화면으로 등록되지 않았어요. 선생님 화면 → 📺 출석 화면 → '이 기기를 출석 화면으로 쓰기'를 눌러 주세요."); return; }
+    function draw(j) {
+      $("sPin").textContent = j.pin; $("sNow").textContent = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10) + " " + j.now;
+      var url = location.origin + "/plus.html?c=" + encodeURIComponent(j.qr);
+      if (url !== lastQr) {
+        lastQr = url;
+        if (window.qrcode) { var q = qrcode(0, "M"); q.addData(url); q.make(); $("sQr").innerHTML = q.createSvgTag({ cellSize: 8, margin: 0 }); }
+        else $("sQr").innerHTML = '<div style="color:#1B2733;font-size:2.4vh;line-height:1.5;padding:2vh;width:40vh">QR을 그리지 못했어요.<br>숫자 4자리로 출석해 주세요.</div>';
+      }
+      var bar = $("sBar"); bar.style.transition = "none"; bar.style.width = Math.round(j.left / 300) + "%";
+      setTimeout(function () { bar.style.transition = "width " + (j.left / 1000) + "s linear"; bar.style.width = "0%"; }, 50);
+      if (j.board) {
+        var l = j.board.list || [];
+        $("sBoard").innerHTML = l.length ? l.map(function (x) { return '<span class="' + esc(x.state) + '">' + esc(x.hm) + " " + esc(x.name) + " · " + esc(x.state === "확인 중" ? "확인 중" : x.state) + (x.at ? " " + esc(x.at) : "") + "</span>"; }).join("") : '<span>오늘은 플러스 수업이 없어요</span>';
+      }
+    }
+    function load() {
+      clearTimeout(timer);
+      var wantBoard = Date.now() - lastBoard > 20000;
+      post({ action: "plus_screen", screen: tok, board: wantBoard }).then(function (j) {
+        if (j._s === 401) { err(j.msg); return; }
+        if (!j.ok) { err("연결이 잠시 끊겼어요. 다시 시도하는 중…"); timer = setTimeout(load, 5000); return; }
+        err(""); if (wantBoard) lastBoard = Date.now();
+        draw(j);
+        timer = setTimeout(load, Math.max(1000, Math.min(j.left + 300, 20000)));
+      });
+    }
+    load();
+    // 화면이 꺼지지 않게
+    function wake() { try { if (navigator.wakeLock) navigator.wakeLock.request("screen").catch(function () {}); } catch (e) {} }
+    wake(); document.addEventListener("visibilitychange", function () { if (!document.hidden) { wake(); load(); } });
+    $("fs").onclick = function () { var d = document.documentElement; (d.requestFullscreen || d.webkitRequestFullscreen || function () {}).call(d); };
+    return;
+  }
+
+  // =================== 선생님 화면 ===================
+  var STATE = { list: [] };
+  $("padUrl").textContent = location.origin + "/plus.html";
+  $("copyPad").onclick = function () { try { navigator.clipboard.writeText(location.origin + "/plus.html"); $("copyPad").textContent = "복사됨"; } catch (e) {} };
+  $("bdate").value = kday();
+  document.querySelectorAll("#tabs button").forEach(function (b) {
+    b.onclick = function () {
+      document.querySelectorAll("#tabs button").forEach(function (x) { x.classList.toggle("on", x === b); });
+      document.querySelectorAll(".tab").forEach(function (t) { t.style.display = t.id === "t-" + b.getAttribute("data-t") ? "" : "none"; });
+      var t = b.getAttribute("data-t"); if (t === "tpl") loadTpl(); if (t === "time" && !STATE.timeLoaded) loadTime(); if (t === "today") loadBoard();
+    };
+  });
+
+  function init() {
+    post({ action: "t_plus_list" }).then(function (j) {
+      if (j._s === 401) { $("loginMsg").textContent = j.msg; lsSet(LS_T, ""); $("login").style.display = ""; return; }
+      if (!j.ok) { $("loginMsg").textContent = j.msg || "불러오지 못했어요."; return; }
+      lsSet(LS_T, CODE); $("login").style.display = "none"; $("main").style.display = "";
+      var w = "";
+      if (!j.dbOk) w += '<div class="warn">⚠️ 노션 <b>🏫 플러스 수업 출결</b>을 읽지 못했어요. 노션에서 이 데이터베이스(일등급샘 반별 관리페이지 안)에 <b>cmacademy 학습인증</b> 연결을 추가해 주세요. 연결 전에는 출석이 저장되지 않아요.</div>';
+      if (j.mode && j.mode.in === "off") w += '<div class="warn">📵 아직 솔라피가 연결되지 않아 학부모님께 알림이 실제로 가지 않아요. 출결은 그대로 기록되고, 알림 결과 칸에 <b>발송 설정 전</b>과 보낼 문구가 남아요.</div>';
+      $("warn").innerHTML = w;
+      post({ action: "classes" }).then(function (c) {
+        (c.classes || []).forEach(function (n) { ["bcls", "tcls"].forEach(function (id) { var o = document.createElement("option"); o.value = n; o.textContent = n; $(id).appendChild(o); }); });
+      });
+      loadBoard();
+    });
+  }
+
+  // ---------- 오늘 현황 ----------
+  function loadBoard() {
+    $("blist").innerHTML = '<tr><td colspan="8" class="hint">불러오는 중…</td></tr>';
+    post({ action: "t_plus_board", date: $("bdate").value, cls: $("bcls").value }).then(function (j) {
+      if (!j.ok) { $("blist").innerHTML = ""; msg("bmsg", j.msg); return; }
+      msg("bmsg", "");
+      var l = j.list || [];
+      if (!l.length) { $("blist").innerHTML = '<tr><td colspan="8" class="hint">' + esc(j.label) + " 플러스 수업이 있는 학생이 없어요. 🕒 시간표에서 학생별 시간을 넣어 주세요.</td></tr>"; return; }
+      $("blist").innerHTML = l.map(function (x, i) {
+        var cls = x.state === "확인 중" ? "확인" : x.state;
+        return "<tr><td>" + esc(x.hm) + '</td><td class="nm">' + (x.url ? '<a href="' + esc(x.url) + '" target="_blank" rel="noopener" style="color:inherit">' + esc(x.name) + "</a>" : esc(x.name)) + "</td><td>" + esc(x.cls) + '</td><td><span class="b ' + esc(cls) + '">' + esc(x.state) + "</span></td><td>" + esc(x.at || "-") + "</td><td>" + esc(x.how || "") + '</td><td class="nt">' + esc([x.notice, x.memo].filter(Boolean).join("\n")) + "</td><td>" +
+          ["면제", "출석", "미참여"].map(function (s) { return '<button class="sub sm" data-i="' + i + '" data-s="' + s + '">' + s + "</button>"; }).join(" ") + "</td></tr>";
+      }).join("");
+      STATE.list = l;
+      $("blist").querySelectorAll("button").forEach(function (b) {
+        b.onclick = function () {
+          var x = STATE.list[+b.getAttribute("data-i")], s = b.getAttribute("data-s");
+          var memo = s === "면제" ? (prompt(x.name + " 학생을 면제로 처리해요. 사유를 적어 주세요. (예: 병결 미리 연락)", "미리 연락") || "") : "";
+          b.disabled = true;
+          post({ action: "t_plus_mark", sid: x.sid, date: j.date, hm: x.hm, state: s, memo: memo }).then(function (r) { if (!r.ok) { b.disabled = false; msg("bmsg", r.msg); return; } loadBoard(); });
+        };
+      });
+    });
+  }
+  $("bload").onclick = loadBoard; $("bdate").onchange = loadBoard; $("bcls").onchange = loadBoard;
+  $("tick").onclick = function () {
+    $("tick").disabled = true;
+    post({ action: "t_plus_tick" }).then(function (j) {
+      $("tick").disabled = false;
+      if (!j.ok) return msg("bmsg", j.msg || "확인하지 못했어요.");
+      msg("bmsg", j.due ? "확인 완료: 미참여 " + (j.absent || 0) + "명, 면제 " + (j.exempt || 0) + "명 새로 기록" : "지금 확인할 학생이 없어요. (수업 시각 10분이 지난 학생만 확인해요)", true);
+      loadBoard();
+    });
+  };
+  setInterval(function () { if ($("t-today").style.display !== "none" && $("main").style.display !== "none" && !document.hidden) loadBoard(); }, 60000);
+
+  // ---------- 시간표 ----------
+  function loadTime() {
+    STATE.timeLoaded = true;
+    $("tlist").innerHTML = '<tr><td colspan="6" class="hint">불러오는 중…</td></tr>';
+    post({ action: "t_plus_list", cls: $("tcls").value }).then(function (j) {
+      if (!j.ok) { $("tlist").innerHTML = ""; return msg("tmsg", j.msg); }
+      msg("tmsg", "");
+      var l = j.students || [];
+      if (!l.length) { $("tlist").innerHTML = '<tr><td colspan="6" class="hint">' + ($("tcls").value ? "이 반에 학생이 없어요." : "아직 플러스 수업 시간이 등록된 학생이 없어요. 위에서 반을 골라 넣어 주세요.") + "</td></tr>"; return; }
+      $("tlist").innerHTML = l.map(function (s, i) {
+        return '<tr><td class="nm">' + esc(s.name) + "</td><td>" + esc(s.cls) + '</td><td><input class="slot" data-i="' + i + '" value="' + esc(s.slots || s.raw) + '" placeholder="예: 화 17:00"></td>' +
+          '<td><div class="row"><select data-d="' + i + '">' + "월화수목금토일".split("").map(function (d) { return "<option>" + d + "</option>"; }).join("") + '</select><input type="time" data-h="' + i + '" value="17:00" style="width:120px"><button class="sub sm" data-a="' + i + '">+</button></div></td>' +
+          "<td>" + (s.phone ? (s.mute ? "있음 (알림 끄기)" : "있음") : '<span class="er">없음</span>') + '</td><td><button class="sm" data-s="' + i + '">저장</button></td></tr>';
+      }).join("");
+      $("tlist").querySelectorAll("button[data-a]").forEach(function (b) {
+        b.onclick = function () { var i = b.getAttribute("data-a"), inp = document.querySelector('.slot[data-i="' + i + '"]'); var add = document.querySelector('[data-d="' + i + '"]').value + " " + document.querySelector('[data-h="' + i + '"]').value; inp.value = inp.value.trim() ? inp.value.trim() + ", " + add : add; };
+      });
+      $("tlist").querySelectorAll("button[data-s]").forEach(function (b) {
+        b.onclick = function () {
+          var i = +b.getAttribute("data-s"), inp = document.querySelector('.slot[data-i="' + i + '"]');
+          b.disabled = true; b.textContent = "저장 중";
+          post({ action: "t_plus_set", sid: l[i].id, slots: inp.value }).then(function (r) {
+            b.disabled = false;
+            if (!r.ok) { b.textContent = "저장"; return msg("tmsg", l[i].name + ": " + (r.msg || "저장하지 못했어요.")); }
+            inp.value = r.slots; b.textContent = "저장됨 ✓"; msg("tmsg", l[i].name + " 학생: " + (r.slots || "플러스 수업 없음"), true);
+            setTimeout(function () { b.textContent = "저장"; }, 2000);
+          });
+        };
+      });
+    });
+  }
+  $("tload").onclick = loadTime; $("tcls").onchange = loadTime;
+
+  // ---------- 출석 화면 ----------
+  $("scrOn").onclick = function () {
+    post({ action: "t_plus_screen" }).then(function (j) {
+      if (!j.ok) return msg("smsg", j.msg);
+      lsSet(LS_S, j.screen); msg("smsg", "이 기기가 출석 화면으로 등록됐어요. (1년 동안 유지) 출석 화면을 열어요…", true);
+      setTimeout(function () { location.href = location.pathname + "?screen=1"; }, 900);
+    });
+  };
+  $("scrOpen").onclick = function () { if (!lsGet(LS_S)) return msg("smsg", "먼저 '이 기기를 출석 화면으로 쓰기'를 눌러 주세요."); location.href = location.pathname + "?screen=1"; };
+
+  // ---------- 알림 문구 ----------
+  function loadTpl() {
+    post({ action: "t_plus_template" }).then(function (j) {
+      if (!j.ok) { $("tplBox").textContent = j.msg || "불러오지 못했어요."; return; }
+      var md = function (m) { return m === "kakao" ? "✅ 알림톡으로 보냄" : m === "sms" ? "📩 템플릿 ID가 없어 문자로 보냄" : "📵 솔라피 연결 전 (기록만)"; };
+      $("tplBox").innerHTML = [["in", "✅ 참여 안내 (출석하면 바로)"], ["out", "⚠️ 미참여 안내 (수업 10분 뒤)"]].map(function (k) {
+        var t = j[k[0]];
+        return '<h3 style="margin:6px 0">' + k[1] + '</h3><div class="hint">지금 상태: <b>' + md(t.mode) + '</b> · Vercel 환경 변수 <b>' + esc(t.env) + '</b>에 심사 통과한 템플릿 ID를 넣어요.</div>' +
+          '<div class="hint" style="margin-top:6px">카카오 템플릿에 그대로 등록할 문구</div><pre>' + esc(t.template) + '</pre><div class="hint">학부모님이 받는 예시</div><pre>' + esc(t.sample) + "</pre>";
+      }).join('<hr style="border:0;border-top:1px solid #E3EEEE;margin:16px 0">');
+    });
+  }
+
+  $("logout").onclick = function () { lsSet(LS_T, ""); location.reload(); };
+  $("loginBtn").onclick = function () { CODE = $("tcode").value.trim(); if (CODE) init(); };
+  $("tcode").onkeydown = function (e) { if (e.key === "Enter") $("loginBtn").onclick(); };
+  CODE = lsGet(LS_T); if (CODE) init();
+})();
+</script>
+</body></html>
