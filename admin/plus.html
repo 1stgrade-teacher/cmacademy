@@ -21,7 +21,13 @@ th{font-size:12px;color:#5F6E7C;text-align:left;padding:7px 6px;white-space:nowr
 .msg{margin-top:8px;font-size:14px;line-height:1.5}.ok{color:#1F6E40}.er{color:#C0392B}.hint{font-size:13px;color:#6B7A88;line-height:1.6}
 .warn{background:#FFF6E0;border:1px solid #F2D58A;color:#7A5300;border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.55;margin-bottom:12px}
 pre{white-space:pre-wrap;background:#F6FAFA;border-radius:10px;padding:12px;font-size:14px;line-height:1.6;font-family:inherit;margin:6px 0}
-.slot{width:200px}.nm{font-weight:700;white-space:nowrap}
+.nm{font-weight:700;white-space:nowrap}
+.days{display:inline-flex;gap:4px;flex-wrap:wrap}.days button{background:#fff;color:#0A5F61;border:1px solid #CFE5E4;padding:6px 0;width:34px;font-size:14px;border-radius:8px}.days button.on{background:#0E8A8C;color:#fff;border-color:#0E8A8C}
+.chip{display:inline-flex;align-items:center;gap:4px;background:#E3F5EA;color:#1F6E40;border-radius:999px;padding:4px 6px 4px 11px;font-weight:700;font-size:14px;margin:2px 4px 2px 0;white-space:nowrap}
+.chip button{background:none;color:#1F6E40;padding:0 5px;font-size:15px;line-height:1}.none{color:#9AA7B3;font-size:13px}
+.bulk{background:#F2FAFA;border:1px dashed #9FD4D1;border-radius:12px;padding:12px;margin:10px 0}
+.addc{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.addc input[type=time]{width:120px;padding:6px 8px}
+tr.sel td{background:#F2FAFA}
 /* ---------- 자습실 출석 화면 ---------- */
 body.scr{background:#0B3B3D;color:#fff;padding:0;overflow:hidden}
 .scr .wrap{display:none}
@@ -56,7 +62,7 @@ body.scr{background:#0B3B3D;color:#fff;padding:0;overflow:hidden}
 <div id="main" style="display:none">
   <div id="warn"></div>
   <div class="tabs" id="tabs">
-    <button data-t="today" class="on">📋 오늘 현황</button><button data-t="time">🕒 시간표</button><button data-t="scr">📺 출석 화면</button><button data-t="tpl">💬 알림 문구</button>
+    <button data-t="today" class="on">📋 오늘 현황</button><button data-t="time">🕒 학생별 일정</button><button data-t="scr">📺 출석 화면</button><button data-t="tpl">💬 알림 문구</button>
   </div>
 
   <div class="card tab" id="t-today">
@@ -70,10 +76,17 @@ body.scr{background:#0B3B3D;color:#fff;padding:0;overflow:hidden}
   </div>
 
   <div class="card tab" id="t-time" style="display:none">
-    <div class="row" style="margin-bottom:10px"><select id="tcls"><option value="">플러스 수업이 있는 학생 전체</option></select><button class="sub" id="tload">불러오기</button></div>
-    <div class="tw"><table><thead><tr><th>이름</th><th>반</th><th>플러스 수업 (매주)</th><th>빠르게 넣기</th><th>학부모 연락처</th><th></th></tr></thead><tbody id="tlist"></tbody></table></div>
+    <h3 style="margin:0 0 6px">🕒 학생별 플러스 수업 일정 <span class="hint">(매주 같은 요일·시각)</span></h3>
+    <p class="hint" style="margin:0 0 10px">① 반을 고르면 학생 명단이 나와요. ② 학생 줄에서 <b>요일</b>을 누르고 <b>시각</b>을 고른 뒤 <b>추가</b> → 바로 저장돼요. 일정의 <b>×</b>를 누르면 지워져요.<br>
+    같은 시간에 오는 학생이 여럿이면 ✔로 골라서 <b>한꺼번에 넣기</b>를 쓰세요. 이 일정이 있어야 출석과 미참여 확인이 돼요.</p>
+    <div class="row"><select id="tcls"><option value="">반을 고르세요</option><option value="*">일정이 있는 학생 전체</option></select><span class="hint" id="tcount"></span></div>
+    <div class="bulk" id="bulk" style="display:none">
+      <div style="font-weight:700;margin-bottom:8px">✔ 고른 학생 <span id="bn">0</span>명에게 한꺼번에</div>
+      <div class="addc"><span class="days" id="bdays"></span><input type="time" id="btime" value="17:00"><button class="sm" id="badd">일정 추가</button><button class="sub sm" id="bclr">일정 모두 지우기</button></div>
+    </div>
+    <div class="tw"><table style="min-width:820px"><thead><tr><th><input type="checkbox" id="tall" title="모두 고르기"></th><th>이름</th><th>반</th><th>플러스 수업 일정</th><th>일정 추가</th><th>학부모 연락처</th></tr></thead><tbody id="tlist"><tr><td colspan="6" class="hint">위에서 반을 골라 주세요.</td></tr></tbody></table></div>
     <div class="msg" id="tmsg"></div>
-    <div class="hint" style="margin-top:8px">· 요일과 시각을 <b>화 17:00</b>처럼 써요. 일주일에 두 번이면 <b>화 17:00, 목 18:00</b>. 시각은 24시간제(오후 5시 = 17:00)예요.<br>· 칸을 비우고 저장하면 플러스 수업에서 빠져요. · 학부모 연락처는 학생 정보(노션 또는 월간평가 관리 화면)에서 넣어요.</div>
+    <div class="hint" style="margin-top:8px">· 일주일에 두 번 오는 학생은 일정을 두 개 넣으면 돼요. (예: 화 17:00, 목 18:00) · 연락처가 <span class="er">없음</span>인 학생은 출결은 기록되지만 학부모 알림이 가지 않아요.</div>
   </div>
 
   <div class="card tab" id="t-scr" style="display:none">
@@ -195,7 +208,7 @@ body.scr{background:#0B3B3D;color:#fff;padding:0;overflow:hidden}
       post({ action: "classes" }).then(function (c) {
         (c.classes || []).forEach(function (n) { ["bcls", "tcls"].forEach(function (id) { var o = document.createElement("option"); o.value = n; o.textContent = n; $(id).appendChild(o); }); });
       });
-      loadBoard();
+      if (location.hash === "#time" || !(j.students || []).length) document.querySelector('#tabs button[data-t="time"]').click(); else loadBoard();
     });
   }
 
@@ -206,7 +219,7 @@ body.scr{background:#0B3B3D;color:#fff;padding:0;overflow:hidden}
       if (!j.ok) { $("blist").innerHTML = ""; msg("bmsg", j.msg); return; }
       msg("bmsg", "");
       var l = j.list || [];
-      if (!l.length) { $("blist").innerHTML = '<tr><td colspan="8" class="hint">' + esc(j.label) + " 플러스 수업이 있는 학생이 없어요. 🕒 시간표에서 학생별 시간을 넣어 주세요.</td></tr>"; return; }
+      if (!l.length) { $("blist").innerHTML = '<tr><td colspan="8" class="hint">' + esc(j.label) + " 플러스 수업이 있는 학생이 없어요. 🕒 학생별 일정에서 시간을 넣어 주세요.</td></tr>"; return; }
       $("blist").innerHTML = l.map(function (x, i) {
         var cls = x.state === "확인 중" ? "확인" : x.state;
         return "<tr><td>" + esc(x.hm) + '</td><td class="nm">' + (x.url ? '<a href="' + esc(x.url) + '" target="_blank" rel="noopener" style="color:inherit">' + esc(x.name) + "</a>" : esc(x.name)) + "</td><td>" + esc(x.cls) + '</td><td><span class="b ' + esc(cls) + '">' + esc(x.state) + "</span></td><td>" + esc(x.at || "-") + "</td><td>" + esc(x.how || "") + '</td><td class="nt">' + esc([x.notice, x.memo].filter(Boolean).join("\n")) + "</td><td>" +
@@ -235,38 +248,96 @@ body.scr{background:#0B3B3D;color:#fff;padding:0;overflow:hidden}
   };
   setInterval(function () { if ($("t-today").style.display !== "none" && $("main").style.display !== "none" && !document.hidden) loadBoard(); }, 60000);
 
-  // ---------- 시간표 ----------
+  // ---------- 학생별 일정 ----------
+  var DW = "월화수목금토일".split("");
+  function dayBtns() { return DW.map(function (d) { return '<button type="button" data-day="' + d + '">' + d + "</button>"; }).join(""); }
+  function wireDays(root) { root.querySelectorAll("[data-day]").forEach(function (b) { b.onclick = function () { b.classList.toggle("on"); }; }); }
+  function pickedDays(root) { return Array.prototype.map.call(root.querySelectorAll("[data-day].on"), function (b) { return b.getAttribute("data-day"); }); }
+  var ORD = { 월: 0, 화: 1, 수: 2, 목: 3, 금: 4, 토: 5, 일: 6 };
+  function slotsOf(str) { return String(str || "").split(",").map(function (x) { return x.trim(); }).filter(Boolean); }
+  function joinSlots(a) {
+    var seen = {}; a = a.filter(function (x) { if (seen[x]) return false; seen[x] = 1; return true; });
+    a.sort(function (x, y) { return ORD[x[0]] - ORD[y[0]] || (x < y ? -1 : 1); });
+    return a.join(", ");
+  }
+  var TL = [];
+  function chips(i) {
+    var a = slotsOf(TL[i].slots);
+    return a.length ? a.map(function (x) { return '<span class="chip">' + esc(x) + '<button title="지우기" data-del="' + i + '" data-v="' + esc(x) + '">×</button></span>'; }).join("") : '<span class="none">아직 없음</span>';
+  }
+  function wireChips(root) {
+    root.querySelectorAll("[data-del]").forEach(function (b) {
+      b.onclick = function () { var i = +b.getAttribute("data-del"), v = b.getAttribute("data-v"); if (!confirm(TL[i].name + " 학생의 '" + v + "' 일정을 지울까요?")) return; save([{ i: i, slots: joinSlots(slotsOf(TL[i].slots).filter(function (x) { return x !== v; })) }]); };
+    });
+  }
+  function save(items) { // items: [{i, slots}]
+    msg("tmsg", "저장하는 중…", true);
+    return post({ action: "t_plus_set_many", items: items.map(function (x) { return { sid: TL[x.i].id, slots: x.slots }; }) }).then(function (r) {
+      if (!r.results) { msg("tmsg", r.msg || "저장하지 못했어요."); return false; }
+      var bad = [];
+      r.results.forEach(function (res, k) {
+        var it = items[k];
+        if (res && res.ok) { TL[it.i].slots = res.slots; var c = $("ch" + it.i); if (c) { c.innerHTML = chips(it.i); wireChips(c); } }
+        else bad.push(TL[it.i].name + "(" + ((res && res.msg) || "실패") + ")");
+      });
+      msg("tmsg", bad.length ? "저장하지 못한 학생: " + bad.join(", ") : "저장했어요 ✓ (" + items.map(function (x) { return TL[x.i].name; }).join(", ") + ")", !bad.length);
+      var has = TL.filter(function (s) { return s.slots; }).length; $("tcount").textContent = "학생 " + TL.length + "명 · 일정 있음 " + has + "명";
+      return true;
+    });
+  }
+  function selCount() {
+    var n = document.querySelectorAll(".tsel:checked").length; $("bn").textContent = n; $("bulk").style.display = n ? "" : "none";
+    document.querySelectorAll(".tsel").forEach(function (c) { c.closest("tr").classList.toggle("sel", c.checked); });
+  }
   function loadTime() {
+    var cls = $("tcls").value;
     STATE.timeLoaded = true;
+    if (!cls) { $("tlist").innerHTML = '<tr><td colspan="6" class="hint">위에서 반을 골라 주세요.</td></tr>'; $("tcount").textContent = ""; return; }
     $("tlist").innerHTML = '<tr><td colspan="6" class="hint">불러오는 중…</td></tr>';
-    post({ action: "t_plus_list", cls: $("tcls").value }).then(function (j) {
+    post({ action: "t_plus_list", cls: cls === "*" ? "" : cls }).then(function (j) {
       if (!j.ok) { $("tlist").innerHTML = ""; return msg("tmsg", j.msg); }
       msg("tmsg", "");
-      var l = j.students || [];
-      if (!l.length) { $("tlist").innerHTML = '<tr><td colspan="6" class="hint">' + ($("tcls").value ? "이 반에 학생이 없어요." : "아직 플러스 수업 시간이 등록된 학생이 없어요. 위에서 반을 골라 넣어 주세요.") + "</td></tr>"; return; }
-      $("tlist").innerHTML = l.map(function (s, i) {
-        return '<tr><td class="nm">' + esc(s.name) + "</td><td>" + esc(s.cls) + '</td><td><input class="slot" data-i="' + i + '" value="' + esc(s.slots || s.raw) + '" placeholder="예: 화 17:00"></td>' +
-          '<td><div class="row"><select data-d="' + i + '">' + "월화수목금토일".split("").map(function (d) { return "<option>" + d + "</option>"; }).join("") + '</select><input type="time" data-h="' + i + '" value="17:00" style="width:120px"><button class="sub sm" data-a="' + i + '">+</button></div></td>' +
-          "<td>" + (s.phone ? (s.mute ? "있음 (알림 끄기)" : "있음") : '<span class="er">없음</span>') + '</td><td><button class="sm" data-s="' + i + '">저장</button></td></tr>';
+      TL = (j.students || []).map(function (s) { return { id: s.id, name: s.name, cls: s.cls, slots: s.slots, phone: s.phone, mute: s.mute }; });
+      var has = TL.filter(function (s) { return s.slots; }).length;
+      $("tcount").textContent = TL.length ? "학생 " + TL.length + "명 · 일정 있음 " + has + "명" : "";
+      if (!TL.length) { $("tlist").innerHTML = '<tr><td colspan="6" class="hint">' + (cls === "*" ? "아직 플러스 수업 일정이 있는 학생이 없어요. 위에서 반을 골라 넣어 주세요." : "이 반에 학생이 없어요.") + "</td></tr>"; $("bulk").style.display = "none"; return; }
+      $("tlist").innerHTML = TL.map(function (s, i) {
+        return '<tr><td><input type="checkbox" class="tsel" data-i="' + i + '"></td><td class="nm">' + esc(s.name) + "</td><td>" + esc(s.cls) + '</td><td id="ch' + i + '">' + chips(i) + "</td>" +
+          '<td><div class="addc" id="ad' + i + '"><span class="days">' + dayBtns() + '</span><input type="time" value="17:00"><button class="sm" data-add="' + i + '">추가</button></div></td>' +
+          "<td>" + (s.phone ? (s.mute ? "있음 (알림 끔)" : "있음") : '<span class="er">없음</span>') + "</td></tr>";
       }).join("");
-      $("tlist").querySelectorAll("button[data-a]").forEach(function (b) {
-        b.onclick = function () { var i = b.getAttribute("data-a"), inp = document.querySelector('.slot[data-i="' + i + '"]'); var add = document.querySelector('[data-d="' + i + '"]').value + " " + document.querySelector('[data-h="' + i + '"]').value; inp.value = inp.value.trim() ? inp.value.trim() + ", " + add : add; };
-      });
-      $("tlist").querySelectorAll("button[data-s]").forEach(function (b) {
+      wireDays($("tlist")); wireChips($("tlist"));
+      $("tlist").querySelectorAll("[data-add]").forEach(function (b) {
         b.onclick = function () {
-          var i = +b.getAttribute("data-s"), inp = document.querySelector('.slot[data-i="' + i + '"]');
-          b.disabled = true; b.textContent = "저장 중";
-          post({ action: "t_plus_set", sid: l[i].id, slots: inp.value }).then(function (r) {
-            b.disabled = false;
-            if (!r.ok) { b.textContent = "저장"; return msg("tmsg", l[i].name + ": " + (r.msg || "저장하지 못했어요.")); }
-            inp.value = r.slots; b.textContent = "저장됨 ✓"; msg("tmsg", l[i].name + " 학생: " + (r.slots || "플러스 수업 없음"), true);
-            setTimeout(function () { b.textContent = "저장"; }, 2000);
+          var i = +b.getAttribute("data-add"), box = $("ad" + i), days = pickedDays(box), hm = box.querySelector("input[type=time]").value;
+          if (!days.length) return msg("tmsg", TL[i].name + ": 요일을 먼저 눌러 주세요.");
+          if (!hm) return msg("tmsg", TL[i].name + ": 시각을 골라 주세요.");
+          b.disabled = true;
+          save([{ i: i, slots: joinSlots(slotsOf(TL[i].slots).concat(days.map(function (d) { return d + " " + hm; }))) }]).then(function () {
+            b.disabled = false; box.querySelectorAll("[data-day].on").forEach(function (x) { x.classList.remove("on"); });
           });
         };
       });
+      $("tlist").querySelectorAll(".tsel").forEach(function (c) { c.onchange = selCount; });
+      $("tall").checked = false; selCount();
     });
   }
-  $("tload").onclick = loadTime; $("tcls").onchange = loadTime;
+  $("bdays").innerHTML = dayBtns(); wireDays($("bdays"));
+  $("tall").onchange = function () { document.querySelectorAll(".tsel").forEach(function (c) { c.checked = $("tall").checked; }); selCount(); };
+  function selected() { return Array.prototype.map.call(document.querySelectorAll(".tsel:checked"), function (c) { return +c.getAttribute("data-i"); }); }
+  $("badd").onclick = function () {
+    var days = pickedDays($("bdays")), hm = $("btime").value, sel = selected();
+    if (!days.length) return msg("tmsg", "요일을 먼저 눌러 주세요."); if (!hm) return msg("tmsg", "시각을 골라 주세요.");
+    $("badd").disabled = true;
+    save(sel.map(function (i) { return { i: i, slots: joinSlots(slotsOf(TL[i].slots).concat(days.map(function (d) { return d + " " + hm; }))) }; })).then(function () {
+      $("badd").disabled = false; $("bdays").querySelectorAll("[data-day].on").forEach(function (x) { x.classList.remove("on"); });
+    });
+  };
+  $("bclr").onclick = function () {
+    var sel = selected(); if (!sel.length || !confirm("고른 학생 " + sel.length + "명의 플러스 수업 일정을 모두 지울까요?")) return;
+    $("bclr").disabled = true; save(sel.map(function (i) { return { i: i, slots: "" }; })).then(function () { $("bclr").disabled = false; });
+  };
+  $("tcls").onchange = loadTime;
 
   // ---------- 출석 화면 ----------
   $("scrOn").onclick = function () {

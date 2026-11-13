@@ -273,6 +273,25 @@ module.exports = function (ctx) {
       cache.t = 0;
       return up ? { status: 200, slots: fmtSlots(sl) } : { status: 502, msg: "저장하지 못했어요.", debug: getLastErr() };
     }
+    if (act === "t_plus_set_many") { // 여러 학생 일정을 한 번에 (같은 시간 학생 묶어 넣기)
+      const items = Array.isArray(b.items) ? b.items.slice(0, 80) : [];
+      if (!items.length) return { status: 400, msg: "학생을 골라 주세요." };
+      const results = new Array(items.length);
+      let k = 0;
+      const one = async () => {
+        while (k < items.length) {
+          const n = k++, it = items[n] || {}, raw = clip(it.slots, 200), sl = parseSlots(raw);
+          if (raw.trim() && !sl.length) { results[n] = { ok: false, msg: "요일·시각 형식" }; continue; }
+          const st = await student(it.sid);
+          if (!st) { results[n] = { ok: false, msg: "학생 없음" }; continue; }
+          const up = await notion("pages/" + id32(st.id), "PATCH", { properties: { [PROP]: { rich_text: rt(fmtSlots(sl)) } } });
+          results[n] = up ? { ok: true, slots: fmtSlots(sl) } : { ok: false, msg: "저장 실패" };
+        }
+      };
+      await Promise.all([one(), one(), one()]);
+      cache.t = 0;
+      return { status: 200, results, ok: results.every((r) => r && r.ok) };
+    }
     if (act === "t_plus_mark") { // 선생님이 직접: 면제(미리 결석 연락) · 출석 · 미참여 — 알림은 보내지 않아요
       const state = ["출석", "지각", "미참여", "면제"].includes(b.state) ? b.state : null;
       const date = /^\d{4}-\d{2}-\d{2}$/.test(b.date || "") ? b.date : null, hm = /^\d{2}:\d{2}$/.test(b.hm || "") ? b.hm : null;
