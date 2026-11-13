@@ -184,7 +184,9 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       </div>
       <div id="vtBox" style="display:none;margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px">
         <b>📒 단어 문제 유형</b> <span class="hint" style="margin:0">고른 유형만 섞어서 내요. 한 단어는 한 번만 나와요.</span>
+        <div class="row" style="gap:6px;margin-top:8px"><button type="button" class="ghost" id="vtAll" style="padding:4px 10px;font-size:13px">모두 선택</button><button type="button" class="ghost" id="vtNone" style="padding:4px 10px;font-size:13px">모두 해제</button></div>
         <div id="vtList" class="row" style="flex-wrap:wrap;gap:6px 14px;margin-top:8px"></div>
+        <div id="vtSum" style="margin-top:8px;font-size:14px"></div>
       </div>
       <div id="listenHint" class="hint" style="display:none;margin-top:10px;padding:10px 12px;border:1px dashed #9BD3D0;border-radius:10px;background:var(--ac-soft)">🎧 <b>듣기시험</b>: 위에서 「듣기」 영역의 회차를 고르세요. 문제는 <b>원래 순서대로</b>(음성 번호와 같게) 나오고, 보기 순서도 섞지 않으며, AI 변형은 쓰지 않아요. 학생은 문제마다 ▶ 음성을 들으며 풀고, 제출하면 바로 채점돼 시험 기록에 「듣기시험」으로 쌓여요. 문항 수는 회차의 문항 수(예: 17~20)로 맞춰 주세요.</div>
       <div id="aiBox" style="margin-top:12px;padding:10px 12px;border:1px dashed #C9B6E8;border-radius:10px;background:#FBF8FF">
@@ -1437,11 +1439,18 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   $("reload").onclick = function () { post({ action: "t_init" }).then(function (j) { if (j.ok) { DATA = j; renderList(); } }); };
 
   // ---------- 📒 단어 문제 유형 ----------
-  var VT = null; // null = 모든 유형
+  var VT = null, VT_FRESH = true; // null = 모든 유형, [] = 아직 안 고름(단어시험은 꼭 골라야 저장돼요)
+  function vtLabel(id) { var t = (DATA.vtypes || []).filter(function (x) { return x.id === id; })[0]; return t ? t.label.replace(/\s*\(.*\)$/, "") : id; }
+  function vtNeed() { return $("vtBox").style.display !== "none" && VT && !VT.length; }
+  function vtSum() {
+    var on = VT ? VT : (DATA.vtypes || []).map(function (t) { return t.id; });
+    $("vtSum").innerHTML = on.length ? "✅ 이 시험에 나올 유형: <b>" + on.map(function (id) { return esc(vtLabel(id)); }).join(", ") + "</b>" : '<span class="er">⚠️ 문제 유형을 하나 이상 체크해 주세요.</span>';
+  }
   function vocabSelected() { var ids = SEL; return DATA.catalog.some(function (b) { return b.chapters.some(function (c) { return c.units.some(function (u) { return u.v && (ids[u.id] || SELB[b.id]); }); }); }); }
   function vtUi() {
     $("aiBox").style.display = /단어시험|듣기시험/.test($("eKind").value) ? "none" : ""; $("listenHint").style.display = $("eKind").value === "듣기시험" ? "" : "none"; if ($("eKind").value === "듣기시험" && F.area !== "듣기" && DATA.catalog.some(function (b) { return b.area === "듣기"; })) { F.area = "듣기"; buildBookFilters(); renderBooks(); }
     var show = $("eKind").value === "단어시험" || vocabSelected(); $("vtBox").style.display = show ? "" : "none"; if (!show) return;
+    if (VT_FRESH && !EDIT && $("eKind").value === "단어시험") { VT = []; VT_FRESH = false; } // 새 단어시험은 빈 칸에서 시작: 원하는 유형만 체크
     var cnt = {}; DATA.catalog.forEach(function (b) { b.chapters.forEach(function (c) { c.units.forEach(function (u) { if (u.v && (SEL[u.id] || SELB[b.id])) Object.keys(u.v).forEach(function (t) { cnt[t] = (cnt[t] || 0) + u.v[t]; }); }); }); });
     var any = Object.keys(cnt).length;
     $("vtList").innerHTML = (DATA.vtypes || []).map(function (t) {
@@ -1450,8 +1459,11 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     }).join("") + (any ? "" : '<span class="hint" style="margin:0">아래에서 📒 단어장 과를 고르면 유형마다 만들 수 있는 문제 수가 보여요.</span>');
     Array.prototype.forEach.call($("vtList").querySelectorAll("[data-vt]"), function (c) { c.onchange = function () {
       VT = Array.prototype.filter.call($("vtList").querySelectorAll("[data-vt]"), function (x) { return x.checked; }).map(function (x) { return x.getAttribute("data-vt"); });
-      if (!VT.length) { c.checked = true; VT = [c.getAttribute("data-vt")]; } if (VT.length === (DATA.vtypes || []).length) VT = null;
+      if (VT.length === (DATA.vtypes || []).length) VT = null; VT_FRESH = false; vtSum();
     }; });
+    $("vtAll").onclick = function () { VT = null; VT_FRESH = false; vtUi(); };
+    $("vtNone").onclick = function () { VT = []; VT_FRESH = false; vtUi(); };
+    vtSum();
   }
   function vtSend() { return VT ? VT.slice() : []; }
   var PLACE_CLS = "신입 반배정";
@@ -1568,7 +1580,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   // ---------- 새로 만들기 / 수정 ----------
   function setRadio(name, v) { var r = document.querySelector('input[name=' + name + '][value="' + v + '"]'); if (r) r.checked = true; }
   function newPaper() {
-    EDIT = null; SEL = {}; SELB = {}; EXCL = []; RESEED = false; titleTouched = false; VT = null;
+    EDIT = null; SEL = {}; SELB = {}; EXCL = []; RESEED = false; titleTouched = false; VT = null; VT_FRESH = true;
     $("editTitle").textContent = "새 시험지"; $("tabEdit").textContent = "➕ 새 시험지";
     setRadio("mode", "fixed"); setRadio("lv", "2"); $("eCount").value = 20; $("eMin").value = 30; $("eStatus").value = "준비중"; $("eShow").checked = true;
     $("eKind").value = "월간평가"; $("eStart").value = kst(); $("eEnd").value = kst(Date.now() + 6 * 864e5);
@@ -1599,6 +1611,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       DATA.catalog.forEach(function (b) { if (SELB[b.id]) b.chapters.forEach(function (c) { c.units.forEach(function (u) { if (units.length < 40) units.push(u.id); }); }); });
     }
     if (!units.length) { $("pvInfo").textContent = "과를 먼저 골라 주세요."; return; }
+    if (vtNeed()) { $("pvInfo").innerHTML = '<span class="er">📒 단어 문제 유형을 하나 이상 체크해 주세요.</span>'; return; }
     $("pvInfo").textContent = "만드는 중…"; $("pvBtn").disabled = true;
     var seed = EDIT && !RESEED ? (EDIT.cfg.seed || EDIT.id) : (PV_SEED = PV_SEED || Math.random().toString(36).slice(2, 10));
     var aiS = aiSend(); if (aiS.variant || aiS.extra) $("pvInfo").textContent = "🧠 AI가 문제를 만드는 중… (처음엔 30초~1분 걸려요)";
@@ -1648,6 +1661,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     var m = mode(), units = Object.keys(SEL), books = Object.keys(SELB);
     if (m === "fixed" && !units.length) { $("saveMsg").innerHTML = '<span class="er">출제할 과를 골라 주세요.</span>'; return; }
     if (m === "choice" && !units.length && !books.length) { $("saveMsg").innerHTML = '<span class="er">학생이 고를 교재를 골라 주세요.</span>'; return; }
+    if (vtNeed()) { $("saveMsg").innerHTML = '<span class="er">📒 단어 문제 유형을 하나 이상 체크해 주세요.</span>'; $("vtBox").scrollIntoView({ block: "center" }); return; }
     var paper = { id: EDIT && EDIT.id, title: $("eTitle").value.trim(), cls: $("eCls").value, kind: $("eKind").value, period: $("ePeriod").value, status: $("eStatus").value, mode: m, level: level(),
       count: +$("eCount").value, minutes: +$("eMin").value, start: $("eStart").value, end: $("eEnd").value, show: $("eShow").checked, units: units, books: books, exclude: EXCL, reseed: RESEED, vtypes: vtSend(), ai: aiSend(), place: $("ePlace").value.trim(), grades: $("eKind").value === "반배정시험" ? PG.slice() : [] };
     if (!paper.title) { autoTitle(); paper.title = $("eTitle").value; }
