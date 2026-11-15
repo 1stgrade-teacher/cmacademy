@@ -18,6 +18,8 @@ const zlib = require("zlib");
 const drive = require("./_drive.js");
 const V = require("./_vocab.js");
 const CTX = require("./_ctx.js");
+const CONF = require("./_confuse.js");
+const AI_VT = { ctx: CTX, spellmc: CONF }; // AI가 한 번 만들어 단어장에 저장해 두는 단어 유형
 
 const NOTION_VER = "2022-06-28";
 const id32 = (s) => String(s || "").replace(/-/g, "").trim();
@@ -1031,7 +1033,7 @@ module.exports = async function handler(req, res) {
       if (vocabWords && found[0]) { // 단어장을 다시 올려도 AI로 만든 문맥 문제는 (그 단어가 남아 있으면) 유지
         let old = []; try { old = JSON.parse(P.text(found[0], "문항") || "[]"); } catch (e) { old = []; }
         const keys = new Set(vocabWords.map((e) => CTX.mainKey(e.w)));
-        all = qs.concat(old.filter((q) => q.vt === "ctx" && keys.has(CTX.mainKey(q.w))));
+        all = qs.concat(old.filter((q) => AI_VT[q.vt] && keys.has(CTX.mainKey(q.w))));
       }
       if (found[0] && !b.replace) { // 같은 과에 더 올리면 기존 문항 뒤에 합침 (같은 문항은 한 번만)
         let old = []; try { old = JSON.parse(P.text(found[0], "문항") || "[]"); } catch (e) { old = []; }
@@ -1111,18 +1113,19 @@ module.exports = async function handler(req, res) {
       }
       return send(200, { ok: true, results: res });
     }
-    if (act === "t_vocab_ctx") { // 🧠 저장된 단어장에 '문맥 5지선다'(AI 예문) 문제 만들기 — 한 번에 8단어씩, 화면이 반복해서 불러요
+    if (act === "t_vocab_ctx") { // 🧠 저장된 단어장에 AI 문제 만들기 — vt: ctx(문맥 5지선다) · spellmc(철자 고르기, 혼동 어휘). 한 번에 8단어씩, 화면이 반복해서 불러요
+      const VT = AI_VT[b.vt] ? b.vt : "ctx", GEN = AI_VT[VT];
       if (!aiOn()) return send(503, { error: "noai", msg: "AI 키가 없어요." });
       loadCatalog(); await loadCustom(true);
       const uid = clip(b.uid, 20), d = custom.data.get(uid), u = unitIndex.get(uid);
       if (!d || !u || !u.vocab) return send(404, { error: "nf", msg: "단어장을 찾지 못했어요." });
-      const words = V.wordsFrom(d.qs), have = new Set(d.qs.filter((q) => q.vt === "ctx").map((q) => CTX.mainKey(q.w)));
+      const words = V.wordsFrom(d.qs).filter((e) => VT !== "spellmc" || e.m), have = new Set(d.qs.filter((q) => q.vt === VT).map((q) => CTX.mainKey(q.w)));
       const skip = new Set((Array.isArray(b.skip) ? b.skip : []).map((x) => CTX.mainKey(x)));
       const need = words.filter((e) => !have.has(CTX.mainKey(e.w)) && !skip.has(CTX.mainKey(e.w)));
       const batch = need.slice(0, 8);
       if (!batch.length) return send(200, { ok: true, made: 0, tried: [], left: 0, total: words.length, have: have.size });
       const keyOf = (e) => { const q = d.qs.find((x) => x.w && CTX.mainKey(x.w) === CTX.mainKey(e.w)); return q ? q.w : e.w.toLowerCase(); };
-      const r = await CTX.generate((sys, usr, mt, to, o) => AI.askAI(sys, usr, mt, to, o), batch, uid, keyOf);
+      const r = await GEN.generate((sys, usr, mt, to, o) => AI.askAI(sys, usr, mt, to, o), batch, uid, keyOf);
       const used = AI.label(AI.lastInfo().used) + (AI.lastInfo().model ? " · " + AI.lastInfo().model : "");
       if (r.err && !r.questions.length) return send(200, { ok: false, msg: r.err, used, aiErr: AI.lastInfo().errors });
       if (r.questions.length) {
