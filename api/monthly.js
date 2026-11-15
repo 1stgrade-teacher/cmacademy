@@ -81,6 +81,12 @@ function rngOf(seed) {
   let a = parseInt(hash(seed, 8), 16) >>> 0;
   return function () { a = (a + 0x6d2b79f5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 }
+// 객관식 보기 섞기 (정답 자리를 seed로 정해 늘 같은 모양). 저장된 문제가 정답 ①이어도 화면·노션에는 섞어서 보여요
+function mixMc(q, seed) {
+  if (!q || q.type !== "mc" || !Array.isArray(q.opts) || !(q.ans >= 0 && q.ans < q.opts.length)) return q;
+  const ord = shuffle(q.opts.map((_, j) => j), rngOf("mix|" + seed)); const opts = ord.map((j) => q.opts[j]);
+  return Object.assign({}, q, { opts, ans: ord.indexOf(q.ans) });
+}
 function shuffle(a, rnd) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 async function readBody(req) {
@@ -297,7 +303,7 @@ async function aiMake(uid, n, level) {
     .map((x) => {
       const opts = x.opts.map((o) => clip(String(o).replace(/^\s*(?:[①②③④⑤]|\(?[1-5][).])\s*/, ""), 200));
       const q = { id: "a" + hash(uid + x.q + opts.join("|")), kind: "AI 출제", type: "mc", q: clip(x.q, 300), sub: clip(x.sub, 900), opts, ans: x.ans, answer: opts[x.ans], exp: clip(x.exp, 400), lv: level || 2, ai: 1 };
-      return q;
+      return mixMc(q, q.id);
     });
   if (!items.length) return [];
   const body = items.map((q, i) => ({ object: "block", type: "paragraph", paragraph: { rich_text: rt((i + 1) + ". " + q.q + (q.sub ? "  [" + q.sub + "]" : "") + "\n" + q.opts.map((o, k) => (k === q.ans ? "✅ " : "　 ") + "①②③④⑤"[k] + " " + o).join("\n") + "\n해설: " + q.exp) } }));
@@ -330,7 +336,8 @@ async function aiVariants(origs) { // origs: [{u, id, q, sub, opts, ans, answer,
     const src = bt[x && x.i]; if (!src || typeof x.q !== "string" || !Array.isArray(x.opts) || x.opts.length < 4 || x.opts.length > 5 || !Number.isInteger(x.ans) || x.ans < 0 || x.ans >= x.opts.length) return;
     const opts = x.opts.map((o) => clip(String(o).replace(/^\s*(?:[①②③④⑤]|\(?[1-5][).])\s*/, ""), 200)); if (new Set(opts.map(normAns)).size !== opts.length) return;
     if (normAns(x.sub || "") && normAns(x.sub) === normAns(src.sub || "") && normAns(opts.join("|")) === normAns((src.opts || []).join("|"))) return; // 원문 그대로면 버림
-    made.push({ u: src.u, id: "av" + hash(src.id + x.q + opts.join("|"), 10), kind: "AI 변형", vof: src.id, type: "mc", q: clip(x.q, 300), sub: clip(x.sub, 900), opts, ans: x.ans, answer: opts[x.ans], exp: clip(x.exp, 400), lv: src.lv || 2, ai: 1 });
+    const id = "av" + hash(src.id + x.q + opts.join("|"), 10);
+    made.push(mixMc({ u: src.u, id, kind: "AI 변형", vof: src.id, type: "mc", q: clip(x.q, 300), sub: clip(x.sub, 900), opts, ans: x.ans, answer: opts[x.ans], exp: clip(x.exp, 400), lv: src.lv || 2, ai: 1 }, id));
   }));
   const byU = new Map(); made.forEach((v) => { if (!byU.has(v.u)) byU.set(v.u, []); byU.get(v.u).push(v); });
   await Promise.all([...byU].map(([uid, vs]) => { const u = unitData(uid) || {}; const items = vs.map((v) => { const c = Object.assign({}, v); delete c.u; return c; });
@@ -424,12 +431,20 @@ function listenPick(uids, exclude, count) {
 function buildSheet(picked, rnd, keep) {
   const T = (t) => (keep ? picked.filter((q) => (q.type || "mc") === t) : shuffle(picked.filter((q) => (q.type || "mc") === t), rnd));
   const ordered = keep ? picked.slice() : T("mc").concat(T("multi"), T("arrange"), T("short"));
-  const view = [], key = [];
+  const view = [], key = [], used = [0, 0, 0, 0, 0, 0];
+  // 객관식 정답 자리: 지금까지 가장 적게 나온 번호에 놓아 ①~⑤가 고르게 (나머지 보기 순서는 무작위)
+  const placeAns = (q) => {
+    const n = q.opts.length; if (!(q.ans >= 0 && q.ans < n)) return shuffle(q.opts.map((_, j) => j), rnd);
+    let lo = Infinity; for (let p = 0; p < n; p++) lo = Math.min(lo, used[p]);
+    const best = []; for (let p = 0; p < n; p++) if (used[p] === lo) best.push(p);
+    const tgt = best[Math.floor(rnd() * best.length)]; used[tgt]++;
+    const rest = shuffle(q.opts.map((_, j) => j).filter((j) => j !== q.ans), rnd); rest.splice(tgt, 0, q.ans); return rest;
+  };
   ordered.forEach((q, i) => {
     const u = unitIndex.get(q.u) || {};
     const k = { id: q.id, u: q.u, t: q.type, q: clip(q.q, 300), sub: clip(q.sub, 700), exp: clip(q.exp, 300), unit: clip(u.name, 80), ch: clip(u.chapter, 60), book: clip(u.book, 40) };
     if (q.type === "mc") {
-      const ord = keep ? q.opts.map((_, j) => j) : shuffle(q.opts.map((_, j) => j), rnd); const opts = ord.map((j) => q.opts[j]);
+      const ord = keep ? q.opts.map((_, j) => j) : placeAns(q); const opts = ord.map((j) => q.opts[j]);
       view.push(Object.assign({ n: i + 1, type: "mc", q: q.q, sub: q.sub, opts, unit: u.chapter }, q.audio ? { audio: q.audio } : {}));
       Object.assign(k, { a: ord.indexOf(q.ans), opts: opts.map((o) => clip(o, 120)), answer: clip(q.opts[q.ans], 200) });
     } else if (q.type === "multi") {
@@ -787,13 +802,13 @@ module.exports = async function handler(req, res) {
       if (opt) {
         const r = await composeSheet(pp, uids, pp.cfg.seed, opt);
         return send(200, { ok: true, stats: r.stats, total: r.stats.reduce((s, x) => s + x.bank + x.ai, 0), range: rangeText(uids), notes: r.notes, aiOn: aiOn(),
-          items: r.picked.map((q) => { const o = q.vof && r.origById.get(q.vof); return { id: q.id, type: q.type, lv: q.lv, ai: !!q.ai, kind: q.kind || "", q: q.q, sub: q.sub, opts: q.opts, ans: q.ans, anss: q.anss, accept: q.accept, answer: q.answer, words: q.words, exp: q.exp, custom: q.u && q.u[0] === "x", vt: q.vt || "", unit: unitIndex.get(q.u).name, ch: unitIndex.get(q.u).chapter, orig: o ? { q: o.q, sub: o.sub, opts: o.opts, ans: o.ans } : undefined }; }) });
+          items: r.picked.map((q0) => { const q = mixMc(q0, q0.id), o0 = q0.vof && r.origById.get(q0.vof), o = o0 && mixMc(o0, o0.id); return { id: q.id, type: q.type, lv: q.lv, ai: !!q.ai, kind: q.kind || "", q: q.q, sub: q.sub, opts: q.opts, ans: q.ans, anss: q.anss, accept: q.accept, answer: q.answer, words: q.words, exp: q.exp, custom: q.u && q.u[0] === "x", vt: q.vt || "", unit: unitIndex.get(q.u).name, ch: unitIndex.get(q.u).chapter, orig: o ? { q: o.q, sub: o.sub, opts: o.opts, ans: o.ans } : undefined }; }) });
       }
       const pool = await poolFor(uids, pp.cfg.exclude, pp.cfg.vtypes);
       const stats = [...pool].map(([u, qs]) => ({ u, name: unitIndex.get(u).name, bank: qs.filter((q) => !q.ai).length, ai: qs.filter((q) => q.ai).length }));
       const picked = pick(pool, pp.count, pp.level, rngOf(pp.cfg.seed));
       return send(200, { ok: true, stats, total: stats.reduce((s, x) => s + x.bank + x.ai, 0), range: rangeText(uids),
-        items: picked.map((q) => ({ id: q.id, type: q.type, lv: q.lv, ai: !!q.ai, q: q.q, sub: q.sub, opts: q.opts, ans: q.ans, anss: q.anss, accept: q.accept, answer: q.answer, words: q.words, exp: q.exp, custom: q.u && q.u[0] === "x", vt: q.vt || "", unit: unitIndex.get(q.u).name, ch: unitIndex.get(q.u).chapter })) });
+        items: picked.map((q0) => mixMc(q0, q0.id)).map((q) => ({ id: q.id, type: q.type, lv: q.lv, ai: !!q.ai, q: q.q, sub: q.sub, opts: q.opts, ans: q.ans, anss: q.anss, accept: q.accept, answer: q.answer, words: q.words, exp: q.exp, custom: q.u && q.u[0] === "x", vt: q.vt || "", unit: unitIndex.get(q.u).name, ch: unitIndex.get(q.u).chapter })) });
     }
     if (act === "t_fill") { // AI로 문항 보충 (과마다 n개)
       if (!aiOn()) return send(503, { error: "noai", msg: "AI 키가 없어요. (Vercel에 DEEPSEEK_API_KEY / OPENAI_API_KEY / ANTHROPIC_API_KEY / GEMINI_API_KEY 중 하나)" });

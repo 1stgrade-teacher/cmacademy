@@ -114,7 +114,7 @@ function build(words, uid) {
   const add = (e, vt, q) => { q.vt = vt; q.w = e.w.toLowerCase(); q.kind = "단어"; q.id = "v" + h(uid + "|" + e.w + "|" + vt + "|" + (q.sub || "") + "|" + (q.answer || ""), 10); q.exp = q.exp || (e.w + (e.pos ? " (" + e.pos + ")" : "") + (e.m ? ": " + e.m : "") + (e.exk ? " — " + e.exk : "")); out.push(q); };
   L.forEach((e) => {
     const r = rngOf(uid + "|" + e.w), W = mainForm(e.w), tk = findToken(e);
-    const mc = (opts, ans) => { const uniq = []; opts.forEach((o) => { if (o && !uniq.some((u) => u.toLowerCase() === o.toLowerCase())) uniq.push(o); }); return uniq.length >= 3 ? { opts: uniq, ans: uniq.indexOf(ans) } : null; };
+    const mc = (opts, ans) => { const uniq = []; opts.forEach((o) => { if (o && !uniq.some((u) => u.toLowerCase() === o.toLowerCase())) uniq.push(o); }); if (uniq.length < 3) return null; const mixed = shuffle(uniq, r); return { opts: mixed, ans: mixed.indexOf(ans) }; }; // 정답 자리도 섞어서 저장 (늘 ①이 되지 않게)
     const pos = e.pos ? " (" + e.pos + ")" : "";
     // 1) 단어 → 뜻 고르기
     if (e.m) { const o = mc([e.m].concat(others(L, e, 4, r, (x) => x.m && x.m !== e.m).map((x) => x.m)), e.m); if (o) add(e, "meaning", Object.assign({ type: "mc", lv: 1, q: "다음 단어의 뜻으로 알맞은 것을 고르시오.", sub: W + pos }, o)); }
