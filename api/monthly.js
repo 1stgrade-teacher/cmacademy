@@ -674,6 +674,7 @@ let _game = null; const GAME = () => _game || (_game = require("./_game.js")({ n
 const HW = () => _hw || (_hw = require("./_homework.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, STUDENT_DB, listenUnit, getLastErr: () => lastErr }));
 // 🎧 받아쓰기 숙제용: 듣기 회차의 문항별 음성 + 대본
 function listenUnit(uid) { const d = unitData(uid); if (!d || d.area !== "듣기") return null; const items = (d.qs || []).filter((q) => q.script).map((q) => ({ id: q.id, audio: q.audio || "", script: q.script })); return items.length ? { name: d.name, book: d.book, items } : null; }
+let _lib = null; const LIB = () => _lib || (_lib = require("./_library.js")({ notion, queryAll, P, rt, rtLong, sel, clip, num, normId, id32, unitIndex, rangeText, getLastErr: () => lastErr }));
 let _sc = null; const SC = () => _sc || (_sc = require("./_schedule.js")({ notion, queryAll, P, rt, sel, clip, normId, id32, getLastErr: () => lastErr }));
 let _par = null; const PAR = () => _par || (_par = require("./_parent.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, EXAM_DB, CERT_DB: () => id32(process.env.NOTION_DB_ID || "d6164dec4d2e461aa2f102de18814b7d"), GAME_DB: () => id32(process.env.NOTION_GAME_DB_ID || "3ef113187ca24388b1a68de4cc535144"), HW, getLastErr: () => lastErr }));
 let _plus = null; const PLUS = () => _plus || (_plus = require("./_plus.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, SCHED_DB: () => SC().SCHED_DB(), secret, signToken, readToken, login, getLastErr: () => lastErr }));
@@ -824,6 +825,7 @@ module.exports = async function handler(req, res) {
       if (!old || !old.teacher) props["출제 선생님"] = sel(me.name);
       const pg = old ? await notion("pages/" + old.id, "PATCH", { properties: props }) : await notion("pages", "POST", { parent: { database_id: PAPER_DB() }, properties: props });
       if (!pg) return send(502, { error: "notion", msg: "시험지를 저장하지 못했어요.", debug: lastErr });
+      if (!old && f.libId) await LIB().used(f.libId).catch(() => {});
       return send(200, { ok: true, paper: Object.assign(pub(readPaper(pg)), { cfg: readPaper(pg).cfg, show: P.chk(pg, "결과 공개"), url: pg.url }) });
     }
     if (act === "t_status") {
@@ -903,6 +905,10 @@ module.exports = async function handler(req, res) {
     if (act === "t_pm_send") { const r = await PAR().teacherSend(me, clip(b.sid, 60), clip(b.cls, 40), clip(b.text, 1500)); return r.status === 200 ? send(200, { ok: true, msg: r.msg }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
     if (act === "t_parent_links") { const r = await HW().parentLinks(clip(b.cls, 40)); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
     if (act === "t_parent_reset") { const r = await HW().parentReset(clip(b.sid, 60)); return r.status === 200 ? send(200, { ok: true, k: r.k }) : send(r.status, { ok: false, msg: r.msg }); }
+    // 📦 시험지 보관함 (모든 선생님이 함께 쓰는 시험지 틀)
+    if (act === "t_lib_list") { const r = await LIB().list(); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_lib_save") { const r = await LIB().save(me, b.item); return r.status === 200 ? send(200, { ok: true, item: r.item }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_lib_del") { const r = await LIB().del(me, b.id); return r.status === 200 ? send(200, { ok: true }) : send(r.status, { ok: false, msg: r.msg }); }
     // 📅 반 일정 (단어시험·평가·휴원 …)
     if (act === "t_sched_month") { const r = await SC().month(clip(b.cls, 40), String(b.ym || ""), false); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
     if (act === "t_sched_save") { const r = await SC().save(me && me.name, b.items); return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg, debug: r.debug, failed: r.failed }); }
@@ -1041,7 +1047,7 @@ module.exports = async function handler(req, res) {
       const NEED = { // DB별로 꼭 있어야 하는 칸 (없으면 저장·기록이 실패해요)
         "시험 기록": [EXAM_DB(), ["시험명", "학생", "시험지", "반", "종류", "시험일", "시험 범위", "점수", "만점", "오답 수", "종합 평가", "코멘트", "응시 방식", "소요시간(분)", "자리비움", "단원 분석", "문항 기록", "분석 리포트"]],
         "학생": [STUDENT_DB(), [PIN_PROP, "반", "학부모 연락처", "알림 끄기"]],
-        "📸 과제": [HW().HW_DB(), ["과제명", "반", "마감", "설명", "사용", "알림 보내기", "알림 처리"]], "📮 과제 제출": [HW().SUB_DB(), ["제목", "과제", "학생", "상태", "사진", "제출 시각", "학생 메모", "알림 결과"]], "📅 반 일정": [SC().SCHED_DB(), ["일정명", "반", "날짜", "종류", "범위", "메모", "사용"]],
+        "📸 과제": [HW().HW_DB(), ["과제명", "반", "마감", "설명", "사용", "알림 보내기", "알림 처리"]], "📮 과제 제출": [HW().SUB_DB(), ["제목", "과제", "학생", "상태", "사진", "제출 시각", "학생 메모", "알림 결과"]], "📦 시험지 보관함": [LIB().LIB_DB(), ["이름", "단어장", "종류", "범위", "문항 수", "설정", "만든 선생님", "쓴 횟수", "사용"]], "📅 반 일정": [SC().SCHED_DB(), ["일정명", "반", "날짜", "종류", "범위", "메모", "사용"]],
         "시험지": [PAPER_DB(), []], "AI 문항": [AIQ_DB(), []], "직접 올린 문항": [CUSTOM_DB(), ["과", "교재", "단원", "과ID", "문항", "본문"]], "선생님": [TEACHER_DB(), []],
       };
       const fixConn = "노션에서 「📔 학습리포트」와 「💗 일등급샘 반별 관리페이지」 각각 ⋯ → 연결 → 「cmacademy 학습인증」을 추가해 주세요.";

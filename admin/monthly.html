@@ -42,6 +42,7 @@ table.vt{border-collapse:collapse;font-size:13px;width:100%}table.vt th{position
 .actbar{position:sticky;bottom:0;z-index:6;background:#fff;border-top:2px solid var(--ac-bg);box-shadow:0 -4px 14px rgba(10,60,62,.10);border-radius:14px 14px 0 0;padding:10px 14px;margin-top:4px}
 .actbar .steps{font-size:12.5px;color:#7A8896;margin-top:6px}.actbar .steps b{color:var(--ac-ink)}
 @media(max-width:600px){.actbar .steps .x{display:none}.actbar button{padding:9px 12px}}
+details.libf{border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-top:10px}details.libf>summary{cursor:pointer;font-weight:800;color:var(--ac-ink);font-size:15px;padding:4px 0}
 details.more{margin-top:6px}details.more summary{cursor:pointer;font-size:12.5px;color:var(--ac-ink);font-weight:600}
 /* 범위 고르기 */
 .filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
@@ -133,6 +134,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   <div class="tabs">
     <button class="tab on" data-tab="list">📋 시험지 목록</button>
     <button class="tab" data-tab="edit" id="tabEdit">➕ 새 시험지</button>
+    <button class="tab" data-tab="lib">📦 보관함</button>
     <button class="tab" data-tab="results" id="tabRes">📊 응시 결과</button>
     <button class="tab" data-tab="report">📈 분기 리포트</button>
     <button class="tab" data-tab="import">📚 자료 올리기</button>
@@ -228,7 +230,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       <div id="pv"></div>
     </div>
 
-    <div class="actbar"><div class="row"><button class="sub" id="pvBtn">👀 미리보기</button><button id="saveBtn">💾 저장하기</button><button class="sub" id="cancelEdit">목록으로</button><span class="msg" id="saveMsg" style="margin:0"></span></div>
+    <div class="actbar"><div class="row"><button class="sub" id="pvBtn">👀 미리보기</button><button id="saveBtn">💾 저장하기</button><button class="sub" id="libSave">📦 보관함에 저장</button><button class="sub" id="cancelEdit">목록으로</button><span class="msg" id="saveMsg" style="margin:0"></span></div>
       <div class="steps"><b>① 범위 고르기 → ② 👀 미리보기로 확인 → ③ 💾 저장</b><span class="x"> · 상태를 <b>응시중</b>으로 저장하면 학생 화면에 바로 나와요 (확인 전엔 <b>준비중</b> 권장)</span></div></div>
   </section>
 
@@ -467,6 +469,18 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   </section>
 
   <!-- 결과 -->
+  <section id="v-lib" style="display:none">
+    <div class="card">
+      <h2>📦 시험지 보관함 <span class="hint" style="margin:0;font-weight:500">모든 선생님이 함께 써요</span></h2>
+      <div class="hint" style="margin-top:0">미리 만들어 둔 시험지 틀이 <b>단어장(폴더)별로</b> 모여 있어요. 반만 골라서 바로 시험지를 만들 수 있어요.<br>
+        <b>📄 같은 문제로</b> = 저장할 때와 똑같은 문제 · <b>🎲 새로 뽑아서</b> = 같은 범위·유형·문항 수로 문제만 새로 뽑기 (재시험·다른 반용)<br>
+        넣는 법: <b>➕ 새 시험지</b>에서 범위·유형을 고르고 미리보기로 확인한 뒤, 아래 바의 <b>📦 보관함에 저장</b>을 누르세요.</div>
+      <div class="row" style="margin-top:10px"><input id="libQ" placeholder="이름·단어장·범위 검색 (예: 3연타, DAY 10)" style="flex:1;min-width:200px"><button class="sub" id="libReload">새로고침</button></div>
+      <div id="libMsg" class="msg"></div>
+      <div id="libList"></div>
+    </div>
+  </section>
+
   <section id="v-results" style="display:none">
     <div class="card"><div class="row"><select id="rPaper" style="max-width:520px"></select><button class="sub" id="rLoad">불러오기</button><button class="sub" id="rPrint" style="display:none">🖨 간단 성적표 인쇄</button></div>
       <div class="repbox" id="rRep" style="display:none">
@@ -1391,13 +1405,13 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   // ---------- 탭 ----------
   function tab(name) {
     Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) { t.classList.toggle("on", t.getAttribute("data-tab") === name); });
-    ["list", "edit", "results", "report", "teachers", "import", "hw", "game", "stu", "cert", "pm"].forEach(function (n) { $("v-" + n).style.display = n === name ? "" : "none"; });
+    ["list", "edit", "lib", "results", "report", "teachers", "import", "hw", "game", "stu", "cert", "pm"].forEach(function (n) { $("v-" + n).style.display = n === name ? "" : "none"; });
     $("contactCard").style.display = name === "results" || name === "report" ? "" : "none";
     try { history.replaceState(null, "", "#" + name); } catch (e) {}
     window.scrollTo(0, 0);
   }
   Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) {
-    t.onclick = function () { var n = t.getAttribute("data-tab"); if (n === "edit") newPaper(); if (n === "import") mkFill(); if (n === "results") fillResultSelect(); if (n === "teachers") loadTeachers(); if (n === "hw") hwOpen(); if (n === "game") { gmLoad(); rkLoad(); } if (n === "stu") stOpen(); if (n === "cert") ctOpen(); if (n === "pm") pmOpen(); tab(n); };
+    t.onclick = function () { var n = t.getAttribute("data-tab"); if (n === "edit") newPaper(); if (n === "lib") libLoad(); if (n === "import") mkFill(); if (n === "results") fillResultSelect(); if (n === "teachers") loadTeachers(); if (n === "hw") hwOpen(); if (n === "game") { gmLoad(); rkLoad(); } if (n === "stu") stOpen(); if (n === "cert") ctOpen(); if (n === "pm") pmOpen(); tab(n); };
   });
 
   function fillClassSelects() {
@@ -1593,7 +1607,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   // ---------- 새로 만들기 / 수정 ----------
   function setRadio(name, v) { var r = document.querySelector('input[name=' + name + '][value="' + v + '"]'); if (r) r.checked = true; }
   function newPaper() {
-    EDIT = null; SEL = {}; SELB = {}; EXCL = []; RESEED = false; titleTouched = false; VT = null; VT_FRESH = true;
+    EDIT = null; SEL = {}; SELB = {}; EXCL = []; RESEED = false; titleTouched = false; VT = null; VT_FRESH = true; PV_SEED = ""; LIB_USE = null;
     $("editTitle").textContent = "새 시험지"; $("tabEdit").textContent = "➕ 새 시험지";
     setRadio("mode", "fixed"); setRadio("lv", "2"); $("eCount").value = 20; $("eMin").value = 30; $("eStatus").value = "준비중"; $("eShow").checked = true;
     $("eKind").value = "월간평가"; $("eStart").value = kst(); $("eEnd").value = kst(Date.now() + 6 * 864e5);
@@ -1669,6 +1683,77 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     })();
   }
 
+  // ---------- 📦 시험지 보관함 ----------
+  var LIB = [], LIB_USE = null;
+  var lvName = ["", "기본", "표준", "심화"];
+  function libLoad() {
+    $("libMsg").textContent = "불러오는 중…";
+    post({ action: "t_lib_list" }).then(function (j) {
+      if (!j.ok) { $("libMsg").innerHTML = '<span class="er">' + esc(j.msg || "보관함을 불러오지 못했어요.") + "</span>"; LIB = []; libRender(); return; }
+      LIB = j.list || []; $("libMsg").textContent = LIB.length ? "" : "아직 보관함이 비어 있어요. ➕ 새 시험지에서 만들고 📦 보관함에 저장을 눌러 보세요."; libRender();
+    });
+  }
+  function libRender() {
+    var q = ($("libQ").value || "").trim().toLowerCase(), groups = {}, order = [];
+    LIB.filter(function (t) { return !q || (t.name + " " + t.book + " " + t.range + " " + t.memo + " " + t.by).toLowerCase().indexOf(q) >= 0; }).forEach(function (t) {
+      if (!groups[t.book]) { groups[t.book] = []; order.push(t.book); } groups[t.book].push(t);
+    });
+    if (!order.length) { $("libList").innerHTML = LIB.length ? '<div class="hint">검색 결과가 없어요.</div>' : ""; return; }
+    $("libList").innerHTML = order.map(function (bk) {
+      return '<details class="libf" open><summary>📒 ' + esc(bk) + ' <span class="pill">' + groups[bk].length + "개</span></summary>" + groups[bk].map(function (t) {
+        var vts = (t.cfg.vtypes || []).length ? (t.cfg.vtypes || []).map(vtLabel).join(", ") : (t.kind === "단어시험" ? "모든 유형" : "");
+        var mine = DATA.me.master || !t.by || t.by === DATA.me.name;
+        return '<div class="paper"><div class="b"><div class="t">' + esc(t.name) + ' <span class="pill v">' + esc(t.kind) + "</span></div>" +
+          '<div class="m">' + t.count + "문항 · " + esc(t.level) + (t.minutes ? " · " + t.minutes + "분" : "") + (vts ? " · " + esc(vts) : "") + "</div>" +
+          '<div class="m">' + esc(t.range) + "</div>" +
+          '<div class="m">👩‍🏫 ' + esc(t.by || "-") + (t.created ? " · " + esc(t.created) : "") + " · " + t.used + "번 씀" + (t.memo ? " · 📝 " + esc(t.memo) : "") + (t.missing ? ' · <span class="er">문제은행에 없는 과 ' + t.missing + "개</span>" : "") + "</div></div>" +
+          '<div class="row"><button class="sm" data-use="' + t.id + '" data-same="1">📄 같은 문제로</button><button class="sm sub" data-use="' + t.id + '">🎲 새로 뽑아서</button>' + (mine ? '<button class="sm warn" data-del="' + t.id + '">🗑</button>' : "") + "</div></div>";
+      }).join("") + "</details>";
+    }).join("");
+    Array.prototype.forEach.call($("libList").querySelectorAll("[data-use]"), function (b) { b.onclick = function () { libUse(LIB.filter(function (t) { return t.id === b.getAttribute("data-use"); })[0], !!b.getAttribute("data-same")); }; });
+    Array.prototype.forEach.call($("libList").querySelectorAll("[data-del]"), function (b) { b.onclick = function () {
+      var t = LIB.filter(function (x) { return x.id === b.getAttribute("data-del"); })[0]; if (!t || !confirm("「" + t.name + "」을(를) 보관함에서 지울까요?\n(이 틀로 이미 만든 시험지는 그대로 남아요)")) return;
+      b.disabled = true; post({ action: "t_lib_del", id: t.id }).then(function (j) { if (!j.ok) { alert(j.msg || "지우지 못했어요."); b.disabled = false; return; } LIB = LIB.filter(function (x) { return x !== t; }); libRender(); });
+    }; });
+  }
+  $("libQ").oninput = libRender; $("libReload").onclick = libLoad;
+  // 틀 → 새 시험지 화면에 채우기
+  function libUse(t, same) {
+    if (!t) return;
+    newPaper(); var c = t.cfg || {};
+    $("eKind").value = t.kind; buildPeriods();
+    setRadio("mode", "fixed"); setRadio("lv", String(c.level || 2)); $("eCount").value = c.count || t.count; $("eMin").value = c.minutes != null ? c.minutes : t.minutes;
+    (c.units || []).forEach(function (u) { SEL[u] = 1; });
+    VT = c.vtypes && c.vtypes.length ? c.vtypes.slice() : null; VT_FRESH = false;
+    var ai = c.ai || {}; $("aiVar").value = String(ai.variant || 0); $("aiExtra").value = String(ai.extra || 0); $("aiFill").checked = ai.fill !== false;
+    EXCL = same ? (c.exclude || []).slice() : [];
+    PV_SEED = same && c.seed ? c.seed : Math.random().toString(36).slice(2, 10);
+    LIB_USE = { id: t.id, by: t.by, name: t.name, same: same };
+    $("eTitle").value = t.name; titleTouched = true;
+    $("editTitle").textContent = "새 시험지 · 📦 " + t.name;
+    modeUi(); renderBooks(); vtUi(); placeUi(); tab("edit");
+    $("saveMsg").innerHTML = '<span class="ok">📦 「' + esc(t.name) + "」을(를) " + (same ? "같은 문제로" : "문제를 새로 뽑아서") + " 불러왔어요. ① 반·날짜를 고르고 저장하세요.</span>";
+    preview();
+  }
+  $("libSave").onclick = function () {
+    if (mode() !== "fixed") { alert("보관함에는 「선생님 지정」 시험지만 넣을 수 있어요."); return; }
+    var units = Object.keys(SEL); if (!units.length) { alert("출제할 과를 먼저 골라 주세요."); return; }
+    if (vtNeed()) { alert("📒 단어 문제 유형을 하나 이상 체크해 주세요."); return; }
+    var seed = EDIT && !RESEED ? (EDIT.cfg.seed || EDIT.id) : (PV_SEED = PV_SEED || Math.random().toString(36).slice(2, 10));
+    var base = ($("eTitle").value || "").replace(/\s*·\s*[^·]*반\s*$/, "").trim();
+    var id = null;
+    if (LIB_USE && (DATA.me.master || !LIB_USE.by || LIB_USE.by === DATA.me.name) && confirm("불러온 틀 「" + LIB_USE.name + "」을(를) 지금 내용으로 덮어쓸까요?\n(취소를 누르면 새 틀로 따로 저장해요)")) { id = LIB_USE.id; base = LIB_USE.name; }
+    var name = prompt("보관함에 넣을 이름 (예: 3연타 DAY 9~10 뜻 고르기 40문항)", base); if (name == null) return; name = name.trim(); if (!name) return;
+    var memo = prompt("다른 선생님께 남길 메모 (없으면 비워 두세요)", "") || "";
+    $("libSave").disabled = true; $("saveMsg").textContent = "보관함에 저장하는 중…";
+    post({ action: "t_lib_save", item: { id: id, name: name, memo: memo, kind: $("eKind").value, units: units, count: +$("eCount").value, minutes: +$("eMin").value, level: level(), vtypes: vtSend(), exclude: EXCL, seed: seed, ai: aiSend() } }).then(function (j) {
+      $("libSave").disabled = false;
+      if (!j.ok) { $("saveMsg").innerHTML = '<span class="er">' + esc(j.msg || "보관함에 저장하지 못했어요.") + "</span>"; return; }
+      LIB_USE = { id: j.item.id, by: j.item.by, name: j.item.name, same: true };
+      $("saveMsg").innerHTML = '<span class="ok">📦 보관함에 저장했어요 · 「' + esc(j.item.book) + "」 폴더</span>";
+    });
+  };
+
   // ---------- 저장 ----------
   $("saveBtn").onclick = function () {
     var m = mode(), units = Object.keys(SEL), books = Object.keys(SELB);
@@ -1682,6 +1767,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     $("saveBtn").disabled = true; $("saveMsg").textContent = "저장하는 중…";
     // 미리보기에서 정한 씨앗을 그대로 쓰도록: 새 시험지는 미리보기 씨앗을 함께 보냄
     if (!EDIT && PV_SEED) paper.seed = PV_SEED;
+    if (!EDIT && LIB_USE) paper.libId = LIB_USE.id;
     post({ action: "t_save", paper: paper }).then(function (j) {
       $("saveBtn").disabled = false;
       if (!j.ok) { $("saveMsg").innerHTML = '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; return; }
