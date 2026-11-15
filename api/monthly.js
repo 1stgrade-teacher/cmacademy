@@ -735,7 +735,7 @@ module.exports = async function handler(req, res) {
 
   // =================== 선생님 ===================
   if (act.startsWith("t_")) {
-    AI.setPrefer(b.ai, b.aiModels); // 선생님이 고른 AI와 모델을 먼저
+    AI.setPrefer(typeof b.ai === "string" ? b.ai : "", b.aiModels); // 선생님이 고른 AI와 모델을 먼저
     const ip = String((req.headers["x-forwarded-for"] || "").split(",")[0]).trim() || "x";
     if (tBlocked(ip)) return send(429, { error: "limit", msg: "코드를 여러 번 틀렸어요. 10분 뒤에 다시 해 주세요." });
     const me = await whoTeacher(b.code);
@@ -777,7 +777,7 @@ module.exports = async function handler(req, res) {
     if (act === "t_preview") { // 선생님 지정형: 실제 학생이 받을 문항(정답 포함)을 미리 보기
       const uids = (Array.isArray(b.units) ? b.units : []).filter((u) => unitIndex.has(u)).slice(0, 300);
       if (!uids.length) return send(400, { error: "input", msg: "과를 하나 이상 골라 주세요." });
-      const pp = { id: "preview", count: num(b.count, 5, 100, 20), level: num(b.level, 1, 3, 2), mode: b.mode === "choice" ? "choice" : "fixed", cfg: { seed: clip(b.seed, 40) || "preview", exclude: (b.exclude || []).slice(0, 500), vtypes: (Array.isArray(b.vtypes) ? b.vtypes : []).filter((t) => V.VT_IDS.includes(t)), ai: b.ai && typeof b.ai === "object" ? b.ai : undefined } };
+      const pp = { id: "preview", count: num(b.count, 5, 100, 20), level: num(b.level, 1, 3, 2), mode: b.mode === "choice" ? "choice" : "fixed", cfg: { seed: clip(b.seed, 40) || "preview", exclude: (b.exclude || []).slice(0, 500), vtypes: (Array.isArray(b.vtypes) ? b.vtypes : []).filter((t) => V.VT_IDS.includes(t)), ai: b.aiOpt && typeof b.aiOpt === "object" ? b.aiOpt : b.ai && typeof b.ai === "object" ? b.ai : undefined } };
       if (isListen({ kind: b.kind }, uids)) { // 🎧 듣기: 순서대로 그대로
         const picked = listenPick(uids, pp.cfg.exclude, pp.count), all = listenPick(uids, [], 1000);
         return send(200, { ok: true, listen: true, stats: uids.map((u) => ({ u, name: unitIndex.get(u).name, bank: (unitData(u) || { qs: [] }).qs.filter((q) => q.type === "mc").length, ai: 0 })), total: all.length, range: rangeText(uids),
@@ -830,10 +830,14 @@ module.exports = async function handler(req, res) {
     }
     if (act === "t_status") {
       const st = STATUSES.includes(b.status) ? b.status : null; if (!st) return send(400, { error: "input" });
+      if (!(await getPaper(b.id))) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요. 목록을 새로고침해 주세요." });
       const pg = await notion("pages/" + id32(b.id), "PATCH", { properties: { "상태": sel(st) } });
       return pg ? send(200, { ok: true }) : send(502, { error: "notion", msg: "바꾸지 못했어요.", debug: lastErr });
     }
-    if (act === "t_delete") {
+    if (act === "t_delete") { // 시험지 지우기: 만든 선생님과 관리자만, 응시중이면 먼저 마감
+      const old = await getPaper(b.id); if (!old) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요. 목록을 새로고침해 주세요." });
+      if (!me.master && old.teacher && old.teacher !== me.name) return send(403, { error: "owner", msg: old.teacher + "이(가) 만든 시험지는 " + old.teacher + "이나 관리자만 지울 수 있어요." });
+      if (old.status === "응시중") return send(400, { error: "open", msg: "응시중인 시험지는 먼저 마감한 뒤에 지워 주세요." });
       const pg = await notion("pages/" + id32(b.id), "PATCH", { archived: true });
       return pg ? send(200, { ok: true }) : send(502, { error: "notion", msg: "지우지 못했어요.", debug: lastErr });
     }
