@@ -194,6 +194,7 @@ async function loadCustom(force) {
     const uid = P.text(p, "과ID"); if (!/^x[0-9a-f]{8,}$/.test(uid)) return;
     let qs = []; try { qs = JSON.parse(P.text(p, "문항") || "[]"); } catch (e) { qs = []; }
     if (qs.some((q) => q.vt === "meaning") && !qs.some((q) => q.vt === "mwrite")) qs = qs.concat(qs.map(V.mwriteFrom).filter(Boolean)); // 예전 단어장에도 '뜻 쓰기'
+    if (qs.some((q) => q.vt === "spell") && !qs.some((q) => q.vt === "spellgap" || q.vt === "unscramble")) qs = qs.concat(...qs.map(V.spellExtrasFrom)); // 예전 단어장에도 '철자 빈칸 채우기'·'철자 순서 맞추기'
     const text = P.text(p, "본문");
     if (!qs.length && text.length < 80) return;
     const bookName = P.text(p, "교재") || "직접 올린 자료", chapter = P.text(p, "단원") || "단원", name = P.title(p, "과") || "자료";

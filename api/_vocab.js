@@ -10,12 +10,16 @@
 //   mwrite  단어 → 우리말 뜻 쓰기: 단어장 뜻과 같으면 바로 정답, 다르면 채점 때 AI가 사전에 있는 뜻·비슷한 뜻인지 확인
 //   ctx     AI가 만든 예문의 빈칸에 문맥상 알맞은 단어 5개 중 고르기 (api/_ctx.js 가 만들고 검수해서 저장)
 //   spellmc 우리말 뜻 → 철자가 비슷한 혼동 어휘 5개 중 정답 철자 고르기 (api/_confuse.js 가 만들고 검수해서 저장)
+//   spellgap   뜻 + 철자의 70~80%를 무작위로 비운 모양(s _ h _ _ l) → 빈칸 채워 단어 완성
+//   unscramble 뜻 + 섞인 철자(ocohsl) → 바른 순서로 고쳐 쓰기
 // ------------------------------------------------------------------
 const crypto = require("crypto");
 
 const VTYPES = [
   { id: "meaning", label: "뜻 고르기", need: "뜻" },
   { id: "spell", label: "철자 쓰기 (뜻 보고)", need: "뜻" },
+  { id: "spellgap", label: "철자 빈칸 채우기 (70~80% 빈칸)", need: "뜻" },
+  { id: "unscramble", label: "철자 순서 맞추기 (섞인 철자)", need: "뜻" },
   { id: "mwrite", label: "뜻 쓰기 (AI가 비슷한 뜻도 채점)", need: "뜻" },
   { id: "blankmc", label: "예문 빈칸 고르기", need: "예문" },
   { id: "blank", label: "예문 빈칸 쓰기", need: "예문" },
@@ -122,6 +126,8 @@ function build(words, uid) {
     if (e.m) { const o = mc([e.m].concat(others(L, e, 4, r, (x) => x.m && x.m !== e.m).map((x) => x.m)), e.m); if (o) add(e, "meaning", Object.assign({ type: "mc", lv: 1, q: "다음 단어의 뜻으로 알맞은 것을 고르시오.", sub: W + pos }, o)); }
     // 1-1) 단어 → 우리말 뜻 쓰기 (채점 때 AI가 비슷한 뜻도 확인)
     if (e.m) add(e, "mwrite", { type: "short", lv: 2, q: "다음 단어의 뜻을 우리말로 쓰시오.", sub: W + pos, answer: e.m, accept: meaningAccept(e.m) });
+    // 1-2) 철자 빈칸 채우기 · 섞인 철자 순서 맞추기
+    if (e.m) spellExtras(W, e.m + pos, r).forEach((x) => add(e, x.vt, x));
     // 2) 뜻 → 철자 쓰기 (첫 글자 힌트)
     if (e.m) add(e, "spell", { type: "short", lv: 2, q: "우리말 뜻에 알맞은 영어 단어를 쓰시오.", sub: e.m + pos + "  →  " + W[0] + " " + "_ ".repeat(Math.max(1, W.length - 1)).trim() + " (" + W.replace(/\s/g, "").length + "글자)", answer: W, accept: altForms(e.w) });
     if (tk) {
@@ -154,6 +160,33 @@ function build(words, uid) {
   });
   return { questions: out, words: L };
 }
+// 철자 빈칸 채우기(spellgap) · 섞인 철자 순서 맞추기(unscramble) 두 문항. head = "뜻 (품사)"
+//   빈칸: 글자의 70~80%를 무작위로 비우고 1글자 이상은 남겨요 (school → s_h__l). 글자 3개 미만이면 만들지 않아요.
+//   섞기: 낱말마다 글자를 섞되 원래 단어와 같아지면 다시 섞어요 (school → ocohsl). 글자 4개 미만이면 만들지 않아요.
+function spellExtras(W, head, r) {
+  const out = [], word = String(W || "").trim().replace(/\s+/g, " ");
+  if (!word || word.length > 40 || !/^[A-Za-z][A-Za-z' -]*$/.test(word)) return out;
+  const idx = []; word.split("").forEach((c, i) => { if (/[A-Za-z]/.test(c)) idx.push(i); });
+  if (idx.length >= 3) {
+    const n = idx.length, lo = Math.ceil(n * 0.7 - 1e-9), hi = Math.floor(n * 0.8 + 1e-9); // 70~80% 사이 개수 (짧은 단어는 그 범위에 정수가 없으면 75%에 가까운 둘 중 하나)
+    let k = lo <= hi ? lo + Math.floor(r() * (hi - lo + 1)) : (r() < 0.5 ? hi : lo); k = Math.max(1, Math.min(n - 1, k));
+    const hide = new Set(shuffle(idx, r).slice(0, k));
+    const mask = word.split("").map((c, i) => (hide.has(i) ? "_" : c)).join("");
+    out.push({ vt: "spellgap", type: "short", lv: 2, q: "빈칸에 알맞은 철자를 넣어 뜻에 맞는 단어를 완성하시오.", sub: head + "\n" + mask.split("").map((c) => (c === " " ? "   " : c)).join(" ") + "  (" + idx.length + "글자)", answer: word, accept: [word], mask });
+  }
+  if (idx.length >= 4) {
+    const mix = () => word.split(" ").map((p) => shuffle(p.toLowerCase().split(""), r).join("")).join(" / ");
+    let s = mix(); for (let t = 0; t < 12 && s.replace(/ \/ /g, " ") === word.toLowerCase(); t++) s = mix();
+    if (s.replace(/ \/ /g, " ") !== word.toLowerCase()) out.push({ vt: "unscramble", type: "short", lv: 2, q: "섞인 철자를 바른 순서로 고쳐 뜻에 맞는 단어를 쓰시오.", sub: head + "\n" + s, answer: word, accept: [word], mask: word.replace(/[A-Za-z]/g, "_") });
+  }
+  return out;
+}
+// 예전에 저장한 단어장(이 두 유형이 없던 때)은 '철자 쓰기' 문항에서 만들어 써요
+function spellExtrasFrom(q) {
+  if (!q || q.vt !== "spell" || !q.answer) return [];
+  const head = String(q.sub || "").split("\n")[0].split("  →  ")[0].trim();
+  return spellExtras(q.answer, head, rngOf("x|" + q.id)).map((x) => Object.assign(x, { w: q.w, kind: "단어", id: "v" + h(q.id + "|" + x.vt, 10), exp: q.exp }));
+}
 // 저장된 문항에서 단어장(단어·품사·뜻·예문·영영풀이·동의어·반의어)을 다시 꺼내요 → 학생 단어 게임용
 function wordsFrom(qs) {
   const map = new Map();
@@ -183,6 +216,7 @@ function typeCounts(qs) { const c = {}; (qs || []).forEach((q) => { if (q.vt) c[
 
 // 학생 시험 화면용 글자 칸 모양: 첫 글자만 보여 주고 나머지는 "_" (예: look for → "l___ ___"). 정답 표기가 여럿이고 글자 수가 다르면 null (그때는 일반 입력칸)
 function boxShape(q) {
+  if (q && q.type === "short" && (q.vt === "spellgap" || q.vt === "unscramble")) return q.mask && /_/.test(q.mask) && q.mask.length <= 40 ? q.mask : null; // 남긴 글자는 칸에 미리 채워 보여 줘요
   if (!q || q.type !== "short" || !/^(spell|blank|synw)$/.test(q.vt || "")) return null;
   const forms = [q.answer].concat(q.accept || []).map((x) => String(x || "").trim().replace(/\s+/g, " ")).filter(Boolean);
   if (!forms.length) return null;
@@ -191,4 +225,4 @@ function boxShape(q) {
   return forms.every((f) => shape(f.toLowerCase()) === shape(forms[0].toLowerCase())) ? sh : null;
 }
 
-module.exports = { VTYPES, VT_IDS, build, wordsFrom, cleanWord, typeCounts, mwriteOk, mwriteFrom, meaningAccept, formsOf, isFormOf, mainForm, boxShape, _t: { findToken, inflect, koNorm } };
+module.exports = { VTYPES, VT_IDS, build, spellExtrasFrom, wordsFrom, cleanWord, typeCounts, mwriteOk, mwriteFrom, meaningAccept, formsOf, isFormOf, mainForm, boxShape, _t: { findToken, inflect, koNorm } };
