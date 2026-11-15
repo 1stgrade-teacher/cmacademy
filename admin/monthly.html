@@ -482,7 +482,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   </section>
 
   <section id="v-results" style="display:none">
-    <div class="card"><div class="row"><select id="rPaper" style="max-width:520px"></select><button class="sub" id="rLoad">불러오기</button><button class="sub" id="rPrint" style="display:none">🖨 간단 성적표 인쇄</button></div>
+    <div class="card"><div class="row"><select id="rCls" style="width:auto;max-width:180px" title="반별로 걸러 보기"></select><select id="rKind" style="width:auto;max-width:150px" title="종류별로 걸러 보기"></select><select id="rPaper" style="max-width:520px;flex:1;min-width:200px"></select><button class="sub" id="rLoad">불러오기</button><button class="sub" id="rPrint" style="display:none">🖨 간단 성적표 인쇄</button></div>
       <div class="repbox" id="rRep" style="display:none">
         <div class="row"><button id="rMake">📄 학생별 분석 리포트 만들기 (노션)</button><label><input type="checkbox" id="rForce"> 이미 만든 학생도 다시 만들기</label></div>
         <div class="hint">선생님의 「○월 월례고사 분석레포트」 양식 그대로, 학생마다 <b>평가 개요 → 총평 → 영역별 성적 → 문항별 오답 원인 → 학습 대책 → 복습 강의 링크 → 성적 추이</b>를 AI가 써서 노션 <b>📔 학습리포트 › 학생 학습레포트</b> 아래에 만들어요. 학생 1명에 20~40초 걸려요. 보내기 전에 노션에서 한 번 읽고 고쳐 주세요.</div>
@@ -1435,13 +1435,14 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
           '<br>응시 <b>' + (p.takers || 0) + "명</b>" + (p.avg != null ? " · 평균 <b>" + round1(p.avg) + "점</b>" : "") + "</div>" +
           '<div class="copy">학생 링크: ' + esc(studentLink(p)) + "</div></div>" +
           '<div class="row">' + (p.status !== "응시중" ? '<button class="sm" data-st="응시중" data-id="' + p.id + '">▶ 응시 열기</button>' : '<button class="sm warn" data-st="마감" data-id="' + p.id + '">■ 마감</button>') +
-          '<button class="sm sub" data-edit="' + p.id + '">수정</button><button class="sm sub" data-res="' + p.id + '">결과</button><button class="sm sub" data-copy="' + p.id + '">링크 복사</button>' +
-          (DATA.me.master || !p.teacher || p.teacher === DATA.me.name ? '<button class="sm warn" data-pdel="' + p.id + '" title="시험지 지우기">🗑</button>' : "") +
+          (mayEdit(p) ? '<button class="sm sub" data-edit="' + p.id + '">수정</button>' : "") + '<button class="sm sub" data-dup="' + p.id + '" title="원본은 그대로 두고 똑같은 시험지를 하나 더 만들어요">📄 복제</button><button class="sm sub" data-res="' + p.id + '">결과</button><button class="sm sub" data-copy="' + p.id + '">링크 복사</button>' +
+          (mayEdit(p) ? '<button class="sm warn" data-pdel="' + p.id + '" title="시험지 지우기">🗑</button>' : "") +
           (p.url ? '<a class="sm" href="' + esc(p.url) + '" target="_blank" style="font-size:13px;color:#0A5F61">노션</a>' : "") + "</div></div>";
       }).join("") + "</div>";
     }).join("");
     bindList();
   }
+  function mayEdit(p) { return !!(DATA.me.master || !p.teacher || p.teacher === DATA.me.name); } // 만든 선생님과 관리자만 고치고 지워요. 다른 선생님은 📄 복제해서 써요.
   function bindList() {
     var box = $("paperList");
     Array.prototype.forEach.call(box.querySelectorAll("[data-st]"), function (b) {
@@ -1452,11 +1453,12 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         post({ action: "t_status", id: id, status: st }).then(function (j) {
           if (!j.ok) { alert(j.msg || "바꾸지 못했어요."); b.disabled = false; return; }
           paperById(id).status = st; renderList();
-          if (st === "마감" && confirm("마감했어요. 지금 학생별 분석 리포트를 노션에 만들까요?")) { fillResultSelect(); $("rPaper").value = id; tab("results"); loadResults(function () { $("rMake").click(); }); }
+          if (st === "마감" && confirm("마감했어요. 지금 학생별 분석 리포트를 노션에 만들까요?")) { fillResultSelect(id); tab("results"); loadResults(function () { $("rMake").click(); }); }
         });
       };
     });
     Array.prototype.forEach.call(box.querySelectorAll("[data-edit]"), function (b) { b.onclick = function () { editPaper(paperById(b.getAttribute("data-edit"))); }; });
+    Array.prototype.forEach.call(box.querySelectorAll("[data-dup]"), function (b) { b.onclick = function () { dupPaper(paperById(b.getAttribute("data-dup"))); }; });
     Array.prototype.forEach.call(box.querySelectorAll("[data-pdel]"), function (b) {
       b.onclick = function () {
         var p = paperById(b.getAttribute("data-pdel")); if (!p) return;
@@ -1469,7 +1471,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         });
       };
     });
-    Array.prototype.forEach.call(box.querySelectorAll("[data-res]"), function (b) { b.onclick = function () { fillResultSelect(); $("rPaper").value = b.getAttribute("data-res"); tab("results"); loadResults(); }; });
+    Array.prototype.forEach.call(box.querySelectorAll("[data-res]"), function (b) { b.onclick = function () { fillResultSelect(b.getAttribute("data-res")); tab("results"); loadResults(); }; });
     Array.prototype.forEach.call(box.querySelectorAll("[data-copy]"), function (b) {
       b.onclick = function () { var t = studentLink(paperById(b.getAttribute("data-copy"))); (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { b.textContent = "복사됨 ✓"; }, function () { prompt("링크를 복사하세요", t); }); };
     });
@@ -1632,6 +1634,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     $("ePlace").value = ""; PG = []; buildPeriods(); autoTitle(); modeUi(); buildBookFilters(); renderBooks(); vtUi(); placeUi(); $("pv").innerHTML = ""; $("pvInfo").textContent = ""; $("fillBtn").style.display = "none"; $("saveMsg").textContent = "";
   }
   function editPaper(p) {
+    if (!mayEdit(p)) { alert((p.teacher || "다른 선생님") + "이(가) 만든 시험지예요. 📄 복제해서 써 주세요."); return; }
     newPaper(); EDIT = p; titleTouched = true;
     $("editTitle").textContent = "시험지 수정 · " + p.title; $("tabEdit").textContent = "✏️ 수정 중";
     $("eCls").value = p.cls; $("eKind").value = p.kind; buildPeriods(); VT = p.cfg.vtypes && p.cfg.vtypes.length ? p.cfg.vtypes.slice() : null;
@@ -1646,6 +1649,25 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   }
   function actbarH() { var a = document.querySelector(".actbar"); if (a) document.documentElement.style.setProperty("--abh", a.offsetHeight + "px"); }
   window.addEventListener("resize", actbarH); if (window.ResizeObserver) new ResizeObserver(actbarH).observe(document.querySelector(".actbar"));
+  // 📄 복제: 원본은 그대로 두고, 같은 범위·설정·문제로 새 시험지를 만들어요 (이름·반·날짜만 바꿔 저장)
+  function dupPaper(p) {
+    if (!p) return;
+    if (editBusy() && !EDIT_DONE && !confirm("지금 만들던 시험지 내용을 비우고 「" + p.title + "」을(를) 복제할까요?")) return;
+    newPaper(); var c = p.cfg || {};
+    $("eKind").value = p.kind; buildPeriods();
+    if (Array.prototype.some.call($("eCls").options, function (o) { return o.value === p.cls; })) $("eCls").value = p.cls;
+    VT = c.vtypes && c.vtypes.length ? c.vtypes.slice() : null; VT_FRESH = false;
+    setRadio("mode", p.mode); setRadio("lv", String(["기본", "표준", "심화"].indexOf(p.level) + 1)); $("eCount").value = p.count; $("eMin").value = p.minutes; $("eShow").checked = !!p.show;
+    (c.units || []).forEach(function (u) { SEL[u] = 1; }); (c.books || []).forEach(function (b) { SELB[b] = 1; }); EXCL = (c.exclude || []).slice();
+    var ai = c.ai || {}; $("aiVar").value = String(ai.variant || 0); $("aiExtra").value = String(ai.extra || 0); $("aiFill").checked = ai.fill !== false;
+    $("ePlace").value = c.place || ""; PG = (c.grades || []).slice();
+    PV_SEED = String(c.seed || p.id).replace(/[^\w-]/g, ""); // 원본과 같은 문제
+    $("eTitle").value = p.title + " (복제)"; titleTouched = true;
+    $("editTitle").textContent = "새 시험지 · 📄 " + p.title + " 복제";
+    modeUi(); renderBooks(); vtUi(); placeUi(); tab("edit");
+    $("saveMsg").innerHTML = '<span class="ok">📄 복제했어요. 원본은 그대로예요. <b>시험명</b>을 바꾸고 반·날짜를 정한 뒤 저장하세요.</span>';
+    $("eTitle").focus(); $("eTitle").select();
+  }
   $("cancelEdit").onclick = function () { tab("list"); };
   $("editReset").onclick = function () { if (editBusy() && !confirm("지금 만들던 내용을 비우고 새 시험지를 시작할까요?")) return; newPaper(); window.scrollTo(0, 0); };
 
@@ -2275,11 +2297,24 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
 
   // ---------- 응시 결과 ----------
   var LAST_RES = null;
-  function fillResultSelect() {
-    var cur = $("rPaper").value;
-    $("rPaper").innerHTML = (DATA.papers.length ? "" : '<option value="">아직 만든 시험지가 없어요 (➕ 새 시험지에서 만들어요)</option>') + DATA.papers.map(function (p) { return '<option value="' + p.id + '">' + esc(p.cls + " · " + p.title + " (" + p.status + ")") + "</option>"; }).join("");
-    if (cur) $("rPaper").value = cur;
+  // 시험지 고르기: 반·종류로 걸러서 (고른 반은 이 기기에 기억). want = 꼭 보여야 하는 시험지 id
+  function fillResultSelect(want) {
+    var cur = want || $("rPaper").value, wp = want && paperById(want);
+    if (!$("rCls").options.length) {
+      $("rCls").innerHTML = '<option value="">모든 반</option>' + DATA.classes.map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
+      var last = lsGet("cm-res-cls"); if (last && DATA.classes.indexOf(last) >= 0) $("rCls").value = last;
+    }
+    var kinds = [], k0 = $("rKind").value; DATA.papers.forEach(function (p) { if (p.kind && kinds.indexOf(p.kind) < 0) kinds.push(p.kind); });
+    $("rKind").innerHTML = '<option value="">모든 종류</option>' + kinds.map(function (k) { return "<option>" + esc(k) + "</option>"; }).join(""); if (kinds.indexOf(k0) >= 0) $("rKind").value = k0;
+    if (wp) { if ($("rCls").value && $("rCls").value !== wp.cls) $("rCls").value = ""; if ($("rKind").value && $("rKind").value !== wp.kind) $("rKind").value = ""; }
+    var fc = $("rCls").value, fk = $("rKind").value;
+    var list = DATA.papers.filter(function (p) { return (!fc || p.cls === fc) && (!fk || p.kind === fk); });
+    $("rPaper").innerHTML = (list.length ? "" : '<option value="">' + (DATA.papers.length ? "이 조건에 맞는 시험지가 없어요" : "아직 만든 시험지가 없어요 (➕ 새 시험지에서 만들어요)") + "</option>") +
+      list.map(function (p) { return '<option value="' + p.id + '">' + esc((fc ? "" : p.cls + " · ") + p.title + " (" + p.status + (p.takers ? " · " + p.takers + "명" : "") + ")") + "</option>"; }).join("");
+    if (cur && list.some(function (p) { return p.id === cur; })) $("rPaper").value = cur;
   }
+  $("rCls").onchange = function () { lsSet("cm-res-cls", $("rCls").value); fillResultSelect(); };
+  $("rKind").onchange = function () { fillResultSelect(); };
   $("rLoad").onclick = function () { loadResults(); };
   function loadResults(after) {
     var id = $("rPaper").value; if (!id) return;

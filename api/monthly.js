@@ -812,6 +812,7 @@ module.exports = async function handler(req, res) {
       if (mode === "choice" && !books.length && !units.length) return send(400, { error: "input", msg: "학생이 고를 수 있는 교재를 골라 주세요." });
       let old = null;
       if (f.id) { old = await getPaper(f.id); if (!old) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." }); }
+      if (old && !me.master && old.teacher && old.teacher !== me.name) return send(403, { error: "owner", msg: old.teacher + "이(가) 만든 시험지는 고칠 수 없어요. 목록에서 📄 복제해서 써 주세요." });
       const cfg = { units, books, seed: (old && old.cfg.seed) || clip(f.seed, 40).replace(/[^\w-]/g, "") || hash(Date.now() + title, 12), exclude: (Array.isArray(f.exclude) ? f.exclude : (old && old.cfg.exclude) || []).slice(0, 500), vtypes: (Array.isArray(f.vtypes) ? f.vtypes : (old && old.cfg.vtypes) || []).filter((t) => V.VT_IDS.includes(t)), place: clip(f.place != null ? f.place : (old && old.cfg.place) || "", 1500), grades: (Array.isArray(f.grades) ? f.grades : (old && old.cfg.grades) || []).filter((g) => GRADES.includes(g)),
         ai: f.ai && typeof f.ai === "object" ? { fill: f.ai.fill !== false, variant: num(f.ai.variant, 0, 100, 0), extra: num(f.ai.extra, 0, 60, 0) } : (old && old.cfg.ai) || undefined };
       if (f.reseed) cfg.seed = hash(Date.now() + Math.random(), 12);
