@@ -55,6 +55,10 @@ details.bk>summary .cnt{margin-left:auto;font-size:12px;font-weight:700;color:va
 .ch{padding:2px 12px 8px 34px}.chn{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;margin:8px 0 2px;color:var(--ac-ink)}
 .un{display:flex;align-items:center;gap:8px;padding:4px 4px 4px 24px;font-size:13.5px;cursor:pointer;border-radius:6px}.un:hover{background:var(--ac-soft)}
 .un .n{margin-left:auto;font-size:11.5px;color:var(--muted);white-space:nowrap}.un .n.z{color:#B06A00}
+table.kt{font-size:13px;width:auto;min-width:100%}table.kt th,table.kt td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
+table.kt th{background:#F0F8F8;font-weight:700;vertical-align:bottom;line-height:1.35}table.kt th small{display:block;font-weight:500;color:var(--muted);max-width:110px;overflow:hidden;text-overflow:ellipsis}
+table.kt .nm{position:sticky;left:0;background:#fff;text-align:left;font-weight:700;z-index:1;box-shadow:1px 0 0 var(--line)}table.kt th.nm{background:#F0F8F8}
+table.kt td.lo{background:#FDE3E1;color:#A32D22}table.kt td.hi{background:#DFF5E8;color:#1F7A4A}table.kt td.no{color:#B9C4CC}table.kt tr.av td{background:#F7FAFA;font-weight:700;border-top:2px solid var(--ac-bg)}table.kt td.sm,table.kt th.sm{border-left:2px solid var(--ac-bg);font-weight:700}
 .sumbar{position:sticky;bottom:var(--abh,0px);z-index:2;background:#fff;border-top:1px solid var(--line);padding:10px 0 0;margin-top:10px}
 /* 미리보기 */
 .qv{border-top:1px solid #EEF3F3;padding:10px 0;display:flex;gap:10px}
@@ -489,6 +493,19 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         <div id="rProg"></div>
       </div>
       <div id="rBox"></div></div>
+    <div class="card" id="ktCard">
+      <h2>🗂 종류별 모아 보기 <span class="hint" style="margin:0;font-weight:500">한 반의 단어시험만 쭉, 월간평가만 쭉 — 날짜순으로</span></h2>
+      <div class="row">
+        <select id="ktCls" style="width:auto;max-width:180px" title="반"></select>
+        <select id="ktKind" style="width:auto" title="시험 종류"><option>단어시험</option><option>주간평가</option><option>월간평가</option><option>분기평가</option><option>듣기시험</option></select>
+        <select id="ktSpan" style="width:auto" title="기간"><option value="1">최근 1개월</option><option value="3" selected>최근 3개월</option><option value="6">최근 6개월</option><option value="12">최근 1년</option><option value="y">올해</option><option value="c">직접 고르기</option></select>
+        <span id="ktDates" style="display:none"><input type="date" id="ktFrom" style="width:auto"> ~ <input type="date" id="ktTo" style="width:auto"></span>
+        <button id="ktLoad">불러오기</button><button class="sub" id="ktCsv" style="display:none">⬇ 엑셀로 받기</button>
+        <label style="font-size:13.5px"><input type="checkbox" id="ktPct"> 100점 환산으로 보기</label>
+      </div>
+      <div class="hint">사이트에서 본 시험과 <b>📝 점수 직접 입력</b>으로 넣은 점수가 함께 나와요. 빈칸(·)은 안 본 시험이에요. 시험 제목에 마우스를 올리면 범위가 보여요.</div>
+      <div id="ktBox"></div>
+    </div>
   </section>
 
   <!-- 분기 리포트 -->
@@ -2299,6 +2316,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   var LAST_RES = null;
   // 시험지 고르기: 반·종류로 걸러서 (고른 반은 이 기기에 기억). want = 꼭 보여야 하는 시험지 id
   function fillResultSelect(want) {
+    ktInit();
     var cur = want || $("rPaper").value, wp = want && paperById(want);
     if (!$("rCls").options.length) {
       $("rCls").innerHTML = '<option value="">모든 반</option>' + DATA.classes.map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
@@ -2314,6 +2332,81 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     if (cur && list.some(function (p) { return p.id === cur; })) $("rPaper").value = cur;
   }
   $("rCls").onchange = function () { lsSet("cm-res-cls", $("rCls").value); fillResultSelect(); };
+  // ---------- 🗂 종류별 모아 보기 ----------
+  var KT = null;
+  function ktInit() {
+    if ($("ktCls").options.length) return;
+    $("ktCls").innerHTML = DATA.classes.map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
+    var last = lsGet("cm-res-cls") || lsGet("cm-teacher-cls"); if (last && DATA.classes.indexOf(last) >= 0) $("ktCls").value = last;
+    var k = lsGet("cm-kt-kind"); if (k) $("ktKind").value = k;
+  }
+  function ktRange() {
+    var v = $("ktSpan").value, to = kst();
+    if (v === "c") return { from: $("ktFrom").value, to: $("ktTo").value };
+    if (v === "y") return { from: to.slice(0, 4) + "-01-01", to: to };
+    var d = new Date(Date.now() + 9 * 3600e3); d.setUTCMonth(d.getUTCMonth() - +v); return { from: d.toISOString().slice(0, 10), to: to };
+  }
+  $("ktSpan").onchange = function () { var c = $("ktSpan").value === "c"; $("ktDates").style.display = c ? "" : "none"; if (c && !$("ktFrom").value) { $("ktTo").value = kst(); $("ktFrom").value = kst(Date.now() - 90 * 864e5); } };
+  $("ktLoad").onclick = function () {
+    var r = ktRange(); if (!r.from || !r.to || r.from > r.to) { $("ktBox").innerHTML = '<p class="er">기간을 다시 골라 주세요.</p>'; return; }
+    lsSet("cm-kt-kind", $("ktKind").value);
+    $("ktBox").innerHTML = '<p class="hint">불러오는 중…</p>'; $("ktLoad").disabled = true; $("ktCsv").style.display = "none";
+    post({ action: "t_kind_table", cls: $("ktCls").value, kind: $("ktKind").value, from: r.from, to: r.to }).then(function (j) {
+      $("ktLoad").disabled = false;
+      if (!j.ok) { $("ktBox").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; }
+      KT = ktBuild(j); ktRender();
+    });
+  };
+  $("ktPct").onchange = function () { if (KT) ktRender(); };
+  // 기록 → 시험(열) × 학생(행). 같은 날 같은 이름(또는 같은 시험지)이면 한 시험으로 묶어요.
+  function ktBuild(j) {
+    var exams = [], byKey = {};
+    j.records.forEach(function (r) {
+      var key = r.paper || (r.date + "|" + r.title), e = byKey[key];
+      if (!e) { e = byKey[key] = { key: key, title: r.title, date: r.date, range: r.range || "", totals: {}, cells: {} }; exams.push(e); }
+      if (r.date < e.date) e.date = r.date; if (!e.range && r.range) e.range = r.range;
+      if (r.total) e.totals[r.total] = (e.totals[r.total] || 0) + 1;
+      var old = e.cells[r.sid]; if (!old || r.date >= old.date) e.cells[r.sid] = r; // 다시 본 경우 마지막 기록
+    });
+    exams.sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : a.title < b.title ? -1 : 1; });
+    exams.forEach(function (e) { var ts = Object.keys(e.totals).sort(function (a, b) { return e.totals[b] - e.totals[a]; }); e.total = ts.length ? +ts[0] : 0; e.mixed = ts.length > 1; });
+    return { j: j, exams: exams, students: j.students.filter(function (s) { return !s.gone || exams.some(function (e) { return e.cells[s.sid]; }); }) };
+  }
+  function ktPct(c) { return c.pct != null ? c.pct : c.total ? c.score / c.total * 100 : null; }
+  function ktRender() {
+    var K = KT, E = K.exams, asPct = $("ktPct").checked;
+    if (!E.length) { $("ktBox").innerHTML = '<p class="hint">이 기간에 ' + esc(K.j.cls) + "의 " + esc(K.j.kind) + " 기록이 없어요. 기간을 넓혀 보세요.</p>"; return; }
+    var md = function (d) { return +d.slice(5, 7) + "/" + +d.slice(8, 10); };
+    var head = '<tr><th class="nm">이름</th>' + E.map(function (e) { return '<th title="' + esc(e.title + (e.range ? "\n범위: " + e.range : "")) + '">' + md(e.date) + "<small>" + esc(e.title) + "</small>" + (asPct ? "" : '<small>' + (e.total ? "/" + e.total + (e.mixed ? "*" : "") : "") + "</small>") + "</th>"; }).join("") + '<th class="sm">평균<small>100점 환산</small></th><th>응시</th></tr>';
+    var colSum = E.map(function () { return { s: 0, n: 0 }; });
+    var body = K.students.map(function (s) {
+      var ps = [];
+      var tds = E.map(function (e, i) {
+        var c = e.cells[s.sid]; if (!c) return '<td class="no">·</td>';
+        var p = ktPct(c); if (p != null) { ps.push(p); colSum[i].s += p; colSum[i].n++; }
+        var diff = !asPct && c.total && e.total && c.total !== e.total; // 문항 수가 다른 시험지
+        return '<td class="' + (p != null && p < 60 ? "lo" : p != null && p >= 90 ? "hi" : "") + '" title="' + esc(s.name + " · " + c.score + "/" + c.total + (p != null ? " (" + round1(p) + "점)" : "")) + '">' + (asPct ? (p != null ? round1(p) : "-") : c.score + (diff ? "<small style='color:inherit;opacity:.7'>/" + c.total + "</small>" : "")) + "</td>";
+      }).join("");
+      var avg = ps.length ? ps.reduce(function (a, b) { return a + b; }, 0) / ps.length : null;
+      s._avg = avg; s._n = ps.length;
+      return '<tr><td class="nm">' + esc(s.name) + (s.gone ? ' <span class="hint" style="margin:0;font-weight:500">(' + esc(s.gone) + ")</span>" : "") + "</td>" + tds + '<td class="sm ' + (avg != null && avg < 60 ? "lo" : avg != null && avg >= 90 ? "hi" : "") + '">' + (avg != null ? round1(avg) : "-") + "</td><td>" + ps.length + "/" + E.length + "</td></tr>";
+    }).join("");
+    var all = colSum.filter(function (c) { return c.n; }), tot = all.length ? all.reduce(function (a, c) { return a + c.s / c.n; }, 0) / all.length : null;
+    var foot = '<tr class="av"><td class="nm" style="background:#F7FAFA">반 평균 <span class="hint" style="margin:0;font-weight:500">(100점 환산)</span></td>' + colSum.map(function (c) { return "<td>" + (c.n ? round1(c.s / c.n) : "-") + "</td>"; }).join("") + '<td class="sm">' + (tot != null ? round1(tot) : "-") + "</td><td></td></tr>" +
+      '<tr class="av"><td class="nm" style="background:#F7FAFA;font-weight:500">응시 인원</td>' + colSum.map(function (c) { return '<td style="font-weight:500">' + c.n + "명</td>"; }).join("") + "<td class=sm></td><td></td></tr>";
+    $("ktBox").innerHTML = "<h3>" + esc(K.j.cls) + " · " + esc(K.j.kind) + " " + E.length + "회 <span class='hint' style='margin:0;font-weight:500'>" + esc(K.j.from) + " ~ " + esc(K.j.to) + (asPct ? " · 100점 환산" : " · 맞은 개수 (제목 아래 /숫자 = 문항 수)") + "</span></h3>" +
+      '<div class="tw" id="ktScroll"><table class="kt"><thead>' + head + "</thead><tbody>" + body + foot + "</tbody></table></div>" +
+      '<div class="hint"><span style="background:#DFF5E8;padding:1px 6px;border-radius:5px">90점 이상</span> <span style="background:#FDE3E1;padding:1px 6px;border-radius:5px">60점 미만</span>' + (E.some(function (e) { return e.mixed; }) ? " · * 표시는 학생마다 문항 수가 다른 시험이에요 (다른 학생은 점수 옆에 /문항 수)" : "") + (K.j.more ? ' · <span class="er">기록이 많아 일부만 보여요. 기간을 줄여 주세요.</span>' : "") + "</div>";
+    var sc = $("ktScroll"); sc.scrollLeft = sc.scrollWidth; // 가장 최근 시험이 보이게
+    $("ktCsv").style.display = "";
+  }
+  $("ktCsv").onclick = function () {
+    if (!KT) return; var E = KT.exams, q = function (v) { v = String(v == null ? "" : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    var lines = [["이름"].concat(E.map(function (e) { return e.date + " " + e.title + (e.total ? " (/" + e.total + ")" : ""); })).concat(["평균(100점 환산)", "응시 횟수"])];
+    KT.students.forEach(function (s) { lines.push([s.name + (s.gone ? " (" + s.gone + ")" : "")].concat(E.map(function (e) { var c = e.cells[s.sid]; return c ? ($("ktPct").checked ? round1(ktPct(c)) : c.score + (c.total && e.total && c.total !== e.total ? "/" + c.total : "")) : ""; })).concat([s._avg != null ? round1(s._avg) : "", s._n])); });
+    var blob = new Blob(["\ufeff" + lines.map(function (l) { return l.map(q).join(","); }).join("\r\n")], { type: "text/csv;charset=utf-8" }), a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = KT.j.cls + "_" + KT.j.kind + "_" + KT.j.from + "_" + KT.j.to + ".csv"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+  };
   $("rKind").onchange = function () { fillResultSelect(); };
   $("rLoad").onclick = function () { loadResults(); };
   function loadResults(after) {

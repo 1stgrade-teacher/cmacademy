@@ -953,6 +953,17 @@ module.exports = async function handler(req, res) {
         units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }));
       return send(200, { ok: true, cls, from, to, students: (ros || []).map((s) => ({ sid: s.id, name: s.name })), records: recs.map((r) => Object.assign(r, { name: names.get(r.sid) || "" })) });
     }
+    if (act === "t_kind_table") { // 🗂 반 · 시험 종류별로 날짜순 모아 보기 (온라인 응시 + 직접 입력한 점수 모두)
+      const cls = clip(b.cls, 40), kind = KINDS.includes(b.kind) ? b.kind : "", isD = (x) => /^\d{4}-\d{2}-\d{2}$/.test(x || "");
+      if (!cls || !kind || !isD(b.from) || !isD(b.to)) return send(400, { error: "input", msg: "반·종류·기간을 골라 주세요." });
+      const [rows, ros] = await Promise.all([queryAll(EXAM_DB(), { filter: { and: [{ property: "반", select: { equals: cls } }, { property: "종류", select: { equals: kind } }, { property: "시험일", date: { on_or_after: b.from } }, { property: "시험일", date: { on_or_before: b.to } }] }, sorts: [{ property: "시험일", direction: "ascending" }] }, 15), roster(cls)]);
+      if (!rows) return send(502, { error: "notion", msg: "시험 기록을 불러오지 못했어요.", debug: lastErr });
+      const recs = rows.map((p) => { const score = P.num(p, "점수"), total = P.num(p, "만점"), f = P.formula(p, "환산점수"); return { sid: P.rel(p, "학생")[0] || "", title: P.title(p, "시험명"), date: ((P.date(p, "시험일") || {}).start || "").slice(0, 10), score, total, pct: typeof f === "number" ? f : (total ? Math.round(score / total * 1000) / 10 : null), paper: normId(P.rel(p, "시험지")[0] || ""), range: P.text(p, "시험 범위"), url: p.url }; }).filter((r) => r.sid && r.date);
+      // 지금은 이 반이 아닌 학생(반 이동·휴원·퇴원)의 기록도 이름을 찾아 보여 줘요
+      const students = (ros || []).map((x) => ({ sid: x.id, name: x.name })), have = new Set(students.map((x) => x.sid)), extra = [...new Set(recs.map((r) => r.sid))].filter((x) => !have.has(x));
+      if (extra.length) { const a = await STU().all(), nm = new Map(((a && a.students) || []).map((x) => [x.id, x])); extra.forEach((sid) => { const x = nm.get(sid); students.push({ sid, name: x ? x.name : "(이름 없음)", gone: x ? (x.cls !== cls ? x.cls : x.status) || "다른 반" : "기록만 있음" }); }); }
+      return send(200, { ok: true, cls, kind, from: b.from, to: b.to, students, records: recs, more: rows.length >= 1500 });
+    }
     if (act === "t_unit_get") { // ✍️ 직접 올린 자료를 불러와 고치기
       loadCatalog(); await loadCustom(true);
       const uid = clip(b.uid, 20), d = custom.data.get(uid), u = unitIndex.get(uid);
