@@ -266,6 +266,27 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       </div>
       <datalist id="bookList"></datalist>
     </div>
+    <div class="card" id="qzCard">
+      <h2>🃏 Quizlet 단어 가져오기</h2>
+      <p class="hint" style="margin-top:0">Quizlet 세트의 단어·뜻을 복사해 붙여 넣으면 📒 단어장으로 바뀌어요. 저장하면 단어시험 출제·단어 게임에 바로 쓰여요. (Quizlet이 주소로 직접 가져오는 것을 막아 두어서 복사해 붙여 넣는 방식이에요)</p>
+      <details class="libf" open><summary>복사하는 방법 3가지</summary>
+        <div class="hint" style="margin:6px 0 0;line-height:1.75">
+          <b>① 내가 만든 세트</b> — Quizlet 웹사이트에서 세트 열기 → <b>⋯ (더 보기)</b> → <b>내보내기(Export)</b> → <b>텍스트 복사</b> → 아래 칸에 붙여넣기. (구분 기호는 기본값 그대로 두면 돼요)<br>
+          <b>② 다른 사람이 만든 세트</b> — 내보내기가 안 돼요. 아래 <b>📌 Quizlet 단어 복사</b> 버튼을 컴퓨터 브라우저의 <b>북마크바로 끌어다 놓고</b>(한 번만), Quizlet 세트 화면에서 그 북마크를 누르면 단어가 모두 복사돼요. → 아래 칸에 붙여넣기.<br>
+          <span style="display:inline-flex;gap:8px;align-items:center;margin:4px 0"><a id="qzBm" href="#" class="sm" style="display:inline-block;padding:6px 12px;border-radius:10px;background:#4255FF;color:#fff;font-weight:800;text-decoration:none;cursor:grab">📌 Quizlet 단어 복사</a><span>← 북마크바로 끌어다 놓기 (북마크바가 안 보이면 Ctrl+Shift+B)</span></span><br>
+          <b>③ 그래도 안 되면</b> — 세트 화면 아래쪽 「이 세트의 용어」 목록을 마우스로 끌어서 선택 → 복사(Ctrl+C) → 붙여넣기. 영어 줄·한글 줄이 번갈아 있어도 짝을 맞춰 읽어요.<br>
+          세트 화면에 단어가 다 안 보이면 맨 아래까지 내리거나 「더 보기」를 누른 뒤 복사하세요. 남이 만든 세트는 학원 수업 자료로만 쓰세요.
+        </div></details>
+      <textarea id="qzText" rows="8" style="margin-top:10px" placeholder="attract&#9;끌어당기다&#10;adapt&#9;적응하다&#10;quiet&#9;(형) 조용한&#10;&#10;또는  attract - 끌어당기다  /  attract, 끌어당기다  /  영어 줄·한글 줄 번갈아"></textarea>
+      <div class="grid" style="margin-top:8px">
+        <div><label class="l">교재(단어장 이름)</label><input id="qzBook" list="bookList" placeholder="예: 중1 필수 영단어"></div>
+        <div><label class="l">Day 이름 (첫 Day)</label><input id="qzDay" value="Day 01" placeholder="Day 01"></div>
+        <div><label class="l">Day 나누기</label><select id="qzPer"><option value="0">나누지 않음 (한 Day)</option><option value="20">20단어씩</option><option value="25">25단어씩</option><option value="30">30단어씩</option><option value="40">40단어씩</option><option value="50">50단어씩</option></select></div>
+        <div><label class="l">학년</label><select id="qzGrade"><option value="">고르지 않음</option><option>초등</option><option>중1</option><option>중2</option><option>중3</option><option>고등</option></select></div>
+      </div>
+      <div class="row" style="margin-top:8px"><button id="qzGo">🃏 단어장으로 읽기</button><span class="msg" id="qzMsg" style="margin:0"></span></div>
+      <p class="hint">「(n) 사과」「v. 끌다」「run (v)」처럼 붙은 품사는 품사 칸으로 옮겨요. 뜻 → 단어 순서로 만든 세트도 알아서 바꿔요. 같은 단어가 두 번 나오면 하나만 넣어요. 읽은 뒤 아래 카드에서 확인하고 <b>💾 단어장 저장</b>을 누르세요.</p>
+    </div>
     <div class="card" id="ctxCard">
       <h2>🧠 AI 단어 문제 만들기 <span class="hint" style="margin:0;font-weight:500">문맥 5지선다 · 철자 고르기</span></h2>
       <p class="hint" style="margin-top:0"><b>🔤 철자 고르기 (혼동 어휘)</b>: 우리말 뜻을 보고, 철자가 비슷한 단어 5개(예: adapt / adopt / adept / adult / admit) 중에서 정답 철자를 고르는 문제예요. 오답은 <b>중학생 수준을 넘지 않는 실제 단어</b>만 쓰고, AI가 한 번 더 검수해서 <b>그 뜻이 되는 보기가 둘 이상이거나 어려운 단어가 섞인 문제는 고치거나 버려요</b>. 단어시험 출제 유형 「철자 고르기」로 나와요.<br>
@@ -1892,6 +1913,34 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   function blankQ(prev) { return { no: "", type: prev ? prev.type : "mc", lv: prev ? prev.lv : 2, q: prev && prev.type !== "short" ? prev.q : "", sub: "", opts: [], ans: -1, anss: [], answer: "", frame: "", words: [], exp: "", warn: [] }; }
   function mkMeta() { var last = lsGet("cm-mk-book"); return { book: last || "", chapter: "", unit: "", area: "문법", grade: "", file: "✍️ 직접 입력" }; }
   function mkAdd(unit) { IMP.push(unit); renderImport(); var cards = $("impUnits").querySelectorAll(".card[data-u]"), c = cards[cards.length - 1]; if (c) { c.scrollIntoView({ behavior: "smooth", block: "start" }); var b = c.querySelector('[data-m="book"]'); if (b && !b.value) b.focus(); } }
+  // ---------- 🃏 Quizlet 붙여넣기 ----------
+  (function () {
+    var bm = "(function(){if(!/quizlet\\./.test(location.host)){alert('Quizlet 세트 화면에서 눌러 주세요.');return;}" +
+      "function c(e){return(e.innerText||e.textContent||'').replace(/\\t/g,' ').replace(/\\s*\\n+\\s*/g,' | ').trim();}" +
+      "var out=[],seen={};function add(a,b){a=c(a);b=c(b);if(!a||!b)return;var k=a+'\\t'+b;if(seen[k])return;seen[k]=1;out.push(k);}" +
+      "document.querySelectorAll('.SetPageTerms-term').forEach(function(li){var x=li.querySelectorAll('.TermText');if(x.length>=2)add(x[0],x[1]);});" +
+      "if(!out.length){var t=document.querySelectorAll('[class*=TermText]');for(var i=0;i+1<t.length;i+=2)add(t[i],t[i+1]);}" +
+      "if(!out.length){alert('단어를 찾지 못했어요. 세트 화면을 맨 아래까지 내린 뒤 다시 눌러 주세요. 그래도 안 되면 단어 목록을 마우스로 끌어서 복사해 주세요.');return;}" +
+      "var s=out.join('\\n');function ok(){alert(out.length+'개 단어를 복사했어요. 청명학원 자료 올리기 → 🃏 Quizlet 칸에 붙여 넣으세요.');}" +
+      "function fb(){var a=document.createElement('textarea');a.value=s;document.body.appendChild(a);a.select();var r=false;try{r=document.execCommand('copy');}catch(e){}a.remove();if(r)ok();else prompt('아래 글을 모두 선택해 복사해 주세요 (Ctrl+A, Ctrl+C)',s);}" +
+      "if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(s).then(ok,fb);else fb();})()";
+    var a = $("qzBm"); a.href = "javascript:" + encodeURIComponent(bm);
+    a.onclick = function (e) { e.preventDefault(); alert("이 버튼은 누르는 게 아니라 브라우저 북마크바로 끌어다 놓는 버튼이에요.\n북마크바에 놓은 뒤, Quizlet 세트 화면에서 그 북마크를 누르세요."); };
+    $("qzBook").value = lsGet("cm-qz-book");
+    $("qzGo").onclick = function () {
+      var P = window.ImportParser, text = $("qzText").value, m = $("qzMsg");
+      if (!text.trim()) { m.innerHTML = '<span class="er">붙여 넣은 글이 없어요.</span>'; return; }
+      var book = $("qzBook").value.trim(); if (!book) { m.innerHTML = '<span class="er">교재(단어장 이름)를 써 주세요.</span>'; $("qzBook").focus(); return; }
+      var r = P.quizletUnits(text, { book: book, day: $("qzDay").value, per: +$("qzPer").value, grade: $("qzGrade").value });
+      if (!r.words) { m.innerHTML = '<span class="er">단어·뜻 짝을 찾지 못했어요.</span> 한 줄에 「단어 [탭] 뜻」, 또는 영어 줄 다음 한글 줄로 되어 있는지 확인해 주세요.'; return; }
+      lsSet("cm-qz-book", book);
+      var n0 = IMP.length; IMP = IMP.concat(r.units); renderImport();
+      var c = $("impUnits").querySelectorAll('.card[data-u="' + n0 + '"]')[0]; if (c) c.scrollIntoView({ behavior: "smooth", block: "start" });
+      m.innerHTML = '<span class="ok">단어 ' + r.words + "개 → " + r.units.length + "개 묶음으로 읽었어요 ✓</span>" + (r.dup.length ? " · 겹친 단어 " + r.dup.length + "개 뺐어요" : "") +
+        (r.skipped.length ? '<br><span class="er">못 읽은 줄 ' + r.skipped.length + "개</span>: " + r.skipped.slice(0, 5).map(function (x) { return "「" + esc(String(x).slice(0, 40)) + "」"; }).join(" ") + (r.skipped.length > 5 ? " …" : "") + " — 필요하면 고쳐서 다시 읽어 주세요." : "");
+      $("qzText").value = "";
+    };
+  })();
   // ---------- 🧠 문맥 5지선다 (AI) ----------
   // uids 의 단어장을 차례로: 한 번에 8단어씩 서버가 만들고 검수해서 저장 → 끝날 때까지 반복
   var VT_NAME = { ctx: "🧠 문맥", spellmc: "🔤 철자 고르기" };
