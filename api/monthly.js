@@ -47,7 +47,7 @@ function placeRec(rules, grade, pct) {
   return hit ? hit.cls : "";
 }
 const joinHits = new Map();
-function joinLimited(ip) { const e = joinHits.get(ip), now = Date.now(); if (!e || now - e.t > 3600000) { joinHits.set(ip, { n: 1, t: now }); return false; } e.n++; if (joinHits.size > 3000) joinHits.clear(); return e.n > 40; }
+function joinLimited(ip) { const e = joinHits.get(ip), now = Date.now(); if (!e || now - e.t > 3600000) { joinHits.set(ip, { n: 1, t: now }); return false; } e.n++; if (joinHits.size > 3000) joinHits.clear(); return e.n > (Number(process.env.JOIN_LIMIT) || 300); }
 const STATUSES = ["준비중", "응시중", "마감"];
 const MODES = { fixed: "선생님 지정", choice: "학생 선택" };
 const LEVELS = ["기본", "표준", "심화"];
@@ -431,6 +431,25 @@ function listenPick(uids, exclude, count) {
   uids.forEach((u) => { const d = unitData(u); if (d) d.qs.filter((q) => !ex.has(q.id) && q.type === "mc").forEach((q) => out.push(Object.assign({ u }, q))); });
   return out.slice(0, count || 100);
 }
+// 🆕 반배정시험: 영역별 구성(문항 수·배점). 영역 순서대로, 원래 순서 그대로 (듣기가 항상 1~20번)
+const cleanSections = (a) => (Array.isArray(a) ? a : []).slice(0, 8).map((x) => ({ area: clip(x && x.area, 10), n: num(x && x.n, 0, 100, 0), pts: Math.round(Math.min(1000, Math.max(0, Number(x && x.pts) || 0)) * 100) / 100 })).filter((x) => x.area && x.n > 0 && x.pts > 0);
+const hasSections = (pp) => !!(pp && pp.cfg && Array.isArray(pp.cfg.sections) && pp.cfg.sections.length);
+function sectionPick(pp, uids) {
+  const ex = new Set(pp.cfg.exclude || []), picked = [], lack = [];
+  pp.cfg.sections.forEach((sec) => {
+    const got = [];
+    uids.filter((u) => (unitIndex.get(u) || {}).area === sec.area).forEach((u) => { const d = unitData(u); if (d) d.qs.filter((q) => !ex.has(q.id)).forEach((q) => got.push(Object.assign({ u }, q))); });
+    if (got.length < sec.n) lack.push(sec.area + " " + got.length + "/" + sec.n + "문항");
+    picked.push(...got.slice(0, sec.n));
+  });
+  return { picked, have: picked.length, keep: true, lack };
+}
+// 영역마다 배점을 문항 수로 나눠 문제당 점수를 정함
+function assignPoints(sheet, secs) {
+  const cnt = {}; sheet.key.forEach((k) => { cnt[k.ar] = (cnt[k.ar] || 0) + 1; });
+  const pts = {}; secs.forEach((x) => { pts[x.area] = x.pts; });
+  sheet.key.forEach((k) => { k.pt = cnt[k.ar] && pts[k.ar] ? Math.round((pts[k.ar] / cnt[k.ar]) * 10000) / 10000 : 0; });
+}
 function buildSheet(picked, rnd, keep) {
   const T = (t) => (keep ? picked.filter((q) => (q.type || "mc") === t) : shuffle(picked.filter((q) => (q.type || "mc") === t), rnd));
   const ordered = keep ? picked.slice() : T("mc").concat(T("multi"), T("arrange"), T("short"));
@@ -445,7 +464,7 @@ function buildSheet(picked, rnd, keep) {
   };
   ordered.forEach((q, i) => {
     const u = unitIndex.get(q.u) || {};
-    const k = { id: q.id, u: q.u, t: q.type, q: clip(q.q, 300), sub: clip(q.sub, 700), exp: clip(q.exp, 300), unit: clip(u.name, 80), ch: clip(u.chapter, 60), book: clip(u.book, 40) };
+    const k = { id: q.id, u: q.u, ar: u.area || "", t: q.type, q: clip(q.q, 300), sub: clip(q.sub, 700), exp: clip(q.exp, 300), unit: clip(u.name, 80), ch: clip(u.chapter, 60), book: clip(u.book, 40) };
     if (q.type === "mc") {
       const ord = keep ? q.opts.map((_, j) => j) : placeAns(q); const opts = ord.map((j) => q.opts[j]);
       view.push(Object.assign({ n: i + 1, type: "mc", q: q.q, sub: q.sub, opts, unit: u.chapter }, q.audio ? { audio: q.audio } : {}));
@@ -466,6 +485,7 @@ function buildSheet(picked, rnd, keep) {
     }
     key.push(k);
   });
+  view.forEach((v, i) => { v.area = key[i].ar; });
   return { view, key };
 }
 const SECRET = () => crypto.createHash("sha256").update("cm-monthly|" + (process.env.REPORT_SECRET || process.env.NOTION_TOKEN || "cm")).digest();
@@ -493,7 +513,7 @@ function readPaper(p) {
     teacher: P.sel(p, "출제 선생님"),
   };
 }
-const pub = (pp) => ({ grades: (pp.cfg && Array.isArray(pp.cfg.grades) ? pp.cfg.grades : []), id: pp.id, title: pp.title, cls: pp.cls, kind: pp.kind, period: pp.period, status: pp.status, mode: pp.mode, level: LEVELS[pp.level - 1], count: pp.count, minutes: pp.minutes, start: pp.start, end: pp.end, range: pp.mode === "fixed" ? pp.range : "", teacher: pp.teacher || "" });
+const pub = (pp) => ({ sections: (hasSections(pp) ? pp.cfg.sections : []), speaker: !!(pp.cfg && pp.cfg.speaker), grades: (pp.cfg && Array.isArray(pp.cfg.grades) ? pp.cfg.grades : []), id: pp.id, title: pp.title, cls: pp.cls, kind: pp.kind, period: pp.period, status: pp.status, mode: pp.mode, level: LEVELS[pp.level - 1], count: pp.count, minutes: pp.minutes, start: pp.start, end: pp.end, range: pp.mode === "fixed" ? pp.range : "", teacher: pp.teacher || "" });
 async function getPaper(id) {
   const p = await notion("pages/" + id32(id), "GET");
   if (!p || p.archived || normId(p.parent && p.parent.database_id) !== normId(PAPER_DB())) return null;
@@ -515,6 +535,7 @@ function attemptSummary(p) {
   return { score: P.num(p, "점수"), total: P.num(p, "만점"), pct: P.formula(p, "환산점수"), grade: P.sel(p, "종합 평가"), date: (P.date(p, "시험일") || {}).start || "", comment: P.text(p, "코멘트") };
 }
 async function makeSheet(pp, uids, sid) {
+  if (hasSections(pp)) return sectionPick(pp, uids);
   if (isListen(pp, uids)) { const picked = listenPick(uids, pp.cfg.exclude, pp.count); return { picked, have: picked.length, keep: true }; }
   const opt = aiOpt(pp.cfg);
   if (opt) { const pickSeed = pp.mode === "fixed" ? (pp.cfg.seed || pp.id) : (pp.cfg.seed || pp.id) + "|" + sid + "|" + uids.join(","); const r = await composeSheet(pp, uids, pickSeed, opt); return { picked: r.picked, have: r.have }; }
@@ -832,13 +853,13 @@ module.exports = async function handler(req, res) {
       let old = null;
       if (f.id) { old = await getPaper(f.id); if (!old) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." }); }
       if (old && !me.master && old.teacher && old.teacher !== me.name) return send(403, { error: "owner", msg: old.teacher + "이(가) 만든 시험지는 고칠 수 없어요. 목록에서 📄 복제해서 써 주세요." });
-      const cfg = { units, books, seed: (old && old.cfg.seed) || clip(f.seed, 40).replace(/[^\w-]/g, "") || hash(Date.now() + title, 12), exclude: (Array.isArray(f.exclude) ? f.exclude : (old && old.cfg.exclude) || []).slice(0, 500), vtypes: (Array.isArray(f.vtypes) ? f.vtypes : (old && old.cfg.vtypes) || []).filter((t) => V.VT_IDS.includes(t)), place: clip(f.place != null ? f.place : (old && old.cfg.place) || "", 1500), grades: (Array.isArray(f.grades) ? f.grades : (old && old.cfg.grades) || []).filter((g) => GRADES.includes(g)),
+      const cfg = { units, books, seed: (old && old.cfg.seed) || clip(f.seed, 40).replace(/[^\w-]/g, "") || hash(Date.now() + title, 12), exclude: (Array.isArray(f.exclude) ? f.exclude : (old && old.cfg.exclude) || []).slice(0, 500), vtypes: (Array.isArray(f.vtypes) ? f.vtypes : (old && old.cfg.vtypes) || []).filter((t) => V.VT_IDS.includes(t)), place: clip(f.place != null ? f.place : (old && old.cfg.place) || "", 1500), sections: f.sections !== undefined ? cleanSections(f.sections) : (old && old.cfg.sections) || [], speaker: f.speaker !== undefined ? !!f.speaker : !!(old && old.cfg.speaker), grades: (Array.isArray(f.grades) ? f.grades : (old && old.cfg.grades) || []).filter((g) => GRADES.includes(g)),
         ai: f.ai && typeof f.ai === "object" ? { fill: f.ai.fill !== false, variant: num(f.ai.variant, 0, 100, 0), extra: num(f.ai.extra, 0, 60, 0) } : (old && old.cfg.ai) || undefined };
       if (f.reseed) cfg.seed = hash(Date.now() + Math.random(), 12);
       const range = mode === "fixed" ? rangeText(units) : "학생 선택: " + (books.length ? allBooks().filter((x) => books.includes(x.id)).map((x) => x.name).join(", ") : rangeText(units));
       const props = {
         "시험명": { title: rt(title) }, "반": sel(cls), "종류": sel(kind), "시기": sel(clip(f.period, 40)), "상태": sel(STATUSES.includes(f.status) ? f.status : "준비중"),
-        "출제 방식": sel(MODES[mode]), "난이도": sel(LEVELS[num(f.level, 1, 3, 2) - 1]), "문항 수": { number: num(f.count, 5, 100, 20) }, "제한시간(분)": { number: num(f.minutes, 0, 180, 40) },
+        "출제 방식": sel(MODES[mode]), "난이도": sel(LEVELS[num(f.level, 1, 3, 2) - 1]), "문항 수": { number: cfg.sections.length ? Math.min(100, cfg.sections.reduce((t, x) => t + x.n, 0)) : num(f.count, 5, 100, 20) }, "제한시간(분)": { number: num(f.minutes, 0, 180, 40) },
         "결과 공개": { checkbox: !!f.show }, "시험 범위": { rich_text: rt(range) }, "설정": { rich_text: rtLong(JSON.stringify(cfg)) },
         "시험 기간": /^\d{4}-\d{2}-\d{2}$/.test(f.start || "") ? { date: { start: f.start, end: /^\d{4}-\d{2}-\d{2}$/.test(f.end || "") && f.end > f.start ? f.end : null } } : { date: null },
       };
@@ -1277,9 +1298,11 @@ module.exports = async function handler(req, res) {
       uids = [...new Set((Array.isArray(b.units) ? b.units : []).filter((u) => { const x = unitIndex.get(u); return x && (allowU.has(u) || allowB.has(x.bid)); }))].slice(0, 80);
       if (!uids.length) return send(400, { error: "input", msg: "공부한 교재와 과를 골라 주세요." });
     }
-    const { picked, keep } = await makeSheet(pp, uids, who.sid);
+    const { picked, keep, lack } = await makeSheet(pp, uids, who.sid);
+    if (lack && lack.length) return send(409, { error: "few", msg: "시험 문제가 아직 다 준비되지 않았어요. 선생님께 알려 주세요. (" + lack.join(", ") + ")" });
     if (picked.length < Math.min(keep ? 1 : 5, pp.count)) return send(409, { error: "few", msg: "고른 범위에 문제가 부족해요. 과를 더 골라 주세요." });
     const sheet = buildSheet(picked, rngOf((pp.cfg.seed || pp.id) + "|" + who.sid + "|" + Date.now()), keep);
+    if (hasSections(pp)) assignPoints(sheet, pp.cfg.sections);
     const t0 = Date.now(), dl = pp.minutes ? t0 + pp.minutes * 60000 : 0;
     const key = seal({ sid: who.sid, pid: pp.id, t0, dl, units: uids, items: sheet.key });
     return send(200, { ok: true, paper: pub(pp), questions: sheet.view, key, t0, deadline: dl, range: pp.mode === "choice" ? rangeText(uids) : pp.range });
@@ -1294,7 +1317,13 @@ module.exports = async function handler(req, res) {
     const answers = Array.isArray(b.answers) ? b.answers.slice(0, key.items.length) : [];
     const res1 = grade(key, answers);
     await judgeMeanings(key, res1); // 📒 뜻 쓰기: 비슷한 뜻은 AI가 확인해서 정답 처리
-    const right = res1.filter((x) => x.ok).length, total = key.items.length, pct = Math.round((right / total) * 1000) / 10;
+    const nRight = res1.filter((x) => x.ok).length, nTot = key.items.length;
+    const weighted = key.items.some((k) => k.pt > 0); // 🆕 배점이 있는 시험(반배정): 점수 = 맞힌 문제의 배점 합
+    const secPts = weighted ? key.items.reduce((t, k) => t + (k.pt || 0), 0) : 0, gotPts = weighted ? key.items.reduce((t, k, i) => t + (res1[i].ok ? (k.pt || 0) : 0), 0) : 0;
+    const right = weighted ? Math.round(gotPts * 10) / 10 : nRight, total = weighted ? Math.round(secPts * 10) / 10 : nTot, pct = Math.round((right / total) * 1000) / 10;
+    const areaSum = []; // 영역별 점수
+    if (weighted) { const m = new Map(); key.items.forEach((k, i) => { const e = m.get(k.ar) || { a: k.ar || "기타", r: 0, t: 0, p: 0, g: 0 }; e.t++; e.p += k.pt || 0; if (res1[i].ok) { e.r++; e.g += k.pt || 0; } m.set(k.ar, e); }); m.forEach((e) => areaSum.push({ a: e.a, r: e.r, t: e.t, g: Math.round(e.g * 10) / 10, p: Math.round(e.p * 10) / 10 })); }
+    const areaText = areaSum.map((e) => e.a + " " + e.g + "/" + e.p + "점(" + e.r + "/" + e.t + ")").join(" · ");
     const units = unitStats(key, res1);
     const mins = Math.max(1, Math.round((Date.now() - key.t0) / 60000)), late = key.dl && Date.now() > key.dl + 120000;
     const away = num(b.away, 0, 999, 0);
@@ -1302,29 +1331,29 @@ module.exports = async function handler(req, res) {
     units.forEach((u) => { const k = (u.c && u.c !== "단원" ? u.c : u.u); const e = chs.get(k) || { k, r: 0, t: 0 }; e.r += u.r; e.t += u.t; chs.set(k, e); });
     const weak = [...chs.values()].filter((u) => u.r / u.t < 0.6).sort((a, c) => a.r / a.t - c.r / c.t).slice(0, 4).map((u) => u.k + "(" + u.r + "/" + u.t + ")");
     const strong = [...chs.values()].filter((u) => u.t >= 2 && u.r === u.t).slice(0, 3).map((u) => u.k);
-    const comment = [weak.length ? "보충 필요: " + weak.join(", ") : "모든 단원 60% 이상", strong.length ? "강점: " + strong.join(", ") : "", late ? "⏰ 제한시간 초과 제출" : "", away ? "자리비움 " + away + "회" : ""].filter(Boolean).join(" · ");
+    const comment = [areaText ? "영역별: " + areaText : "", weak.length ? "보충 필요: " + weak.join(", ") : "모든 단원 60% 이상", strong.length ? "강점: " + strong.join(", ") : "", late ? "⏰ 제한시간 초과 제출" : "", away ? "자리비움 " + away + "회" : ""].filter(Boolean).join(" · ");
     const range = rangeText(key.units);
     let rec2 = "";
     if (pp.kind === "반배정시험" || (pp.cfg && pp.cfg.place)) {
       const st = await notion("pages/" + id32(who.sid), "GET"), grade = st ? P.sel(st, "학년") : "";
       rec2 = (placeRec(pp.cfg.place, grade, pct) || (pp.cfg.place ? "기준에 맞는 반 없음" : "기준 미설정")) + " (" + (grade || "학년 ?") + " · " + pct + "점)";
-      if (st) { const memo = P.text(st, "메모"); await notion("pages/" + id32(who.sid), "PATCH", { properties: { "메모": { rich_text: rt(clip((memo ? memo + "\n" : "") + today() + " " + pp.title + " " + right + "/" + total + " → 추천 " + rec2, 1900)) } } }); }
+      if (st) { const memo = P.text(st, "메모"); await notion("pages/" + id32(who.sid), "PATCH", { properties: { "메모": { rich_text: rt(clip((memo ? memo + "\n" : "") + today() + " " + pp.title + " " + right + "/" + total + (weighted ? "점" : "") + " → 추천 " + rec2, 1900)) } } }); }
     }
     const props = {
       "시험명": { title: rt(pp.title) }, "학생": { relation: [{ id: uuid(who.sid) }] }, "시험지": { relation: [{ id: uuid(pp.id) }] }, "반": sel(pp.cls), "종류": sel(pp.kind || "월간평가"),
-      "시험일": { date: { start: today() } }, "시험 범위": { rich_text: rt(range) }, "점수": { number: right }, "만점": { number: total }, "오답 수": { number: total - right },
+      "시험일": { date: { start: today() } }, "시험 범위": { rich_text: rt(range) }, "점수": { number: right }, "만점": { number: total }, "오답 수": { number: nTot - nRight },
       "종합 평가": sel(gradeOf(pct)), "코멘트": { rich_text: rt(comment) }, "응시 방식": sel("온라인"), "소요시간(분)": { number: mins }, "자리비움": { number: away },
       "단원 분석": { rich_text: rtLong(JSON.stringify(units)) },
       ...(rec2 ? { "추천 반": { rich_text: rt(rec2) } } : {}),
       // 분석 리포트용: 문항마다 영역·단원·학생 답·정답 (짧게)
       "문항 기록": { rich_text: rtLong(JSON.stringify(key.items.map((k, i) => {
         const ui = unitIndex.get(k.u) || {};
-        return { n: i + 1, u: k.u, a: ui.area || "", c: k.ch, un: k.unit, t: k.t, q: clip(k.q, 160), s: clip(k.sub, 160), o: k.opts ? k.opts.map((o) => clip(o, 60)) : undefined, g: clip(res1[i].given, 100), r: clip(k.answer, 120), ok: res1[i].ok, x: clip(k.exp, 160), ai: res1[i].ai || undefined };
+        return { n: i + 1, u: k.u, a: ui.area || "", c: k.ch, un: k.unit, t: k.t, q: clip(k.q, 160), s: clip(k.sub, 160), o: k.opts ? k.opts.map((o) => clip(o, 60)) : undefined, g: clip(res1[i].given, 100), r: clip(k.answer, 120), ok: res1[i].ok, x: clip(k.exp, 160), ai: res1[i].ai || undefined, p: k.pt || undefined };
       }))) },
     };
     const wrongs = key.items.map((k, i) => ({ k, r: res1[i], i })).filter((x) => !x.r.ok);
     const children = [
-      { object: "block", type: "callout", callout: { icon: { type: "emoji", emoji: pct >= 80 ? "🎉" : pct >= 60 ? "🙂" : "💪" }, rich_text: rt(who.name + " · " + right + " / " + total + "문항 (" + pct + "점) · " + gradeOf(pct) + " · 소요 " + mins + "분" + (away ? " · 자리비움 " + away + "회" : "") + "\n범위: " + range) } },
+      { object: "block", type: "callout", callout: { icon: { type: "emoji", emoji: pct >= 80 ? "🎉" : pct >= 60 ? "🙂" : "💪" }, rich_text: rt(who.name + " · " + (weighted ? right + " / " + total + "점" : right + " / " + total + "문항 (" + pct + "점)") + " · " + gradeOf(pct) + " · 소요 " + mins + "분" + (away ? " · 자리비움 " + away + "회" : "") + "\n범위: " + range) } },
       H("단원별 결과"),
       tableBlock([["교재", "단원", "맞은 수", "정답률"]].concat(units.map((u) => [u.b, (u.c ? u.c + " › " : "") + u.u, u.r + " / " + u.t, Math.round((u.r / u.t) * 100) + "%"])), true),
       H("문항별 결과"),
@@ -1333,11 +1362,11 @@ module.exports = async function handler(req, res) {
     if (wrongs.length) { children.push(H("틀린 문제 해설")); wrongs.slice(0, 40).forEach((w) => children.push({ object: "block", type: "bulleted_list_item", bulleted_list_item: { rich_text: rt((w.i + 1) + "번 · 정답 " + w.k.answer + (w.k.exp ? " — " + w.k.exp : "")) } })); }
     const pg = await notion("pages", "POST", { parent: { database_id: EXAM_DB() }, properties: props, children });
     if (!pg) return send(502, { error: "notion", msg: "결과를 저장하지 못했어요. 다시 제출해 주세요. (답은 그대로 남아 있어요)", debug: lastErr });
-    const out = { ok: true, show: pp.show, saved: true };
+    const out = { ok: true, show: pp.show, saved: true, areas: pp.show ? areaSum : undefined };
     if (pp.show) Object.assign(out, { result: { score: right, total, pct, grade: gradeOf(pct), comment, mins }, units, items: key.items.map((k, i) => ({ n: i + 1, q: k.q, sub: k.sub, given: res1[i].given, answer: k.answer, ok: res1[i].ok, exp: k.exp, unit: k.ch || k.unit, ai: res1[i].ai || "" })) });
     return send(200, out);
   }
   return send(400, { error: "action" });
 };
 // 시험용 내부 함수 (로컬 점검에서 씀)
-module.exports._t = { placeRec, expandAccept, shortOk, pick, buildSheet, seal, unseal, grade, unitStats, rangeText, loadCatalog, unitData, poolFor, rngOf };
+module.exports._t = { cleanSections, assignPoints, hasSections, placeRec, expandAccept, shortOk, pick, buildSheet, seal, unseal, grade, unitStats, rangeText, loadCatalog, unitData, poolFor, rngOf };

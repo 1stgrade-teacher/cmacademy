@@ -80,6 +80,14 @@
   .rv .a{font-size:14.5px;margin-top:6px;line-height:1.6}
   .rv .x{font-size:13.5px;color:var(--muted);margin-top:4px;line-height:1.6;background:#FAFBFB;border-radius:8px;padding:8px 10px}
   .ok{color:#1F7A4A}.no{color:#C0392B}
+  .sect{margin:22px 2px 0;padding:10px 14px;border-radius:12px;background:var(--accent-soft);color:var(--accent-ink);font:800 16px var(--font)}
+  .sect span{font-weight:600;font-size:14px;margin-left:6px}
+  .spk{margin-top:10px;padding:12px 14px;border-radius:12px;background:#FFF8E6;border:1px solid #F1D98A;font:600 15px/1.5 var(--font);color:#6B5200}
+  .lrow{display:flex;align-items:center;gap:12px;padding:10px 12px;margin-top:8px}
+  .lrow .qn{flex:0 0 auto;min-width:34px;text-align:center}
+  .lopts{display:flex;gap:8px;flex:1;justify-content:space-between}
+  .lopts .opt{flex:1;justify-content:center;align-items:center;padding:12px 0;font-size:20px;min-height:48px}
+  .lrow.done{border-color:var(--accent)}
   @media (max-width:560px){.prog{flex-basis:70px}.box{padding:16px}.q{padding:15px}}
   .au{display:flex;align-items:center;gap:8px;background:var(--accent-soft,#F3FAFA);border-radius:10px;padding:8px 10px;margin:4px 0 10px}.au audio{flex:1;min-width:0;height:40px}
 </style>
@@ -244,10 +252,17 @@
   // ================= 3. 시험 =================
   var timerId = null;
   function runExam(run) {
-    var Q = run.questions, total = Q.length;
+    var Q = run.questions, total = Q.length, SECS = (run.paper && run.paper.sections) || [], SPK = !!(run.paper && run.paper.speaker);
     function save() { ls.set("cm-monthly-run:" + PID, run); }
     app.innerHTML = '<div class="bar"><span class="ttl">' + esc(run.paper.title) + '</span><span class="prog"><i id="pg"></i></span><span class="timer" id="tm">' + (run.deadline ? "" : "0/" + total) + "</span></div>" +
       Q.map(function (q, i) {
+        var pre = "";
+        if (SECS.length && (i === 0 || Q[i - 1].area !== q.area)) {
+          var sc = SECS.filter(function (x) { return x.area === q.area; })[0], cnt = Q.filter(function (z) { return z.area === q.area; }).length;
+          pre = '<div class="sect">' + esc(q.area || "문제") + "<span>" + cnt + "문제" + (sc ? " · " + sc.pts + "점" : "") + "</span></div>";
+          if (SPK && q.area === "듣기") pre += '<div class="spk">🔊 교실 스피커로 나오는 소리를 잘 들으세요. 문제는 화면에 나오지 않아요. 들으면서 번호에 맞는 답을 눌러 주세요. 답은 다시 눌러 바꿀 수 있어요.</div>';
+        }
+        if (SPK && q.area === "듣기" && q.type === "mc") return pre + '<div class="q lrow" id="q' + i + '"><span class="qn">' + q.n + '</span><div class="lopts">' + q.opts.map(function (o, k) { return '<button class="opt" data-i="' + i + '" data-k="' + k + '" aria-label="' + q.n + "번 " + NUM[k] + '"><b>' + NUM[k] + "</b></button>"; }).join("") + "</div></div>";
         var h = '<div class="q" id="q' + i + '"><div class="qh"><span class="qn">' + q.n + '</span><div><div class="qt">' + fmt(q.q) + (q.type === "multi" ? ' <span style="color:#A2342A">(정답 모두 고르기)</span>' : "") + "</div>" + (q.unit && q.unit !== "단원" ? '<div class="qu">' + esc(q.unit) + "</div>" : "") + "</div></div>";
         if (q.sub) h += '<div class="qs">' + fmt(q.sub) + "</div>";
         if (q.audio) h += '<div class="au">🎧 <audio controls preload="none" controlsList="nodownload" src="' + esc(q.audio) + '" aria-label="' + q.n + '번 듣기"></audio></div>'; // 🎧 듣기시험
@@ -255,7 +270,7 @@
         else if (q.type === "short" && q.box && window.LetterBox) h += '<div class="sabox" data-i="' + i + '" style="margin-top:12px"></div>';
         else if (q.type === "short") h += '<input class="sa" data-i="' + i + '" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="' + esc(q.hint || "답을 쓰세요 (빈칸에 들어갈 말만 써도 돼요)") + '">';
         else h += '<div class="built" id="b' + i + '"></div><div class="chips" id="c' + i + '"></div><button class="reset" data-reset="' + i + '">처음부터 다시 배열</button>';
-        return h + "</div>";
+        return pre + h + "</div>";
       }).join("") +
       '<div class="foot"><span class="info" id="left"></span><button class="btn" id="submit">제출하기</button></div>';
     Array.prototype.forEach.call(app.querySelectorAll(".au audio"), function (a) { a.addEventListener("play", function () { Array.prototype.forEach.call(app.querySelectorAll(".au audio"), function (o) { if (o !== a) o.pause(); }); }); }); // 한 번에 하나만 재생
