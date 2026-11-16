@@ -317,14 +317,15 @@ module.exports = function (ctx) {
     return { status: 200, name, cls, list };
   }
   // 한 학생의 최근 두 달 과제 + 제출 사진 (부모님 화면용, 공개 전 과제는 빼요)
-  async function hwForStudent(sid, cls) {
+  async function hwForStudent(sid, cls, range) { // range: { from, to } (YYYY-MM-DD, 한국 시간) — 인쇄용 기간 보고서
     const [hws, subs] = await Promise.all([
       queryAll(HW_DB(), { filter: { and: [{ property: "반", rich_text: { equals: cls } }, { property: "사용", checkbox: { equals: true } }] }, sorts: [{ property: "마감", direction: "descending" }] }, 2),
       queryAll(SUB_DB(), { filter: { property: "학생", relation: { contains: uuid(sid) } } }, 3),
     ]);
     if (!hws || !subs) return null;
     const by = new Map(subs.map(readSub).map((s) => [s.hw, s]));
-    return hws.map(readHw).filter((h) => h.due && !h.hidden && forMe(h, sid) && Date.parse(h.due) > Date.now() - 62 * 864e5).sort((x, y) => Date.parse(y.due) - Date.parse(x.due)).slice(0, 40).map((h) => {
+    const inRange = (h) => (range ? (h.dueKst || "").slice(0, 10) >= range.from && (h.dueKst || "").slice(0, 10) <= range.to : Date.parse(h.due) > Date.now() - 62 * 864e5);
+    return hws.map(readHw).filter((h) => h.due && !h.hidden && forMe(h, sid) && inRange(h)).sort((x, y) => Date.parse(y.due) - Date.parse(x.due)).slice(0, range ? 200 : 40).map((h) => {
       const s = by.get(h.id);
       return { only: !!(h.targets && h.targets.length), dict: !!h.dict, score: s ? s.score : "", title: h.title, desc: h.desc, due: h.dueKst, dueLabel: h.dueLabel, past: h.past, status: s ? s.status : h.past ? "미제출" : "", at: s && s.at ? kst(s.at) : "", memo: s ? s.memo : "", checked: s ? s.checked : false, photos: s ? s.files.map((f) => f.url) : [] };
     });

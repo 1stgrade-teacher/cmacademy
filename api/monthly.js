@@ -694,6 +694,7 @@ const HW = () => _hw || (_hw = require("./_homework.js")({ notion, queryAll, P, 
 function listenUnit(uid) { const d = unitData(uid); if (!d || d.area !== "듣기") return null; const items = (d.qs || []).filter((q) => q.script).map((q) => ({ id: q.id, audio: q.audio || "", script: q.script })); return items.length ? { name: d.name, book: d.book, items } : null; }
 let _lib = null; const LIB = () => _lib || (_lib = require("./_library.js")({ notion, queryAll, P, rt, rtLong, sel, clip, num, normId, id32, unitIndex, rangeText, getLastErr: () => lastErr }));
 let _sc = null; const SC = () => _sc || (_sc = require("./_schedule.js")({ notion, queryAll, P, rt, sel, clip, normId, id32, getLastErr: () => lastErr }));
+let _prt = null; const PRT = () => _prt || (_prt = require("./_print.js")({ notion, queryAll, P, uuid, normId, id32, STUDENT_DB, EXAM_DB, CERT_DB: () => id32(process.env.NOTION_DB_ID || "d6164dec4d2e461aa2f102de18814b7d"), GAME_DB: () => id32(process.env.NOTION_GAME_DB_ID || "3ef113187ca24388b1a68de4cc535144"), PLUS_DB: () => id32(process.env.NOTION_PLUS_DB_ID || "c539836a490b41ec98df5ddc0b384b6d"), HW, getLastErr: () => lastErr }));
 let _par = null; const PAR = () => _par || (_par = require("./_parent.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, EXAM_DB, CERT_DB: () => id32(process.env.NOTION_DB_ID || "d6164dec4d2e461aa2f102de18814b7d"), GAME_DB: () => id32(process.env.NOTION_GAME_DB_ID || "3ef113187ca24388b1a68de4cc535144"), HW, getLastErr: () => lastErr }));
 let _plus = null; const PLUS = () => _plus || (_plus = require("./_plus.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, SCHED_DB: () => SC().SCHED_DB(), secret, signToken, readToken, login, getLastErr: () => lastErr }));
 const plusOut = (send, r) => send(r.status || 200, Object.assign({ ok: (r.status || 200) === 200 && r.ok !== false }, r, { status: undefined }));
@@ -741,12 +742,12 @@ module.exports = async function handler(req, res) {
     return plusOut(send, act === "plus_today" ? await PLUS().today(b, ip) : await PLUS().check(b, ip));
   }
   if (act === "plus_screen") return plusOut(send, await PLUS().screen(b)); // 자습실 출석 화면
-  if (/^t_plus_\w+$/.test(act)) {
+  if (/^t_(plus|print)\w*$/.test(act)) {
     const ip = String((req.headers["x-forwarded-for"] || "").split(",")[0]).trim() || "x";
     if (tBlocked(ip)) return send(429, { error: "limit", msg: "코드를 여러 번 틀렸어요. 10분 뒤에 다시 해 주세요." });
     const me = await whoTeacher(b.code);
     if (!me) { tFail(ip); return send(401, { error: "code", msg: "선생님 코드가 맞지 않아요." }); }
-    return plusOut(send, Object.assign({ me: { name: me.name } }, await PLUS().teacher(act, b, me)));
+    return plusOut(send, Object.assign({ me: { name: me.name } }, act.startsWith("t_print") ? await PRT().teacher(act, b, me) : await PLUS().teacher(act, b, me)));
   }
   if (!/^(classes|roster|login|s_list|p_\w+)$/.test(act)) await loadCustom();
   lastErr = null;
