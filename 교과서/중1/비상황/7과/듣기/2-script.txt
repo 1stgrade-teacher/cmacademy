@@ -1,43 +1,35 @@
 [강의 녹음 대본] 중1 비상(황) 7과 Watch & Present 2
 
-음성 파일 폴더 이름: 중1_비상(황)_7과_Watch_&_Present_2_audio 비상(황) 7과 Watch & Present 2_audio
+음성 파일 폴더 이름: 2_audio
 강의 HTML 파일과 같은 위치에 이 폴더를 만들고, 아래 번호대로 음성 파일을 넣어 주세요.
 
 ────────────────────────
 1.mp3   (슬라이드 1)
-안녕하세요 여러분. 오늘 은 중1 비상 황 7과 대화문 을 함께 공부해 볼 거에요. 지구의 날을 맞아 어떤 멋진 일을 할 수 있을지 귀를 기울여 보면서 오늘의 핵심 표현을 잘 익혀 보도록 해요.
+안녕하세요 여러분. 오늘은 중학교 일학년 비상 교과서 칠과 대화문 Watch and Present 두번째 대화문 을 함께 공부해 볼 거에요. '지구의 날'을 맞아 어떤 멋진 일을 할 수 있을지 귀를 기울여 보면서 오늘의 핵심 표현을 잘 익혀 보도록 해요.
 
 ────────────────────────
 2.mp3   (슬라이드 2)
-M Your bag is pretty, Jessica.
+Your bag is pretty, Jessica.
 
 ────────────────────────
 3.mp3   (슬라이드 2)
-W Thank you, Toby. I made it with my old jeans. It's
-
-────────────────────────
-4.mp3   (슬라이드 2)
-my Earth Day project.
+Thank you, Toby. I made it with my old jeans. It's my Earth Day project.
 
 ────────────────────────
 5.mp3   (슬라이드 2)
-M That's cool. I want to do something on Earth Day.
+That's cool. I want to do something on Earth Day.
 
 ────────────────────────
 6.mp3   (슬라이드 2)
-W Why don't we make a short video about reusing
-
-────────────────────────
-7.mp3   (슬라이드 2)
-old clothes together?
+Why don't we make a short video about reusing old clothes together?
 
 ────────────────────────
 8.mp3   (슬라이드 2)
-M That's a good idea.
+That's a good idea.
 
 ────────────────────────
 9.mp3   (슬라이드 3)
-다섯 번째 줄을 보면 W가 Why don't we make a short video about reusing old clothes together 라고 말하고 있어요. 이 표현은 함께 어떤 일을 하자고 제안할 때 쓰는 제안하기 표현이에요.
+다섯 번째 줄을 보면 제시카가 Why don't we make a short video about reusing old clothes together 라고 말하고 있어요. 이 표현은 함께 어떤 일을 하자고 제안할 때 쓰는 제안하기 표현이에요.
 
 ────────────────────────
 10.mp3   (슬라이드 3)
@@ -117,4 +109,4 @@ M That's a good idea.
 
 ────────────────────────
 34.mp3   (슬라이드 13)
-오늘 은 지구의 날을 맞아 함께 무언가를 하자고 제안하고 여기에 멋지게 응답하는 표현을 배워 보았어요. 배운 내용을 다시 복습해 보면서 오늘 공부를 마무리해 보도록 해요. 여러분 모두 수고했어요.
+오늘은 지구의 날을 맞아 함께 무언가를 하자고 제안하고 여기에 멋지게 응답하는 표현을 배워 보았어요. 배운 내용을 다시 복습해 보면서 오늘 공부를 마무리해 보도록 해요. 여러분 모두 수고했어요.

@@ -1,39 +1,35 @@
 [강의 녹음 대본] 중1 비상(황) 7과 Watch & Present
 
-음성 파일 폴더 이름: 중1_비상(황)_7과_Watch_&_Present_audio 비상(황) 7과 Watch & Present_audio
+음성 파일 폴더 이름: 1_audio
 강의 HTML 파일과 같은 위치에 이 폴더를 만들고, 아래 번호대로 음성 파일을 넣어 주세요.
 
 ────────────────────────
 1.mp3   (슬라이드 1)
-안녕하세요 여러분. 오늘은 비상 황 7과 대화문을 함께 살펴보려고 해요. 제시카와 남학생이 북극곰 포스터를 보며 어떤 이야기를 나누는지 자세히 알아볼게요. 자, 그럼 첫 번째 줄부터 차근차근 시작해 볼까요.
+안녕하세요 여러분. 오늘은 중학교 일학년 비상황 교과서 칠과 대화문 Watch and Present를 함께 살펴보려고 해요. Jessica와 남학생이 북극곰 포스터를 보며 어떤 이야기를 나누는지 자세히 알아볼게요. 자, 그럼 첫 번째 줄부터 차근차근 시작해 볼까요.
 
 ────────────────────────
 2.mp3   (슬라이드 2)
-M What are you drawing, Jessica?
+What are you drawing, Jessica?
 
 ────────────────────────
 3.mp3   (슬라이드 2)
-W I'm drawing a poster about polar bears.
+I'm drawing a poster about polar bears.
 
 ────────────────────────
 4.mp3   (슬라이드 2)
-M I see. Oh, the polar bears on the ice look so sad.
+I see. Oh, the polar bears on the ice look so sad.
 
 ────────────────────────
 5.mp3   (슬라이드 2)
-W Yeah, I'm worried about the polar bears. They are
-
-────────────────────────
-6.mp3   (슬라이드 2)
-losing their homes.
+Yeah, I'm worried about the polar bears. They are losing their homes.
 
 ────────────────────────
 7.mp3   (슬라이드 2)
-M You're right. We need to do something for them.
+You're right. We need to do something for them.
 
 ────────────────────────
 8.mp3   (슬라이드 2)
-W Right. They may not have much time.
+Right. They may not have much time.
 
 ────────────────────────
 9.mp3   (슬라이드 3)
