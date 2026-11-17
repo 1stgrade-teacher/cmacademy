@@ -862,6 +862,24 @@ module.exports = async function handler(req, res) {
       const pg = await notion("pages/" + id32(b.id), "PATCH", { archived: true });
       return pg ? send(200, { ok: true }) : send(502, { error: "notion", msg: "지우지 못했어요.", debug: lastErr });
     }
+    if (act === "t_rec_edit") { // 📊 응시 결과에서 점수·만점·평가·코멘트 직접 고치기 (여러 기록 만점 한꺼번에도)
+      const pp = await getPaper(b.paper); if (!pp) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." });
+      if (!me.master && pp.teacher && pp.teacher !== me.name) return send(403, { error: "owner", msg: pp.teacher + "이(가) 만든 시험지의 기록은 " + pp.teacher + "이나 관리자만 고칠 수 있어요." });
+      const edits = (Array.isArray(b.edits) ? b.edits : []).slice(0, 100), GR = ["우수", "양호", "보통", "노력 필요"], out = [];
+      if (!edits.length) return send(400, { error: "input", msg: "고칠 기록이 없어요." });
+      for (const e of edits) {
+        const id = normId(clip(e && e.rec, 60)); const p = id && await notion("pages/" + id32(id), "GET", null, 2);
+        if (!p || p.archived || !p.parent || normId(p.parent.database_id) !== normId(EXAM_DB()) || !P.rel(p, "시험지").map(normId).includes(normId(pp.id))) { out.push({ rec: id, ok: false, msg: "이 시험지의 기록이 아니에요" }); continue; }
+        const total = e.total == null || e.total === "" ? P.num(p, "만점") : Number(e.total), score = e.score == null || e.score === "" ? P.num(p, "점수") : Number(e.score);
+        if (!(total > 0 && total <= 1000) || !(score >= 0 && score <= total) || Math.round(score * 2) !== score * 2) { out.push({ rec: id, ok: false, msg: "점수는 0~만점 사이로 써 주세요" }); continue; }
+        const pct = Math.round(score / total * 1000) / 10, props = { "점수": { number: score }, "만점": { number: total }, "종합 평가": sel(GR.includes(e.grade) ? e.grade : gradeOf(pct)) };
+        if (Number.isInteger(score) && Number.isInteger(total)) props["오답 수"] = { number: total - score };
+        if (typeof e.comment === "string") props["코멘트"] = { rich_text: rt(clip(e.comment, 1900)) };
+        out.push({ rec: id, ok: !!(await notion("pages/" + id32(id), "PATCH", { properties: props }, 2)) });
+      }
+      const n = out.filter((x) => x.ok).length;
+      return send(200, { ok: true, saved: n, failed: out.length - n, results: out });
+    }
     if (act === "t_rec_delete") { // 📊 응시 결과에서 고른 기록 지우기 (노션 휴지통으로, 30일 안에 되살릴 수 있어요)
       const pp = await getPaper(b.paper); if (!pp) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." });
       if (!me.master && pp.teacher && pp.teacher !== me.name) return send(403, { error: "owner", msg: pp.teacher + "이(가) 만든 시험지의 기록은 " + pp.teacher + "이나 관리자만 지울 수 있어요." });
