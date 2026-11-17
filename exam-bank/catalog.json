@@ -1,5 +1,5 @@
 {
- "built": "2026-11-17T03:58:36.475Z",
+ "built": "2026-11-17T05:00:38.021Z",
  "books": [
   {
    "id": "bb391852c",
@@ -5162,6 +5162,166 @@
    ]
   },
   {
+   "id": "bf24cf120",
+   "area": "독해",
+   "grade": "중등",
+   "name": "What’s Reading 왓츠 리딩 70A",
+   "path": "독해/whatsreading-70a",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "chapter01",
+     "name": "Chapter 1 Panda",
+     "units": [
+      {
+       "id": "uee93901f",
+       "name": "01 Cute Bears",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2d4605e7",
+       "name": "02 Panda and Polar Bear",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc59396be",
+       "name": "03 Pandas in the World",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf2d31992",
+       "name": "04 Sad Pandas",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter02",
+     "name": "Chapter 2 Red Food",
+     "units": [
+      {
+       "id": "u2bb26e53",
+       "name": "01 I Like the Sun!",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u650e7039",
+       "name": "02 Poison Apple",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0ab34cd6",
+       "name": "03 A Ball in the Garden",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uffead4a6",
+       "name": "04 Delicious Sauce!",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter03",
+     "name": "Chapter 3 Cow",
+     "units": [
+      {
+       "id": "ub9211ce5",
+       "name": "01 Granfather’s Farm",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf20126c5",
+       "name": "02 Charging Bull",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc5e79802",
+       "name": "03 Raju and the Farmer",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2d64d331",
+       "name": "04 Cows: Giving Animals",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter04",
+     "name": "Chapter 4 The Sun",
+     "units": [
+      {
+       "id": "ue330d163",
+       "name": "01 Maui vs. the Sun God",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u21891a02",
+       "name": "02 Teotihuacan",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc75dc88f",
+       "name": "03 Fox Fire",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub312439f",
+       "name": "04 How’s the Weather?",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter05",
+     "name": "Chapter 5 Slowness",
+     "units": [
+      {
+       "id": "u8b9518fe",
+       "name": "01 My Special Pet",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0f880e64",
+       "name": "02 Slow Sloth",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u25adfe04",
+       "name": "03 A Young Man and Apples",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf60297e0",
+       "name": "04 A Slow Life",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
    "id": "bd72d860f",
    "area": "교과서",
    "grade": "중1",
@@ -5849,7 +6009,7 @@
    "grade": "중1",
    "name": "중1 천재소 교과서",
    "path": "교과서/중1/천재소",
-   "n": 63,
+   "n": 43,
    "chapters": [
     {
      "key": "4과",
@@ -5928,160 +6088,16 @@
        "lv": 1.4
       },
       {
-       "id": "u55d87a89",
-       "name": "문법 · What's Reading 70 A Ch1 Unit 01",
-       "n": 0,
-       "lv": null
-      },
-      {
-       "id": "u8db9db6b",
-       "name": "문법 · What's Reading 70 A Ch1 Unit 02",
-       "n": 0,
-       "lv": null
-      },
-      {
-       "id": "u98ee24fe",
-       "name": "문법 · What's Reading 70 A Ch1 Unit 03",
-       "n": 0,
-       "lv": null
-      },
-      {
-       "id": "u505d7fb8",
-       "name": "문법 · What's Reading 70 A Ch1 Unit 04",
-       "n": 0,
-       "lv": null
-      },
-      {
        "id": "u2577d2ae",
        "name": "문법 · 중1 천재(소) 6과 문법1 to부정사 (부사적 용법) — to부정사 (부사적 용법)",
        "n": 4,
        "lv": 2
       },
       {
-       "id": "u27ccd3b7",
-       "name": "문법 · What's Reading 70 A Ch2 Unit 01",
-       "n": 0,
-       "lv": null
-      },
-      {
-       "id": "u3469276a",
-       "name": "문법 · What's Reading 70 A Ch2 Unit 02",
-       "n": 0,
-       "lv": null
-      },
-      {
-       "id": "ud3a43e3a",
-       "name": "문법 · What's Reading 70 A Ch2 Unit 03",
-       "n": 0,
-       "lv": null
-      },
-      {
-       "id": "ub10aab29",
-       "name": "문법 · What's Reading 70 A Ch2 Unit 04",
-       "n": 0,
-       "lv": null
-      },
-      {
        "id": "uadc8133e",
        "name": "문법 · 중1 천재(소) 6과 문법2 접속사 that — 접속사 that",
        "n": 9,
        "lv": 1.4
-      },
-      {
-       "id": "u920f6359",
-       "name": "문법 · What's Reading 70 A Ch3 Unit 01",
-       "n": 0,
-       "lv": null
-      },
-      {
-       "id": "u54ef69b8",
-       "name": "문법 · What's Reading 70 A Ch3 Unit 02",
-       "n": 0,
-       "lv": null
-      },
-      {
-       "id": "uae19ef90",
-       "name": "문법 · What's Reading 70 A Ch3 Unit 03",
-       "n": 0,
-       "lv": null
-      },
-      {
-       "id": "u9e902492",
-       "name": "문법 · What's Reading 70 A Ch3 Unit 04",
-       "n": 0,
-       "lv": null
-      },
-      {
-       "id": "ufb299e29",
-       "name": "문법 · What's Reading 70 A Ch4 Unit 01",
-       "n": 0,
-       "lv": null
-      },
-      {
-       "id": "ud206b41c",
-       "name": "문법 · What's Reading 70 A Ch4 Unit 02",
-       "n": 0,
-       "lv": null
-      },
-      {
-       "id": "u56cd9cb6",
-       "name": "문법 · What's Reading 70 A Ch4 Unit 03",
-       "n": 0,
-       "lv": null
-      },
-      {
-       "id": "u44a0a9bd",
-       "name": "문법 · What's Reading 70 A Ch4 Unit 04",
-       "n": 0,
-       "lv": null
-      },
-      {
-       "id": "u033283d1",
-       "name": "문법 · What's Reading 70 A Ch5 Unit 01",
-       "n": 0,
-       "lv": null
-      },
-      {
-       "id": "u72f5920a",
-       "name": "문법 · What's Reading 70 A Ch5 Unit 02",
-       "n": 0,
-       "lv": null
-      },
-      {
-       "id": "uc02c28a9",
-       "name": "문법 · What's Reading 70 A Ch5 Unit 03",
-       "n": 0,
-       "lv": null
-      },
-      {
-       "id": "ueabd69ed",
-       "name": "문법 · What's Reading 70 A Ch5 Unit 04",
-       "n": 0,
-       "lv": null
-      },
-      {
-       "id": "u2a852a1a",
-       "name": "문법 · 중1 천재(이) 8과 대화문 A. Listen and Watch (1) — A. Listen and Watch (1)",
-       "n": 5,
-       "lv": 1.4
-      },
-      {
-       "id": "ue873547e",
-       "name": "문법 · 중1 천재(이) 8과 대화문 A. Listen and Watch (2) — A. Listen and Watch (2)",
-       "n": 5,
-       "lv": 1.4
-      },
-      {
-       "id": "u5eec9058",
-       "name": "문법 · 중1 천재(이) 8과 대화문 A. Listen and Watch (3) — . Listen and Watch (3)",
-       "n": 5,
-       "lv": 1.6
-      },
-      {
-       "id": "u2178dcca",
-       "name": "문법 · 중1 천재(이) 8과 대화문 C. Watch and Do — C. Watch and Do",
-       "n": 5,
-       "lv": 1.2
       },
       {
        "id": "ue4cbc00d",
@@ -6141,7 +6157,7 @@
    "grade": "중1",
    "name": "중1 천재이 교과서",
    "path": "교과서/중1/천재이",
-   "n": 20,
+   "n": 40,
    "chapters": [
     {
      "key": "1과",
@@ -6333,6 +6349,30 @@
      "key": "8과",
      "name": "Lesson 8",
      "units": [
+      {
+       "id": "ue4d6e4eb",
+       "name": "듣기 · 중1 천재(이) 8과 대화문 A. Listen and Watch (1) — A. Listen and Watch (1)",
+       "n": 5,
+       "lv": 1.4
+      },
+      {
+       "id": "u340200b4",
+       "name": "듣기 · 중1 천재(이) 8과 대화문 A. Listen and Watch (2) — A. Listen and Watch (2)",
+       "n": 5,
+       "lv": 1.4
+      },
+      {
+       "id": "u2c2e75f8",
+       "name": "듣기 · 중1 천재(이) 8과 대화문 A. Listen and Watch (3) — . Listen and Watch (3)",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "u11282453",
+       "name": "듣기 · 중1 천재(이) 8과 대화문 C. Watch and Do — C. Watch and Do",
+       "n": 5,
+       "lv": 1.2
+      },
       {
        "id": "uad8d5cec",
        "name": "문법 · 중1 천재(이) 8과 문법1 접속사 when — 접속사 when",
