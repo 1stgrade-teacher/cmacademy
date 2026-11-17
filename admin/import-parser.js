@@ -299,6 +299,74 @@
     return [...units.values()];
   }
 
-  var API = { fileLines: fileLines, parseAnswers: parseAnswers, splitAnswerSection: splitAnswerSection, parseQuestions: parseQuestions, guessMeta: guessMeta, xlsxUnits: xlsxUnits, vocabUnits: vocabUnits, vocabSheet: vocabSheet, htmlToLines: htmlToLines };
+  // ---------- 5-2. 🃏 Quizlet 붙여넣기 ----------
+  // 받는 글: ① Quizlet 「내보내기」(단어↹뜻, 줄마다 / 또는 ; 로 줄 나눔, 쉼표·대시 구분도 OK)
+  //          ② 세트 화면을 끌어서 복사한 글(영어 줄 · 한글 줄이 번갈아)  ③ 우리 북마크 버튼이 복사한 글(단어↹뜻)
+  var HAN = /[가-힣]/, ENG = /[A-Za-z]/;
+  var POSMAP = [[/^(n|noun|명|명사)$/i, "명사"], [/^(v|vt|vi|verb|동|동사)$/i, "동사"], [/^(a|adj|형|형용사)$/i, "형용사"], [/^(ad|adv|부|부사)$/i, "부사"],
+    [/^(prep|전|전치사)$/i, "전치사"], [/^(conj|접|접속사)$/i, "접속사"], [/^(pron|대|대명사)$/i, "대명사"], [/^(int|감|감탄사)$/i, "감탄사"], [/^(phr|숙|숙어|구|구동사|idiom)$/i, "숙어"]];
+  function posName(t) { t = String(t || "").replace(/\./g, "").trim(); for (var i = 0; i < POSMAP.length; i++) if (POSMAP[i][0].test(t)) return POSMAP[i][1]; return ""; }
+  var POSRE = "(?:n|noun|v|vt|vi|verb|a|adj|ad|adv|prep|conj|pron|int|phr|idiom|명사?|동사?|형용사?|형|부사?|전치사?|접속사?|대명사|감탄사|숙어?|구동사|구)\\.?";
+  function cleanQ(s) { return String(s == null ? "" : s).replace(/ /g, " ").replace(/\s*\|\s*/g, "; ").replace(/\s+/g, " ").trim(); }
+  function oneWord(w, m) {
+    w = cleanQ(w); m = cleanQ(m); var pos = "";
+    if (HAN.test(w) && !HAN.test(m) && ENG.test(m)) { var t = w; w = m; m = t; } // 뜻 → 단어 순서로 만든 세트
+    var pm = m.match(new RegExp("^[\\(\\[<【]\\s*(" + POSRE + ")\\s*[\\)\\]>】]\\s*|^(" + POSRE + ")\\s*[\\)\\.:]\\s+", "i"));
+    if (pm) { pos = posName(pm[1] || pm[2]); if (pos) m = m.slice(pm[0].length).trim(); }
+    var wm = w.match(new RegExp("\\s*[\\(\\[]\\s*(" + POSRE + ")\\s*[\\)\\]]\\s*$", "i"));
+    if (wm && posName(wm[1])) { pos = pos || posName(wm[1]); w = w.slice(0, wm.index).trim(); }
+    w = w.replace(/^\d+[.)]\s+/, "").replace(/[.,;:]+$/, "").trim();
+    if (!ENG.test(w) || HAN.test(w) || !m || w.length > 60) return null;
+    return { w: w, pos: pos, m: m.slice(0, 120), ex: "", exk: "", def: "", syn: "", ant: "" };
+  }
+  // 한 줄을 단어 / 뜻으로: 탭 → 「 - 」 → 「 = 」 → 「 : 」 → 쉼표 순서로, 한쪽이 영어·한쪽이 한글이면 나눠요
+  function splitRow(r) {
+    var seps = ["\t", " - ", " – ", " — ", " = ", " : ", ":", ",", "  "];
+    for (var i = 0; i < seps.length; i++) {
+      var k = r.indexOf(seps[i]); if (k <= 0) continue;
+      var a = r.slice(0, k), b = r.slice(k + seps[i].length);
+      if (seps[i] === "\t" || (ENG.test(a) && !HAN.test(a) && HAN.test(b)) || (HAN.test(a) && ENG.test(b) && !HAN.test(b))) return [a, b];
+    }
+    return null;
+  }
+  var JUNK = /^(\d+|\d+\s*\/\s*\d+|용어|정의|terms?|definitions?|이 세트의 용어.*|terms in this set.*|학습|플래시카드|낱말카드|flashcards|learn|test|match|모두 보기|더 보기|see more|show more|별표|star|★+|☆+|\(\d+\))$/i;
+  function quizletParse(text) {
+    text = String(text || "").replace(/\r\n?/g, "\n").replace(/ /g, " ");
+    var lines = text.split("\n");
+    // 줄 바꿈 없이 「;」로만 이어진 내보내기 글
+    if (lines.filter(function (l) { return l.trim(); }).length <= 2 && (text.match(/;/g) || []).length >= 3) lines = text.split(/\s*;\s*/);
+    lines = lines.map(function (l) { return l.replace(/\s+$/, ""); });
+    var words = [], seen = {}, dup = [], skipped = [], pend = null, lastAlt = null;
+    function push(x, raw) { if (!x) { skipped.push(raw); return; } var k = x.w.toLowerCase(); if (seen[k]) { dup.push(x.w); return; } seen[k] = 1; words.push(x); }
+    lines.forEach(function (raw) {
+      var l = raw.trim(); if (!l || JUNK.test(l)) return;
+      var sp = splitRow(raw.indexOf("\t") > 0 ? raw.trim() : l);
+      if (sp) { if (pend) { skipped.push(pend); pend = null; } lastAlt = null; push(oneWord(sp[0], sp[1]), l); return; }
+      // 나눌 수 없는 줄: 영어 줄 다음에 한글 줄이 오면 한 쌍 (세트 화면을 끌어서 복사한 글)
+      if (pend) { if (HAN.test(l) || !ENG.test(l)) { var n0 = words.length; push(oneWord(pend, l), pend + " / " + l); lastAlt = words.length > n0 ? words[words.length - 1] : null; pend = null; return; } skipped.push(pend); pend = null; }
+      if (ENG.test(l) && !HAN.test(l)) { pend = l; lastAlt = null; return; }
+      if (HAN.test(l) && lastAlt && lastAlt.m.length + l.length < 118) { lastAlt.m += "; " + l; return; } // 뜻이 두 줄인 경우
+      skipped.push(l);
+    });
+    if (pend) skipped.push(pend);
+    return { words: words, dup: dup, skipped: skipped };
+  }
+  // 단어 목록 → 단어장 묶음(Day). per = Day 하나에 넣을 단어 수 (0이면 한 묶음)
+  function quizletUnits(text, o) {
+    o = o || {}; var r = quizletParse(text), book = cleanQ(o.book) || "Quizlet 단어장", day = cleanQ(o.day) || "Day 01", per = Math.max(0, Math.min(200, +o.per || 0));
+    var dm = day.match(/^(.*?)(\d+)\s*$/), pre = dm ? dm[1] : day + " ", start = dm ? +dm[2] : 1, wid = dm ? Math.max(2, dm[2].length) : 2;
+    var chunks = []; if (per && r.words.length > per) for (var i = 0; i < r.words.length; i += per) chunks.push(r.words.slice(i, i + per)); else chunks.push(r.words);
+    var units = [];
+    chunks.forEach(function (ws, ci) {
+      if (!ws.length) return;
+      var ch = chunks.length > 1 ? pre + ("000" + (start + ci)).slice(-wid) : day;
+      var meta = { book: book, chapter: ch, unit: "단어", area: "어휘", grade: o.grade || "", file: "🃏 Quizlet" + (o.title ? " · " + cleanQ(o.title) : "") };
+      if (ws.length <= 60) { units.push({ vocab: true, meta: meta, words: ws, questions: [], text: "" }); return; }
+      for (var j = 0, k = 1; j < ws.length; j += 50, k++) units.push({ vocab: true, meta: Object.assign({}, meta, { unit: "단어 " + k }), words: ws.slice(j, j + 50), questions: [], text: "" });
+    });
+    return { units: units, words: r.words.length, dup: r.dup, skipped: r.skipped };
+  }
+
+  var API = { quizletParse: quizletParse, quizletUnits: quizletUnits, fileLines: fileLines, parseAnswers: parseAnswers, splitAnswerSection: splitAnswerSection, parseQuestions: parseQuestions, guessMeta: guessMeta, xlsxUnits: xlsxUnits, vocabUnits: vocabUnits, vocabSheet: vocabSheet, htmlToLines: htmlToLines };
   if (typeof module !== "undefined" && module.exports) module.exports = API; else root.ImportParser = API;
 })(typeof window !== "undefined" ? window : globalThis);

@@ -1,0 +1,22 @@
+# 🏫 플러스 수업 미참여 확인 (예비) — 5분마다 사이트에 "수업 10분이 지났는데 출석 안 한 학생 확인해 줘"라고 알려요.
+# 자습실 출석 화면이 켜져 있으면 화면이 1분마다 확인하고, Vercel Pro 크론을 켜면 서버가 1분마다 확인해요.
+# 여러 곳에서 동시에 확인해도 학생·수업마다 알림은 한 번만 가요. (GitHub 예약 실행은 몇 분 늦어질 수 있어요)
+name: 플러스 수업 미참여 확인
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: 미참여 확인
+        env:
+          SITE: ${{ vars.SITE_URL || 'https://cmacademy.vercel.app' }}
+          SECRET: ${{ secrets.HW_CRON_SECRET }}
+        run: |
+          body=$(printf '{"action":"plus_cron","secret":"%s"}' "$SECRET")
+          curl -sS --max-time 90 -X POST "$SITE/api/monthly" -H "Content-Type: application/json" -d "$body" | tee out.json
+          echo
+          grep -q '"ok":true' out.json

@@ -58,7 +58,8 @@ async function generate(askAI, entries, uid, keyOf) {
   cands.forEach((c, i) => {
     const f = fit.get(i); if (!f || f.length !== 1 || f[0] !== c.q.ans) return; // 정답 하나만 맞아야 통과
     const wkey = keyOf ? keyOf(c.e) : c.e.w.toLowerCase();
-    questions.push({ type: "mc", lv: 2, vt: "ctx", w: wkey, kind: "단어", id: "v" + h(uid + "|" + c.e.w + "|ctx|" + c.q.s, 10), q: "문맥상 빈칸에 가장 알맞은 단어를 고르시오.", sub: c.q.s, opts: c.q.opts, ans: c.q.ans, answer: c.q.opts[c.q.ans], exp: c.q.why || (V.mainForm(c.e.w) + (c.e.m ? ": " + c.e.m : "")) });
+    const right = c.q.opts[c.q.ans], opts = c.q.opts.map((o) => [Math.random(), o]).sort((a, b) => a[0] - b[0]).map((x) => x[1]); // AI는 정답을 앞쪽에 두는 버릇이 있어 섞어서 저장
+    questions.push({ type: "mc", lv: 2, vt: "ctx", w: wkey, kind: "단어", id: "v" + h(uid + "|" + c.e.w + "|ctx|" + c.q.s, 10), q: "문맥상 빈칸에 가장 알맞은 단어를 고르시오.", sub: c.q.s, opts, ans: opts.indexOf(right), answer: right, exp: c.q.why || (V.mainForm(c.e.w) + (c.e.m ? ": " + c.e.m : "")) });
   });
   return { questions, tried: entries.map((e) => e.w), dropped: entries.length - questions.length };
 }

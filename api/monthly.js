@@ -18,6 +18,8 @@ const zlib = require("zlib");
 const drive = require("./_drive.js");
 const V = require("./_vocab.js");
 const CTX = require("./_ctx.js");
+const CONF = require("./_confuse.js");
+const AI_VT = { ctx: CTX, spellmc: CONF }; // AI가 한 번 만들어 단어장에 저장해 두는 단어 유형
 
 const NOTION_VER = "2022-06-28";
 const id32 = (s) => String(s || "").replace(/-/g, "").trim();
@@ -80,6 +82,12 @@ function hash(s, n) { return crypto.createHash("sha1").update(String(s)).digest(
 function rngOf(seed) {
   let a = parseInt(hash(seed, 8), 16) >>> 0;
   return function () { a = (a + 0x6d2b79f5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+// 객관식 보기 섞기 (정답 자리를 seed로 정해 늘 같은 모양). 저장된 문제가 정답 ①이어도 화면·노션에는 섞어서 보여요
+function mixMc(q, seed) {
+  if (!q || q.type !== "mc" || !Array.isArray(q.opts) || !(q.ans >= 0 && q.ans < q.opts.length)) return q;
+  const ord = shuffle(q.opts.map((_, j) => j), rngOf("mix|" + seed)); const opts = ord.map((j) => q.opts[j]);
+  return Object.assign({}, q, { opts, ans: ord.indexOf(q.ans) });
 }
 function shuffle(a, rnd) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
@@ -186,6 +194,7 @@ async function loadCustom(force) {
     const uid = P.text(p, "과ID"); if (!/^x[0-9a-f]{8,}$/.test(uid)) return;
     let qs = []; try { qs = JSON.parse(P.text(p, "문항") || "[]"); } catch (e) { qs = []; }
     if (qs.some((q) => q.vt === "meaning") && !qs.some((q) => q.vt === "mwrite")) qs = qs.concat(qs.map(V.mwriteFrom).filter(Boolean)); // 예전 단어장에도 '뜻 쓰기'
+    if (qs.some((q) => q.vt === "spell") && !qs.some((q) => q.vt === "spellgap" || q.vt === "unscramble")) qs = qs.concat(...qs.map(V.spellExtrasFrom)); // 예전 단어장에도 '철자 빈칸 채우기'·'철자 순서 맞추기'
     const text = P.text(p, "본문");
     if (!qs.length && text.length < 80) return;
     const bookName = P.text(p, "교재") || "직접 올린 자료", chapter = P.text(p, "단원") || "단원", name = P.title(p, "과") || "자료";
@@ -297,7 +306,7 @@ async function aiMake(uid, n, level) {
     .map((x) => {
       const opts = x.opts.map((o) => clip(String(o).replace(/^\s*(?:[①②③④⑤]|\(?[1-5][).])\s*/, ""), 200));
       const q = { id: "a" + hash(uid + x.q + opts.join("|")), kind: "AI 출제", type: "mc", q: clip(x.q, 300), sub: clip(x.sub, 900), opts, ans: x.ans, answer: opts[x.ans], exp: clip(x.exp, 400), lv: level || 2, ai: 1 };
-      return q;
+      return mixMc(q, q.id);
     });
   if (!items.length) return [];
   const body = items.map((q, i) => ({ object: "block", type: "paragraph", paragraph: { rich_text: rt((i + 1) + ". " + q.q + (q.sub ? "  [" + q.sub + "]" : "") + "\n" + q.opts.map((o, k) => (k === q.ans ? "✅ " : "　 ") + "①②③④⑤"[k] + " " + o).join("\n") + "\n해설: " + q.exp) } }));
@@ -330,7 +339,8 @@ async function aiVariants(origs) { // origs: [{u, id, q, sub, opts, ans, answer,
     const src = bt[x && x.i]; if (!src || typeof x.q !== "string" || !Array.isArray(x.opts) || x.opts.length < 4 || x.opts.length > 5 || !Number.isInteger(x.ans) || x.ans < 0 || x.ans >= x.opts.length) return;
     const opts = x.opts.map((o) => clip(String(o).replace(/^\s*(?:[①②③④⑤]|\(?[1-5][).])\s*/, ""), 200)); if (new Set(opts.map(normAns)).size !== opts.length) return;
     if (normAns(x.sub || "") && normAns(x.sub) === normAns(src.sub || "") && normAns(opts.join("|")) === normAns((src.opts || []).join("|"))) return; // 원문 그대로면 버림
-    made.push({ u: src.u, id: "av" + hash(src.id + x.q + opts.join("|"), 10), kind: "AI 변형", vof: src.id, type: "mc", q: clip(x.q, 300), sub: clip(x.sub, 900), opts, ans: x.ans, answer: opts[x.ans], exp: clip(x.exp, 400), lv: src.lv || 2, ai: 1 });
+    const id = "av" + hash(src.id + x.q + opts.join("|"), 10);
+    made.push(mixMc({ u: src.u, id, kind: "AI 변형", vof: src.id, type: "mc", q: clip(x.q, 300), sub: clip(x.sub, 900), opts, ans: x.ans, answer: opts[x.ans], exp: clip(x.exp, 400), lv: src.lv || 2, ai: 1 }, id));
   }));
   const byU = new Map(); made.forEach((v) => { if (!byU.has(v.u)) byU.set(v.u, []); byU.get(v.u).push(v); });
   await Promise.all([...byU].map(([uid, vs]) => { const u = unitData(uid) || {}; const items = vs.map((v) => { const c = Object.assign({}, v); delete c.u; return c; });
@@ -424,12 +434,20 @@ function listenPick(uids, exclude, count) {
 function buildSheet(picked, rnd, keep) {
   const T = (t) => (keep ? picked.filter((q) => (q.type || "mc") === t) : shuffle(picked.filter((q) => (q.type || "mc") === t), rnd));
   const ordered = keep ? picked.slice() : T("mc").concat(T("multi"), T("arrange"), T("short"));
-  const view = [], key = [];
+  const view = [], key = [], used = [0, 0, 0, 0, 0, 0];
+  // 객관식 정답 자리: 지금까지 가장 적게 나온 번호에 놓아 ①~⑤가 고르게 (나머지 보기 순서는 무작위)
+  const placeAns = (q) => {
+    const n = q.opts.length; if (!(q.ans >= 0 && q.ans < n)) return shuffle(q.opts.map((_, j) => j), rnd);
+    let lo = Infinity; for (let p = 0; p < n; p++) lo = Math.min(lo, used[p]);
+    const best = []; for (let p = 0; p < n; p++) if (used[p] === lo) best.push(p);
+    const tgt = best[Math.floor(rnd() * best.length)]; used[tgt]++;
+    const rest = shuffle(q.opts.map((_, j) => j).filter((j) => j !== q.ans), rnd); rest.splice(tgt, 0, q.ans); return rest;
+  };
   ordered.forEach((q, i) => {
     const u = unitIndex.get(q.u) || {};
     const k = { id: q.id, u: q.u, t: q.type, q: clip(q.q, 300), sub: clip(q.sub, 700), exp: clip(q.exp, 300), unit: clip(u.name, 80), ch: clip(u.chapter, 60), book: clip(u.book, 40) };
     if (q.type === "mc") {
-      const ord = keep ? q.opts.map((_, j) => j) : shuffle(q.opts.map((_, j) => j), rnd); const opts = ord.map((j) => q.opts[j]);
+      const ord = keep ? q.opts.map((_, j) => j) : placeAns(q); const opts = ord.map((j) => q.opts[j]);
       view.push(Object.assign({ n: i + 1, type: "mc", q: q.q, sub: q.sub, opts, unit: u.chapter }, q.audio ? { audio: q.audio } : {}));
       Object.assign(k, { a: ord.indexOf(q.ans), opts: opts.map((o) => clip(o, 120)), answer: clip(q.opts[q.ans], 200) });
     } else if (q.type === "multi") {
@@ -674,8 +692,12 @@ let _game = null; const GAME = () => _game || (_game = require("./_game.js")({ n
 const HW = () => _hw || (_hw = require("./_homework.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, STUDENT_DB, listenUnit, getLastErr: () => lastErr }));
 // 🎧 받아쓰기 숙제용: 듣기 회차의 문항별 음성 + 대본
 function listenUnit(uid) { const d = unitData(uid); if (!d || d.area !== "듣기") return null; const items = (d.qs || []).filter((q) => q.script).map((q) => ({ id: q.id, audio: q.audio || "", script: q.script })); return items.length ? { name: d.name, book: d.book, items } : null; }
+let _lib = null; const LIB = () => _lib || (_lib = require("./_library.js")({ notion, queryAll, P, rt, rtLong, sel, clip, num, normId, id32, unitIndex, rangeText, getLastErr: () => lastErr }));
 let _sc = null; const SC = () => _sc || (_sc = require("./_schedule.js")({ notion, queryAll, P, rt, sel, clip, normId, id32, getLastErr: () => lastErr }));
+let _prt = null; const PRT = () => _prt || (_prt = require("./_print.js")({ notion, queryAll, P, uuid, normId, id32, STUDENT_DB, EXAM_DB, CERT_DB: () => id32(process.env.NOTION_DB_ID || "d6164dec4d2e461aa2f102de18814b7d"), GAME_DB: () => id32(process.env.NOTION_GAME_DB_ID || "3ef113187ca24388b1a68de4cc535144"), PLUS_DB: () => id32(process.env.NOTION_PLUS_DB_ID || "c539836a490b41ec98df5ddc0b384b6d"), HW, getLastErr: () => lastErr }));
 let _par = null; const PAR = () => _par || (_par = require("./_parent.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, EXAM_DB, CERT_DB: () => id32(process.env.NOTION_DB_ID || "d6164dec4d2e461aa2f102de18814b7d"), GAME_DB: () => id32(process.env.NOTION_GAME_DB_ID || "3ef113187ca24388b1a68de4cc535144"), HW, getLastErr: () => lastErr }));
+let _plus = null; const PLUS = () => _plus || (_plus = require("./_plus.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, SCHED_DB: () => SC().SCHED_DB(), secret, signToken, readToken, login, getLastErr: () => lastErr }));
+const plusOut = (send, r) => send(r.status || 200, Object.assign({ ok: (r.status || 200) === 200 && r.ok !== false }, r, { status: undefined }));
 let _rep = null;
 function reporter() {
   if (!_rep) _rep = require("./_report.js")({ uuid, teacherFor, notion, queryAll, P, clip, normId, id32, unitIndex, unitData, askAI, EXAM_DB, STUDENT_DB, getPaper });
@@ -689,6 +711,11 @@ module.exports = async function handler(req, res) {
     const k = new URL(req.url, "http://x").searchParams.get("pm") || "";
     res.statusCode = 200; res.setHeader("Content-Type", "application/manifest+json; charset=utf-8"); res.setHeader("Cache-Control", "private, max-age=3600");
     return res.end(JSON.stringify(PAR().manifest(k)));
+  }
+  if (req.method === "GET" && /[?&]plus_cron=1\b/.test(req.url || "")) { // ⏰ 🏫 플러스 수업 미참여 확인 (Vercel 크론, 1분마다)
+    const cs = String(process.env.CRON_SECRET || "").trim(), au = String(req.headers.authorization || "");
+    if (cs ? au !== "Bearer " + cs : !/vercel-cron/i.test(String(req.headers["user-agent"] || ""))) return send(401, { error: "cron" });
+    return send(200, await PLUS().tick(true));
   }
   if (req.method === "GET") return send(200, { ok: true, ready: !!process.env.NOTION_TOKEN && process.env.MONTHLY_OFF !== "1", bank: !!loadCatalog(), ai: aiOn(), ais: AI.list().map((x) => x.id), teacher: !!tcode, drive: drive.configured() });
   if (req.method !== "POST") return send(405, { error: "method" });
@@ -704,12 +731,30 @@ module.exports = async function handler(req, res) {
     if (sec && String(b.secret || "") !== sec) return send(401, { error: "secret" });
     try { return send(200, await HW().cron()); } catch (e) { return send(500, { ok: false, msg: clip(e && e.message, 200) }); }
   }
+  // =================== 🏫 플러스 수업 출결 ===================
+  if (act === "plus_cron") { // GitHub Actions(예비, 5분마다)
+    const sec = String(process.env.HW_CRON_SECRET || "").trim();
+    if (sec && String(b.secret || "") !== sec) return send(401, { error: "secret" });
+    return send(200, await PLUS().tick(true));
+  }
+  if (act === "plus_today" || act === "plus_check") { // 학생: 자습실 화면의 QR·숫자를 맞혀야 쓸 수 있음 (사이트 입장 코드 없이)
+    const ip = String((req.headers["x-forwarded-for"] || "").split(",")[0]).trim() || "x";
+    return plusOut(send, act === "plus_today" ? await PLUS().today(b, ip) : await PLUS().check(b, ip));
+  }
+  if (act === "plus_screen") return plusOut(send, await PLUS().screen(b)); // 자습실 출석 화면
+  if (/^t_(plus|print)\w*$/.test(act)) {
+    const ip = String((req.headers["x-forwarded-for"] || "").split(",")[0]).trim() || "x";
+    if (tBlocked(ip)) return send(429, { error: "limit", msg: "코드를 여러 번 틀렸어요. 10분 뒤에 다시 해 주세요." });
+    const me = await whoTeacher(b.code);
+    if (!me) { tFail(ip); return send(401, { error: "code", msg: "선생님 코드가 맞지 않아요." }); }
+    return plusOut(send, Object.assign({ me: { name: me.name } }, act.startsWith("t_print") ? await PRT().teacher(act, b, me) : await PLUS().teacher(act, b, me)));
+  }
   if (!/^(classes|roster|login|s_list|p_\w+)$/.test(act)) await loadCustom();
   lastErr = null;
 
   // =================== 선생님 ===================
   if (act.startsWith("t_")) {
-    AI.setPrefer(b.ai, b.aiModels); // 선생님이 고른 AI와 모델을 먼저
+    AI.setPrefer(typeof b.ai === "string" ? b.ai : "", b.aiModels); // 선생님이 고른 AI와 모델을 먼저
     const ip = String((req.headers["x-forwarded-for"] || "").split(",")[0]).trim() || "x";
     if (tBlocked(ip)) return send(429, { error: "limit", msg: "코드를 여러 번 틀렸어요. 10분 뒤에 다시 해 주세요." });
     const me = await whoTeacher(b.code);
@@ -751,7 +796,7 @@ module.exports = async function handler(req, res) {
     if (act === "t_preview") { // 선생님 지정형: 실제 학생이 받을 문항(정답 포함)을 미리 보기
       const uids = (Array.isArray(b.units) ? b.units : []).filter((u) => unitIndex.has(u)).slice(0, 300);
       if (!uids.length) return send(400, { error: "input", msg: "과를 하나 이상 골라 주세요." });
-      const pp = { id: "preview", count: num(b.count, 5, 100, 20), level: num(b.level, 1, 3, 2), mode: b.mode === "choice" ? "choice" : "fixed", cfg: { seed: clip(b.seed, 40) || "preview", exclude: (b.exclude || []).slice(0, 500), vtypes: (Array.isArray(b.vtypes) ? b.vtypes : []).filter((t) => V.VT_IDS.includes(t)), ai: b.ai && typeof b.ai === "object" ? b.ai : undefined } };
+      const pp = { id: "preview", count: num(b.count, 5, 100, 20), level: num(b.level, 1, 3, 2), mode: b.mode === "choice" ? "choice" : "fixed", cfg: { seed: clip(b.seed, 40) || "preview", exclude: (b.exclude || []).slice(0, 500), vtypes: (Array.isArray(b.vtypes) ? b.vtypes : []).filter((t) => V.VT_IDS.includes(t)), ai: b.aiOpt && typeof b.aiOpt === "object" ? b.aiOpt : b.ai && typeof b.ai === "object" ? b.ai : undefined } };
       if (isListen({ kind: b.kind }, uids)) { // 🎧 듣기: 순서대로 그대로
         const picked = listenPick(uids, pp.cfg.exclude, pp.count), all = listenPick(uids, [], 1000);
         return send(200, { ok: true, listen: true, stats: uids.map((u) => ({ u, name: unitIndex.get(u).name, bank: (unitData(u) || { qs: [] }).qs.filter((q) => q.type === "mc").length, ai: 0 })), total: all.length, range: rangeText(uids),
@@ -761,13 +806,13 @@ module.exports = async function handler(req, res) {
       if (opt) {
         const r = await composeSheet(pp, uids, pp.cfg.seed, opt);
         return send(200, { ok: true, stats: r.stats, total: r.stats.reduce((s, x) => s + x.bank + x.ai, 0), range: rangeText(uids), notes: r.notes, aiOn: aiOn(),
-          items: r.picked.map((q) => { const o = q.vof && r.origById.get(q.vof); return { id: q.id, type: q.type, lv: q.lv, ai: !!q.ai, kind: q.kind || "", q: q.q, sub: q.sub, opts: q.opts, ans: q.ans, anss: q.anss, accept: q.accept, answer: q.answer, words: q.words, exp: q.exp, custom: q.u && q.u[0] === "x", vt: q.vt || "", unit: unitIndex.get(q.u).name, ch: unitIndex.get(q.u).chapter, orig: o ? { q: o.q, sub: o.sub, opts: o.opts, ans: o.ans } : undefined }; }) });
+          items: r.picked.map((q0) => { const q = mixMc(q0, q0.id), o0 = q0.vof && r.origById.get(q0.vof), o = o0 && mixMc(o0, o0.id); return { id: q.id, type: q.type, lv: q.lv, ai: !!q.ai, kind: q.kind || "", q: q.q, sub: q.sub, opts: q.opts, ans: q.ans, anss: q.anss, accept: q.accept, answer: q.answer, words: q.words, exp: q.exp, custom: q.u && q.u[0] === "x", vt: q.vt || "", unit: unitIndex.get(q.u).name, ch: unitIndex.get(q.u).chapter, orig: o ? { q: o.q, sub: o.sub, opts: o.opts, ans: o.ans } : undefined }; }) });
       }
       const pool = await poolFor(uids, pp.cfg.exclude, pp.cfg.vtypes);
       const stats = [...pool].map(([u, qs]) => ({ u, name: unitIndex.get(u).name, bank: qs.filter((q) => !q.ai).length, ai: qs.filter((q) => q.ai).length }));
       const picked = pick(pool, pp.count, pp.level, rngOf(pp.cfg.seed));
       return send(200, { ok: true, stats, total: stats.reduce((s, x) => s + x.bank + x.ai, 0), range: rangeText(uids),
-        items: picked.map((q) => ({ id: q.id, type: q.type, lv: q.lv, ai: !!q.ai, q: q.q, sub: q.sub, opts: q.opts, ans: q.ans, anss: q.anss, accept: q.accept, answer: q.answer, words: q.words, exp: q.exp, custom: q.u && q.u[0] === "x", vt: q.vt || "", unit: unitIndex.get(q.u).name, ch: unitIndex.get(q.u).chapter })) });
+        items: picked.map((q0) => mixMc(q0, q0.id)).map((q) => ({ id: q.id, type: q.type, lv: q.lv, ai: !!q.ai, q: q.q, sub: q.sub, opts: q.opts, ans: q.ans, anss: q.anss, accept: q.accept, answer: q.answer, words: q.words, exp: q.exp, custom: q.u && q.u[0] === "x", vt: q.vt || "", unit: unitIndex.get(q.u).name, ch: unitIndex.get(q.u).chapter })) });
     }
     if (act === "t_fill") { // AI로 문항 보충 (과마다 n개)
       if (!aiOn()) return send(503, { error: "noai", msg: "AI 키가 없어요. (Vercel에 DEEPSEEK_API_KEY / OPENAI_API_KEY / ANTHROPIC_API_KEY / GEMINI_API_KEY 중 하나)" });
@@ -786,6 +831,7 @@ module.exports = async function handler(req, res) {
       if (mode === "choice" && !books.length && !units.length) return send(400, { error: "input", msg: "학생이 고를 수 있는 교재를 골라 주세요." });
       let old = null;
       if (f.id) { old = await getPaper(f.id); if (!old) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." }); }
+      if (old && !me.master && old.teacher && old.teacher !== me.name) return send(403, { error: "owner", msg: old.teacher + "이(가) 만든 시험지는 고칠 수 없어요. 목록에서 📄 복제해서 써 주세요." });
       const cfg = { units, books, seed: (old && old.cfg.seed) || clip(f.seed, 40).replace(/[^\w-]/g, "") || hash(Date.now() + title, 12), exclude: (Array.isArray(f.exclude) ? f.exclude : (old && old.cfg.exclude) || []).slice(0, 500), vtypes: (Array.isArray(f.vtypes) ? f.vtypes : (old && old.cfg.vtypes) || []).filter((t) => V.VT_IDS.includes(t)), place: clip(f.place != null ? f.place : (old && old.cfg.place) || "", 1500), grades: (Array.isArray(f.grades) ? f.grades : (old && old.cfg.grades) || []).filter((g) => GRADES.includes(g)),
         ai: f.ai && typeof f.ai === "object" ? { fill: f.ai.fill !== false, variant: num(f.ai.variant, 0, 100, 0), extra: num(f.ai.extra, 0, 60, 0) } : (old && old.cfg.ai) || undefined };
       if (f.reseed) cfg.seed = hash(Date.now() + Math.random(), 12);
@@ -799,14 +845,19 @@ module.exports = async function handler(req, res) {
       if (!old || !old.teacher) props["출제 선생님"] = sel(me.name);
       const pg = old ? await notion("pages/" + old.id, "PATCH", { properties: props }) : await notion("pages", "POST", { parent: { database_id: PAPER_DB() }, properties: props });
       if (!pg) return send(502, { error: "notion", msg: "시험지를 저장하지 못했어요.", debug: lastErr });
+      if (!old && f.libId) await LIB().used(f.libId).catch(() => {});
       return send(200, { ok: true, paper: Object.assign(pub(readPaper(pg)), { cfg: readPaper(pg).cfg, show: P.chk(pg, "결과 공개"), url: pg.url }) });
     }
     if (act === "t_status") {
       const st = STATUSES.includes(b.status) ? b.status : null; if (!st) return send(400, { error: "input" });
+      if (!(await getPaper(b.id))) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요. 목록을 새로고침해 주세요." });
       const pg = await notion("pages/" + id32(b.id), "PATCH", { properties: { "상태": sel(st) } });
       return pg ? send(200, { ok: true }) : send(502, { error: "notion", msg: "바꾸지 못했어요.", debug: lastErr });
     }
-    if (act === "t_delete") {
+    if (act === "t_delete") { // 시험지 지우기: 만든 선생님과 관리자만, 응시중이면 먼저 마감
+      const old = await getPaper(b.id); if (!old) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요. 목록을 새로고침해 주세요." });
+      if (!me.master && old.teacher && old.teacher !== me.name) return send(403, { error: "owner", msg: old.teacher + "이(가) 만든 시험지는 " + old.teacher + "이나 관리자만 지울 수 있어요." });
+      if (old.status === "응시중") return send(400, { error: "open", msg: "응시중인 시험지는 먼저 마감한 뒤에 지워 주세요." });
       const pg = await notion("pages/" + id32(b.id), "PATCH", { archived: true });
       return pg ? send(200, { ok: true }) : send(502, { error: "notion", msg: "지우지 못했어요.", debug: lastErr });
     }
@@ -878,6 +929,10 @@ module.exports = async function handler(req, res) {
     if (act === "t_pm_send") { const r = await PAR().teacherSend(me, clip(b.sid, 60), clip(b.cls, 40), clip(b.text, 1500)); return r.status === 200 ? send(200, { ok: true, msg: r.msg }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
     if (act === "t_parent_links") { const r = await HW().parentLinks(clip(b.cls, 40)); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
     if (act === "t_parent_reset") { const r = await HW().parentReset(clip(b.sid, 60)); return r.status === 200 ? send(200, { ok: true, k: r.k }) : send(r.status, { ok: false, msg: r.msg }); }
+    // 📦 시험지 보관함 (모든 선생님이 함께 쓰는 시험지 틀)
+    if (act === "t_lib_list") { const r = await LIB().list(); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_lib_save") { const r = await LIB().save(me, b.item); return r.status === 200 ? send(200, { ok: true, item: r.item }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_lib_del") { const r = await LIB().del(me, b.id); return r.status === 200 ? send(200, { ok: true }) : send(r.status, { ok: false, msg: r.msg }); }
     // 📅 반 일정 (단어시험·평가·휴원 …)
     if (act === "t_sched_month") { const r = await SC().month(clip(b.cls, 40), String(b.ym || ""), false); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
     if (act === "t_sched_save") { const r = await SC().save(me && me.name, b.items); return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg, debug: r.debug, failed: r.failed }); }
@@ -916,6 +971,17 @@ module.exports = async function handler(req, res) {
       const recs = rows.map((p) => ({ sid: P.rel(p, "학생")[0] || "", title: P.title(p, "시험명"), kind: P.sel(p, "종류"), date: (P.date(p, "시험일") || {}).start || "", pct: P.formula(p, "환산점수"), score: P.num(p, "점수"), total: P.num(p, "만점"), grade: P.sel(p, "종합 평가"), comment: P.text(p, "코멘트"), url: p.url, rec: normId(p.id), report: (p.properties["분석 리포트"] || {}).url || "",
         units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }));
       return send(200, { ok: true, cls, from, to, students: (ros || []).map((s) => ({ sid: s.id, name: s.name })), records: recs.map((r) => Object.assign(r, { name: names.get(r.sid) || "" })) });
+    }
+    if (act === "t_kind_table") { // 🗂 반 · 시험 종류별로 날짜순 모아 보기 (온라인 응시 + 직접 입력한 점수 모두)
+      const cls = clip(b.cls, 40), kind = KINDS.includes(b.kind) ? b.kind : "", isD = (x) => /^\d{4}-\d{2}-\d{2}$/.test(x || "");
+      if (!cls || !kind || !isD(b.from) || !isD(b.to)) return send(400, { error: "input", msg: "반·종류·기간을 골라 주세요." });
+      const [rows, ros] = await Promise.all([queryAll(EXAM_DB(), { filter: { and: [{ property: "반", select: { equals: cls } }, { property: "종류", select: { equals: kind } }, { property: "시험일", date: { on_or_after: b.from } }, { property: "시험일", date: { on_or_before: b.to } }] }, sorts: [{ property: "시험일", direction: "ascending" }] }, 15), roster(cls)]);
+      if (!rows) return send(502, { error: "notion", msg: "시험 기록을 불러오지 못했어요.", debug: lastErr });
+      const recs = rows.map((p) => { const score = P.num(p, "점수"), total = P.num(p, "만점"), f = P.formula(p, "환산점수"); return { sid: P.rel(p, "학생")[0] || "", title: P.title(p, "시험명"), date: ((P.date(p, "시험일") || {}).start || "").slice(0, 10), score, total, pct: typeof f === "number" ? f : (total ? Math.round(score / total * 1000) / 10 : null), paper: normId(P.rel(p, "시험지")[0] || ""), range: P.text(p, "시험 범위"), url: p.url }; }).filter((r) => r.sid && r.date);
+      // 지금은 이 반이 아닌 학생(반 이동·휴원·퇴원)의 기록도 이름을 찾아 보여 줘요
+      const students = (ros || []).map((x) => ({ sid: x.id, name: x.name })), have = new Set(students.map((x) => x.sid)), extra = [...new Set(recs.map((r) => r.sid))].filter((x) => !have.has(x));
+      if (extra.length) { const a = await STU().all(), nm = new Map(((a && a.students) || []).map((x) => [x.id, x])); extra.forEach((sid) => { const x = nm.get(sid); students.push({ sid, name: x ? x.name : "(이름 없음)", gone: x ? (x.cls !== cls ? x.cls : x.status) || "다른 반" : "기록만 있음" }); }); }
+      return send(200, { ok: true, cls, kind, from: b.from, to: b.to, students, records: recs, more: rows.length >= 1500 });
     }
     if (act === "t_unit_get") { // ✍️ 직접 올린 자료를 불러와 고치기
       loadCatalog(); await loadCustom(true);
@@ -969,7 +1035,7 @@ module.exports = async function handler(req, res) {
       if (vocabWords && found[0]) { // 단어장을 다시 올려도 AI로 만든 문맥 문제는 (그 단어가 남아 있으면) 유지
         let old = []; try { old = JSON.parse(P.text(found[0], "문항") || "[]"); } catch (e) { old = []; }
         const keys = new Set(vocabWords.map((e) => CTX.mainKey(e.w)));
-        all = qs.concat(old.filter((q) => q.vt === "ctx" && keys.has(CTX.mainKey(q.w))));
+        all = qs.concat(old.filter((q) => AI_VT[q.vt] && keys.has(CTX.mainKey(q.w))));
       }
       if (found[0] && !b.replace) { // 같은 과에 더 올리면 기존 문항 뒤에 합침 (같은 문항은 한 번만)
         let old = []; try { old = JSON.parse(P.text(found[0], "문항") || "[]"); } catch (e) { old = []; }
@@ -1016,7 +1082,7 @@ module.exports = async function handler(req, res) {
       const NEED = { // DB별로 꼭 있어야 하는 칸 (없으면 저장·기록이 실패해요)
         "시험 기록": [EXAM_DB(), ["시험명", "학생", "시험지", "반", "종류", "시험일", "시험 범위", "점수", "만점", "오답 수", "종합 평가", "코멘트", "응시 방식", "소요시간(분)", "자리비움", "단원 분석", "문항 기록", "분석 리포트"]],
         "학생": [STUDENT_DB(), [PIN_PROP, "반", "학부모 연락처", "알림 끄기"]],
-        "📸 과제": [HW().HW_DB(), ["과제명", "반", "마감", "설명", "사용", "알림 보내기", "알림 처리"]], "📮 과제 제출": [HW().SUB_DB(), ["제목", "과제", "학생", "상태", "사진", "제출 시각", "학생 메모", "알림 결과"]], "📅 반 일정": [SC().SCHED_DB(), ["일정명", "반", "날짜", "종류", "범위", "메모", "사용"]],
+        "📸 과제": [HW().HW_DB(), ["과제명", "반", "마감", "설명", "사용", "알림 보내기", "알림 처리"]], "📮 과제 제출": [HW().SUB_DB(), ["제목", "과제", "학생", "상태", "사진", "제출 시각", "학생 메모", "알림 결과"]], "📦 시험지 보관함": [LIB().LIB_DB(), ["이름", "단어장", "종류", "범위", "문항 수", "설정", "만든 선생님", "쓴 횟수", "사용"]], "📅 반 일정": [SC().SCHED_DB(), ["일정명", "반", "날짜", "종류", "범위", "메모", "사용"]],
         "시험지": [PAPER_DB(), []], "AI 문항": [AIQ_DB(), []], "직접 올린 문항": [CUSTOM_DB(), ["과", "교재", "단원", "과ID", "문항", "본문"]], "선생님": [TEACHER_DB(), []],
       };
       const fixConn = "노션에서 「📔 학습리포트」와 「💗 일등급샘 반별 관리페이지」 각각 ⋯ → 연결 → 「cmacademy 학습인증」을 추가해 주세요.";
@@ -1049,18 +1115,19 @@ module.exports = async function handler(req, res) {
       }
       return send(200, { ok: true, results: res });
     }
-    if (act === "t_vocab_ctx") { // 🧠 저장된 단어장에 '문맥 5지선다'(AI 예문) 문제 만들기 — 한 번에 8단어씩, 화면이 반복해서 불러요
+    if (act === "t_vocab_ctx") { // 🧠 저장된 단어장에 AI 문제 만들기 — vt: ctx(문맥 5지선다) · spellmc(철자 고르기, 혼동 어휘). 한 번에 8단어씩, 화면이 반복해서 불러요
+      const VT = AI_VT[b.vt] ? b.vt : "ctx", GEN = AI_VT[VT];
       if (!aiOn()) return send(503, { error: "noai", msg: "AI 키가 없어요." });
       loadCatalog(); await loadCustom(true);
       const uid = clip(b.uid, 20), d = custom.data.get(uid), u = unitIndex.get(uid);
       if (!d || !u || !u.vocab) return send(404, { error: "nf", msg: "단어장을 찾지 못했어요." });
-      const words = V.wordsFrom(d.qs), have = new Set(d.qs.filter((q) => q.vt === "ctx").map((q) => CTX.mainKey(q.w)));
+      const words = V.wordsFrom(d.qs).filter((e) => VT !== "spellmc" || e.m), have = new Set(d.qs.filter((q) => q.vt === VT).map((q) => CTX.mainKey(q.w)));
       const skip = new Set((Array.isArray(b.skip) ? b.skip : []).map((x) => CTX.mainKey(x)));
       const need = words.filter((e) => !have.has(CTX.mainKey(e.w)) && !skip.has(CTX.mainKey(e.w)));
       const batch = need.slice(0, 8);
       if (!batch.length) return send(200, { ok: true, made: 0, tried: [], left: 0, total: words.length, have: have.size });
       const keyOf = (e) => { const q = d.qs.find((x) => x.w && CTX.mainKey(x.w) === CTX.mainKey(e.w)); return q ? q.w : e.w.toLowerCase(); };
-      const r = await CTX.generate((sys, usr, mt, to, o) => AI.askAI(sys, usr, mt, to, o), batch, uid, keyOf);
+      const r = await GEN.generate((sys, usr, mt, to, o) => AI.askAI(sys, usr, mt, to, o), batch, uid, keyOf);
       const used = AI.label(AI.lastInfo().used) + (AI.lastInfo().model ? " · " + AI.lastInfo().model : "");
       if (r.err && !r.questions.length) return send(200, { ok: false, msg: r.err, used, aiErr: AI.lastInfo().errors });
       if (r.questions.length) {

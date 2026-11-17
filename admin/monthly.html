@@ -4,7 +4,7 @@
 <style>
 *{box-sizing:border-box}
 :root{--ink:#1B2733;--muted:#5F6E7C;--line:#DCE7E7;--ac:#0E8A8C;--ac-ink:#0A5F61;--ac-bg:#DDF2F1;--ac-soft:#F3FAFA;--amber:#8A5A00;--amber-bg:#FFF1D8;--red:#C0392B;--red-bg:#FDE3E1;--green:#1F7A4A}
-body{margin:0;background:#F0F8F8;font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;color:var(--ink);padding:14px 12px 90px}
+body{word-break:keep-all;overflow-wrap:break-word;margin:0;background:#F0F8F8;font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;color:var(--ink);padding:14px 12px 90px}
 .wrap{max-width:1080px;margin:0 auto}
 h1{font-size:20px;color:var(--ac-ink);margin:4px 0 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 h1 a{font-size:13px;font-weight:600;color:var(--ac-ink)}
@@ -34,6 +34,16 @@ table.vt{border-collapse:collapse;font-size:13px;width:100%}table.vt th{position
 .seg{display:inline-flex;border:1px solid #CFE5E4;border-radius:10px;overflow:hidden}
 .seg label{padding:8px 12px;cursor:pointer;font-size:14px;margin:0;border-right:1px solid #CFE5E4}.seg label:last-child{border-right:0}
 .seg input{display:none}.seg label:has(input:checked){background:var(--ac);color:#fff;font-weight:700}
+/* 새 시험지: 설정 묶음 · 아래 고정 바 */
+.fs{border:1px solid var(--line);border-radius:12px;padding:12px 14px 14px;margin-top:12px;background:#FAFDFD}
+.fs>.fh{font-weight:800;color:var(--ac-ink);font-size:14.5px;margin-bottom:10px}.fs>.fh span{font-weight:500;color:#7A8896;font-size:12.5px;margin-left:6px}
+.fl{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:8px}.fl>.fn{font-size:12.5px;font-weight:700;color:var(--muted);min-width:34px}
+.fl .filters{margin:0}
+.actbar{position:sticky;bottom:0;z-index:6;background:#fff;border-top:2px solid var(--ac-bg);box-shadow:0 -4px 14px rgba(10,60,62,.10);border-radius:14px 14px 0 0;padding:10px 14px;margin-top:4px}
+.actbar .steps{font-size:12.5px;color:#7A8896;margin-top:6px}.actbar .steps b{color:var(--ac-ink)}
+@media(max-width:700px){.tabs{position:static}.actbar{padding:8px 10px}.actbar .steps{display:none}.actbar button{padding:8px 10px;font-size:13.5px}#meBox{flex-wrap:wrap;gap:6px;margin-left:0!important}}
+details.libf{border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-top:10px}details.libf>summary{cursor:pointer;font-weight:800;color:var(--ac-ink);font-size:15px;padding:4px 0}
+details.more{margin-top:6px}details.more summary{cursor:pointer;font-size:12.5px;color:var(--ac-ink);font-weight:600}
 /* 범위 고르기 */
 .filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
 .books{max-height:520px;overflow:auto;border:1px solid var(--line);border-radius:12px}
@@ -45,7 +55,11 @@ details.bk>summary .cnt{margin-left:auto;font-size:12px;font-weight:700;color:va
 .ch{padding:2px 12px 8px 34px}.chn{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;margin:8px 0 2px;color:var(--ac-ink)}
 .un{display:flex;align-items:center;gap:8px;padding:4px 4px 4px 24px;font-size:13.5px;cursor:pointer;border-radius:6px}.un:hover{background:var(--ac-soft)}
 .un .n{margin-left:auto;font-size:11.5px;color:var(--muted);white-space:nowrap}.un .n.z{color:#B06A00}
-.sumbar{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--line);padding:10px 0 0;margin-top:10px}
+table.kt{font-size:13px;width:auto;min-width:100%}table.kt th,table.kt td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
+table.kt th{background:#F0F8F8;font-weight:700;vertical-align:bottom;line-height:1.35}table.kt th small{display:block;font-weight:500;color:var(--muted);max-width:110px;overflow:hidden;text-overflow:ellipsis}
+table.kt .nm{position:sticky;left:0;background:#fff;text-align:left;font-weight:700;z-index:1;box-shadow:1px 0 0 var(--line)}table.kt th.nm{background:#F0F8F8}
+table.kt td.lo{background:#FDE3E1;color:#A32D22}table.kt td.hi{background:#DFF5E8;color:#1F7A4A}table.kt td.no{color:#B9C4CC}table.kt tr.av td{background:#F7FAFA;font-weight:700;border-top:2px solid var(--ac-bg)}table.kt td.sm,table.kt th.sm{border-left:2px solid var(--ac-bg);font-weight:700}
+.sumbar{position:sticky;bottom:var(--abh,0px);z-index:2;background:#fff;border-top:1px solid var(--line);padding:10px 0 0;margin-top:10px}
 /* 미리보기 */
 .qv{border-top:1px solid #EEF3F3;padding:10px 0;display:flex;gap:10px}
 .qv .no{flex:0 0 28px;font-weight:800;color:var(--ac-ink)}
@@ -107,7 +121,13 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   .rep{box-shadow:none;border-radius:0;margin:0;padding:10mm 8mm;max-width:none}.noprint{display:none!important}
   .rep textarea.cmi{border:1px solid #ccc}
 }
-</style></head><body><div class="wrap">
+</style><link rel="icon" type="image/png" sizes="32x32" href="/check-favicon-32.png">
+<link rel="apple-touch-icon" href="/check-apple-touch-icon.png">
+<link rel="manifest" href="/check-manifest.json">
+<meta name="theme-color" content="#14305A">
+<meta name="apple-mobile-web-app-title" content="청명 CHECK">
+<meta name="application-name" content="청명 CHECK">
+</head><body><div class="wrap">
 <h1>🗓 TEST 관리 <a href="./exam.html">📝 점수 직접 입력 →</a> <a href="../월간고사/index.html" target="_blank">👀 학생 화면 →</a><span id="meBox" style="margin-left:auto;display:none;font-size:13.5px;font-weight:600;color:#1B2733">👤 <b id="meName"></b> <span id="aiBox" style="display:none;margin-left:10px" title="해설·문항 나누기·AI 보충·리포트에 먼저 쓸 AI">🤖 <select id="aiSel" style="width:auto;padding:4px 6px;font-size:13px"></select> <select id="aiModel" title="같은 AI 안에서 모델(엔진) 고르기" style="width:auto;max-width:190px;padding:4px 6px;font-size:13px"></select> <button class="sm sub" id="aiTest">연결 확인</button></span> <button class="sm sub" id="healthBtn" title="노션·드라이브·AI가 잘 연결됐는지 한 번에 점검">🩺 점검</button> <button class="sm sub" id="logout" style="margin-left:6px">로그아웃</button></span></h1>
 <div class="hint" id="aiMsg" style="text-align:right;margin:-6px 0 8px"></div>
 
@@ -124,6 +144,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   <div class="tabs">
     <button class="tab on" data-tab="list">📋 시험지 목록</button>
     <button class="tab" data-tab="edit" id="tabEdit">➕ 새 시험지</button>
+    <button class="tab" data-tab="lib">📦 보관함</button>
     <button class="tab" data-tab="results" id="tabRes">📊 응시 결과</button>
     <button class="tab" data-tab="report">📈 분기 리포트</button>
     <button class="tab" data-tab="import">📚 자료 올리기</button>
@@ -131,6 +152,8 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     <button class="tab" data-tab="game">🎮 단어 게임</button>
     <button class="tab" data-tab="stu">🧑‍🎓 학생</button>
     <button class="tab" data-tab="cert">📺 학습 인증</button>
+    <a href="/admin/plus.html#time" style="display:inline-flex;align-items:center;text-decoration:none;background:#fff;color:var(--ac-ink);border:1px solid var(--line);border-radius:10px;padding:10px 15px;font-weight:700;font-size:14.5px">🏫 플러스 수업</a>
+    <a href="/admin/print.html" style="display:inline-flex;align-items:center;text-decoration:none;background:#fff;color:var(--ac-ink);border:1px solid var(--line);border-radius:10px;padding:10px 15px;font-weight:700;font-size:14.5px">🖨️ 리포트 인쇄</a>
     <button class="tab" data-tab="pm" id="tabPm">💬 학부모</button>
     <button class="tab" data-tab="teachers" id="tabTeachers" style="display:none">👩‍🏫 선생님</button>
   </div>
@@ -154,7 +177,8 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   <!-- 만들기·수정 -->
   <section id="v-edit" style="display:none">
     <div class="card">
-      <h2 id="editTitle">새 시험지</h2>
+      <div class="row" style="justify-content:space-between;margin-bottom:10px"><h2 id="editTitle" style="margin:0">새 시험지</h2><button class="sub sm" id="editReset" title="고른 범위와 설정을 모두 비우고 새 시험지를 시작해요">🆕 처음부터 새로</button></div>
+      <div class="fs"><div class="fh">① 누구에게 · 언제<span>반과 응시 기간을 정해요</span></div>
       <div class="grid">
         <div><label class="l">반</label><select id="eCls"></select></div>
         <div><label class="l">종류</label><select id="eKind"><option>월간평가</option><option>분기평가</option><option>주간평가</option><option>단어시험</option><option>듣기시험</option><option>반배정시험</option></select></div>
@@ -162,18 +186,21 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         <div style="grid-column:span 2"><label class="l">시험명</label><input id="eTitle" placeholder="자동으로 채워져요"></div>
       </div>
       <div class="grid" style="margin-top:12px">
-        <div><label class="l">출제 방식</label><div class="seg"><label><input type="radio" name="mode" value="fixed" checked>선생님 지정</label><label><input type="radio" name="mode" value="choice">학생 선택</label></div></div>
-        <div><label class="l">난이도</label><div class="seg"><label><input type="radio" name="lv" value="1">기본</label><label><input type="radio" name="lv" value="2" checked>표준</label><label><input type="radio" name="lv" value="3">심화</label></div></div>
-        <div><label class="l">문항 수</label><input id="eCount" type="number" min="1" max="100" value="20"></div>
-        <div><label class="l">제한시간(분, 0=없음)</label><input id="eMin" type="number" min="0" max="180" value="30"></div>
-      </div>
-      <div class="grid" style="margin-top:12px">
         <div><label class="l">응시 시작일</label><input id="eStart" type="date"></div>
         <div><label class="l">응시 마감일</label><input id="eEnd" type="date"></div>
         <div><label class="l">상태</label><select id="eStatus"><option>준비중</option><option>응시중</option><option>마감</option></select></div>
         <div><label class="l">&nbsp;</label><div class="row" style="height:40px"><label><input type="checkbox" id="eShow" checked> 제출 후 학생에게 점수·해설 보여 주기</label></div></div>
       </div>
+      </div>
+      <div class="fs"><div class="fh">② 어떻게 낼까<span>문제 수·난이도·시간</span></div>
+      <div class="grid">
+        <div><label class="l">출제 방식</label><div class="seg"><label><input type="radio" name="mode" value="fixed" checked>선생님 지정</label><label><input type="radio" name="mode" value="choice">학생 선택</label></div></div>
+        <div><label class="l">난이도</label><div class="seg"><label><input type="radio" name="lv" value="1">기본</label><label><input type="radio" name="lv" value="2" checked>표준</label><label><input type="radio" name="lv" value="3">심화</label></div></div>
+        <div><label class="l">문항 수</label><input id="eCount" type="number" min="5" max="100" value="20"></div>
+        <div><label class="l">제한시간(분, 0=없음)</label><input id="eMin" type="number" min="0" max="180" value="30"></div>
+      </div>
       <div class="hint" id="modeHint"></div>
+      </div>
       <div id="placeBox" style="display:none;margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px">
         <b>🎓 대상 학년</b> <span class="hint" style="margin:0">신입생이 등록한 학년의 시험이 맨 위에 「내 학년 시험」으로 나와요. 학년마다 시험지를 따로 만드세요.</span>
         <div id="gList" class="row" style="flex-wrap:wrap;gap:6px 14px;margin:8px 0 14px"></div>
@@ -183,24 +210,26 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       </div>
       <div id="vtBox" style="display:none;margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px">
         <b>📒 단어 문제 유형</b> <span class="hint" style="margin:0">고른 유형만 섞어서 내요. 한 단어는 한 번만 나와요.</span>
+        <div class="row" style="gap:6px;margin-top:8px"><button type="button" class="ghost" id="vtAll" style="padding:4px 10px;font-size:13px">모두 선택</button><button type="button" class="ghost" id="vtNone" style="padding:4px 10px;font-size:13px">모두 해제</button></div>
         <div id="vtList" class="row" style="flex-wrap:wrap;gap:6px 14px;margin-top:8px"></div>
+        <div id="vtSum" style="margin-top:8px;font-size:14px"></div>
       </div>
       <div id="listenHint" class="hint" style="display:none;margin-top:10px;padding:10px 12px;border:1px dashed #9BD3D0;border-radius:10px;background:var(--ac-soft)">🎧 <b>듣기시험</b>: 위에서 「듣기」 영역의 회차를 고르세요. 문제는 <b>원래 순서대로</b>(음성 번호와 같게) 나오고, 보기 순서도 섞지 않으며, AI 변형은 쓰지 않아요. 학생은 문제마다 ▶ 음성을 들으며 풀고, 제출하면 바로 채점돼 시험 기록에 「듣기시험」으로 쌓여요. 문항 수는 회차의 문항 수(예: 17~20)로 맞춰 주세요.</div>
-      <div id="aiBox" style="margin-top:12px;padding:10px 12px;border:1px dashed #C9B6E8;border-radius:10px;background:#FBF8FF">
-        <b>🧠 AI 활용 출제</b> <span class="hint" style="margin:0">기본은 선생님 자료의 문제를 그대로 내요.</span>
+      <div id="aiOptBox" style="margin-top:12px;padding:10px 12px;border:1px dashed #C9B6E8;border-radius:10px;background:#FBF8FF">
+        <b>🧠 AI 활용 출제</b> <span class="hint" style="margin:0">아무것도 안 바꾸면 선생님 자료의 문제를 그대로 내요.</span>
         <div class="grid" style="margin-top:8px">
           <div><label class="l">원문 문제 변형 (유사문항)</label><select id="aiVar"><option value="0">안 함 (원문 그대로)</option><option value="30">객관식의 30%를 변형</option><option value="50">객관식의 50%를 변형</option><option value="100">객관식 모두 변형</option></select></div>
           <div><label class="l">AI 새 문제 추가</label><select id="aiExtra"><option value="0">안 함</option><option value="10">전체의 10%</option><option value="20">전체의 20%</option><option value="30">전체의 30%</option><option value="50">전체의 50%</option></select></div>
         </div>
-        <div class="row" style="margin-top:8px"><label><input type="checkbox" id="aiFill" checked> 범위 안 문제가 모자라면 AI로 채우기</label></div>
-        <div class="hint" style="margin:4px 0 0"><b>변형</b>: 정답이 있는 원문 객관식을 같은 개념·같은 유형으로 문장·보기·정답 위치를 바꿔 새로 만들어요(학생이 문제를 외워서 맞히는 것 방지). <b>새 문제</b>: 고른 과의 강의 내용·본문으로 AI가 새로 출제해요. AI 문제는 미리보기에 🧠 표시가 붙고, 한 번 만든 문제는 노션 🧠 AI 보충 문항에 저장돼 다시 써요. <b>배포 전에 미리보기로 꼭 확인</b>하세요. (처음 미리보기는 AI가 만드느라 30초~1분 걸려요)</div>
+        <div class="row" style="margin-top:10px;padding-top:8px;border-top:1px dashed #DCCDF0"><label><input type="checkbox" id="aiFill" checked> 문항 수보다 문제가 모자랄 때만 AI가 채워 넣기</label><span class="hint" style="margin:0">(위 두 설정과 따로 작동해요)</span></div>
+        <details class="more"><summary>자세히 보기</summary><div class="hint" style="margin:4px 0 0"><b>변형</b>: 정답이 있는 원문 객관식을 같은 개념·같은 유형으로 문장·보기·정답 위치를 바꿔 새로 만들어요(학생이 문제를 외워서 맞히는 것 방지). <b>새 문제</b>: 고른 과의 강의 내용·본문으로 AI가 새로 출제해요. AI 문제는 미리보기에 🧠 표시가 붙고, 한 번 만든 문제는 노션 🧠 AI 보충 문항에 저장돼 다시 써요. <b>배포 전에 미리보기로 꼭 확인</b>하세요. (처음 미리보기는 AI가 만드느라 30초~1분 걸려요)</div></details>
       </div>
     </div>
 
     <div class="card">
       <h2 id="rangeTitle">출제 범위 (교재 → 챕터 → 과)</h2>
-      <div class="filters" id="areaF"></div>
-      <div class="filters" id="gradeF"></div>
+      <div class="fl"><span class="fn">영역</span><div class="filters" id="areaF"></div></div>
+      <div class="fl"><span class="fn">학년</span><div class="filters" id="gradeF"></div><span class="hint" style="margin:0">줄마다 하나씩 골라요</span></div>
       <input id="bkSearch" placeholder="교재·단원 이름 검색 (예: 현재완료, 동아윤)" style="margin-bottom:8px">
       <div class="books" id="books"></div>
       <div class="sumbar"><div class="row"><b id="selInfo">선택한 과 없음</b><button class="sub sm" id="clearSel">선택 지우기</button></div>
@@ -208,12 +237,12 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     </div>
 
     <div class="card" id="pvCard">
-      <div class="row"><button class="sub" id="pvBtn">👀 시험지 미리보기</button><button class="sub" id="fillBtn" style="display:none">🧠 문제 없는 과 AI로 채우기</button><button class="sub" id="reseed" style="display:none">🎲 문제 다시 뽑기</button><span class="hint" id="pvInfo" style="margin:0"></span></div>
+      <div class="row"><b>👀 시험지 미리보기</b><button class="sub" id="fillBtn" style="display:none">🧠 문제 없는 과 AI로 채우기</button><button class="sub" id="reseed" style="display:none">🎲 문제 다시 뽑기</button><span class="hint" id="pvInfo" style="margin:0"></span></div>
       <div id="pv"></div>
     </div>
 
-    <div class="card"><div class="row"><button id="saveBtn">💾 저장하기</button><button class="sub" id="cancelEdit">목록으로</button><span class="msg" id="saveMsg" style="margin:0"></span></div>
-      <div class="hint">저장할 때 상태를 <b>응시중</b>으로 두면 학생 화면에 바로 나타나요. 처음엔 <b>준비중</b>으로 저장하고 미리보기로 확인한 뒤 여는 걸 권해요.</div></div>
+    <div class="actbar"><div class="row"><button class="sub" id="pvBtn">👀 미리보기</button><button id="saveBtn">💾 저장하기</button><button class="sub" id="libSave">📦 보관함에 저장</button><button class="sub" id="cancelEdit">목록으로</button><span class="msg" id="saveMsg" style="margin:0"></span></div>
+      <div class="steps"><b>① 범위 고르기 → ② 👀 미리보기로 확인 → ③ 💾 저장</b><span class="x"> · 상태를 <b>응시중</b>으로 저장하면 학생 화면에 바로 나와요 (확인 전엔 <b>준비중</b> 권장)</span></div></div>
   </section>
 
   <!-- 📚 자료 올리기 -->
@@ -238,10 +267,32 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       </div>
       <datalist id="bookList"></datalist>
     </div>
+    <div class="card" id="qzCard">
+      <h2>🃏 Quizlet 단어 가져오기</h2>
+      <p class="hint" style="margin-top:0">Quizlet 세트의 단어·뜻을 복사해 붙여 넣으면 📒 단어장으로 바뀌어요. 저장하면 단어시험 출제·단어 게임에 바로 쓰여요. (Quizlet이 주소로 직접 가져오는 것을 막아 두어서 복사해 붙여 넣는 방식이에요)</p>
+      <details class="libf" open><summary>복사하는 방법 3가지</summary>
+        <div class="hint" style="margin:6px 0 0;line-height:1.75">
+          <b>① 내가 만든 세트</b> — Quizlet 웹사이트에서 세트 열기 → <b>⋯ (더 보기)</b> → <b>내보내기(Export)</b> → <b>텍스트 복사</b> → 아래 칸에 붙여넣기. (구분 기호는 기본값 그대로 두면 돼요)<br>
+          <b>② 다른 사람이 만든 세트</b> — 내보내기가 안 돼요. 아래 <b>📌 Quizlet 단어 복사</b> 버튼을 컴퓨터 브라우저의 <b>북마크바로 끌어다 놓고</b>(한 번만), Quizlet 세트 화면에서 그 북마크를 누르면 단어가 모두 복사돼요. → 아래 칸에 붙여넣기.<br>
+          <span style="display:inline-flex;gap:8px;align-items:center;margin:4px 0"><a id="qzBm" href="#" class="sm" style="display:inline-block;padding:6px 12px;border-radius:10px;background:#4255FF;color:#fff;font-weight:800;text-decoration:none;cursor:grab">📌 Quizlet 단어 복사</a><span>← 북마크바로 끌어다 놓기 (북마크바가 안 보이면 Ctrl+Shift+B)</span></span><br>
+          <b>③ 그래도 안 되면</b> — 세트 화면 아래쪽 「이 세트의 용어」 목록을 마우스로 끌어서 선택 → 복사(Ctrl+C) → 붙여넣기. 영어 줄·한글 줄이 번갈아 있어도 짝을 맞춰 읽어요.<br>
+          세트 화면에 단어가 다 안 보이면 맨 아래까지 내리거나 「더 보기」를 누른 뒤 복사하세요. 남이 만든 세트는 학원 수업 자료로만 쓰세요.
+        </div></details>
+      <textarea id="qzText" rows="8" style="margin-top:10px" placeholder="attract&#9;끌어당기다&#10;adapt&#9;적응하다&#10;quiet&#9;(형) 조용한&#10;&#10;또는  attract - 끌어당기다  /  attract, 끌어당기다  /  영어 줄·한글 줄 번갈아"></textarea>
+      <div class="grid" style="margin-top:8px">
+        <div><label class="l">교재(단어장 이름)</label><input id="qzBook" list="bookList" placeholder="예: 중1 필수 영단어"></div>
+        <div><label class="l">Day 이름 (첫 Day)</label><input id="qzDay" value="Day 01" placeholder="Day 01"></div>
+        <div><label class="l">Day 나누기</label><select id="qzPer"><option value="0">나누지 않음 (한 Day)</option><option value="20">20단어씩</option><option value="25">25단어씩</option><option value="30">30단어씩</option><option value="40">40단어씩</option><option value="50">50단어씩</option></select></div>
+        <div><label class="l">학년</label><select id="qzGrade"><option value="">고르지 않음</option><option>초등</option><option>중1</option><option>중2</option><option>중3</option><option>고등</option></select></div>
+      </div>
+      <div class="row" style="margin-top:8px"><button id="qzGo">🃏 단어장으로 읽기</button><span class="msg" id="qzMsg" style="margin:0"></span></div>
+      <p class="hint">「(n) 사과」「v. 끌다」「run (v)」처럼 붙은 품사는 품사 칸으로 옮겨요. 뜻 → 단어 순서로 만든 세트도 알아서 바꿔요. 같은 단어가 두 번 나오면 하나만 넣어요. 읽은 뒤 아래 카드에서 확인하고 <b>💾 단어장 저장</b>을 누르세요.</p>
+    </div>
     <div class="card" id="ctxCard">
-      <h2>🧠 문맥 5지선다 문제 만들기 (AI 예문)</h2>
-      <p class="hint" style="margin-top:0">단어마다 AI가 예문 한 문장을 만들고, 빈칸에 들어갈 단어를 <b>보기 5개 중에서 고르는 문제</b>를 저장해 둬요. AI가 한 번 더 검수해서 <b>정답이 둘 이상인 문제는 버려요</b>. 저장된 문제는 학생 <b>단어 게임의 「🧠 문맥 고르기」</b>와 <b>단어시험 출제(유형 「문맥 5지선다」)</b>에 쓰여요. 키보드 자동완성이 통하지 않는 유형이에요.</p>
-      <div class="row"><select id="ctxSel" style="width:auto;max-width:420px"><option value="">— 단어장(교재 또는 Day) 고르기 —</option></select><button id="ctxGo">🧠 만들기</button><span class="msg" id="ctxMsg" style="margin:0"></span></div>
+      <h2>🧠 AI 단어 문제 만들기 <span class="hint" style="margin:0;font-weight:500">문맥 5지선다 · 철자 고르기</span></h2>
+      <p class="hint" style="margin-top:0"><b>🔤 철자 고르기 (혼동 어휘)</b>: 우리말 뜻을 보고, 철자가 비슷한 단어 5개(예: adapt / adopt / adept / adult / admit) 중에서 정답 철자를 고르는 문제예요. 오답은 <b>중학생 수준을 넘지 않는 실제 단어</b>만 쓰고, AI가 한 번 더 검수해서 <b>그 뜻이 되는 보기가 둘 이상이거나 어려운 단어가 섞인 문제는 고치거나 버려요</b>. 단어시험 출제 유형 「철자 고르기」로 나와요.<br>
+        <b>🧠 문맥 5지선다</b>: 단어마다 AI가 예문 한 문장을 만들고, 빈칸에 들어갈 단어를 <b>보기 5개 중에서 고르는 문제</b>를 저장해 둬요. AI가 한 번 더 검수해서 <b>정답이 둘 이상인 문제는 버려요</b>. 저장된 문제는 학생 <b>단어 게임의 「🧠 문맥 고르기」</b>와 <b>단어시험 출제(유형 「문맥 5지선다」)</b>에 쓰여요. 키보드 자동완성이 통하지 않는 유형이에요.</p>
+      <div class="row"><select id="ctxVt" style="width:auto"><option value="spellmc">🔤 철자 고르기 (혼동 어휘)</option><option value="ctx">🧠 문맥 5지선다</option></select><select id="ctxSel" style="width:auto;max-width:420px"><option value="">— 단어장(교재 또는 Day) 고르기 —</option></select><button id="ctxGo">🧠 만들기</button><span class="msg" id="ctxMsg" style="margin:0"></span></div>
       <p class="hint">이미 만든 단어는 건너뛰어요. 단어 8개마다 20~40초쯤 걸려요. 만든 뒤 시험 출제 화면에서 문제를 훑어볼 수 있어요.</p>
     </div>
     <div class="card" id="drvCard">
@@ -451,14 +502,39 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   </section>
 
   <!-- 결과 -->
+  <section id="v-lib" style="display:none">
+    <div class="card">
+      <h2>📦 시험지 보관함 <span class="hint" style="margin:0;font-weight:500">모든 선생님이 함께 써요</span></h2>
+      <div class="hint" style="margin-top:0">미리 만들어 둔 시험지 틀이 <b>단어장(폴더)별로</b> 모여 있어요. 반만 골라서 바로 시험지를 만들 수 있어요.<br>
+        <b>📄 같은 문제로</b> = 저장할 때와 똑같은 문제 · <b>🎲 새로 뽑아서</b> = 같은 범위·유형·문항 수로 문제만 새로 뽑기 (재시험·다른 반용)<br>
+        넣는 법: <b>➕ 새 시험지</b>에서 범위·유형을 고르고 미리보기로 확인한 뒤, 아래 바의 <b>📦 보관함에 저장</b>을 누르세요.</div>
+      <div class="row" style="margin-top:10px"><input id="libQ" placeholder="이름·단어장·범위 검색 (예: 3연타, DAY 10)" style="flex:1;min-width:200px"><button class="sub" id="libReload">새로고침</button></div>
+      <div id="libMsg" class="msg"></div>
+      <div id="libList"></div>
+    </div>
+  </section>
+
   <section id="v-results" style="display:none">
-    <div class="card"><div class="row"><select id="rPaper" style="max-width:520px"></select><button class="sub" id="rLoad">불러오기</button><button class="sub" id="rPrint" style="display:none">🖨 간단 성적표 인쇄</button></div>
+    <div class="card"><div class="row"><select id="rCls" style="width:auto;max-width:180px" title="반별로 걸러 보기"></select><select id="rKind" style="width:auto;max-width:150px" title="종류별로 걸러 보기"></select><select id="rPaper" style="max-width:520px;flex:1;min-width:200px"></select><button class="sub" id="rLoad">불러오기</button><button class="sub" id="rPrint" style="display:none">🖨 간단 성적표 인쇄</button></div>
       <div class="repbox" id="rRep" style="display:none">
         <div class="row"><button id="rMake">📄 학생별 분석 리포트 만들기 (노션)</button><label><input type="checkbox" id="rForce"> 이미 만든 학생도 다시 만들기</label></div>
         <div class="hint">선생님의 「○월 월례고사 분석레포트」 양식 그대로, 학생마다 <b>평가 개요 → 총평 → 영역별 성적 → 문항별 오답 원인 → 학습 대책 → 복습 강의 링크 → 성적 추이</b>를 AI가 써서 노션 <b>📔 학습리포트 › 학생 학습레포트</b> 아래에 만들어요. 학생 1명에 20~40초 걸려요. 보내기 전에 노션에서 한 번 읽고 고쳐 주세요.</div>
         <div id="rProg"></div>
       </div>
       <div id="rBox"></div></div>
+    <div class="card" id="ktCard">
+      <h2>🗂 종류별 모아 보기 <span class="hint" style="margin:0;font-weight:500">한 반의 단어시험만 쭉, 월간평가만 쭉 — 날짜순으로</span></h2>
+      <div class="row">
+        <select id="ktCls" style="width:auto;max-width:180px" title="반"></select>
+        <select id="ktKind" style="width:auto" title="시험 종류"><option>단어시험</option><option>주간평가</option><option>월간평가</option><option>분기평가</option><option>듣기시험</option></select>
+        <select id="ktSpan" style="width:auto" title="기간"><option value="1">최근 1개월</option><option value="3" selected>최근 3개월</option><option value="6">최근 6개월</option><option value="12">최근 1년</option><option value="y">올해</option><option value="c">직접 고르기</option></select>
+        <span id="ktDates" style="display:none"><input type="date" id="ktFrom" style="width:auto"> ~ <input type="date" id="ktTo" style="width:auto"></span>
+        <button id="ktLoad">불러오기</button><button class="sub" id="ktCsv" style="display:none">⬇ 엑셀로 받기</button>
+        <label style="font-size:13.5px"><input type="checkbox" id="ktPct"> 100점 환산으로 보기</label>
+      </div>
+      <div class="hint">사이트에서 본 시험과 <b>📝 점수 직접 입력</b>으로 넣은 점수가 함께 나와요. 빈칸(·)은 안 본 시험이에요. 시험 제목에 마우스를 올리면 범위가 보여요.</div>
+      <div id="ktBox"></div>
+    </div>
   </section>
 
   <!-- 분기 리포트 -->
@@ -544,7 +620,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       $("bankInfo").textContent = "문제은행: 교재 " + j.catalog.length + "권 · " + units + "과 · 문항 " + total + "개" + (j.ai ? " · AI 켜짐(" + (j.ais || []).map(function (a) { return a.label; }).join("·") + ")" : " · AI 꺼짐");
       buildAiSel(j); pmBadge();
       fillClassSelects(); renderList(); buildPeriods(); buildQuarters(); buildBookFilters();
-      var h = (location.hash || "").slice(1); if (h === "hw") { hwOpen(); tab("hw"); } else if (h === "game") { gmLoad(); rkLoad(); tab("game"); } else if (h === "stu") { stOpen(); tab("stu"); } else if (h === "cert") { ctOpen(); tab("cert"); } else if (h === "pm") { pmOpen(); tab("pm"); } else if (/^(results|report|import)$/.test(h) || (h === "teachers" && j.me.master)) { if (h === "results") fillResultSelect(); if (h === "teachers") loadTeachers(); if (h === "import") mkFill(); tab(h); }
+      var h = (location.hash || "").slice(1); if (h === "hw") { hwOpen(); tab("hw"); } else if (h === "game") { gmLoad(); rkLoad(); tab("game"); } else if (h === "stu") { stOpen(); tab("stu"); } else if (h === "cert") { ctOpen(); tab("cert"); } else if (h === "pm") { pmOpen(); tab("pm"); } else if (h === "lib") { libLoad(); tab("lib"); } else if (/^(results|report|import)$/.test(h) || (h === "teachers" && j.me.master)) { if (h === "results") fillResultSelect(); if (h === "teachers") loadTeachers(); if (h === "import") mkFill(); tab(h); }
     });
   }
   $("logout").onclick = function () { lsSet("cm-teacher-code", ""); location.reload(); };
@@ -1375,13 +1451,13 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   // ---------- 탭 ----------
   function tab(name) {
     Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) { t.classList.toggle("on", t.getAttribute("data-tab") === name); });
-    ["list", "edit", "results", "report", "teachers", "import", "hw", "game", "stu", "cert", "pm"].forEach(function (n) { $("v-" + n).style.display = n === name ? "" : "none"; });
+    ["list", "edit", "lib", "results", "report", "teachers", "import", "hw", "game", "stu", "cert", "pm"].forEach(function (n) { $("v-" + n).style.display = n === name ? "" : "none"; });
     $("contactCard").style.display = name === "results" || name === "report" ? "" : "none";
     try { history.replaceState(null, "", "#" + name); } catch (e) {}
     window.scrollTo(0, 0);
   }
   Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) {
-    t.onclick = function () { var n = t.getAttribute("data-tab"); if (n === "edit") newPaper(); if (n === "import") mkFill(); if (n === "results") fillResultSelect(); if (n === "teachers") loadTeachers(); if (n === "hw") hwOpen(); if (n === "game") { gmLoad(); rkLoad(); } if (n === "stu") stOpen(); if (n === "cert") ctOpen(); if (n === "pm") pmOpen(); tab(n); };
+    t.onclick = function () { var n = t.getAttribute("data-tab"); if (n === "edit") { if (EDIT_DONE || !editBusy()) newPaper(); } if (n === "lib") libLoad(); if (n === "import") mkFill(); if (n === "results") fillResultSelect(); if (n === "teachers") loadTeachers(); if (n === "hw") hwOpen(); if (n === "game") { gmLoad(); rkLoad(); } if (n === "stu") stOpen(); if (n === "cert") ctOpen(); if (n === "pm") pmOpen(); tab(n); };
   });
 
   function fillClassSelects() {
@@ -1405,12 +1481,14 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
           '<br>응시 <b>' + (p.takers || 0) + "명</b>" + (p.avg != null ? " · 평균 <b>" + round1(p.avg) + "점</b>" : "") + "</div>" +
           '<div class="copy">학생 링크: ' + esc(studentLink(p)) + "</div></div>" +
           '<div class="row">' + (p.status !== "응시중" ? '<button class="sm" data-st="응시중" data-id="' + p.id + '">▶ 응시 열기</button>' : '<button class="sm warn" data-st="마감" data-id="' + p.id + '">■ 마감</button>') +
-          '<button class="sm sub" data-edit="' + p.id + '">수정</button><button class="sm sub" data-res="' + p.id + '">결과</button><button class="sm sub" data-copy="' + p.id + '">링크 복사</button>' +
+          (mayEdit(p) ? '<button class="sm sub" data-edit="' + p.id + '">수정</button>' : "") + '<button class="sm sub" data-dup="' + p.id + '" title="원본은 그대로 두고 똑같은 시험지를 하나 더 만들어요">📄 복제</button><button class="sm sub" data-res="' + p.id + '">결과</button><button class="sm sub" data-copy="' + p.id + '">링크 복사</button>' +
+          (mayEdit(p) ? '<button class="sm warn" data-pdel="' + p.id + '" title="시험지 지우기">🗑</button>' : "") +
           (p.url ? '<a class="sm" href="' + esc(p.url) + '" target="_blank" style="font-size:13px;color:#0A5F61">노션</a>' : "") + "</div></div>";
       }).join("") + "</div>";
     }).join("");
     bindList();
   }
+  function mayEdit(p) { return !!(DATA.me.master || !p.teacher || p.teacher === DATA.me.name); } // 만든 선생님과 관리자만 고치고 지워요. 다른 선생님은 📄 복제해서 써요.
   function bindList() {
     var box = $("paperList");
     Array.prototype.forEach.call(box.querySelectorAll("[data-st]"), function (b) {
@@ -1421,12 +1499,25 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         post({ action: "t_status", id: id, status: st }).then(function (j) {
           if (!j.ok) { alert(j.msg || "바꾸지 못했어요."); b.disabled = false; return; }
           paperById(id).status = st; renderList();
-          if (st === "마감" && confirm("마감했어요. 지금 학생별 분석 리포트를 노션에 만들까요?")) { fillResultSelect(); $("rPaper").value = id; tab("results"); loadResults(function () { $("rMake").click(); }); }
+          if (st === "마감" && confirm("마감했어요. 지금 학생별 분석 리포트를 노션에 만들까요?")) { fillResultSelect(id); tab("results"); loadResults(function () { $("rMake").click(); }); }
         });
       };
     });
     Array.prototype.forEach.call(box.querySelectorAll("[data-edit]"), function (b) { b.onclick = function () { editPaper(paperById(b.getAttribute("data-edit"))); }; });
-    Array.prototype.forEach.call(box.querySelectorAll("[data-res]"), function (b) { b.onclick = function () { fillResultSelect(); $("rPaper").value = b.getAttribute("data-res"); tab("results"); loadResults(); }; });
+    Array.prototype.forEach.call(box.querySelectorAll("[data-dup]"), function (b) { b.onclick = function () { dupPaper(paperById(b.getAttribute("data-dup"))); }; });
+    Array.prototype.forEach.call(box.querySelectorAll("[data-pdel]"), function (b) {
+      b.onclick = function () {
+        var p = paperById(b.getAttribute("data-pdel")); if (!p) return;
+        if (p.status === "응시중") { alert("응시중인 시험지는 먼저 ■ 마감을 누른 뒤에 지울 수 있어요."); return; }
+        if (!confirm("「" + p.title + "」 시험지를 지울까요?" + (p.takers ? "\n\n이미 " + p.takers + "명이 응시했어요. 학생들의 점수 기록은 노션 시험 기록에 그대로 남지만, 이 화면의 📊 응시 결과에서는 더 볼 수 없어요." : "") + "\n(노션 휴지통에서 30일 안에 되살릴 수 있어요)")) return;
+        b.disabled = true;
+        post({ action: "t_delete", id: p.id }).then(function (j) {
+          if (!j.ok) { alert(j.msg || "지우지 못했어요."); b.disabled = false; return; }
+          DATA.papers = DATA.papers.filter(function (x) { return x !== p; }); if (EDIT === p) { EDIT = null; EDIT_DONE = true; $("tabEdit").textContent = "➕ 새 시험지"; } renderList();
+        });
+      };
+    });
+    Array.prototype.forEach.call(box.querySelectorAll("[data-res]"), function (b) { b.onclick = function () { fillResultSelect(b.getAttribute("data-res")); tab("results"); loadResults(); }; });
     Array.prototype.forEach.call(box.querySelectorAll("[data-copy]"), function (b) {
       b.onclick = function () { var t = studentLink(paperById(b.getAttribute("data-copy"))); (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { b.textContent = "복사됨 ✓"; }, function () { prompt("링크를 복사하세요", t); }); };
     });
@@ -1436,11 +1527,18 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   $("reload").onclick = function () { post({ action: "t_init" }).then(function (j) { if (j.ok) { DATA = j; renderList(); } }); };
 
   // ---------- 📒 단어 문제 유형 ----------
-  var VT = null; // null = 모든 유형
+  var VT = null, VT_FRESH = true; // null = 모든 유형, [] = 아직 안 고름(단어시험은 꼭 골라야 저장돼요)
+  function vtLabel(id) { var t = (DATA.vtypes || []).filter(function (x) { return x.id === id; })[0]; return t ? t.label.replace(/\s*\(.*\)$/, "") : id; }
+  function vtNeed() { return $("vtBox").style.display !== "none" && VT && !VT.length; }
+  function vtSum() {
+    var on = VT ? VT : (DATA.vtypes || []).map(function (t) { return t.id; });
+    $("vtSum").innerHTML = on.length ? "✅ 이 시험에 나올 유형: <b>" + on.map(function (id) { return esc(vtLabel(id)); }).join(", ") + "</b>" : '<span class="er">⚠️ 문제 유형을 하나 이상 체크해 주세요.</span>';
+  }
   function vocabSelected() { var ids = SEL; return DATA.catalog.some(function (b) { return b.chapters.some(function (c) { return c.units.some(function (u) { return u.v && (ids[u.id] || SELB[b.id]); }); }); }); }
   function vtUi() {
-    $("aiBox").style.display = /단어시험|듣기시험/.test($("eKind").value) ? "none" : ""; $("listenHint").style.display = $("eKind").value === "듣기시험" ? "" : "none"; if ($("eKind").value === "듣기시험" && F.area !== "듣기" && DATA.catalog.some(function (b) { return b.area === "듣기"; })) { F.area = "듣기"; buildBookFilters(); renderBooks(); }
+    $("aiOptBox").style.display = /단어시험|듣기시험/.test($("eKind").value) ? "none" : ""; $("listenHint").style.display = $("eKind").value === "듣기시험" ? "" : "none"; if ($("eKind").value === "듣기시험" && F.area !== "듣기" && DATA.catalog.some(function (b) { return b.area === "듣기"; })) { F.area = "듣기"; buildBookFilters(); renderBooks(); }
     var show = $("eKind").value === "단어시험" || vocabSelected(); $("vtBox").style.display = show ? "" : "none"; if (!show) return;
+    if (VT_FRESH && !EDIT && $("eKind").value === "단어시험") { VT = []; VT_FRESH = false; } // 새 단어시험은 빈 칸에서 시작: 원하는 유형만 체크
     var cnt = {}; DATA.catalog.forEach(function (b) { b.chapters.forEach(function (c) { c.units.forEach(function (u) { if (u.v && (SEL[u.id] || SELB[b.id])) Object.keys(u.v).forEach(function (t) { cnt[t] = (cnt[t] || 0) + u.v[t]; }); }); }); });
     var any = Object.keys(cnt).length;
     $("vtList").innerHTML = (DATA.vtypes || []).map(function (t) {
@@ -1449,8 +1547,11 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     }).join("") + (any ? "" : '<span class="hint" style="margin:0">아래에서 📒 단어장 과를 고르면 유형마다 만들 수 있는 문제 수가 보여요.</span>');
     Array.prototype.forEach.call($("vtList").querySelectorAll("[data-vt]"), function (c) { c.onchange = function () {
       VT = Array.prototype.filter.call($("vtList").querySelectorAll("[data-vt]"), function (x) { return x.checked; }).map(function (x) { return x.getAttribute("data-vt"); });
-      if (!VT.length) { c.checked = true; VT = [c.getAttribute("data-vt")]; } if (VT.length === (DATA.vtypes || []).length) VT = null;
+      if (VT.length === (DATA.vtypes || []).length) VT = null; VT_FRESH = false; vtSum();
     }; });
+    $("vtAll").onclick = function () { VT = null; VT_FRESH = false; vtUi(); };
+    $("vtNone").onclick = function () { VT = []; VT_FRESH = false; vtUi(); };
+    vtSum();
   }
   function vtSend() { return VT ? VT.slice() : []; }
   var PLACE_CLS = "신입 반배정";
@@ -1566,8 +1667,12 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
 
   // ---------- 새로 만들기 / 수정 ----------
   function setRadio(name, v) { var r = document.querySelector('input[name=' + name + '][value="' + v + '"]'); if (r) r.checked = true; }
+  // 다른 탭을 보고 돌아와도 만들던 시험지가 그대로 있어요. 저장을 마쳤거나 [🆕 처음부터]를 누르면 비워요.
+  var EDIT_DONE = true;
+  function editBusy() { return !!(EDIT || LIB_USE || Object.keys(SEL).length || Object.keys(SELB).length); }
   function newPaper() {
-    EDIT = null; SEL = {}; SELB = {}; EXCL = []; RESEED = false; titleTouched = false; VT = null;
+    EDIT_DONE = false;
+    EDIT = null; SEL = {}; SELB = {}; EXCL = []; RESEED = false; titleTouched = false; VT = null; VT_FRESH = true; PV_SEED = ""; LIB_USE = null;
     $("editTitle").textContent = "새 시험지"; $("tabEdit").textContent = "➕ 새 시험지";
     setRadio("mode", "fixed"); setRadio("lv", "2"); $("eCount").value = 20; $("eMin").value = 30; $("eStatus").value = "준비중"; $("eShow").checked = true;
     $("eKind").value = "월간평가"; $("eStart").value = kst(); $("eEnd").value = kst(Date.now() + 6 * 864e5);
@@ -1575,6 +1680,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     $("ePlace").value = ""; PG = []; buildPeriods(); autoTitle(); modeUi(); buildBookFilters(); renderBooks(); vtUi(); placeUi(); $("pv").innerHTML = ""; $("pvInfo").textContent = ""; $("fillBtn").style.display = "none"; $("saveMsg").textContent = "";
   }
   function editPaper(p) {
+    if (!mayEdit(p)) { alert((p.teacher || "다른 선생님") + "이(가) 만든 시험지예요. 📄 복제해서 써 주세요."); return; }
     newPaper(); EDIT = p; titleTouched = true;
     $("editTitle").textContent = "시험지 수정 · " + p.title; $("tabEdit").textContent = "✏️ 수정 중";
     $("eCls").value = p.cls; $("eKind").value = p.kind; buildPeriods(); VT = p.cfg.vtypes && p.cfg.vtypes.length ? p.cfg.vtypes.slice() : null;
@@ -1587,8 +1693,31 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     $("ePlace").value = (p.cfg && p.cfg.place) || ""; PG = (p.cfg && p.cfg.grades) || []; modeUi(); renderBooks(); vtUi(); placeUi(); tab("edit");
     if (p.takers) $("saveMsg").innerHTML = '<span class="er">⚠ 이미 ' + p.takers + "명이 응시했어요. 범위·문항을 바꾸면 학생마다 시험지가 달라질 수 있어요.</span>";
   }
+  function actbarH() { var a = document.querySelector(".actbar"); if (a) document.documentElement.style.setProperty("--abh", a.offsetHeight + "px"); }
+  window.addEventListener("resize", actbarH); if (window.ResizeObserver) new ResizeObserver(actbarH).observe(document.querySelector(".actbar"));
+  // 📄 복제: 원본은 그대로 두고, 같은 범위·설정·문제로 새 시험지를 만들어요 (이름·반·날짜만 바꿔 저장)
+  function dupPaper(p) {
+    if (!p) return;
+    if (editBusy() && !EDIT_DONE && !confirm("지금 만들던 시험지 내용을 비우고 「" + p.title + "」을(를) 복제할까요?")) return;
+    newPaper(); var c = p.cfg || {};
+    $("eKind").value = p.kind; buildPeriods();
+    if (Array.prototype.some.call($("eCls").options, function (o) { return o.value === p.cls; })) $("eCls").value = p.cls;
+    VT = c.vtypes && c.vtypes.length ? c.vtypes.slice() : null; VT_FRESH = false;
+    setRadio("mode", p.mode); setRadio("lv", String(["기본", "표준", "심화"].indexOf(p.level) + 1)); $("eCount").value = p.count; $("eMin").value = p.minutes; $("eShow").checked = !!p.show;
+    (c.units || []).forEach(function (u) { SEL[u] = 1; }); (c.books || []).forEach(function (b) { SELB[b] = 1; }); EXCL = (c.exclude || []).slice();
+    var ai = c.ai || {}; $("aiVar").value = String(ai.variant || 0); $("aiExtra").value = String(ai.extra || 0); $("aiFill").checked = ai.fill !== false;
+    $("ePlace").value = c.place || ""; PG = (c.grades || []).slice();
+    PV_SEED = String(c.seed || p.id).replace(/[^\w-]/g, ""); // 원본과 같은 문제
+    $("eTitle").value = p.title + " (복제)"; titleTouched = true;
+    $("editTitle").textContent = "새 시험지 · 📄 " + p.title + " 복제";
+    modeUi(); renderBooks(); vtUi(); placeUi(); tab("edit");
+    $("saveMsg").innerHTML = '<span class="ok">📄 복제했어요. 원본은 그대로예요. <b>시험명</b>을 바꾸고 반·날짜를 정한 뒤 저장하세요.</span>';
+    $("eTitle").focus(); $("eTitle").select();
+  }
   $("cancelEdit").onclick = function () { tab("list"); };
+  $("editReset").onclick = function () { if (editBusy() && !confirm("지금 만들던 내용을 비우고 새 시험지를 시작할까요?")) return; newPaper(); window.scrollTo(0, 0); };
 
+  function countOk() { var n = +$("eCount").value; return n >= 5 && n <= 100 && Math.floor(n) === n; }
   function aiSend() { return { fill: $("aiFill").checked, variant: +$("aiVar").value, extra: +$("aiExtra").value }; }
   // ---------- 미리보기 ----------
   var PV_SEED = "";
@@ -1598,10 +1727,12 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       DATA.catalog.forEach(function (b) { if (SELB[b.id]) b.chapters.forEach(function (c) { c.units.forEach(function (u) { if (units.length < 40) units.push(u.id); }); }); });
     }
     if (!units.length) { $("pvInfo").textContent = "과를 먼저 골라 주세요."; return; }
+    if (vtNeed()) { $("pvInfo").innerHTML = '<span class="er">📒 단어 문제 유형을 하나 이상 체크해 주세요.</span>'; return; }
+    if (!countOk()) { $("pvInfo").innerHTML = '<span class="er">문항 수는 5~100 사이로 넣어 주세요.</span>'; return; }
     $("pvInfo").textContent = "만드는 중…"; $("pvBtn").disabled = true;
     var seed = EDIT && !RESEED ? (EDIT.cfg.seed || EDIT.id) : (PV_SEED = PV_SEED || Math.random().toString(36).slice(2, 10));
     var aiS = aiSend(); if (aiS.variant || aiS.extra) $("pvInfo").textContent = "🧠 AI가 문제를 만드는 중… (처음엔 30초~1분 걸려요)";
-    post({ action: "t_preview", kind: $("eKind").value, units: units.slice(0, 300), count: +$("eCount").value, level: level(), exclude: EXCL, seed: seed, vtypes: vtSend(), mode: mode(), ai: aiS }).then(function (j) {
+    post({ action: "t_preview", kind: $("eKind").value, units: units.slice(0, 300), count: +$("eCount").value, level: level(), exclude: EXCL, seed: seed, vtypes: vtSend(), mode: mode(), aiOpt: aiS }).then(function (j) {
       $("pvBtn").disabled = false;
       if (!j.ok) { $("pvInfo").textContent = j.msg || "미리보기를 만들지 못했어요."; return; }
       var empty = j.stats.filter(function (s) { return !s.bank && !s.ai; });
@@ -1628,7 +1759,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       var un = $("unex"); if (un) un.onclick = function (e) { e.preventDefault(); EXCL = []; preview(); };
     });
   }
-  $("pvBtn").onclick = preview;
+  $("pvBtn").onclick = function () { preview(); $("pvCard").scrollIntoView({ behavior: "smooth", block: "start" }); };
   $("reseed").onclick = function () { RESEED = true; PV_SEED = Math.random().toString(36).slice(2, 10); preview(); };
   function fillAi(units) {
     var b = $("fillBtn"); b.disabled = true; var done = 0, made = 0;
@@ -1642,11 +1773,85 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     })();
   }
 
+  // ---------- 📦 시험지 보관함 ----------
+  var LIB = [], LIB_USE = null;
+  var lvName = ["", "기본", "표준", "심화"];
+  function libLoad() {
+    $("libMsg").textContent = "불러오는 중…";
+    post({ action: "t_lib_list" }).then(function (j) {
+      if (!j.ok) { $("libMsg").innerHTML = '<span class="er">' + esc(j.msg || "보관함을 불러오지 못했어요.") + "</span>"; LIB = []; libRender(); return; }
+      LIB = j.list || []; $("libMsg").textContent = LIB.length ? "" : "아직 보관함이 비어 있어요. ➕ 새 시험지에서 만들고 📦 보관함에 저장을 눌러 보세요."; libRender();
+    });
+  }
+  function libRender() {
+    var q = ($("libQ").value || "").trim().toLowerCase(), groups = {}, order = [];
+    LIB.filter(function (t) { return !q || (t.name + " " + t.book + " " + t.range + " " + t.memo + " " + t.by).toLowerCase().indexOf(q) >= 0; }).forEach(function (t) {
+      if (!groups[t.book]) { groups[t.book] = []; order.push(t.book); } groups[t.book].push(t);
+    });
+    if (!order.length) { $("libList").innerHTML = LIB.length ? '<div class="hint">검색 결과가 없어요.</div>' : ""; return; }
+    $("libList").innerHTML = order.map(function (bk) {
+      return '<details class="libf" open><summary>📒 ' + esc(bk) + ' <span class="pill">' + groups[bk].length + "개</span></summary>" + groups[bk].map(function (t) {
+        var vts = (t.cfg.vtypes || []).length ? (t.cfg.vtypes || []).map(vtLabel).join(", ") : (t.kind === "단어시험" ? "모든 유형" : "");
+        var mine = DATA.me.master || !t.by || t.by === DATA.me.name;
+        return '<div class="paper"><div class="b"><div class="t">' + esc(t.name) + ' <span class="pill v">' + esc(t.kind) + "</span></div>" +
+          '<div class="m">' + t.count + "문항 · " + esc(t.level) + (t.minutes ? " · " + t.minutes + "분" : "") + (vts ? " · " + esc(vts) : "") + "</div>" +
+          '<div class="m">' + esc(t.range) + "</div>" +
+          '<div class="m">👩‍🏫 ' + esc(t.by || "-") + (t.created ? " · " + esc(t.created) : "") + " · " + t.used + "번 씀" + (t.memo ? " · 📝 " + esc(t.memo) : "") + (t.missing ? ' · <span class="er">문제은행에 없는 과 ' + t.missing + "개</span>" : "") + "</div></div>" +
+          '<div class="row"><button class="sm" data-use="' + t.id + '" data-same="1">📄 같은 문제로</button><button class="sm sub" data-use="' + t.id + '">🎲 새로 뽑아서</button>' + (mine ? '<button class="sm warn" data-del="' + t.id + '">🗑</button>' : "") + "</div></div>";
+      }).join("") + "</details>";
+    }).join("");
+    Array.prototype.forEach.call($("libList").querySelectorAll("[data-use]"), function (b) { b.onclick = function () { libUse(LIB.filter(function (t) { return t.id === b.getAttribute("data-use"); })[0], !!b.getAttribute("data-same")); }; });
+    Array.prototype.forEach.call($("libList").querySelectorAll("[data-del]"), function (b) { b.onclick = function () {
+      var t = LIB.filter(function (x) { return x.id === b.getAttribute("data-del"); })[0]; if (!t || !confirm("「" + t.name + "」을(를) 보관함에서 지울까요?\n(이 틀로 이미 만든 시험지는 그대로 남아요)")) return;
+      b.disabled = true; post({ action: "t_lib_del", id: t.id }).then(function (j) { if (!j.ok) { alert(j.msg || "지우지 못했어요."); b.disabled = false; return; } LIB = LIB.filter(function (x) { return x !== t; }); libRender(); });
+    }; });
+  }
+  $("libQ").oninput = libRender; $("libReload").onclick = libLoad;
+  // 틀 → 새 시험지 화면에 채우기
+  function libUse(t, same) {
+    if (!t) return;
+    newPaper(); var c = t.cfg || {};
+    $("eKind").value = t.kind; buildPeriods();
+    setRadio("mode", "fixed"); setRadio("lv", String(c.level || 2)); $("eCount").value = c.count || t.count; $("eMin").value = c.minutes != null ? c.minutes : t.minutes;
+    (c.units || []).forEach(function (u) { SEL[u] = 1; });
+    VT = c.vtypes && c.vtypes.length ? c.vtypes.slice() : null; VT_FRESH = false;
+    var ai = c.ai || {}; $("aiVar").value = String(ai.variant || 0); $("aiExtra").value = String(ai.extra || 0); $("aiFill").checked = ai.fill !== false;
+    EXCL = same ? (c.exclude || []).slice() : [];
+    PV_SEED = same && c.seed ? c.seed : Math.random().toString(36).slice(2, 10);
+    LIB_USE = { id: t.id, by: t.by, name: t.name, same: same };
+    $("eTitle").value = t.name; titleTouched = true;
+    $("editTitle").textContent = "새 시험지 · 📦 " + t.name;
+    modeUi(); renderBooks(); vtUi(); placeUi(); tab("edit");
+    $("saveMsg").innerHTML = '<span class="ok">📦 「' + esc(t.name) + "」을(를) " + (same ? "같은 문제로" : "문제를 새로 뽑아서") + " 불러왔어요. ① 반·날짜를 고르고 저장하세요.</span>";
+    preview();
+  }
+  $("libSave").onclick = function () {
+    if (mode() !== "fixed") { alert("보관함에는 「선생님 지정」 시험지만 넣을 수 있어요."); return; }
+    var units = Object.keys(SEL); if (!units.length) { alert("출제할 과를 먼저 골라 주세요."); return; }
+    if (vtNeed()) { alert("📒 단어 문제 유형을 하나 이상 체크해 주세요."); return; }
+    var seed = EDIT && !RESEED ? (EDIT.cfg.seed || EDIT.id) : (PV_SEED = PV_SEED || Math.random().toString(36).slice(2, 10));
+    var base = ($("eTitle").value || "").replace(/\s*·\s*[^·]*반\s*$/, "").trim();
+    var id = null;
+    if (LIB_USE && (DATA.me.master || !LIB_USE.by || LIB_USE.by === DATA.me.name) && confirm("불러온 틀 「" + LIB_USE.name + "」을(를) 지금 내용으로 덮어쓸까요?\n(취소를 누르면 새 틀로 따로 저장해요)")) { id = LIB_USE.id; base = LIB_USE.name; }
+    var name = prompt("보관함에 넣을 이름 (예: 3연타 DAY 9~10 뜻 고르기 40문항)", base); if (name == null) return; name = name.trim(); if (!name) return;
+    var memo = prompt("다른 선생님께 남길 메모 (없으면 비워 두세요)", "") || "";
+    $("libSave").disabled = true; $("saveMsg").textContent = "보관함에 저장하는 중…";
+    post({ action: "t_lib_save", item: { id: id, name: name, memo: memo, kind: $("eKind").value, units: units, count: +$("eCount").value, minutes: +$("eMin").value, level: level(), vtypes: vtSend(), exclude: EXCL, seed: seed, ai: aiSend() } }).then(function (j) {
+      $("libSave").disabled = false;
+      if (!j.ok) { $("saveMsg").innerHTML = '<span class="er">' + esc(j.msg || "보관함에 저장하지 못했어요.") + "</span>"; return; }
+      LIB_USE = { id: j.item.id, by: j.item.by, name: j.item.name, same: true };
+      $("saveMsg").innerHTML = '<span class="ok">📦 보관함에 저장했어요 · 「' + esc(j.item.book) + "」 폴더</span>";
+    });
+  };
+
   // ---------- 저장 ----------
   $("saveBtn").onclick = function () {
     var m = mode(), units = Object.keys(SEL), books = Object.keys(SELB);
     if (m === "fixed" && !units.length) { $("saveMsg").innerHTML = '<span class="er">출제할 과를 골라 주세요.</span>'; return; }
     if (m === "choice" && !units.length && !books.length) { $("saveMsg").innerHTML = '<span class="er">학생이 고를 교재를 골라 주세요.</span>'; return; }
+    if (vtNeed()) { $("saveMsg").innerHTML = '<span class="er">📒 단어 문제 유형을 하나 이상 체크해 주세요.</span>'; $("vtBox").scrollIntoView({ block: "center" }); return; }
+    if (!countOk()) { $("saveMsg").innerHTML = '<span class="er">문항 수는 5~100 사이로 넣어 주세요.</span>'; $("eCount").focus(); return; }
+    if ($("eStart").value && $("eEnd").value && $("eEnd").value < $("eStart").value) { $("saveMsg").innerHTML = '<span class="er">응시 마감일이 시작일보다 빨라요. 날짜를 확인해 주세요.</span>'; $("eEnd").focus(); return; }
     var paper = { id: EDIT && EDIT.id, title: $("eTitle").value.trim(), cls: $("eCls").value, kind: $("eKind").value, period: $("ePeriod").value, status: $("eStatus").value, mode: m, level: level(),
       count: +$("eCount").value, minutes: +$("eMin").value, start: $("eStart").value, end: $("eEnd").value, show: $("eShow").checked, units: units, books: books, exclude: EXCL, reseed: RESEED, vtypes: vtSend(), ai: aiSend(), place: $("ePlace").value.trim(), grades: $("eKind").value === "반배정시험" ? PG.slice() : [] };
     if (!paper.title) { autoTitle(); paper.title = $("eTitle").value; }
@@ -1654,12 +1859,13 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     $("saveBtn").disabled = true; $("saveMsg").textContent = "저장하는 중…";
     // 미리보기에서 정한 씨앗을 그대로 쓰도록: 새 시험지는 미리보기 씨앗을 함께 보냄
     if (!EDIT && PV_SEED) paper.seed = PV_SEED;
+    if (!EDIT && LIB_USE) paper.libId = LIB_USE.id;
     post({ action: "t_save", paper: paper }).then(function (j) {
       $("saveBtn").disabled = false;
       if (!j.ok) { $("saveMsg").innerHTML = '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; return; }
       var i = DATA.papers.findIndex(function (p) { return p.id === j.paper.id; });
       if (i >= 0) DATA.papers[i] = Object.assign(DATA.papers[i], j.paper); else DATA.papers.unshift(j.paper);
-      $("saveMsg").innerHTML = '<span class="ok">저장했어요 ✓</span>'; EDIT = paperById(j.paper.id); RESEED = false;
+      $("saveMsg").innerHTML = '<span class="ok">저장했어요 ✓</span>'; EDIT = paperById(j.paper.id); RESEED = false; EDIT_DONE = true; $("tabEdit").textContent = "➕ 새 시험지";
       setTimeout(function () { renderList(); tab("list"); }, 700);
     });
   };
@@ -1708,44 +1914,76 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   function blankQ(prev) { return { no: "", type: prev ? prev.type : "mc", lv: prev ? prev.lv : 2, q: prev && prev.type !== "short" ? prev.q : "", sub: "", opts: [], ans: -1, anss: [], answer: "", frame: "", words: [], exp: "", warn: [] }; }
   function mkMeta() { var last = lsGet("cm-mk-book"); return { book: last || "", chapter: "", unit: "", area: "문법", grade: "", file: "✍️ 직접 입력" }; }
   function mkAdd(unit) { IMP.push(unit); renderImport(); var cards = $("impUnits").querySelectorAll(".card[data-u]"), c = cards[cards.length - 1]; if (c) { c.scrollIntoView({ behavior: "smooth", block: "start" }); var b = c.querySelector('[data-m="book"]'); if (b && !b.value) b.focus(); } }
+  // ---------- 🃏 Quizlet 붙여넣기 ----------
+  (function () {
+    var bm = "(function(){if(!/quizlet\\./.test(location.host)){alert('Quizlet 세트 화면에서 눌러 주세요.');return;}" +
+      "function c(e){return(e.innerText||e.textContent||'').replace(/\\t/g,' ').replace(/\\s*\\n+\\s*/g,' | ').trim();}" +
+      "var out=[],seen={};function add(a,b){a=c(a);b=c(b);if(!a||!b)return;var k=a+'\\t'+b;if(seen[k])return;seen[k]=1;out.push(k);}" +
+      "document.querySelectorAll('.SetPageTerms-term').forEach(function(li){var x=li.querySelectorAll('.TermText');if(x.length>=2)add(x[0],x[1]);});" +
+      "if(!out.length){var t=document.querySelectorAll('[class*=TermText]');for(var i=0;i+1<t.length;i+=2)add(t[i],t[i+1]);}" +
+      "if(!out.length){alert('단어를 찾지 못했어요. 세트 화면을 맨 아래까지 내린 뒤 다시 눌러 주세요. 그래도 안 되면 단어 목록을 마우스로 끌어서 복사해 주세요.');return;}" +
+      "var s=out.join('\\n');function ok(){alert(out.length+'개 단어를 복사했어요. 청명학원 자료 올리기 → 🃏 Quizlet 칸에 붙여 넣으세요.');}" +
+      "function fb(){var a=document.createElement('textarea');a.value=s;document.body.appendChild(a);a.select();var r=false;try{r=document.execCommand('copy');}catch(e){}a.remove();if(r)ok();else prompt('아래 글을 모두 선택해 복사해 주세요 (Ctrl+A, Ctrl+C)',s);}" +
+      "if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(s).then(ok,fb);else fb();})()";
+    var a = $("qzBm"); a.href = "javascript:" + encodeURIComponent(bm);
+    a.onclick = function (e) { e.preventDefault(); alert("이 버튼은 누르는 게 아니라 브라우저 북마크바로 끌어다 놓는 버튼이에요.\n북마크바에 놓은 뒤, Quizlet 세트 화면에서 그 북마크를 누르세요."); };
+    $("qzBook").value = lsGet("cm-qz-book");
+    $("qzGo").onclick = function () {
+      var P = window.ImportParser, text = $("qzText").value, m = $("qzMsg");
+      if (!text.trim()) { m.innerHTML = '<span class="er">붙여 넣은 글이 없어요.</span>'; return; }
+      var book = $("qzBook").value.trim(); if (!book) { m.innerHTML = '<span class="er">교재(단어장 이름)를 써 주세요.</span>'; $("qzBook").focus(); return; }
+      var r = P.quizletUnits(text, { book: book, day: $("qzDay").value, per: +$("qzPer").value, grade: $("qzGrade").value });
+      if (!r.words) { m.innerHTML = '<span class="er">단어·뜻 짝을 찾지 못했어요.</span> 한 줄에 「단어 [탭] 뜻」, 또는 영어 줄 다음 한글 줄로 되어 있는지 확인해 주세요.'; return; }
+      lsSet("cm-qz-book", book);
+      var n0 = IMP.length; IMP = IMP.concat(r.units); renderImport();
+      var c = $("impUnits").querySelectorAll('.card[data-u="' + n0 + '"]')[0]; if (c) c.scrollIntoView({ behavior: "smooth", block: "start" });
+      m.innerHTML = '<span class="ok">단어 ' + r.words + "개 → " + r.units.length + "개 묶음으로 읽었어요 ✓</span>" + (r.dup.length ? " · 겹친 단어 " + r.dup.length + "개 뺐어요" : "") +
+        (r.skipped.length ? '<br><span class="er">못 읽은 줄 ' + r.skipped.length + "개</span>: " + r.skipped.slice(0, 5).map(function (x) { return "「" + esc(String(x).slice(0, 40)) + "」"; }).join(" ") + (r.skipped.length > 5 ? " …" : "") + " — 필요하면 고쳐서 다시 읽어 주세요." : "");
+      $("qzText").value = "";
+    };
+  })();
   // ---------- 🧠 문맥 5지선다 (AI) ----------
   // uids 의 단어장을 차례로: 한 번에 8단어씩 서버가 만들고 검수해서 저장 → 끝날 때까지 반복
-  function ctxRun(uids, say) {
+  var VT_NAME = { ctx: "🧠 문맥", spellmc: "🔤 철자 고르기" };
+  function ctxRun(uids, say, vt) {
+    vt = vt || "ctx"; var nm = VT_NAME[vt] || "AI";
     var made = 0, dropped = 0, skip = {}, ui = 0, err = "", tot = uids.length;
     return new Promise(function (done) {
       (function next() {
         if (ui >= uids.length) {
-          say('<span class="ok">🧠 문맥 문제를 ' + made + "개 만들어 저장했어요" + (dropped ? " (정답이 애매해서 빠진 단어 " + dropped + "개 — 다시 누르면 그 단어만 다시 만들어 봐요)" : "") + "</span>");
+          say('<span class="ok">' + nm + " 문제를 " + made + "개 만들어 저장했어요" + (dropped ? " (검수에서 빠진 단어 " + dropped + "개 — 다시 누르면 그 단어만 다시 만들어 봐요)" : "") + "</span>");
           ctxFill(); return done({ made: made, dropped: dropped, err: err });
         }
         var uid = uids[ui];
-        post({ action: "t_vocab_ctx", uid: uid, skip: Object.keys(skip) }).then(function (j) {
+        post({ action: "t_vocab_ctx", vt: vt, uid: uid, skip: Object.keys(skip) }).then(function (j) {
           if (!j.ok) { err = j.msg || "만들지 못했어요"; say('<span class="er">' + esc(err) + (j.aiErr && j.aiErr.length ? " · " + esc(j.aiErr.join(" / ")) : "") + "</span>"); ctxFill(); return done({ made: made, dropped: dropped, err: err }); }
           made += j.made || 0; dropped += j.dropped || 0; (j.tried || []).forEach(function (w) { skip[w] = 1; });
           if (j.catalog) { DATA.catalog = j.catalog; }
-          say("🧠 AI가 문맥 문제를 만드는 중… " + (tot > 1 ? "(" + (ui + 1) + "/" + tot + "번째 단어장) " : "") + "단어 " + (j.have || 0) + "/" + (j.total || 0) + " · 지금까지 " + made + "개" + (j.used ? " · " + esc(j.used) : ""));
+          say(nm + " 문제를 AI가 만드는 중… " + (tot > 1 ? "(" + (ui + 1) + "/" + tot + "번째 단어장) " : "") + "단어 " + (j.have || 0) + "/" + (j.total || 0) + " · 지금까지 " + made + "개" + (j.used ? " · " + esc(j.used) : ""));
           if (!j.left) { ui++; skip = {}; } next();
         });
       })();
     });
   }
   function ctxFill() {
-    var sel = $("ctxSel"); if (!sel) return; var keep = sel.value, html = '<option value="">— 단어장(교재 또는 Day) 고르기 —</option>';
+    var sel = $("ctxSel"); if (!sel) return; var keep = sel.value, vt = $("ctxVt").value, nm = vt === "spellmc" ? "철자" : "문맥", html = '<option value="">— 단어장(교재 또는 Day) 고르기 —</option>';
     (DATA.catalog || []).forEach(function (b) {
       var us = []; b.chapters.forEach(function (c) { c.units.forEach(function (u) { if (u.v) us.push({ c: c, u: u }); }); }); if (!us.length) return;
-      var nc = us.filter(function (x) { return (x.u.v.ctx || 0) >= x.u.words; }).length;
-      html += '<optgroup label="' + esc(b.name) + '"><option value="b:' + esc(b.id) + '">📚 ' + esc(b.name) + " 전체 (" + us.length + "개 Day · 문맥 완료 " + nc + "개)</option>" +
-        us.map(function (x) { return '<option value="u:' + esc(x.u.id) + '">' + esc(x.c.name + " › " + x.u.name) + " — 문맥 " + (x.u.v.ctx || 0) + "/" + x.u.words + "</option>"; }).join("") + "</optgroup>";
+      var nc = us.filter(function (x) { return (x.u.v[vt] || 0) >= x.u.words; }).length;
+      html += '<optgroup label="' + esc(b.name) + '"><option value="b:' + esc(b.id) + '">📚 ' + esc(b.name) + " 전체 (" + us.length + "개 Day · " + nm + " 완료 " + nc + "개)</option>" +
+        us.map(function (x) { return '<option value="u:' + esc(x.u.id) + '">' + esc(x.c.name + " › " + x.u.name) + " — " + nm + " " + (x.u.v[vt] || 0) + "/" + x.u.words + "</option>"; }).join("") + "</optgroup>";
     });
     sel.innerHTML = html; sel.value = keep;
   }
+  if ($("ctxVt")) $("ctxVt").onchange = ctxFill;
   if ($("ctxGo")) $("ctxGo").onclick = function () {
     var v = $("ctxSel").value, m = $("ctxMsg"), b = this; if (!v) { m.innerHTML = '<span class="er">단어장을 골라 주세요.</span>'; return; }
     if (!DATA.ai) { m.innerHTML = '<span class="er">AI 키가 없어요. (Vercel 환경 변수)</span>'; return; }
     var uids = [];
-    (DATA.catalog || []).forEach(function (bk) { bk.chapters.forEach(function (c) { c.units.forEach(function (u) { if (u.v && (v === "u:" + u.id || v === "b:" + bk.id) && (v.charAt(0) === "u" || (u.v.ctx || 0) < u.words)) uids.push(u.id); }); }); });
+    var vt = $("ctxVt").value;
+    (DATA.catalog || []).forEach(function (bk) { bk.chapters.forEach(function (c) { c.units.forEach(function (u) { if (u.v && (v === "u:" + u.id || v === "b:" + bk.id) && (v.charAt(0) === "u" || (u.v[vt] || 0) < u.words)) uids.push(u.id); }); }); });
     if (!uids.length) { m.innerHTML = '<span class="ok">이미 모두 만들어져 있어요 ✓</span>'; return; }
-    b.disabled = true; ctxRun(uids, function (t) { m.innerHTML = t; }).then(function () { b.disabled = false; });
+    b.disabled = true; ctxRun(uids, function (t) { m.innerHTML = t; }, vt).then(function () { b.disabled = false; });
   };
   function mkFill() {
     var sel = $("mkLoadSel"), books = (DATA.catalog || []).filter(function (b) { return b.custom; });
@@ -1786,7 +2024,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         '<div><label class="l">학년</label><select data-m="grade">' + grades.map(function (g) { return '<option value="' + g + '"' + (g === (u.meta.grade || "") ? " selected" : "") + ">" + (g || "고르지 않음") + "</option>"; }).join("") + "</select></div></div>" +
         '<div class="chips2">' + ["m", "ex", "def", "syn", "ant"].map(function (k) { var h = k === "syn" ? u.words.filter(function (x) { return x.syn || x.ant; }).length : has(k); return k === "ant" ? "" : '<span class="pill' + (h === n ? " go" : h ? "" : " end") + '">' + (k === "syn" ? "동의어·반의어" : VLAB[k]) + " " + h + "/" + n + "</span>"; }).join("") + "</div>" +
         (miss.length ? '<p class="hint">빈 칸이 있으면 그 유형은 그 단어에서 빠져요. ' + (DATA.ai ? "<b>🧠 빈 칸 AI로 채우기</b>로 예문·해석·영영정의·동의어·반의어를 채울 수 있어요. (AI가 쓴 내용은 꼭 훑어보세요)" : "엑셀에서 채워서 다시 올려도 돼요.") + "</p>" : "") +
-        '<div class="row" style="margin-top:8px">' + (DATA.ai && miss.length ? '<button class="sm sub" data-act="vfill">🧠 빈 칸 AI로 채우기</button>' : "") + '<button data-act="save">💾 단어장 저장 (문제 자동 생성)</button>' + (DATA.ai ? '<button class="sm sub" data-act="ctx">🧠 문맥 5지선다 만들기 (AI)</button>' : "") + '<span class="msg" data-msg style="margin:0"></span></div>' +
+        '<div class="row" style="margin-top:8px">' + (DATA.ai && miss.length ? '<button class="sm sub" data-act="vfill">🧠 빈 칸 AI로 채우기</button>' : "") + '<button data-act="save">💾 단어장 저장 (문제 자동 생성)</button>' + (DATA.ai ? '<button class="sm sub" data-act="ctx">🧠 문맥 5지선다 만들기 (AI)</button><button class="sm sub" data-act="spellmc">🔤 철자 고르기 만들기 (AI)</button>' : "") + '<span class="msg" data-msg style="margin:0"></span></div>' +
         '<div style="overflow:auto;max-height:340px;margin-top:10px;border:1px solid var(--line);border-radius:10px"><table class="vt"><tr>' + Object.keys(VLAB).map(function (k) { return "<th>" + VLAB[k] + "</th>"; }).join("") + "</tr>" +
         u.words.map(function (x) { return "<tr>" + Object.keys(VLAB).map(function (k) { return "<td" + (!x[k] && k !== "pos" && k !== "exk" ? ' class="e"' : "") + ">" + esc(x[k] || "") + "</td>"; }).join("") + "</tr>"; }).join("") + "</table></div></div>";
     }
@@ -1849,14 +2087,16 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     }
     card.__save = doSave;
     card.querySelector('[data-act="save"]').onclick = function () { doSave(); };
-    var bc = card.querySelector('[data-act="ctx"]');
-    if (bc) bc.onclick = function () {
-      bc.disabled = true;
-      (u.uid ? Promise.resolve({ ok: true }) : doSave()).then(function (r) {
-        if (!r.ok || !u.uid) { bc.disabled = false; return; }
-        ctxRun([u.uid], function (t) { msg.innerHTML = t; }).then(function () { bc.disabled = false; });
-      });
-    };
+    ["ctx", "spellmc"].forEach(function (vt) {
+      var bc = card.querySelector('[data-act="' + vt + '"]');
+      if (bc) bc.onclick = function () {
+        bc.disabled = true;
+        (u.uid ? Promise.resolve({ ok: true }) : doSave()).then(function (r) {
+          if (!r.ok || !u.uid) { bc.disabled = false; return; }
+          ctxRun([u.uid], function (t) { msg.innerHTML = t; }, vt).then(function () { bc.disabled = false; });
+        });
+      };
+    });
   }
   function bindBulk() {
     var say = function (t, cls) { $("bulkMsg").innerHTML = cls ? '<span class="' + cls + '">' + t + "</span>" : esc(t); };
@@ -2137,11 +2377,100 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
 
   // ---------- 응시 결과 ----------
   var LAST_RES = null;
-  function fillResultSelect() {
-    var cur = $("rPaper").value;
-    $("rPaper").innerHTML = (DATA.papers.length ? "" : '<option value="">아직 만든 시험지가 없어요 (➕ 새 시험지에서 만들어요)</option>') + DATA.papers.map(function (p) { return '<option value="' + p.id + '">' + esc(p.cls + " · " + p.title + " (" + p.status + ")") + "</option>"; }).join("");
-    if (cur) $("rPaper").value = cur;
+  // 시험지 고르기: 반·종류로 걸러서 (고른 반은 이 기기에 기억). want = 꼭 보여야 하는 시험지 id
+  function fillResultSelect(want) {
+    ktInit();
+    var cur = want || $("rPaper").value, wp = want && paperById(want);
+    if (!$("rCls").options.length) {
+      $("rCls").innerHTML = '<option value="">모든 반</option>' + DATA.classes.map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
+      var last = lsGet("cm-res-cls"); if (last && DATA.classes.indexOf(last) >= 0) $("rCls").value = last;
+    }
+    var kinds = [], k0 = $("rKind").value; DATA.papers.forEach(function (p) { if (p.kind && kinds.indexOf(p.kind) < 0) kinds.push(p.kind); });
+    $("rKind").innerHTML = '<option value="">모든 종류</option>' + kinds.map(function (k) { return "<option>" + esc(k) + "</option>"; }).join(""); if (kinds.indexOf(k0) >= 0) $("rKind").value = k0;
+    if (wp) { if ($("rCls").value && $("rCls").value !== wp.cls) $("rCls").value = ""; if ($("rKind").value && $("rKind").value !== wp.kind) $("rKind").value = ""; }
+    var fc = $("rCls").value, fk = $("rKind").value;
+    var list = DATA.papers.filter(function (p) { return (!fc || p.cls === fc) && (!fk || p.kind === fk); });
+    $("rPaper").innerHTML = (list.length ? "" : '<option value="">' + (DATA.papers.length ? "이 조건에 맞는 시험지가 없어요" : "아직 만든 시험지가 없어요 (➕ 새 시험지에서 만들어요)") + "</option>") +
+      list.map(function (p) { return '<option value="' + p.id + '">' + esc((fc ? "" : p.cls + " · ") + p.title + " (" + p.status + (p.takers ? " · " + p.takers + "명" : "") + ")") + "</option>"; }).join("");
+    if (cur && list.some(function (p) { return p.id === cur; })) $("rPaper").value = cur;
   }
+  $("rCls").onchange = function () { lsSet("cm-res-cls", $("rCls").value); fillResultSelect(); };
+  // ---------- 🗂 종류별 모아 보기 ----------
+  var KT = null;
+  function ktInit() {
+    if ($("ktCls").options.length) return;
+    $("ktCls").innerHTML = DATA.classes.map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
+    var last = lsGet("cm-res-cls") || lsGet("cm-teacher-cls"); if (last && DATA.classes.indexOf(last) >= 0) $("ktCls").value = last;
+    var k = lsGet("cm-kt-kind"); if (k) $("ktKind").value = k;
+  }
+  function ktRange() {
+    var v = $("ktSpan").value, to = kst();
+    if (v === "c") return { from: $("ktFrom").value, to: $("ktTo").value };
+    if (v === "y") return { from: to.slice(0, 4) + "-01-01", to: to };
+    var d = new Date(Date.now() + 9 * 3600e3); d.setUTCMonth(d.getUTCMonth() - +v); return { from: d.toISOString().slice(0, 10), to: to };
+  }
+  $("ktSpan").onchange = function () { var c = $("ktSpan").value === "c"; $("ktDates").style.display = c ? "" : "none"; if (c && !$("ktFrom").value) { $("ktTo").value = kst(); $("ktFrom").value = kst(Date.now() - 90 * 864e5); } };
+  $("ktLoad").onclick = function () {
+    var r = ktRange(); if (!r.from || !r.to || r.from > r.to) { $("ktBox").innerHTML = '<p class="er">기간을 다시 골라 주세요.</p>'; return; }
+    lsSet("cm-kt-kind", $("ktKind").value);
+    $("ktBox").innerHTML = '<p class="hint">불러오는 중…</p>'; $("ktLoad").disabled = true; $("ktCsv").style.display = "none";
+    post({ action: "t_kind_table", cls: $("ktCls").value, kind: $("ktKind").value, from: r.from, to: r.to }).then(function (j) {
+      $("ktLoad").disabled = false;
+      if (!j.ok) { $("ktBox").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; }
+      KT = ktBuild(j); ktRender();
+    });
+  };
+  $("ktPct").onchange = function () { if (KT) ktRender(); };
+  // 기록 → 시험(열) × 학생(행). 같은 날 같은 이름(또는 같은 시험지)이면 한 시험으로 묶어요.
+  function ktBuild(j) {
+    var exams = [], byKey = {};
+    j.records.forEach(function (r) {
+      var key = r.paper || (r.date + "|" + r.title), e = byKey[key];
+      if (!e) { e = byKey[key] = { key: key, title: r.title, date: r.date, range: r.range || "", totals: {}, cells: {} }; exams.push(e); }
+      if (r.date < e.date) e.date = r.date; if (!e.range && r.range) e.range = r.range;
+      if (r.total) e.totals[r.total] = (e.totals[r.total] || 0) + 1;
+      var old = e.cells[r.sid]; if (!old || r.date >= old.date) e.cells[r.sid] = r; // 다시 본 경우 마지막 기록
+    });
+    exams.sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : a.title < b.title ? -1 : 1; });
+    exams.forEach(function (e) { var ts = Object.keys(e.totals).sort(function (a, b) { return e.totals[b] - e.totals[a]; }); e.total = ts.length ? +ts[0] : 0; e.mixed = ts.length > 1; });
+    return { j: j, exams: exams, students: j.students.filter(function (s) { return !s.gone || exams.some(function (e) { return e.cells[s.sid]; }); }) };
+  }
+  function ktPct(c) { return c.pct != null ? c.pct : c.total ? c.score / c.total * 100 : null; }
+  function ktRender() {
+    var K = KT, E = K.exams, asPct = $("ktPct").checked;
+    if (!E.length) { $("ktBox").innerHTML = '<p class="hint">이 기간에 ' + esc(K.j.cls) + "의 " + esc(K.j.kind) + " 기록이 없어요. 기간을 넓혀 보세요.</p>"; return; }
+    var md = function (d) { return +d.slice(5, 7) + "/" + +d.slice(8, 10); };
+    var head = '<tr><th class="nm">이름</th>' + E.map(function (e) { return '<th title="' + esc(e.title + (e.range ? "\n범위: " + e.range : "")) + '">' + md(e.date) + "<small>" + esc(e.title) + "</small>" + (asPct ? "" : '<small>' + (e.total ? "/" + e.total + (e.mixed ? "*" : "") : "") + "</small>") + "</th>"; }).join("") + '<th class="sm">평균<small>100점 환산</small></th><th>응시</th></tr>';
+    var colSum = E.map(function () { return { s: 0, n: 0 }; });
+    var body = K.students.map(function (s) {
+      var ps = [];
+      var tds = E.map(function (e, i) {
+        var c = e.cells[s.sid]; if (!c) return '<td class="no">·</td>';
+        var p = ktPct(c); if (p != null) { ps.push(p); colSum[i].s += p; colSum[i].n++; }
+        var diff = !asPct && c.total && e.total && c.total !== e.total; // 문항 수가 다른 시험지
+        return '<td class="' + (p != null && p < 60 ? "lo" : p != null && p >= 90 ? "hi" : "") + '" title="' + esc(s.name + " · " + c.score + "/" + c.total + (p != null ? " (" + round1(p) + "점)" : "")) + '">' + (asPct ? (p != null ? round1(p) : "-") : c.score + (diff ? "<small style='color:inherit;opacity:.7'>/" + c.total + "</small>" : "")) + "</td>";
+      }).join("");
+      var avg = ps.length ? ps.reduce(function (a, b) { return a + b; }, 0) / ps.length : null;
+      s._avg = avg; s._n = ps.length;
+      return '<tr><td class="nm">' + esc(s.name) + (s.gone ? ' <span class="hint" style="margin:0;font-weight:500">(' + esc(s.gone) + ")</span>" : "") + "</td>" + tds + '<td class="sm ' + (avg != null && avg < 60 ? "lo" : avg != null && avg >= 90 ? "hi" : "") + '">' + (avg != null ? round1(avg) : "-") + "</td><td>" + ps.length + "/" + E.length + "</td></tr>";
+    }).join("");
+    var all = colSum.filter(function (c) { return c.n; }), tot = all.length ? all.reduce(function (a, c) { return a + c.s / c.n; }, 0) / all.length : null;
+    var foot = '<tr class="av"><td class="nm" style="background:#F7FAFA">반 평균 <span class="hint" style="margin:0;font-weight:500">(100점 환산)</span></td>' + colSum.map(function (c) { return "<td>" + (c.n ? round1(c.s / c.n) : "-") + "</td>"; }).join("") + '<td class="sm">' + (tot != null ? round1(tot) : "-") + "</td><td></td></tr>" +
+      '<tr class="av"><td class="nm" style="background:#F7FAFA;font-weight:500">응시 인원</td>' + colSum.map(function (c) { return '<td style="font-weight:500">' + c.n + "명</td>"; }).join("") + "<td class=sm></td><td></td></tr>";
+    $("ktBox").innerHTML = "<h3>" + esc(K.j.cls) + " · " + esc(K.j.kind) + " " + E.length + "회 <span class='hint' style='margin:0;font-weight:500'>" + esc(K.j.from) + " ~ " + esc(K.j.to) + (asPct ? " · 100점 환산" : " · 맞은 개수 (제목 아래 /숫자 = 문항 수)") + "</span></h3>" +
+      '<div class="tw" id="ktScroll"><table class="kt"><thead>' + head + "</thead><tbody>" + body + foot + "</tbody></table></div>" +
+      '<div class="hint"><span style="background:#DFF5E8;padding:1px 6px;border-radius:5px">90점 이상</span> <span style="background:#FDE3E1;padding:1px 6px;border-radius:5px">60점 미만</span>' + (E.some(function (e) { return e.mixed; }) ? " · * 표시는 학생마다 문항 수가 다른 시험이에요 (다른 학생은 점수 옆에 /문항 수)" : "") + (K.j.more ? ' · <span class="er">기록이 많아 일부만 보여요. 기간을 줄여 주세요.</span>' : "") + "</div>";
+    var sc = $("ktScroll"); sc.scrollLeft = sc.scrollWidth; // 가장 최근 시험이 보이게
+    $("ktCsv").style.display = "";
+  }
+  $("ktCsv").onclick = function () {
+    if (!KT) return; var E = KT.exams, q = function (v) { v = String(v == null ? "" : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    var lines = [["이름"].concat(E.map(function (e) { return e.date + " " + e.title + (e.total ? " (/" + e.total + ")" : ""); })).concat(["평균(100점 환산)", "응시 횟수"])];
+    KT.students.forEach(function (s) { lines.push([s.name + (s.gone ? " (" + s.gone + ")" : "")].concat(E.map(function (e) { var c = e.cells[s.sid]; return c ? ($("ktPct").checked ? round1(ktPct(c)) : c.score + (c.total && e.total && c.total !== e.total ? "/" + c.total : "")) : ""; })).concat([s._avg != null ? round1(s._avg) : "", s._n])); });
+    var blob = new Blob(["\ufeff" + lines.map(function (l) { return l.map(q).join(","); }).join("\r\n")], { type: "text/csv;charset=utf-8" }), a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = KT.j.cls + "_" + KT.j.kind + "_" + KT.j.from + "_" + KT.j.to + ".csv"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+  };
+  $("rKind").onchange = function () { fillResultSelect(); };
   $("rLoad").onclick = function () { loadResults(); };
   function loadResults(after) {
     var id = $("rPaper").value; if (!id) return;

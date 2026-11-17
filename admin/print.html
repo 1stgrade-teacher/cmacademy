@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><title>학습 리포트 인쇄 · 청명 CHECK</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/check-favicon-32.png">
+<style>
+:root{--ink:#14305A;--gold:#C2A27A;--ac:#0E8A8C;--line:#DCE3EA;--soft:#F5F7FA;--mut:#66707C}
+*{box-sizing:border-box}
+body{margin:0;background:#E9EDF1;font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;color:#1B2733}
+/* ---------- 조작 화면 ---------- */
+.panel{max-width:1000px;margin:0 auto;padding:16px 12px 6px}
+.panel h1{font-size:20px;color:var(--ink);margin:4px 0 12px;display:flex;align-items:center;gap:8px}.panel h1 img{width:34px;height:34px}
+.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 2px 10px rgba(20,48,90,.07)}
+label.l{display:block;font-size:12.5px;color:var(--mut);margin:0 0 5px;font-weight:600}
+input,select,textarea{border:1px solid #CBD5DF;border-radius:9px;padding:9px 10px;font-size:15px;background:#fff;color:#1B2733;font-family:inherit}
+button{border:0;border-radius:10px;background:var(--ink);color:#fff;font-size:15px;font-weight:700;padding:10px 16px;cursor:pointer;font-family:inherit}
+button.sub{background:#EEF2F6;color:var(--ink)}button.sm{padding:6px 10px;font-size:13px}button:disabled{opacity:.5}
+button.gold{background:var(--gold);color:#fff}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:760px){.grid{grid-template-columns:1fr}}
+.stus{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;max-height:220px;overflow:auto}
+.stus label{display:inline-flex;align-items:center;gap:5px;background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:5px 11px;font-size:14px;cursor:pointer}
+.stus label.on{background:#E6EDF6;border-color:#9DB2CC;font-weight:700}
+.chk{display:inline-flex;align-items:center;gap:5px;font-size:14px;margin:3px 12px 3px 0}
+.msg{font-size:14px;margin-top:8px;line-height:1.5}.er{color:#C0392B}.ok{color:#1F6E40}.hint{font-size:13px;color:var(--mut);line-height:1.6}
+.prog{height:6px;background:#E3E8EE;border-radius:4px;overflow:hidden;margin-top:8px;display:none}.prog i{display:block;height:100%;background:var(--gold);width:0}
+.bar{position:sticky;top:0;z-index:5;background:rgba(233,237,241,.94);backdrop-filter:blur(4px);padding:8px 12px;display:none}
+.bar .in{max-width:1000px;margin:0 auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+/* ---------- 보고서 (A4) ---------- */
+#out{padding:6px 0 40px}
+.sheet{width:210mm;min-height:297mm;margin:0 auto 14px;background:#fff;padding:13mm 13mm 11mm;box-shadow:0 2px 14px rgba(0,0,0,.12);position:relative;display:flex;flex-direction:column}
+.hd{display:flex;align-items:center;gap:12px;padding-bottom:10px;border-bottom:2.5px solid var(--ink)}
+.hd img{width:21mm;height:21mm}
+.hd .t{flex:1}.hd .t b{display:block;font-size:19pt;color:var(--ink);letter-spacing:-.3px}.hd .t span{font-size:10.5pt;color:var(--mut)}
+.hd .who{text-align:right}.hd .who b{display:block;font-size:20pt;color:var(--ink)}.hd .who span{font-size:10pt;color:var(--mut)}
+.gl{height:3px;background:var(--gold);margin:2px 0 12px;width:38%}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:12px}
+.kp{border:1px solid var(--line);border-radius:9px;padding:8px 9px;background:var(--soft)}
+.kp .k{font-size:8.6pt;color:var(--mut);font-weight:700}.kp .v{font-size:17pt;font-weight:800;color:var(--ink);line-height:1.2;margin-top:2px}.kp .v small{font-size:9pt;font-weight:700;color:var(--mut);margin-left:2px}
+.kp .s{font-size:8.4pt;color:var(--mut);margin-top:1px}
+h3{font-size:11.5pt;color:var(--ink);margin:12px 0 6px;padding-left:8px;border-left:4px solid var(--gold)}
+table.t{width:100%;border-collapse:collapse;font-size:9pt}
+table.t th{background:#EEF2F6;color:#3A4A5C;font-weight:700;text-align:left;padding:4px 5px;border-bottom:1px solid #C9D3DD;white-space:nowrap}
+table.t td{padding:4px 5px;border-bottom:1px solid #EDF0F3;vertical-align:top}
+table.t tr{break-inside:avoid}
+.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}.c{text-align:center;white-space:nowrap}.nw{white-space:nowrap}
+.pb{display:inline-block;width:46px;height:6px;background:#E6EAEF;border-radius:3px;vertical-align:middle;margin-left:4px;overflow:hidden}.pb i{display:block;height:100%;background:var(--ink)}
+.tag{display:inline-block;border-radius:999px;padding:0 7px;font-size:8.4pt;font-weight:700;line-height:1.7}
+.g{background:#E3F5EA;color:#1F6E40}.y{background:#FFF1D2;color:#8A5A00}.r{background:#FDE3E0;color:#A93226}.x{background:#EEF1F4;color:#5F6E7C}
+.none{font-size:9pt;color:#98A2AD;padding:4px 0 2px}
+.plus{display:flex;flex-wrap:wrap;gap:4px}.plus span{font-size:8.6pt;border-radius:6px;padding:2px 7px;border:1px solid var(--line)}
+.cm{border:1.5px solid #C9D3DD;border-radius:9px;min-height:30mm;padding:8px 10px;font-size:10pt;line-height:1.7;white-space:pre-wrap;outline:none;
+  background-image:repeating-linear-gradient(transparent,transparent 6.7mm,#EEF1F4 6.7mm,#EEF1F4 calc(6.7mm + 1px))}
+.cm:empty:before{content:attr(data-ph);color:#B4BDC7}
+.ft{margin-top:auto;padding-top:10px;display:flex;justify-content:space-between;align-items:flex-end;font-size:8.6pt;color:var(--mut);border-top:1px solid var(--line)}
+.sign{display:flex;gap:16px}.sign span{display:inline-block;min-width:34mm;border-bottom:1px solid #9AA5B1;height:7mm}
+.err{color:#A93226;font-size:10pt}
+@page{size:A4;margin:0}
+@media print{
+  body{background:#fff}.panel,.bar,.noprint{display:none!important}#out{padding:0}
+  .sheet{margin:0;box-shadow:none;width:210mm;min-height:297mm;break-after:page;page-break-after:always}
+  .sheet:last-child{break-after:auto;page-break-after:auto}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .cm:empty:before{content:""}
+}
+@media screen and (max-width:840px){.sheet{transform-origin:top left;width:210mm}#out{overflow-x:auto}}
+</style></head><body>
+<div class="panel">
+  <h1><img src="/check-icon-192.png" alt="">학습 리포트 인쇄 <span class="hint" style="font-weight:400">가정 통신용</span></h1>
+
+  <div class="card" id="login">
+    <label class="l">선생님 코드</label>
+    <div class="row"><input id="tcode" type="password" autocomplete="off" placeholder="선생님 전용 코드" style="max-width:260px"><button id="loginBtn">확인</button></div>
+    <div class="msg er" id="loginMsg"></div>
+  </div>
+
+  <div id="main" style="display:none">
+    <div class="grid">
+      <div class="card">
+        <label class="l">① 반</label>
+        <select id="cls" style="width:100%"><option value="">반을 고르세요</option></select>
+        <div class="row" style="margin-top:8px"><button class="sub sm" id="allOn">모두 고르기</button><button class="sub sm" id="allOff">모두 빼기</button><span class="hint" id="cnt"></span></div>
+        <div class="stus" id="stus"><span class="hint">반을 고르면 학생이 나와요.</span></div>
+      </div>
+      <div class="card">
+        <label class="l">② 기간</label>
+        <div class="row"><input type="date" id="from"> ~ <input type="date" id="to"></div>
+        <div class="row" style="margin-top:8px">
+          <button class="sub sm" data-p="thism">이번 달</button><button class="sub sm" data-p="lastm">지난달</button><button class="sub sm" data-p="2w">최근 2주</button><button class="sub sm" data-p="4w">최근 4주</button><button class="sub sm" data-p="3m">최근 3개월</button>
+        </div>
+        <label class="l" style="margin-top:12px">③ 넣을 내용</label>
+        <div>
+          <label class="chk"><input type="checkbox" class="sec" value="exams" checked>📝 시험 결과</label>
+          <label class="chk"><input type="checkbox" class="sec" value="certs" checked>📺 강의 학습 인증</label>
+          <label class="chk"><input type="checkbox" class="sec" value="hw" checked>📸 과제</label>
+          <label class="chk"><input type="checkbox" class="sec" value="plus" checked>🏫 플러스 수업</label>
+          <label class="chk"><input type="checkbox" class="sec" value="game" checked>🎮 단어 게임</label>
+          <label class="chk"><input type="checkbox" id="hideEmpty">기록 없는 항목 빼기</label>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <label class="l">④ 선생님 한마디 (모든 학생에게 같이 넣을 문구 · 비워 두면 손글씨 칸)</label>
+      <textarea id="common" rows="2" style="width:100%" placeholder="예: 이번 달은 2과 문법과 중간고사 대비를 했습니다. 가정에서도 단어 복습을 격려해 주세요."></textarea>
+      <div class="row" style="margin-top:10px"><button id="make">보고서 만들기</button><span class="hint">만든 뒤 각 학생 보고서의 한마디 칸을 눌러 학생별로 고쳐 쓸 수 있어요.</span></div>
+      <div class="prog" id="prog"><i></i></div>
+      <div class="msg" id="msg"></div>
+    </div>
+  </div>
+</div>
+<div class="bar" id="bar"><div class="in"><b id="barT"></b><button class="gold" id="print">🖨️ 인쇄 / PDF 저장</button><button class="sub" id="top">조건 바꾸기</button><span class="hint">인쇄 창에서 용지 A4, 여백 '없음', '배경 그래픽' 켜기를 권해요.</span></div></div>
+<div id="out"></div>
+
+<script>
+(function () {
+  var API = "/api/monthly", CODE = "", LS_T = "cm-teacher-code";
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function lsGet(k) { try { return localStorage.getItem(k) || ""; } catch (e) { return ""; } }
+  function lsSet(k, v) { try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); } catch (e) {} }
+  function post(b) {
+    b.code = CODE;
+    return fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { j._s = r.status; return j; }); })
+      .catch(function () { return { _s: 0, msg: "인터넷 연결을 확인해 주세요." }; });
+  }
+  function msg(t, ok) { $("msg").className = "msg " + (ok ? "ok" : "er"); $("msg").textContent = t || ""; }
+  // ---------- 날짜 ----------
+  function kd(d) { return new Date(d.getTime() + 9 * 3600e3).toISOString().slice(0, 10); }
+  function today() { return kd(new Date()); }
+  function addDays(s, n) { var d = new Date(s + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
+  function preset(p) {
+    var t = today(), y = +t.slice(0, 4), m = +t.slice(5, 7), f, e;
+    if (p === "thism") { f = t.slice(0, 8) + "01"; e = t; }
+    if (p === "lastm") { var ly = m === 1 ? y - 1 : y, lm = m === 1 ? 12 : m - 1; f = ly + "-" + String(lm).padStart(2, "0") + "-01"; e = addDays(t.slice(0, 8) + "01", -1); }
+    if (p === "2w") { f = addDays(t, -13); e = t; } if (p === "4w") { f = addDays(t, -27); e = t; }
+    if (p === "3m") { f = addDays(t, -90); e = t; }
+    $("from").value = f; $("to").value = e;
+  }
+  document.querySelectorAll("[data-p]").forEach(function (b) { b.onclick = function () { preset(b.getAttribute("data-p")); }; });
+  preset(+today().slice(8, 10) <= 7 ? "lastm" : "thism");
+  var dot = function (s) { return s ? s.replace(/-/g, ".") : ""; };
+  var md = function (s) { return s ? +s.slice(5, 7) + "/" + +s.slice(8, 10) : ""; };
+
+  // ---------- 로그인 · 반 · 학생 ----------
+  var STU = [];
+  function init() {
+    post({ action: "classes" }).then(function (c) {
+      if (c._s === 401 || !c.classes) { $("loginMsg").textContent = c.msg || "선생님 코드를 확인해 주세요."; return; }
+      post({ action: "t_print_roster", cls: c.classes[0] }).then(function (j) {
+        if (j._s === 401) { $("loginMsg").textContent = j.msg; lsSet(LS_T, ""); $("login").style.display = ""; return; }
+        lsSet(LS_T, CODE); $("login").style.display = "none"; $("main").style.display = "";
+        c.classes.forEach(function (n) { var o = document.createElement("option"); o.value = o.textContent = n; $("cls").appendChild(o); });
+      });
+    });
+  }
+  function paintStus() {
+    $("stus").innerHTML = STU.length ? STU.map(function (s, i) { return '<label class="' + (s.on ? "on" : "") + '"><input type="checkbox" data-i="' + i + '"' + (s.on ? " checked" : "") + ">" + esc(s.name) + "</label>"; }).join("") : '<span class="hint">이 반에 학생이 없어요.</span>';
+    $("stus").querySelectorAll("input").forEach(function (c) { c.onchange = function () { STU[+c.getAttribute("data-i")].on = c.checked; paintStus(); }; });
+    var n = STU.filter(function (s) { return s.on; }).length; $("cnt").textContent = STU.length ? n + " / " + STU.length + "명" : "";
+  }
+  $("cls").onchange = function () {
+    STU = []; if (!$("cls").value) return paintStus();
+    $("stus").innerHTML = '<span class="hint">불러오는 중…</span>';
+    post({ action: "t_print_roster", cls: $("cls").value }).then(function (j) {
+      if (!j.ok) { $("stus").innerHTML = '<span class="er">' + esc(j.msg || "불러오지 못했어요.") + "</span>"; return; }
+      STU = (j.students || []).map(function (s) { s.on = true; return s; }); paintStus();
+    });
+  };
+  $("allOn").onclick = function () { STU.forEach(function (s) { s.on = true; }); paintStus(); };
+  $("allOff").onclick = function () { STU.forEach(function (s) { s.on = false; }); paintStus(); };
+
+  // ---------- 보고서 ----------
+  function avg(a) { a = a.filter(function (x) { return typeof x === "number" && !isNaN(x); }); return a.length ? Math.round(a.reduce(function (s, x) { return s + x; }, 0) / a.length) : null; }
+  function kp(k, v, unit, sub) { return '<div class="kp"><div class="k">' + k + '</div><div class="v">' + (v == null ? "–" : v) + (v == null || !unit ? "" : "<small>" + unit + "</small>") + '</div><div class="s">' + (sub || "&nbsp;") + "</div></div>"; }
+  function tagOf(s) {
+    s = String(s || "");
+    if (/통과|출석|제출|확인|완료|우수|매우|잘함|상/.test(s) && !/미/.test(s)) return "g";
+    if (/지각|늦|보통|재수강|진행|중/.test(s)) return "y";
+    if (/미|결|부족|노력|하$/.test(s)) return "r";
+    return "x";
+  }
+  function bar(p) { return p == null ? "" : '<span class="pb"><i style="width:' + Math.max(0, Math.min(100, p)) + '%"></i></span>'; }
+  function sheet(r, opt) {
+    if (r.error || !r.student) return '<section class="sheet"><div class="err">' + esc(r.error || "불러오지 못했어요.") + "</div></section>";
+    var s = r.student, on = opt.sec, H = "";
+    var ex = r.exams || [], ce = r.certs || [], hw = r.hw || [], pl = r.plus || [], g = r.game || {};
+    var exPct = ex.map(function (e) { return typeof e.pct === "number" ? Math.round(e.pct) : e.total ? Math.round((e.score / e.total) * 100) : null; });
+    var hwDue = hw.filter(function (h) { return h.past; }), hwDone = hwDue.filter(function (h) { return /제출|확인|완료/.test(h.status) && !/미/.test(h.status); });
+    var plAll = pl.filter(function (x) { return x.state !== "면제"; }), plIn = plAll.filter(function (x) { return x.state === "출석" || x.state === "지각"; }), plLate = pl.filter(function (x) { return x.state === "지각"; }).length, plOut = pl.filter(function (x) { return x.state === "미참여"; }).length;
+    H += '<div class="hd"><img src="/check-icon-192.png" alt=""><div class="t"><b>학습 리포트</b><span>' + dot(opt.from) + " ~ " + dot(opt.to) + '</span></div><div class="who"><b>' + esc(s.name) + "</b><span>" + esc([s.cls, s.grade, s.school].filter(Boolean).join(" · ")) + '</span></div></div><div class="gl"></div>';
+    H += '<div class="kpis">' +
+      kp("📝 시험", avg(exPct), "점", ex.length ? ex.length + "회 평균" : "기록 없음") +
+      kp("📺 강의 학습", ce.length, "건", ce.length ? "평균 " + avg(ce.map(function (c) { return c.score; })) + "점 · 시청 " + avg(ce.map(function (c) { return c.watch; })) + "%" : "기록 없음") +
+      kp("📸 과제 제출", hwDue.length ? Math.round((hwDone.length / hwDue.length) * 100) : null, "%", hwDue.length ? hwDone.length + " / " + hwDue.length + "개 제출" : "기록 없음") +
+      kp("🏫 플러스 출석", plAll.length ? Math.round((plIn.length / plAll.length) * 100) : null, "%", plAll.length ? plIn.length + " / " + plAll.length + "회" + (plLate ? " · 지각 " + plLate : "") + (plOut ? " · 미참여 " + plOut : "") : "기록 없음") +
+      kp("🎮 단어 게임", g.days || 0, "일", g.plays ? g.words + "문제 · " + g.points + "점" : "기록 없음") + "</div>";
+    function sec(key, title, body, n) { if (!on[key] || (opt.hideEmpty && !n)) return ""; return "<h3>" + title + "</h3>" + (n ? body : '<div class="none">이 기간에 기록이 없어요.</div>'); }
+    H += sec("exams", "📝 시험 결과", '<table class="t"><thead><tr><th>날짜</th><th>시험</th><th>종류</th><th class="n">점수</th><th class="n">환산</th><th class="n">오답</th><th>평가</th><th>코멘트</th></tr></thead><tbody>' +
+      ex.map(function (e, i) { return "<tr><td class=nw>" + md(e.date) + "</td><td>" + esc(e.title) + (e.range ? '<div style="color:#8792A0;font-size:8pt">' + esc(e.range) + "</div>" : "") + "</td><td class=nw>" + esc(e.kind) + '</td><td class="n">' + (e.score != null ? e.score + (e.total ? "/" + e.total : "") : "결시") + (e.retest ? '<div style="font-size:8pt;color:#8A5A00">재시험' + (e.retestScore != null ? " " + e.retestScore : "") + "</div>" : "") + '</td><td class="n">' + (exPct[i] != null ? exPct[i] + bar(exPct[i]) : "") + '</td><td class="n">' + (e.wrong != null ? e.wrong : "") + "</td><td>" + (e.grade ? '<span class="tag ' + tagOf(e.grade) + '">' + esc(e.grade) + "</span>" : "") + "</td><td>" + esc(e.comment) + "</td></tr>"; }).join("") + "</tbody></table>", ex.length);
+    H += sec("certs", "📺 강의 학습 인증", '<table class="t"><thead><tr><th>날짜</th><th>강의</th><th class="n">시청률</th><th class="n">확인 문제</th><th>판정</th><th>이해도</th></tr></thead><tbody>' +
+      ce.map(function (c) { return "<tr><td class=nw>" + md(c.at.slice(0, 10)) + "</td><td>" + esc(c.lecture || c.book) + (c.book && c.lecture ? '<div style="color:#8792A0;font-size:8pt">' + esc(c.book) + "</div>" : "") + '</td><td class="n">' + (c.watch != null ? c.watch + "%" : "") + '</td><td class="n">' + (c.score != null ? c.score + "점" : "") + "</td><td>" + (c.verdict ? '<span class="tag ' + tagOf(c.verdict) + '">' + esc(c.verdict) + "</span>" : "") + "</td><td class=nw>" + esc(c.understand) + "</td></tr>"; }).join("") + "</tbody></table>", ce.length);
+    H += sec("hw", "📸 과제", '<table class="t"><thead><tr><th>마감</th><th>과제</th><th>상태</th><th>제출</th></tr></thead><tbody>' +
+      hw.map(function (h) { return "<tr><td class=nw>" + md(String(h.due).slice(0, 10)) + "</td><td>" + esc(h.title) + "</td><td>" + '<span class="tag ' + tagOf(h.status) + '">' + esc(h.status) + "</span>" + (h.score ? " " + esc(h.score) : "") + "</td><td class=nw>" + esc(h.at ? md(h.at.slice(0, 10)) + " " + h.at.slice(11, 16) : "") + "</td></tr>"; }).join("") + "</tbody></table>", hw.length);
+    H += sec("plus", "🏫 플러스 수업 출결", '<div class="plus">' + pl.map(function (x) { return '<span class="tag ' + tagOf(x.state) + '">' + md(x.date) + " " + esc(x.hm) + " · " + esc(x.state) + (x.at && x.state !== "출석" ? " " + esc(x.at) : "") + "</span>"; }).join("") + "</div>", pl.length);
+    H += sec("game", "🎮 단어 게임", '<div style="font-size:9.5pt">' + g.days + "일 참여 · " + g.plays + "판 · " + g.words + "문제 · 포인트 " + g.points + "점</div>", g.plays);
+    H += "<h3>✍️ 선생님 한마디</h3>" + '<div class="cm" contenteditable="true" data-ph="여기를 눌러 학생별 한마디를 쓰세요. (비워 두면 인쇄물에 손글씨 칸으로 나와요)">' + esc(opt.common) + "</div>";
+    if (r.missing && r.missing.length) H += '<div class="noprint err" style="margin-top:6px">⚠️ 일부 기록을 읽지 못했어요: ' + esc(r.missing.join(", ")) + "</div>";
+    H += '<div class="ft"><div>청명학원 문화본원 영어과 · 발행 ' + dot(today()) + '</div><div class="sign">담당 선생님 <span></span> 학부모 확인 <span></span></div></div>';
+    return '<section class="sheet">' + H + "</section>";
+  }
+  $("make").onclick = function () {
+    var pick = STU.filter(function (s) { return s.on; }), from = $("from").value, to = $("to").value;
+    if (!pick.length) return msg("학생을 골라 주세요.");
+    if (!from || !to || from > to) return msg("기간을 확인해 주세요.");
+    var sec = {}; document.querySelectorAll(".sec").forEach(function (c) { sec[c.value] = c.checked; });
+    var opt = { from: from, to: to, sec: sec, hideEmpty: $("hideEmpty").checked, common: $("common").value.trim() };
+    var res = [], i = 0, N = 4;
+    $("make").disabled = true; $("prog").style.display = "block"; $("prog").firstChild.style.width = "3%"; msg("기록을 모으는 중… (" + pick.length + "명)", true); $("out").innerHTML = "";
+    (function next() {
+      if (i >= pick.length) {
+        $("make").disabled = false; $("prog").style.display = "none"; msg("보고서 " + res.length + "장을 만들었어요. 아래에서 확인하고 인쇄하세요.", true);
+        $("out").innerHTML = res.map(function (r) { return sheet(r, opt); }).join("");
+        $("bar").style.display = "block"; $("barT").textContent = $("cls").value + " · " + res.length + "명 · " + dot(from) + " ~ " + dot(to);
+        $("bar").scrollIntoView({ behavior: "smooth" }); return;
+      }
+      var batch = pick.slice(i, i + N); i += N;
+      post({ action: "t_print", from: from, to: to, sids: batch.map(function (s) { return s.id; }) }).then(function (j) {
+        if (!j.ok) { batch.forEach(function (s) { res.push({ error: s.name + ": " + (j.msg || "불러오지 못했어요.") }); }); }
+        else (j.reports || []).forEach(function (r) { res.push(r); });
+        $("prog").firstChild.style.width = Math.round((Math.min(i, pick.length) / pick.length) * 100) + "%"; next();
+      });
+    })();
+  };
+  $("print").onclick = function () { window.print(); };
+  $("top").onclick = function () { window.scrollTo({ top: 0, behavior: "smooth" }); };
+  $("loginBtn").onclick = function () { CODE = $("tcode").value.trim(); if (CODE) init(); };
+  $("tcode").onkeydown = function (e) { if (e.key === "Enter") $("loginBtn").onclick(); };
+  CODE = lsGet(LS_T); if (CODE) init();
+})();
+</script>
+</body></html>
