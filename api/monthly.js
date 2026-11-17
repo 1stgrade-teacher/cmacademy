@@ -493,7 +493,9 @@ function readPaper(p) {
     teacher: P.sel(p, "출제 선생님"),
   };
 }
-const pub = (pp) => ({ grades: (pp.cfg && Array.isArray(pp.cfg.grades) ? pp.cfg.grades : []), id: pp.id, title: pp.title, cls: pp.cls, kind: pp.kind, period: pp.period, status: pp.status, mode: pp.mode, level: LEVELS[pp.level - 1], count: pp.count, minutes: pp.minutes, start: pp.start, end: pp.end, range: pp.mode === "fixed" ? pp.range : "", teacher: pp.teacher || "" });
+// ✅ 통과 기준: { by: "cnt"(맞힌 개수) | "pct"(100점 환산), v: 숫자 } — 없으면 null
+const passCfg = (x) => { if (!x || typeof x !== "object") return null; const by = x.by === "pct" ? "pct" : x.by === "cnt" ? "cnt" : ""; const v = Number(x.v); return by && v > 0 && v <= (by === "pct" ? 100 : 1000) ? { by, v: Math.round(v * 10) / 10 } : null; };
+const pub = (pp) => ({ pass: passCfg(pp.cfg && pp.cfg.pass), grades: (pp.cfg && Array.isArray(pp.cfg.grades) ? pp.cfg.grades : []), id: pp.id, title: pp.title, cls: pp.cls, kind: pp.kind, period: pp.period, status: pp.status, mode: pp.mode, level: LEVELS[pp.level - 1], count: pp.count, minutes: pp.minutes, start: pp.start, end: pp.end, range: pp.mode === "fixed" ? pp.range : "", teacher: pp.teacher || "" });
 async function getPaper(id) {
   const p = await notion("pages/" + id32(id), "GET");
   if (!p || p.archived || normId(p.parent && p.parent.database_id) !== normId(PAPER_DB())) return null;
@@ -834,6 +836,7 @@ module.exports = async function handler(req, res) {
       if (f.id) { old = await getPaper(f.id); if (!old) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." }); }
       if (old && !me.master && old.teacher && old.teacher !== me.name) return send(403, { error: "owner", msg: old.teacher + "이(가) 만든 시험지는 고칠 수 없어요. 목록에서 📄 복제해서 써 주세요." });
       const cfg = { units, books, seed: (old && old.cfg.seed) || clip(f.seed, 40).replace(/[^\w-]/g, "") || hash(Date.now() + title, 12), exclude: (Array.isArray(f.exclude) ? f.exclude : (old && old.cfg.exclude) || []).slice(0, 500), vtypes: (Array.isArray(f.vtypes) ? f.vtypes : (old && old.cfg.vtypes) || []).filter((t) => V.VT_IDS.includes(t)), place: clip(f.place != null ? f.place : (old && old.cfg.place) || "", 1500), grades: (Array.isArray(f.grades) ? f.grades : (old && old.cfg.grades) || []).filter((g) => GRADES.includes(g)),
+        pass: f.pass !== undefined ? passCfg(f.pass) || undefined : (old && passCfg(old.cfg.pass)) || undefined,
         ai: f.ai && typeof f.ai === "object" ? { fill: f.ai.fill !== false, variant: num(f.ai.variant, 0, 100, 0), extra: num(f.ai.extra, 0, 60, 0) } : (old && old.cfg.ai) || undefined };
       if (f.reseed) cfg.seed = hash(Date.now() + Math.random(), 12);
       const range = mode === "fixed" ? rangeText(units) : "학생 선택: " + (books.length ? allBooks().filter((x) => books.includes(x.id)).map((x) => x.name).join(", ") : rangeText(units));
@@ -848,6 +851,13 @@ module.exports = async function handler(req, res) {
       if (!pg) return send(502, { error: "notion", msg: "시험지를 저장하지 못했어요.", debug: lastErr });
       if (!old && f.libId) await LIB().used(f.libId).catch(() => {});
       return send(200, { ok: true, paper: Object.assign(pub(readPaper(pg)), { cfg: readPaper(pg).cfg, show: P.chk(pg, "결과 공개"), url: pg.url }) });
+    }
+    if (act === "t_pass_set") { // 📊 응시 결과에서 통과 기준만 바로 바꾸기
+      const old = await getPaper(b.id); if (!old) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." });
+      if (!me.master && old.teacher && old.teacher !== me.name) return send(403, { error: "owner", msg: old.teacher + "이(가) 만든 시험지라 통과 기준을 바꿀 수 없어요." });
+      const cfg = Object.assign({}, old.cfg); const ps = passCfg(b.pass); if (ps) cfg.pass = ps; else delete cfg.pass;
+      const pg = await notion("pages/" + id32(old.id), "PATCH", { properties: { "설정": { rich_text: rtLong(JSON.stringify(cfg)) } } });
+      return pg ? send(200, { ok: true, pass: ps }) : send(502, { error: "notion", msg: "저장하지 못했어요.", debug: lastErr });
     }
     if (act === "t_status") {
       const st = STATUSES.includes(b.status) ? b.status : null; if (!st) return send(400, { error: "input" });

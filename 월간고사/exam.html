@@ -236,7 +236,7 @@
     var r = j.result;
     app.innerHTML = '<div class="box"><p class="sub">' + esc(j.paper.period) + " · " + esc(j.paper.kind) + "</p><h2>" + esc(j.paper.title) + "</h2>" +
       '<p class="sub">✅ ' + esc(ME.name) + " 학생은 이미 이 시험을 봤어요.</p>" +
-      (r ? '<div class="facts"><div class="fact"><b>점수</b><span>' + r.score + " / " + r.total + '</span></div><div class="fact"><b>환산</b><span>' + (r.pct != null ? r.pct + "점" : "-") + '</span></div><div class="fact"><b>평가</b><span>' + esc(r.grade || "-") + "</span></div></div>" + (r.comment ? '<p class="sub" style="margin-top:12px">' + esc(r.comment) + "</p>" : "") : '<p class="sub" style="margin-top:8px">결과는 선생님이 알려 주실 거예요.</p>') +
+      (r ? '<div class="facts"><div class="fact"><b>점수</b><span>' + r.score + " / " + r.total + '</span></div><div class="fact"><b>환산</b><span>' + (r.pct != null ? r.pct + "점" : "-") + '</span></div><div class="fact"><b>평가</b><span>' + esc(r.grade || "-") + "</span></div></div>" + passBadge(j.paper && j.paper.pass, r) + (r.comment ? '<p class="sub" style="margin-top:12px">' + esc(r.comment) + "</p>" : "") : '<p class="sub" style="margin-top:8px">결과는 선생님이 알려 주실 거예요.</p>') +
       '<div class="row"><a class="btn ghost" href="./index.html' + (CLS ? "?c=" + encodeURIComponent(CLS) : "") + '" style="text-decoration:none">시험 목록으로</a><button class="btn ghost" id="notme">다른 학생으로 보기</button></div></div>';
     bindNotMe();
   }
@@ -337,15 +337,21 @@
   }
 
   // ================= 4. 결과 =================
+  function passBadge(ps, r) {
+    if (!ps || !r || r.score == null) return "";
+    var ok = ps.by === "cnt" ? r.score >= ps.v : (r.total ? r.score / r.total * 100 : 0) >= ps.v - 1e-9;
+    var need = ps.by === "cnt" ? ps.v + "개 이상" : ps.v + "점 이상";
+    return '<p style="margin:8px 0 0;font-weight:800;font-size:17px;color:' + (ok ? "#1F6E40" : "#B03A2E") + '">' + (ok ? "✅ 통과! (" + need + ")" : "🔁 재시험이에요 (통과 기준 " + need + ")") + "</p>";
+  }
   function showResult(j, run) {
     window.scrollTo(0, 0);
     if (!j.show || !j.result) {
       app.innerHTML = '<div class="box" style="text-align:center"><h2>🎉 제출 완료!</h2><p class="sub">' + esc(ME.name) + " 학생, 수고했어요. 결과는 선생님이 알려 주실 거예요.</p>" + backRow() + "</div>";
       bindBack(); return;
     }
-    var r = j.result, items = j.items || [];
+    var r = j.result, items = j.items || [], ps = run.paper && run.paper.pass;
     var html = '<div class="box"><p class="sub">' + esc(run.paper.title) + '</p><div class="score" style="margin-top:10px"><div class="ring" style="--p:' + r.pct + '"><span>' + Math.round(r.pct) + "<small>점</small></span></div>" +
-      '<div><h2 style="margin:0">' + r.score + " / " + r.total + " 문항 · " + esc(r.grade) + '</h2><p class="sub">소요 ' + r.mins + "분" + (r.comment ? "<br>" + esc(r.comment) : "") + "</p></div></div></div>";
+      '<div><h2 style="margin:0">' + r.score + " / " + r.total + " 문항 · " + esc(r.grade) + "</h2>" + passBadge(ps, r) + '<p class="sub">소요 ' + r.mins + "분" + (r.comment ? "<br>" + esc(r.comment) : "") + "</p></div></div></div>";
     if (j.units && j.units.length) {
       html += '<div class="box"><h2>📊 단원별 정답률</h2>' + j.units.map(function (u) {
         var p = Math.round(u.r / u.t * 100);

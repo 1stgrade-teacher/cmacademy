@@ -24,7 +24,7 @@ button:disabled{background:#B9CDD0;color:#fff;cursor:default}
 .hint{font-size:12.5px;color:#7A8896;margin-top:6px;line-height:1.55}
 .msg{font-size:14px;line-height:1.5;margin-top:8px}.ok{color:var(--green)}.er{color:var(--red)}
 .tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;position:sticky;top:0;z-index:5;background:#F0F8F8;padding:6px 0}
-tr.dupr td{background:#FFF8E1}tr.redit td{background:#F3FAFA;border-top:0}tr.picked td{background:#FDECEC!important}.recdel{margin:8px 0 4px;gap:10px}.tab{background:#fff;color:var(--ac-ink);border:1px solid var(--line)}.tabs .tg{align-self:center;font-size:11.5px;font-weight:800;color:#8A99A6;padding:0 2px 0 8px;white-space:nowrap}.tabs .tgrp{display:inline-flex;gap:6px;align-items:center;flex-wrap:nowrap;flex:0 0 auto}.tabs .tgrp:first-child .tg{padding-left:0}.tabs .tab{padding:9px 12px;font-size:14px}.tab.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+tr.dupr td{background:#FFF8E1}tr.redit td{background:#F3FAFA;border-top:0}.passrow{margin:10px 0 2px;gap:8px;padding:8px 10px;background:#F7FBFB;border:1px solid var(--line);border-radius:10px}tr.picked td{background:#FDECEC!important}.recdel{margin:8px 0 4px;gap:10px}.tab{background:#fff;color:var(--ac-ink);border:1px solid var(--line)}.tabs .tg{align-self:center;font-size:11.5px;font-weight:800;color:#8A99A6;padding:0 2px 0 8px;white-space:nowrap}.tabs .tgrp{display:inline-flex;gap:6px;align-items:center;flex-wrap:nowrap;flex:0 0 auto}.tabs .tgrp:first-child .tg{padding-left:0}.tabs .tab{padding:9px 12px;font-size:14px}.tab.on{background:var(--ac);color:#fff;border-color:var(--ac)}
 .pill{display:inline-block;font-size:12px;font-weight:700;padding:3px 8px;border-radius:999px;background:#EEF1F3;color:var(--muted);white-space:nowrap}
 .pill.go{background:#DFF5E8;color:var(--green)}.pill.end{background:var(--red-bg);color:var(--red)}.pill.m{background:var(--amber-bg);color:var(--amber)}.pill.q{background:#F1E6FA;color:#6B3FA0}.pill.v{background:#E3F0FF;color:#1F5FA8}
 table.vt{border-collapse:collapse;font-size:13px;width:100%}table.vt th{position:sticky;top:0;background:#F0F8F8;text-align:left;padding:6px 8px;white-space:nowrap}table.vt td{padding:5px 8px;border-top:1px solid var(--line);vertical-align:top}table.vt td.e{background:#FFF6E5}.pill.w{background:#E6F6F4;color:#11706A}.pill.p{background:#FDE8E8;color:#A12A2A}
@@ -204,6 +204,11 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         <div><label class="l">제한시간(분, 0=없음)</label><input id="eMin" type="number" min="0" max="180" value="30"></div>
       </div>
       <div class="hint" id="modeHint"></div>
+      </div>
+      <div id="passBox" style="margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px">
+        <b>✅ 통과 기준</b> <span class="hint" style="margin:0">정해 두면 📊 응시 결과에 <b>통과 / 재시험</b>이 자동으로 표시돼요. (단어시험에 쓰기 좋아요)</span>
+        <div class="row" style="margin-top:8px;gap:8px"><select id="ePassBy" style="width:auto"><option value="">정하지 않음</option><option value="cnt">맞힌 개수가</option><option value="pct">100점 환산 점수가</option></select>
+          <input id="ePassV" type="number" min="1" step="1" style="width:90px" placeholder="예: 18"><span id="ePassU" class="hint" style="margin:0">개 이상이면 통과</span></div>
       </div>
       <div id="placeBox" style="display:none;margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px">
         <b>🎓 대상 학년</b> <span class="hint" style="margin:0">신입생이 등록한 학년의 시험이 맨 위에 「내 학년 시험」으로 나와요. 학년마다 시험지를 따로 만드세요.</span>
@@ -1576,6 +1581,13 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       autoTitle();
     }; });
   }
+  // ---------- ✅ 통과 기준 ----------
+  function passOk(ps, r) { if (!ps || !r || r.missing || r.score == null) return null; return ps.by === "cnt" ? r.score >= ps.v : (r.total ? r.score / r.total * 100 : 0) >= ps.v - 1e-9; }
+  function passText(ps) { return !ps ? "" : ps.by === "cnt" ? ps.v + "개 이상 맞히면 통과" : "100점 환산 " + ps.v + "점 이상이면 통과"; }
+  function passUiSync() { var by = $("ePassBy").value; $("ePassV").disabled = !by; $("ePassU").textContent = by === "pct" ? "점 이상이면 통과" : "개 이상이면 통과"; $("ePassV").max = by === "pct" ? 100 : 1000; }
+  function passLoad(ps) { $("ePassBy").value = ps && ps.by ? ps.by : ""; $("ePassV").value = ps && ps.v ? ps.v : ""; passUiSync(); }
+  function passSend() { var by = $("ePassBy").value, v = +$("ePassV").value; return by && v > 0 ? { by: by, v: v } : null; }
+  $("ePassBy").onchange = function () { passUiSync(); if (this.value && !$("ePassV").value) { $("ePassV").value = this.value === "pct" ? 80 : Math.max(1, Math.round((+$("eCount").value || 20) * 0.8)); } };
   function placeUi() {
     var on = $("eKind").value === "반배정시험"; $("placeBox").style.display = on ? "" : "none"; if (on) gradeUi();
     if (on && !EDIT && Array.prototype.some.call($("eCls").options, function (o) { return o.value === PLACE_CLS; })) { $("eCls").value = PLACE_CLS; autoTitle(); }
@@ -1690,7 +1702,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     setRadio("mode", "fixed"); setRadio("lv", "2"); $("eCount").value = 20; $("eMin").value = 30; $("eStatus").value = "준비중"; $("eShow").checked = true;
     $("eKind").value = "월간평가"; $("eStart").value = kst(); $("eEnd").value = kst(Date.now() + 6 * 864e5);
     $("aiVar").value = "0"; $("aiExtra").value = "0"; $("aiFill").checked = true;
-    $("ePlace").value = ""; PG = []; buildPeriods(); autoTitle(); modeUi(); buildBookFilters(); renderBooks(); vtUi(); placeUi(); $("pv").innerHTML = ""; $("pvInfo").textContent = ""; $("fillBtn").style.display = "none"; $("saveMsg").textContent = "";
+    $("ePlace").value = ""; PG = []; passLoad(null); buildPeriods(); autoTitle(); modeUi(); buildBookFilters(); renderBooks(); vtUi(); placeUi(); $("pv").innerHTML = ""; $("pvInfo").textContent = ""; $("fillBtn").style.display = "none"; $("saveMsg").textContent = "";
   }
   function editPaper(p) {
     if (!mayEdit(p)) { alert((p.teacher || "다른 선생님") + "이(가) 만든 시험지예요. 📄 복제해서 써 주세요."); return; }
@@ -1703,7 +1715,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     $("eStart").value = p.start || ""; $("eEnd").value = p.end || ""; $("eStatus").value = p.status; $("eShow").checked = !!p.show;
     (p.cfg.units || []).forEach(function (u) { SEL[u] = 1; }); (p.cfg.books || []).forEach(function (b) { SELB[b] = 1; }); EXCL = (p.cfg.exclude || []).slice();
     var ai = (p.cfg && p.cfg.ai) || {}; $("aiVar").value = String(ai.variant || 0); $("aiExtra").value = String(ai.extra || 0); $("aiFill").checked = ai.fill !== false;
-    $("ePlace").value = (p.cfg && p.cfg.place) || ""; PG = (p.cfg && p.cfg.grades) || []; modeUi(); renderBooks(); vtUi(); placeUi(); tab("edit");
+    passLoad(p.cfg && p.cfg.pass); $("ePlace").value = (p.cfg && p.cfg.place) || ""; PG = (p.cfg && p.cfg.grades) || []; modeUi(); renderBooks(); vtUi(); placeUi(); tab("edit");
     if (p.takers) $("saveMsg").innerHTML = '<span class="er">⚠ 이미 ' + p.takers + "명이 응시했어요. 범위·문항을 바꾸면 학생마다 시험지가 달라질 수 있어요.</span>";
   }
   function actbarH() { var a = document.querySelector(".actbar"); if (a) document.documentElement.style.setProperty("--abh", a.offsetHeight + "px"); }
@@ -1719,7 +1731,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     setRadio("mode", p.mode); setRadio("lv", String(["기본", "표준", "심화"].indexOf(p.level) + 1)); $("eCount").value = p.count; $("eMin").value = p.minutes; $("eShow").checked = !!p.show;
     (c.units || []).forEach(function (u) { SEL[u] = 1; }); (c.books || []).forEach(function (b) { SELB[b] = 1; }); EXCL = (c.exclude || []).slice();
     var ai = c.ai || {}; $("aiVar").value = String(ai.variant || 0); $("aiExtra").value = String(ai.extra || 0); $("aiFill").checked = ai.fill !== false;
-    $("ePlace").value = c.place || ""; PG = (c.grades || []).slice();
+    passLoad(c.pass); $("ePlace").value = c.place || ""; PG = (c.grades || []).slice();
     PV_SEED = String(c.seed || p.id).replace(/[^\w-]/g, ""); // 원본과 같은 문제
     $("eTitle").value = p.title + " (복제)"; titleTouched = true;
     $("editTitle").textContent = "새 시험지 · 📄 " + p.title + " 복제";
@@ -1829,6 +1841,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     (c.units || []).forEach(function (u) { SEL[u] = 1; });
     VT = c.vtypes && c.vtypes.length ? c.vtypes.slice() : null; VT_FRESH = false;
     var ai = c.ai || {}; $("aiVar").value = String(ai.variant || 0); $("aiExtra").value = String(ai.extra || 0); $("aiFill").checked = ai.fill !== false;
+    passLoad(c.pass);
     EXCL = same ? (c.exclude || []).slice() : [];
     PV_SEED = same && c.seed ? c.seed : Math.random().toString(36).slice(2, 10);
     LIB_USE = { id: t.id, by: t.by, name: t.name, same: same };
@@ -1849,7 +1862,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     var name = prompt("보관함에 넣을 이름 (예: 3연타 DAY 9~10 뜻 고르기 40문항)", base); if (name == null) return; name = name.trim(); if (!name) return;
     var memo = prompt("다른 선생님께 남길 메모 (없으면 비워 두세요)", "") || "";
     $("libSave").disabled = true; $("saveMsg").textContent = "보관함에 저장하는 중…";
-    post({ action: "t_lib_save", item: { id: id, name: name, memo: memo, kind: $("eKind").value, units: units, count: +$("eCount").value, minutes: +$("eMin").value, level: level(), vtypes: vtSend(), exclude: EXCL, seed: seed, ai: aiSend() } }).then(function (j) {
+    post({ action: "t_lib_save", item: { id: id, name: name, memo: memo, kind: $("eKind").value, units: units, count: +$("eCount").value, minutes: +$("eMin").value, level: level(), vtypes: vtSend(), exclude: EXCL, seed: seed, ai: aiSend(), pass: passSend() } }).then(function (j) {
       $("libSave").disabled = false;
       if (!j.ok) { $("saveMsg").innerHTML = '<span class="er">' + esc(j.msg || "보관함에 저장하지 못했어요.") + "</span>"; return; }
       LIB_USE = { id: j.item.id, by: j.item.by, name: j.item.name, same: true };
@@ -1866,7 +1879,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     if (!countOk()) { $("saveMsg").innerHTML = '<span class="er">문항 수는 5~100 사이로 넣어 주세요.</span>'; $("eCount").focus(); return; }
     if ($("eStart").value && $("eEnd").value && $("eEnd").value < $("eStart").value) { $("saveMsg").innerHTML = '<span class="er">응시 마감일이 시작일보다 빨라요. 날짜를 확인해 주세요.</span>'; $("eEnd").focus(); return; }
     var paper = { id: EDIT && EDIT.id, title: $("eTitle").value.trim(), cls: $("eCls").value, kind: $("eKind").value, period: $("ePeriod").value, status: $("eStatus").value, mode: m, level: level(),
-      count: +$("eCount").value, minutes: +$("eMin").value, start: $("eStart").value, end: $("eEnd").value, show: $("eShow").checked, units: units, books: books, exclude: EXCL, reseed: RESEED, vtypes: vtSend(), ai: aiSend(), place: $("ePlace").value.trim(), grades: $("eKind").value === "반배정시험" ? PG.slice() : [] };
+      count: +$("eCount").value, minutes: +$("eMin").value, start: $("eStart").value, end: $("eEnd").value, show: $("eShow").checked, units: units, books: books, exclude: EXCL, reseed: RESEED, vtypes: vtSend(), ai: aiSend(), place: $("ePlace").value.trim(), grades: $("eKind").value === "반배정시험" ? PG.slice() : [], pass: passSend() };
     if (!paper.title) { autoTitle(); paper.title = $("eTitle").value; }
     lsSet("cm-teacher-cls", paper.cls);
     $("saveBtn").disabled = true; $("saveMsg").textContent = "저장하는 중…";
@@ -2491,6 +2504,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     post({ action: "t_results", id: id }).then(function (j) {
       if (!j.ok) { $("rBox").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; }
       var PL = j.paper.kind === "반배정시험";
+      var PS = j.paper.pass || null;
       var DUPS = j.rows.filter(function (r) { return r.dup; }); j.rows = j.rows.filter(function (r) { return !r.dup; }); j.dups = DUPS;
       LAST_RES = j; $("rRep").style.display = j.rows.some(function (r) { return !r.missing; }) ? "" : "none"; $("rProg").innerHTML = ""; $("contactCard").style.display = "";
       var done = j.rows.filter(function (r) { return !r.missing; }), ps = done.map(function (r) { return r.pct || 0; });
@@ -2500,15 +2514,30 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       var um = {}; done.forEach(function (r) { (r.units || []).forEach(function (u) { var k = u.c && u.c !== "단원" ? u.c : u.u; var e = um[k] || (um[k] = { k: k, r: 0, t: 0 }); e.r += u.r; e.t += u.t; }); });
       var ul = Object.keys(um).map(function (k) { return um[k]; }).sort(function (a, b) { return a.r / a.t - b.r / b.t; });
       $("rBox").innerHTML = '<h3>' + esc(j.paper.title) + "</h3>" +
-        '<div class="stat"><div><b>응시</b><span>' + done.length + " / " + j.rows.length + '</span></div><div><b>반 평균</b><span>' + round1(avg) + '</span></div><div><b>최고</b><span>' + (ps.length ? Math.max.apply(null, ps) : "-") + '</span></div><div><b>최저</b><span>' + (ps.length ? Math.min.apply(null, ps) : "-") + "</span></div></div>" +
+        '<div class="stat"><div><b>응시</b><span>' + done.length + " / " + j.rows.length + '</span></div><div><b>반 평균</b><span>' + round1(avg) + '</span></div><div><b>최고</b><span>' + (ps.length ? Math.max.apply(null, ps) : "-") + '</span></div><div><b>최저</b><span>' + (ps.length ? Math.min.apply(null, ps) : "-") + "</span></div>" +
+        (PS ? '<div><b>통과</b><span>' + done.filter(function (r) { return passOk(PS, r); }).length + " / " + done.length + "</span></div>" : "") + "</div>" +
+        '<div class="row passrow"><b style="font-size:13.5px">✅ 통과 기준</b><select id="rPassBy" style="width:auto;padding:5px 8px;font-size:13px"><option value="">정하지 않음</option><option value="cnt">맞힌 개수가</option><option value="pct">100점 환산 점수가</option></select><input id="rPassV" type="number" min="1" step="1" style="width:80px;padding:5px 8px;font-size:13px"><span id="rPassU" class="hint" style="margin:0"></span><button class="sm sub" id="rPassSave">저장</button>' +
+        (PS ? '<span class="hint" style="margin:0">지금: ' + esc(passText(PS)) + " · 재시험 " + done.filter(function (r) { return !passOk(PS, r); }).map(function (r) { return esc(r.name); }).join(", ") + "</span>" : '<span class="hint" style="margin:0">정하면 표에 통과 / 재시험이 바로 표시돼요.</span>') + "</div>" +
         '<div class="row recdel"><label style="margin:0;font-size:13.5px"><input type="checkbox" id="rAll"> 기록 모두 고르기</label><select id="rDate" style="width:auto;padding:5px 8px;font-size:13px" title="그날 본 기록을 모두 골라요"></select><button class="sm sub" id="rDel" disabled>🗑 고른 기록 지우기</button><button class="sm sub" id="rTot" disabled>✏️ 고른 기록 만점 바꾸기</button><span class="hint" style="margin:0">잘못 만든 기록만 골라 지워요. 노션 휴지통으로 가서 30일 안에 되살릴 수 있어요.</span></div>' +
         (DUPS.length ? '<p class="hint" style="margin:6px 0"><span class="pill p">기록 겹침</span> 같은 학생의 기록이 둘 이상인 경우가 ' + DUPS.length + "개 있어요. 아래 표 맨 끝(노란 줄)에 따로 보여 줘요. 위 표의 점수는 가장 최근 기록이에요.</p>" : "") +
-        '<div class="tw"><table><thead><tr><th></th><th>순위</th><th>이름</th><th>점수</th><th>환산</th>' + (PL ? "<th>추천 반</th><th>반 배정</th>" : "") + '<th>시험일</th><th>평가</th><th>소요</th><th>자리비움</th><th>코멘트</th><th>분석 리포트</th><th></th></tr></thead><tbody>' +
-        sorted.concat(DUPS).map(function (r, i) { return "<tr" + (r.dup ? ' class="dupr"' : "") + '><td><input type="checkbox" class="rck" value="' + esc(r.rec) + '" data-name="' + esc(r.name) + '" aria-label="' + esc(r.name) + ' 기록 고르기"></td><td class=num>' + (r.dup ? '<span class="pill p" title="' + esc(r.made) + ' 기록">겹침</span>' : i + 1) + "</td><td><b>" + esc(r.name) + "</b>" + (r.sgrade || r.school ? '<div class="hint" style="margin:0">' + esc([r.sgrade, r.school].filter(Boolean).join(" · ")) + "</div>" : "") + (r.how === "종이" ? ' <span class="pill" title="종이 시험으로 넣은 기록" style="font-size:11px">📄 종이</span>' : "") + "</td><td class=num>" + r.score + "/" + r.total + "</td><td class=num>" + round1(r.pct) + "</td>" + (PL ? "<td><b>" + esc(r.rec2 || "-") + "</b></td><td>" + assignCell(r) + "</td>" : "") + "<td class=num style=\"white-space:nowrap\">" + esc(String(r.date || "").slice(5, 10).replace("-", "/")) + "</td><td>" + esc(r.grade) + "</td><td class=num>" + (r.mins ? r.mins + "분" : "-") + "</td><td class=num>" + (r.away || 0) + "</td><td>" + esc(r.comment) + "</td><td>" + (r.report ? '<a href="' + esc(r.report) + '" target="_blank">📄 보기</a>' : '<span class="hint">-</span>') + '</td><td style="white-space:nowrap"><button class="sm sub" data-redit="' + esc(r.rec) + '" title="점수·평가·코멘트 고치기">✏️ 고치기</button> <a href="' + esc(r.url) + '" target="_blank">기록</a></td></tr>'; }).join("") +
-        j.rows.filter(function (r) { return r.missing; }).map(function (r) { return '<tr class="miss"><td></td><td>-</td><td>' + esc(r.name) + (r.sgrade || r.school ? '<div class="hint" style="margin:0">' + esc([r.sgrade, r.school].filter(Boolean).join(" · ")) + "</div>" : "") + '</td><td colspan="' + (PL ? 11 : 9) + '">미응시 <button class="sm sub" data-radd="' + esc(r.sid) + '" data-name="' + esc(r.name) + '" style="margin-left:8px" title="나중에 종이로 본 점수 넣기">📄 종이 점수 넣기</button>' + (PL ? " · " + assignCell(r) : "") + "</td></tr>"; }).join("") +
+        '<div class="tw"><table><thead><tr><th></th><th>순위</th><th>이름</th><th>점수</th><th>환산</th>' + (PL ? "<th>추천 반</th><th>반 배정</th>" : "") + '<th>시험일</th>' + (PS ? "<th>통과</th>" : "") + '<th>평가</th><th>소요</th><th>자리비움</th><th>코멘트</th><th>분석 리포트</th><th></th></tr></thead><tbody>' +
+        sorted.concat(DUPS).map(function (r, i) { return "<tr" + (r.dup ? ' class="dupr"' : "") + '><td><input type="checkbox" class="rck" value="' + esc(r.rec) + '" data-name="' + esc(r.name) + '" aria-label="' + esc(r.name) + ' 기록 고르기"></td><td class=num>' + (r.dup ? '<span class="pill p" title="' + esc(r.made) + ' 기록">겹침</span>' : i + 1) + "</td><td><b>" + esc(r.name) + "</b>" + (r.sgrade || r.school ? '<div class="hint" style="margin:0">' + esc([r.sgrade, r.school].filter(Boolean).join(" · ")) + "</div>" : "") + (r.how === "종이" ? ' <span class="pill" title="종이 시험으로 넣은 기록" style="font-size:11px">📄 종이</span>' : "") + "</td><td class=num>" + r.score + "/" + r.total + "</td><td class=num>" + round1(r.pct) + "</td>" + (PL ? "<td><b>" + esc(r.rec2 || "-") + "</b></td><td>" + assignCell(r) + "</td>" : "") + "<td class=num style=\"white-space:nowrap\">" + esc(String(r.date || "").slice(5, 10).replace("-", "/")) + "</td>" + (PS ? "<td>" + (passOk(PS, r) ? '<span class="pill go">✅ 통과</span>' : '<span class="pill p">🔁 재시험</span>') + "</td>" : "") + "<td>" + esc(r.grade) + "</td><td class=num>" + (r.mins ? r.mins + "분" : "-") + "</td><td class=num>" + (r.away || 0) + "</td><td>" + esc(r.comment) + "</td><td>" + (r.report ? '<a href="' + esc(r.report) + '" target="_blank">📄 보기</a>' : '<span class="hint">-</span>') + '</td><td style="white-space:nowrap"><button class="sm sub" data-redit="' + esc(r.rec) + '" title="점수·평가·코멘트 고치기">✏️ 고치기</button> <a href="' + esc(r.url) + '" target="_blank">기록</a></td></tr>'; }).join("") +
+        j.rows.filter(function (r) { return r.missing; }).map(function (r) { return '<tr class="miss"><td></td><td>-</td><td>' + esc(r.name) + (r.sgrade || r.school ? '<div class="hint" style="margin:0">' + esc([r.sgrade, r.school].filter(Boolean).join(" · ")) + "</div>" : "") + '</td><td colspan="' + (PL ? 11 : 9) + (PS ? 1 : 0) + '">미응시 <button class="sm sub" data-radd="' + esc(r.sid) + '" data-name="' + esc(r.name) + '" style="margin-left:8px" title="나중에 종이로 본 점수 넣기">📄 종이 점수 넣기</button>' + (PL ? " · " + assignCell(r) : "") + "</td></tr>"; }).join("") +
         "</tbody></table></div>" +
         (ul.length ? "<h3>반 전체 단원별 정답률 (낮은 순)</h3>" + ul.map(function (u) { var p = pct(u.r, u.t); return '<div class="ub"><span>' + esc(u.k) + '</span><span class="bar"><i class="' + (p < 60 ? "low" : "") + '" style="width:' + p + '%"></i></span><b class="num">' + p + "%</b></div>"; }).join("") : "");
       $("rPrint").style.display = done.length ? "" : "none";
+      var pU = function () { var by = $("rPassBy").value; $("rPassV").disabled = !by; $("rPassU").textContent = by ? (by === "pct" ? "점 이상" : "개 이상") : ""; };
+      $("rPassBy").value = PS ? PS.by : ""; $("rPassV").value = PS ? PS.v : ""; pU();
+      $("rPassBy").onchange = function () { pU(); if (this.value && !$("rPassV").value) $("rPassV").value = this.value === "pct" ? 80 : Math.max(1, Math.round((done[0] ? done[0].total : j.paper.count) * 0.8)); };
+      $("rPassSave").onclick = function () {
+        var by = $("rPassBy").value, v = +$("rPassV").value; if (by && !(v > 0)) { alert("기준 숫자를 써 주세요."); return; }
+        var btn = this; btn.disabled = true;
+        post({ action: "t_pass_set", id: j.paper.id, pass: by ? { by: by, v: v } : null }).then(function (d) {
+          btn.disabled = false; if (!d.ok) { alert(d.msg || "저장하지 못했어요."); return; }
+          var pp = (DATA.papers || []).filter(function (x) { return x.id === j.paper.id; })[0]; if (pp) { pp.pass = d.pass; if (pp.cfg) pp.cfg.pass = d.pass || undefined; }
+          loadResults(function () { $("rProg").innerHTML = '<p class="ok">' + (d.pass ? "통과 기준을 저장했어요: " + esc(passText(d.pass)) : "통과 기준을 없앴어요") + " ✓</p>"; });
+        });
+      };
       var cks = $("rBox").querySelectorAll(".rck"), sync = function () { var n = 0; Array.prototype.forEach.call(cks, function (c) { if (c.checked) n++; c.closest("tr").classList.toggle("picked", c.checked); }); $("rDel").disabled = !n; $("rDel").textContent = "🗑 고른 기록 지우기" + (n ? " (" + n + ")" : ""); $("rTot").disabled = !n; $("rAll").checked = !!n && n === cks.length; };
       if (!cks.length) $("rBox").querySelector(".recdel").style.display = "none";
       Array.prototype.forEach.call(cks, function (c) { c.onchange = sync; });
