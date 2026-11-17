@@ -760,6 +760,7 @@ module.exports = async function handler(req, res) {
     const me = await whoTeacher(b.code);
     if (!me) { tFail(ip); return send(401, { error: "code", msg: "선생님 코드가 맞지 않아요." }); }
 
+    if (act === "t_hello") return send(200, { ok: true, me: { name: me.name, master: !!me.master } }); // 메인 화면 선생님 로그인 확인
     if (act === "t_me") { // 내 상담 안내 문구 · 리포트 위치 저장
       const props = { "상담 안내": { rich_text: rt(clip(b.contact, 1500)) }, "리포트 위치": { url: /^https?:\/\//.test(b.reportUrl || "") ? clip(b.reportUrl, 500) : null } };
       const pg = me.id ? await notion("pages/" + me.id, "PATCH", { properties: props })
