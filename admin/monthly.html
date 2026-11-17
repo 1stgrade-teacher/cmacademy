@@ -129,14 +129,16 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
 <meta name="application-name" content="청명 CHECK">
 </head><body><div class="wrap">
 <script src="/admin/nav.js" data-here="monthly"></script>
-<h1><a href="#list" id="homeTitle" title="시험지 목록으로" style="font-size:inherit;font-weight:inherit;text-decoration:none;color:inherit">🗓 TEST 관리</a><span id="meBox" style="margin-left:auto;display:none;font-size:13.5px;font-weight:600;color:#1B2733">👤 <b id="meName"></b> <span id="aiBox" style="display:none;margin-left:10px" title="해설·문항 나누기·AI 보충·리포트에 먼저 쓸 AI">🤖 <select id="aiSel" style="width:auto;padding:4px 6px;font-size:13px"></select> <select id="aiModel" title="같은 AI 안에서 모델(엔진) 고르기" style="width:auto;max-width:190px;padding:4px 6px;font-size:13px"></select> <button class="sm sub" id="aiTest">연결 확인</button></span> <button class="sm sub" id="healthBtn" title="노션·드라이브·AI가 잘 연결됐는지 한 번에 점검">🩺 점검</button> <button class="sm sub" id="logout" style="margin-left:6px">로그아웃</button></span></h1>
+<h1 id="topH1" style="display:none"><a href="#list" id="homeTitle" title="시험지 목록으로" style="font-size:inherit;font-weight:inherit;text-decoration:none;color:inherit">🗓 TEST 관리</a><span id="meBox" style="margin-left:auto;display:none;font-size:13.5px;font-weight:600;color:#1B2733">👤 <b id="meName"></b> <span id="aiBox" style="display:none;margin-left:10px" title="해설·문항 나누기·AI 보충·리포트에 먼저 쓸 AI">🤖 <select id="aiSel" style="width:auto;padding:4px 6px;font-size:13px"></select> <select id="aiModel" title="같은 AI 안에서 모델(엔진) 고르기" style="width:auto;max-width:190px;padding:4px 6px;font-size:13px"></select> <button class="sm sub" id="aiTest">연결 확인</button></span> <button class="sm sub" id="healthBtn" title="노션·드라이브·AI가 잘 연결됐는지 한 번에 점검">🩺 점검</button> <button class="sm sub" id="logout" style="margin-left:6px">로그아웃</button></span></h1>
 <div class="hint" id="aiMsg" style="text-align:right;margin:-6px 0 8px"></div>
 
-<div class="card" id="login">
-  <label class="l">선생님 코드</label>
-  <div class="row"><input id="tcode" type="password" autocomplete="off" placeholder="선생님 전용 코드" style="max-width:260px"><button id="loginBtn">확인</button></div>
-  <div class="hint">'시험 점수 입력' 화면과 같은 코드예요. 한 번 넣으면 이 기기에 저장돼요.</div>
+<div class="card" id="login" style="max-width:520px;margin:28px auto;padding:26px 26px 22px;text-align:left">
+  <div style="font-size:22px;font-weight:800;color:var(--ac-ink);margin-bottom:4px">👩‍🏫 청명학원 선생님 관리</div>
+  <div class="hint" style="margin:0 0 16px">선생님 전용 화면이에요. 시험지·응시 결과·과제·학생·학부모 관리를 모두 여기서 해요.</div>
+  <label class="l" for="tcode">선생님 코드</label>
+  <div class="row"><input id="tcode" type="password" autocomplete="off" placeholder="선생님 전용 코드" style="flex:1;min-width:0"><button id="loginBtn">로그인</button></div>
   <div class="msg er" id="loginMsg"></div>
+  <div class="hint" style="margin-top:12px;line-height:1.7">한 번 로그인하면 이 기기에 저장돼서 점수 입력·플러스 수업·리포트 인쇄 화면도 바로 열려요. 학생과 함께 쓰는 기기에서는 다 쓴 뒤 <b>로그아웃</b>해 주세요.<br>📌 바로 오는 주소: <b>cmacademy.vercel.app/admin</b> — 즐겨찾기(북마크) 해 두세요.</div>
 </div>
 
 <div class="card" id="healthCard" style="display:none"><div class="row" style="justify-content:space-between"><b>🩺 시스템 점검</b><button class="sm sub" id="healthClose">닫기</button></div><div id="healthList"></div></div>
@@ -613,7 +615,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       if (j._s === 401) { $("loginMsg").textContent = j.msg; lsSet("cm-teacher-code", ""); return; }
       if (!j.ok) { $("loginMsg").textContent = j.msg || "불러오지 못했어요."; return; }
       lsSet("cm-teacher-code", CODE);
-      DATA = j; $("login").style.display = "none"; $("main").style.display = "";
+      DATA = j; $("login").style.display = "none"; $("topH1").style.display = ""; $("main").style.display = "";
       $("meBox").style.display = "inline-flex"; $("meName").textContent = j.me.name + (j.me.master ? " (관리자)" : "");
       $("tabTeachers").style.display = j.me.master ? "" : "none";
       $("fMine").checked = !j.me.master;

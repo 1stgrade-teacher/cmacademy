@@ -10,5 +10,22 @@
       "maxDuration": 60,
       "includeFiles": "exam-bank/**"
     }
-  }
+  },
+  "redirects": [
+    {
+      "source": "/admin",
+      "destination": "/admin/monthly.html",
+      "permanent": false
+    },
+    {
+      "source": "/admin/",
+      "destination": "/admin/monthly.html",
+      "permanent": false
+    },
+    {
+      "source": "/teacher",
+      "destination": "/admin/monthly.html",
+      "permanent": false
+    }
+  ]
 }

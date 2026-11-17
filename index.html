@@ -11,51 +11,10 @@
 <meta name="theme-color" content="#ffffff">
 <link rel="stylesheet" href="./style.css">
 <style>
-.tlog{margin:22px 0 6px;text-align:center}
-.tlog-open{background:#fff;border:1px solid var(--border-strong,#CFE5E4);color:var(--accent-ink,#0A5F61);font-weight:700;font-size:14px;padding:9px 18px;border-radius:999px;cursor:pointer;font-family:inherit}
-.tlog-open:hover{background:var(--accent-soft,#F3FAFA)}
-.tlog-box{max-width:460px;margin:0 auto;text-align:left;background:#fff;border:1px solid var(--border,#E6ECEF);border-radius:16px;padding:16px 18px;box-shadow:0 6px 20px rgba(10,60,62,.08)}
-.tlog-h{font-weight:800;color:var(--ink,#1B2733);margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.tlog-row{display:flex;gap:8px}
-.tlog-row input{flex:1;min-width:0;padding:10px 12px;border:1px solid var(--border-strong,#CFE5E4);border-radius:10px;font-size:15px;font-family:inherit}
-.tlog-row button{background:var(--accent,#0E8A8C);color:#fff;border:0;border-radius:10px;padding:10px 16px;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit;white-space:nowrap}
-.tlog-row button:disabled{opacity:.6}
-.tlog-hint{font-size:12.5px;color:var(--muted,#5F6E7C);margin-top:8px;line-height:1.5}
-.tlog-msg{font-size:13.5px;margin-top:6px;color:#C0392B;min-height:1em}
-.tlog-out{margin-left:auto;background:#F3F3F5;border:0;border-radius:8px;padding:5px 10px;font-size:12.5px;font-weight:700;color:var(--muted,#5F6E7C);cursor:pointer;font-family:inherit}
-.tlog-links{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.tlog-links a{display:block;text-align:center;padding:11px 8px;border-radius:12px;background:var(--accent-soft,#F3FAFA);border:1px solid var(--border-strong,#CFE5E4);color:var(--accent-ink,#0A5F61);font-weight:700;text-decoration:none;font-size:14.5px}
-.tlog-links a:first-child{background:var(--accent,#0E8A8C);border-color:var(--accent,#0E8A8C);color:#fff}
+.tbar{display:flex;justify-content:flex-end;margin:0 0 6px}
+.tbar a{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:#fff;border:1px solid var(--border-strong,#CFE5E4);color:var(--accent-ink,#0A5F61);font-weight:700;font-size:13.5px;text-decoration:none;box-shadow:0 2px 8px rgba(10,60,62,.06)}
+.tbar a:hover{background:var(--accent-soft,#F3FAFA)}
 </style>
-<script>
-(function () {
-  var KEY = "cm-teacher-code", $ = function (i) { return document.getElementById(i); };
-  function get() { try { return localStorage.getItem(KEY) || ""; } catch (e) { return ""; } }
-  function set(v) { try { if (v) localStorage.setItem(KEY, v); else localStorage.removeItem(KEY); } catch (e) {} }
-  function show(name) { $("tlBox").hidden = false; $("tlOpen").hidden = true; $("tlForm").hidden = !!name; $("tlIn").hidden = !name; if (name) $("tlName").textContent = name + " 선생님 ✓"; }
-  function check(code) {
-    return fetch("/api/monthly", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "t_hello", code: code }) })
-      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { j._s = r.status; return j; }); });
-  }
-  function go() {
-    var code = $("tlCode").value.trim(); if (!code) { $("tlMsg").textContent = "코드를 넣어 주세요."; $("tlCode").focus(); return; }
-    $("tlGo").disabled = true; $("tlMsg").style.color = "#5F6E7C"; $("tlMsg").textContent = "확인하는 중…";
-    check(code).then(function (j) {
-      $("tlGo").disabled = false; $("tlMsg").style.color = "";
-      if (j.ok) { set(code); $("tlMsg").textContent = ""; $("tlCode").value = ""; show(j.me.name); location.href = "/admin/monthly.html#list"; return; }
-      $("tlMsg").textContent = j._s === 401 ? "선생님 코드가 맞지 않아요." : j._s === 429 ? "여러 번 틀려서 잠시 막혔어요. 조금 뒤에 다시 해 주세요." : (j.msg || "지금 확인하지 못했어요. 잠시 뒤 다시 해 주세요.");
-    }).catch(function () { $("tlGo").disabled = false; $("tlMsg").textContent = "인터넷 연결을 확인해 주세요."; });
-  }
-  document.addEventListener("DOMContentLoaded", function () {
-    $("tlOpen").onclick = function () { show(""); $("tlCode").focus(); };
-    $("tlGo").onclick = go;
-    $("tlCode").onkeydown = function (e) { if (e.key === "Enter") go(); };
-    $("tlOut").onclick = function () { set(""); show(""); $("tlMsg").textContent = "로그아웃했어요."; };
-    var saved = get();
-    if (saved) check(saved).then(function (j) { if (j.ok) show(j.me.name); else if (j._s === 401) set(""); }).catch(function () {});
-  });
-})();
-</script>
 </head>
 <body>
 
@@ -66,6 +25,7 @@
 </div>
 
 <div class="wrap">
+  <div class="tbar"><a href="/admin/monthly.html" title="선생님 전용 관리 화면">👩‍🏫 선생님 관리 →</a></div>
   <div class="hero">
     <p class="eyebrow">일등급쌤, 저스틴쌤, 로미쌤의</p>
     <span class="mark has-logo"><img src="./logo.webp" alt="청명학원 문화본원 로고"></span>
@@ -156,24 +116,6 @@
     </span>
     <span class="sl-arrow">→</span>
   </a>
-
-  <section class="tlog" id="tlog" aria-label="선생님 로그인">
-    <button type="button" class="tlog-open" id="tlOpen">👩‍🏫 선생님 로그인</button>
-    <div class="tlog-box" id="tlBox" hidden>
-      <div id="tlForm">
-        <div class="tlog-h">👩‍🏫 선생님 로그인</div>
-        <div class="tlog-row"><input id="tlCode" type="password" autocomplete="off" placeholder="선생님 코드" aria-label="선생님 코드"><button type="button" id="tlGo">들어가기</button></div>
-        <div class="tlog-hint">TEST 관리에서 쓰는 코드예요. 이 기기에 저장돼서 다음부터는 묻지 않아요. 학생과 함께 쓰는 기기에서는 다 쓴 뒤 로그아웃해 주세요.</div>
-        <div class="tlog-msg" id="tlMsg"></div>
-      </div>
-      <div id="tlIn" hidden>
-        <div class="tlog-h"><span id="tlName"></span> <button type="button" class="tlog-out" id="tlOut">로그아웃</button></div>
-        <div class="tlog-links">
-          <a href="/admin/monthly.html#list">🗓 TEST 관리</a><a href="/admin/exam.html">📝 점수 입력</a><a href="/admin/plus.html#time">🏫 플러스 수업</a><a href="/admin/print.html">🖨️ 리포트 인쇄</a>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <footer>&copy; 2026 청명학원 문화본원 수업저장소</footer>
 </div>
