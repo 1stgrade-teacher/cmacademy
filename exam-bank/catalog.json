@@ -1,5 +1,5 @@
 {
- "built": "2026-11-11T05:44:53.226Z",
+ "built": "2026-11-17T03:58:36.475Z",
  "books": [
   {
    "id": "bb391852c",
@@ -5849,7 +5849,7 @@
    "grade": "중1",
    "name": "중1 천재소 교과서",
    "path": "교과서/중1/천재소",
-   "n": 43,
+   "n": 63,
    "chapters": [
     {
      "key": "4과",
@@ -5928,16 +5928,160 @@
        "lv": 1.4
       },
       {
+       "id": "u55d87a89",
+       "name": "문법 · What's Reading 70 A Ch1 Unit 01",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8db9db6b",
+       "name": "문법 · What's Reading 70 A Ch1 Unit 02",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u98ee24fe",
+       "name": "문법 · What's Reading 70 A Ch1 Unit 03",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u505d7fb8",
+       "name": "문법 · What's Reading 70 A Ch1 Unit 04",
+       "n": 0,
+       "lv": null
+      },
+      {
        "id": "u2577d2ae",
        "name": "문법 · 중1 천재(소) 6과 문법1 to부정사 (부사적 용법) — to부정사 (부사적 용법)",
        "n": 4,
        "lv": 2
       },
       {
+       "id": "u27ccd3b7",
+       "name": "문법 · What's Reading 70 A Ch2 Unit 01",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u3469276a",
+       "name": "문법 · What's Reading 70 A Ch2 Unit 02",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud3a43e3a",
+       "name": "문법 · What's Reading 70 A Ch2 Unit 03",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub10aab29",
+       "name": "문법 · What's Reading 70 A Ch2 Unit 04",
+       "n": 0,
+       "lv": null
+      },
+      {
        "id": "uadc8133e",
        "name": "문법 · 중1 천재(소) 6과 문법2 접속사 that — 접속사 that",
        "n": 9,
        "lv": 1.4
+      },
+      {
+       "id": "u920f6359",
+       "name": "문법 · What's Reading 70 A Ch3 Unit 01",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u54ef69b8",
+       "name": "문법 · What's Reading 70 A Ch3 Unit 02",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uae19ef90",
+       "name": "문법 · What's Reading 70 A Ch3 Unit 03",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u9e902492",
+       "name": "문법 · What's Reading 70 A Ch3 Unit 04",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ufb299e29",
+       "name": "문법 · What's Reading 70 A Ch4 Unit 01",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud206b41c",
+       "name": "문법 · What's Reading 70 A Ch4 Unit 02",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u56cd9cb6",
+       "name": "문법 · What's Reading 70 A Ch4 Unit 03",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u44a0a9bd",
+       "name": "문법 · What's Reading 70 A Ch4 Unit 04",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u033283d1",
+       "name": "문법 · What's Reading 70 A Ch5 Unit 01",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u72f5920a",
+       "name": "문법 · What's Reading 70 A Ch5 Unit 02",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc02c28a9",
+       "name": "문법 · What's Reading 70 A Ch5 Unit 03",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ueabd69ed",
+       "name": "문법 · What's Reading 70 A Ch5 Unit 04",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2a852a1a",
+       "name": "문법 · 중1 천재(이) 8과 대화문 A. Listen and Watch (1) — A. Listen and Watch (1)",
+       "n": 5,
+       "lv": 1.4
+      },
+      {
+       "id": "ue873547e",
+       "name": "문법 · 중1 천재(이) 8과 대화문 A. Listen and Watch (2) — A. Listen and Watch (2)",
+       "n": 5,
+       "lv": 1.4
+      },
+      {
+       "id": "u5eec9058",
+       "name": "문법 · 중1 천재(이) 8과 대화문 A. Listen and Watch (3) — . Listen and Watch (3)",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "u2178dcca",
+       "name": "문법 · 중1 천재(이) 8과 대화문 C. Watch and Do — C. Watch and Do",
+       "n": 5,
+       "lv": 1.2
       },
       {
        "id": "ue4cbc00d",
