@@ -24,7 +24,7 @@ button:disabled{background:#B9CDD0;color:#fff;cursor:default}
 .hint{font-size:12.5px;color:#7A8896;margin-top:6px;line-height:1.55}
 .msg{font-size:14px;line-height:1.5;margin-top:8px}.ok{color:var(--green)}.er{color:var(--red)}
 .tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;position:sticky;top:0;z-index:5;background:#F0F8F8;padding:6px 0}
-.tab{background:#fff;color:var(--ac-ink);border:1px solid var(--line)}.tab.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.tab{background:#fff;color:var(--ac-ink);border:1px solid var(--line)}.tabs .tg{align-self:center;font-size:11.5px;font-weight:800;color:#8A99A6;padding:0 2px 0 8px;white-space:nowrap}.tabs .tgrp{display:inline-flex;gap:6px;align-items:center;flex-wrap:nowrap;flex:0 0 auto}.tabs .tgrp:first-child .tg{padding-left:0}.tabs .tab{padding:9px 12px;font-size:14px}.tab.on{background:var(--ac);color:#fff;border-color:var(--ac)}
 .pill{display:inline-block;font-size:12px;font-weight:700;padding:3px 8px;border-radius:999px;background:#EEF1F3;color:var(--muted);white-space:nowrap}
 .pill.go{background:#DFF5E8;color:var(--green)}.pill.end{background:var(--red-bg);color:var(--red)}.pill.m{background:var(--amber-bg);color:var(--amber)}.pill.q{background:#F1E6FA;color:#6B3FA0}.pill.v{background:#E3F0FF;color:#1F5FA8}
 table.vt{border-collapse:collapse;font-size:13px;width:100%}table.vt th{position:sticky;top:0;background:#F0F8F8;text-align:left;padding:6px 8px;white-space:nowrap}table.vt td{padding:5px 8px;border-top:1px solid var(--line);vertical-align:top}table.vt td.e{background:#FFF6E5}.pill.w{background:#E6F6F4;color:#11706A}.pill.p{background:#FDE8E8;color:#A12A2A}
@@ -41,7 +41,7 @@ table.vt{border-collapse:collapse;font-size:13px;width:100%}table.vt th{position
 .fl .filters{margin:0}
 .actbar{position:sticky;bottom:0;z-index:6;background:#fff;border-top:2px solid var(--ac-bg);box-shadow:0 -4px 14px rgba(10,60,62,.10);border-radius:14px 14px 0 0;padding:10px 14px;margin-top:4px}
 .actbar .steps{font-size:12.5px;color:#7A8896;margin-top:6px}.actbar .steps b{color:var(--ac-ink)}
-@media(max-width:700px){.tabs{position:static}.actbar{padding:8px 10px}.actbar .steps{display:none}.actbar button{padding:8px 10px;font-size:13.5px}#meBox{flex-wrap:wrap;gap:6px;margin-left:0!important}}
+@media(max-width:700px){.tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-left:-4px;margin-right:-4px;padding:6px 4px}.tabs::-webkit-scrollbar{display:none}.tabs .tab{flex:0 0 auto;padding:8px 12px;font-size:13.5px}.actbar{padding:8px 10px}.actbar .steps{display:none}.actbar button{padding:8px 10px;font-size:13.5px}#meBox{flex-wrap:wrap;gap:6px;margin-left:0!important}}
 details.libf{border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-top:10px}details.libf>summary{cursor:pointer;font-weight:800;color:var(--ac-ink);font-size:15px;padding:4px 0}
 details.more{margin-top:6px}details.more summary{cursor:pointer;font-size:12.5px;color:var(--ac-ink);font-weight:600}
 /* 범위 고르기 */
@@ -128,7 +128,8 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
 <meta name="apple-mobile-web-app-title" content="청명 CHECK">
 <meta name="application-name" content="청명 CHECK">
 </head><body><div class="wrap">
-<h1>🗓 TEST 관리 <a href="./exam.html">📝 점수 직접 입력 →</a> <a href="../월간고사/index.html" target="_blank">👀 학생 화면 →</a><span id="meBox" style="margin-left:auto;display:none;font-size:13.5px;font-weight:600;color:#1B2733">👤 <b id="meName"></b> <span id="aiBox" style="display:none;margin-left:10px" title="해설·문항 나누기·AI 보충·리포트에 먼저 쓸 AI">🤖 <select id="aiSel" style="width:auto;padding:4px 6px;font-size:13px"></select> <select id="aiModel" title="같은 AI 안에서 모델(엔진) 고르기" style="width:auto;max-width:190px;padding:4px 6px;font-size:13px"></select> <button class="sm sub" id="aiTest">연결 확인</button></span> <button class="sm sub" id="healthBtn" title="노션·드라이브·AI가 잘 연결됐는지 한 번에 점검">🩺 점검</button> <button class="sm sub" id="logout" style="margin-left:6px">로그아웃</button></span></h1>
+<script src="/admin/nav.js" data-here="monthly"></script>
+<h1><a href="#list" id="homeTitle" title="시험지 목록으로" style="font-size:inherit;font-weight:inherit;text-decoration:none;color:inherit">🗓 TEST 관리</a><span id="meBox" style="margin-left:auto;display:none;font-size:13.5px;font-weight:600;color:#1B2733">👤 <b id="meName"></b> <span id="aiBox" style="display:none;margin-left:10px" title="해설·문항 나누기·AI 보충·리포트에 먼저 쓸 AI">🤖 <select id="aiSel" style="width:auto;padding:4px 6px;font-size:13px"></select> <select id="aiModel" title="같은 AI 안에서 모델(엔진) 고르기" style="width:auto;max-width:190px;padding:4px 6px;font-size:13px"></select> <button class="sm sub" id="aiTest">연결 확인</button></span> <button class="sm sub" id="healthBtn" title="노션·드라이브·AI가 잘 연결됐는지 한 번에 점검">🩺 점검</button> <button class="sm sub" id="logout" style="margin-left:6px">로그아웃</button></span></h1>
 <div class="hint" id="aiMsg" style="text-align:right;margin:-6px 0 8px"></div>
 
 <div class="card" id="login">
@@ -141,21 +142,22 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
 <div class="card" id="healthCard" style="display:none"><div class="row" style="justify-content:space-between"><b>🩺 시스템 점검</b><button class="sm sub" id="healthClose">닫기</button></div><div id="healthList"></div></div>
 
 <div id="main" style="display:none">
-  <div class="tabs">
+  <div class="tabs" role="tablist">
+    <span class="tgrp"><span class="tg">시험</span>
     <button class="tab on" data-tab="list">📋 시험지 목록</button>
     <button class="tab" data-tab="edit" id="tabEdit">➕ 새 시험지</button>
     <button class="tab" data-tab="lib">📦 보관함</button>
     <button class="tab" data-tab="results" id="tabRes">📊 응시 결과</button>
     <button class="tab" data-tab="report">📈 분기 리포트</button>
+    </span><span class="tgrp"><span class="tg">자료·학습</span>
     <button class="tab" data-tab="import">📚 자료 올리기</button>
     <button class="tab" data-tab="hw">📸 과제</button>
     <button class="tab" data-tab="game">🎮 단어 게임</button>
-    <button class="tab" data-tab="stu">🧑‍🎓 학생</button>
     <button class="tab" data-tab="cert">📺 학습 인증</button>
-    <a href="/admin/plus.html#time" style="display:inline-flex;align-items:center;text-decoration:none;background:#fff;color:var(--ac-ink);border:1px solid var(--line);border-radius:10px;padding:10px 15px;font-weight:700;font-size:14.5px">🏫 플러스 수업</a>
-    <a href="/admin/print.html" style="display:inline-flex;align-items:center;text-decoration:none;background:#fff;color:var(--ac-ink);border:1px solid var(--line);border-radius:10px;padding:10px 15px;font-weight:700;font-size:14.5px">🖨️ 리포트 인쇄</a>
+    </span><span class="tgrp"><span class="tg">학생·학부모</span>
+    <button class="tab" data-tab="stu">🧑‍🎓 학생</button>
     <button class="tab" data-tab="pm" id="tabPm">💬 학부모</button>
-    <button class="tab" data-tab="teachers" id="tabTeachers" style="display:none">👩‍🏫 선생님</button>
+    <button class="tab" data-tab="teachers" id="tabTeachers" style="display:none">👩‍🏫 선생님</button></span>
   </div>
 
   <div class="card" id="contactCard" style="display:none">
@@ -621,6 +623,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       buildAiSel(j); pmBadge();
       fillClassSelects(); renderList(); buildPeriods(); buildQuarters(); buildBookFilters();
       var h = (location.hash || "").slice(1); if (h === "hw") { hwOpen(); tab("hw"); } else if (h === "game") { gmLoad(); rkLoad(); tab("game"); } else if (h === "stu") { stOpen(); tab("stu"); } else if (h === "cert") { ctOpen(); tab("cert"); } else if (h === "pm") { pmOpen(); tab("pm"); } else if (h === "lib") { libLoad(); tab("lib"); } else if (/^(results|report|import)$/.test(h) || (h === "teachers" && j.me.master)) { if (h === "results") fillResultSelect(); if (h === "teachers") loadTeachers(); if (h === "import") mkFill(); tab(h); }
+      tab.first = false;
     });
   }
   $("logout").onclick = function () { lsSet("cm-teacher-code", ""); location.reload(); };
@@ -1453,9 +1456,17 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) { t.classList.toggle("on", t.getAttribute("data-tab") === name); });
     ["list", "edit", "lib", "results", "report", "teachers", "import", "hw", "game", "stu", "cert", "pm"].forEach(function (n) { $("v-" + n).style.display = n === name ? "" : "none"; });
     $("contactCard").style.display = name === "results" || name === "report" ? "" : "none";
-    try { history.replaceState(null, "", "#" + name); } catch (e) {}
+    if (!tab.fromPop) { try { if ((location.hash || "").slice(1) !== name) history[tab.first ? "replaceState" : "pushState"]({ tab: name }, "", "#" + name); } catch (e) {} }
+    tab.first = false; tab.fromPop = false;
+    var cur = document.querySelector('.tab[data-tab="' + name + '"]'); if (cur && cur.scrollIntoView && window.innerWidth <= 700) try { cur.scrollIntoView({ block: "nearest", inline: "center" }); } catch (e) {}
     window.scrollTo(0, 0);
   }
+  tab.first = true;
+  // 탭 열기 (불러오기까지) — 위 이동 줄의 「🗓 TEST 관리」, 제목 클릭, 브라우저 뒤로 가기에서 같이 써요
+  window.cmGoTab = function (n, fromPop) { var t = document.querySelector('.tab[data-tab="' + n + '"]'); if (!t || t.style.display === "none") n = "list", t = document.querySelector('.tab[data-tab="list"]'); tab.fromPop = !!fromPop; t.onclick(); };
+  window.addEventListener("popstate", function () { if ($("main").style.display === "none") return; window.cmGoTab((location.hash || "#list").slice(1) || "list", true); });
+  $("homeTitle").onclick = function (e) { e.preventDefault(); if ($("main").style.display !== "none") window.cmGoTab("list"); };
+  window.addEventListener("beforeunload", function (e) { if (!EDIT_DONE && editBusy() && $("v-edit").style.display !== "none") { e.preventDefault(); e.returnValue = ""; } });
   Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) {
     t.onclick = function () { var n = t.getAttribute("data-tab"); if (n === "edit") { if (EDIT_DONE || !editBusy()) newPaper(); } if (n === "lib") libLoad(); if (n === "import") mkFill(); if (n === "results") fillResultSelect(); if (n === "teachers") loadTeachers(); if (n === "hw") hwOpen(); if (n === "game") { gmLoad(); rkLoad(); } if (n === "stu") stOpen(); if (n === "cert") ctOpen(); if (n === "pm") pmOpen(); tab(n); };
   });
