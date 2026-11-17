@@ -2504,8 +2504,8 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         '<div class="row recdel"><label style="margin:0;font-size:13.5px"><input type="checkbox" id="rAll"> 기록 모두 고르기</label><button class="sm sub" id="rDel" disabled>🗑 고른 기록 지우기</button><button class="sm sub" id="rTot" disabled>✏️ 고른 기록 만점 바꾸기</button><span class="hint" style="margin:0">잘못 만든 기록만 골라 지워요. 노션 휴지통으로 가서 30일 안에 되살릴 수 있어요.</span></div>' +
         (DUPS.length ? '<p class="hint" style="margin:6px 0"><span class="pill p">기록 겹침</span> 같은 학생의 기록이 둘 이상인 경우가 ' + DUPS.length + "개 있어요. 아래 표 맨 끝(노란 줄)에 따로 보여 줘요. 위 표의 점수는 가장 최근 기록이에요.</p>" : "") +
         '<div class="tw"><table><thead><tr><th></th><th>순위</th><th>이름</th><th>점수</th><th>환산</th>' + (PL ? "<th>추천 반</th><th>반 배정</th>" : "") + '<th>평가</th><th>소요</th><th>자리비움</th><th>코멘트</th><th>분석 리포트</th><th></th></tr></thead><tbody>' +
-        sorted.concat(DUPS).map(function (r, i) { return "<tr" + (r.dup ? ' class="dupr"' : "") + '><td><input type="checkbox" class="rck" value="' + esc(r.rec) + '" data-name="' + esc(r.name) + '" aria-label="' + esc(r.name) + ' 기록 고르기"></td><td class=num>' + (r.dup ? '<span class="pill p" title="' + esc(r.made) + ' 기록">겹침</span>' : i + 1) + "</td><td><b>" + esc(r.name) + "</b>" + (r.sgrade || r.school ? '<div class="hint" style="margin:0">' + esc([r.sgrade, r.school].filter(Boolean).join(" · ")) + "</div>" : "") + "</td><td class=num>" + r.score + "/" + r.total + "</td><td class=num>" + round1(r.pct) + "</td>" + (PL ? "<td><b>" + esc(r.rec2 || "-") + "</b></td><td>" + assignCell(r) + "</td>" : "") + "<td>" + esc(r.grade) + "</td><td class=num>" + (r.mins || "-") + "분</td><td class=num>" + (r.away || 0) + "</td><td>" + esc(r.comment) + "</td><td>" + (r.report ? '<a href="' + esc(r.report) + '" target="_blank">📄 보기</a>' : '<span class="hint">-</span>') + '</td><td style="white-space:nowrap"><button class="sm sub" data-redit="' + esc(r.rec) + '" title="점수·평가·코멘트 고치기">✏️ 고치기</button> <a href="' + esc(r.url) + '" target="_blank">기록</a></td></tr>'; }).join("") +
-        j.rows.filter(function (r) { return r.missing; }).map(function (r) { return '<tr class="miss"><td></td><td>-</td><td>' + esc(r.name) + (r.sgrade || r.school ? '<div class="hint" style="margin:0">' + esc([r.sgrade, r.school].filter(Boolean).join(" · ")) + "</div>" : "") + '</td><td colspan="' + (PL ? 10 : 8) + '">미응시' + (PL ? " · " + assignCell(r) : "") + "</td></tr>"; }).join("") +
+        sorted.concat(DUPS).map(function (r, i) { return "<tr" + (r.dup ? ' class="dupr"' : "") + '><td><input type="checkbox" class="rck" value="' + esc(r.rec) + '" data-name="' + esc(r.name) + '" aria-label="' + esc(r.name) + ' 기록 고르기"></td><td class=num>' + (r.dup ? '<span class="pill p" title="' + esc(r.made) + ' 기록">겹침</span>' : i + 1) + "</td><td><b>" + esc(r.name) + "</b>" + (r.sgrade || r.school ? '<div class="hint" style="margin:0">' + esc([r.sgrade, r.school].filter(Boolean).join(" · ")) + "</div>" : "") + (r.how === "종이" ? ' <span class="pill" title="종이 시험으로 넣은 기록" style="font-size:11px">📄 종이</span>' : "") + "</td><td class=num>" + r.score + "/" + r.total + "</td><td class=num>" + round1(r.pct) + "</td>" + (PL ? "<td><b>" + esc(r.rec2 || "-") + "</b></td><td>" + assignCell(r) + "</td>" : "") + "<td>" + esc(r.grade) + "</td><td class=num>" + (r.mins || "-") + "분</td><td class=num>" + (r.away || 0) + "</td><td>" + esc(r.comment) + "</td><td>" + (r.report ? '<a href="' + esc(r.report) + '" target="_blank">📄 보기</a>' : '<span class="hint">-</span>') + '</td><td style="white-space:nowrap"><button class="sm sub" data-redit="' + esc(r.rec) + '" title="점수·평가·코멘트 고치기">✏️ 고치기</button> <a href="' + esc(r.url) + '" target="_blank">기록</a></td></tr>'; }).join("") +
+        j.rows.filter(function (r) { return r.missing; }).map(function (r) { return '<tr class="miss"><td></td><td>-</td><td>' + esc(r.name) + (r.sgrade || r.school ? '<div class="hint" style="margin:0">' + esc([r.sgrade, r.school].filter(Boolean).join(" · ")) + "</div>" : "") + '</td><td colspan="' + (PL ? 10 : 8) + '">미응시 <button class="sm sub" data-radd="' + esc(r.sid) + '" data-name="' + esc(r.name) + '" style="margin-left:8px" title="나중에 종이로 본 점수 넣기">📄 종이 점수 넣기</button>' + (PL ? " · " + assignCell(r) : "") + "</td></tr>"; }).join("") +
         "</tbody></table></div>" +
         (ul.length ? "<h3>반 전체 단원별 정답률 (낮은 순)</h3>" + ul.map(function (u) { var p = pct(u.r, u.t); return '<div class="ub"><span>' + esc(u.k) + '</span><span class="bar"><i class="' + (p < 60 ? "low" : "") + '" style="width:' + p + '%"></i></span><b class="num">' + p + "%</b></div>"; }).join("") : "");
       $("rPrint").style.display = done.length ? "" : "none";
@@ -2538,6 +2538,40 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         v = Number(String(v).trim()); if (!(v > 0)) { alert("만점은 0보다 큰 숫자로 써 주세요."); return; }
         saveEdits(pick.map(function (c) { return { rec: c.value, total: v }; }), this);
       };
+      // 📄 미응시 학생의 종이 시험 점수 넣기
+      var totals = {}; done.forEach(function (r) { totals[r.total] = (totals[r.total] || 0) + 1; });
+      var defTotal = Object.keys(totals).sort(function (a, b) { return totals[b] - totals[a]; })[0] || j.paper.count || "";
+      var todayK = new Date(Date.now() + 9 * 3600000).toISOString().slice(0, 10);
+      Array.prototype.forEach.call($("rBox").querySelectorAll("[data-radd]"), function (bt) {
+        bt.onclick = function () {
+          var tr = bt.closest("tr"), nx = tr.nextElementSibling; if (nx && nx.classList.contains("redit")) { nx.remove(); return; }
+          var sid = bt.getAttribute("data-radd"), name = bt.getAttribute("data-name");
+          var ed = document.createElement("tr"); ed.className = "redit";
+          ed.innerHTML = '<td colspan="' + tr.children.length + '"><div class="row" style="gap:10px;align-items:flex-end;padding:6px 0">' +
+            '<div><label class="l">점수</label><input type="number" min="0" step="0.5" class="eS" style="width:90px"></div>' +
+            '<div><label class="l">만점</label><input type="number" min="1" step="1" class="eT" value="' + esc(defTotal) + '" style="width:90px"></div>' +
+            '<div><label class="l">시험 본 날</label><input type="date" class="eD" value="' + todayK + '" style="width:auto"></div>' +
+            '<div><label class="l">평가</label><select class="eG" style="width:auto"><option value="">자동 (점수로)</option><option>우수</option><option>양호</option><option>보통</option><option>노력 필요</option></select></div>' +
+            '<div style="flex:1;min-width:200px"><label class="l">코멘트</label><input class="eC" placeholder="비워 두면 「종이 시험」"></div>' +
+            '<div class="row" style="gap:6px"><button class="sm eOk">💾 넣기</button><button class="sm sub eNo">취소</button></div></div>' +
+            '<div class="hint" style="margin:0 0 4px"><b>' + esc(name) + '</b> 학생이 종이로 본 점수를 넣어요. 기록에 <b>📄 종이</b>로 표시되고, 반 평균·분기 리포트·🗂 모아 보기에 함께 들어가요.' + (PL ? " 반배정시험이면 추천 반도 계산돼요." : "") + "</div></td>";
+          tr.parentNode.insertBefore(ed, tr.nextSibling);
+          var q = function (c) { return ed.querySelector(c); };
+          q(".eNo").onclick = function () { ed.remove(); };
+          var go = function () {
+            var sc = Number(q(".eS").value), to = Number(q(".eT").value);
+            if (q(".eS").value === "" || !(to > 0) || !(sc >= 0) || sc > to) { alert("점수는 0부터 만점 사이로 써 주세요."); q(".eS").focus(); return; }
+            var b2 = q(".eOk"); b2.disabled = true; b2.textContent = "넣는 중…";
+            post({ action: "t_rec_add", paper: j.paper.id, sid: sid, score: sc, total: to, date: q(".eD").value, grade: q(".eG").value, comment: q(".eC").value }).then(function (d) {
+              if (!d.ok) { b2.disabled = false; b2.textContent = "💾 넣기"; alert(d.msg || "넣지 못했어요."); return; }
+              loadResults(function () { $("rProg").innerHTML = '<p class="ok">' + esc(name) + " 학생의 종이 시험 점수(" + sc + "/" + to + ")를 넣었어요 ✓</p>"; });
+            });
+          };
+          q(".eOk").onclick = go;
+          [".eS", ".eT", ".eC"].forEach(function (c) { q(c).onkeydown = function (e) { if (e.key === "Enter") go(); }; });
+          q(".eS").focus();
+        };
+      });
       Array.prototype.forEach.call($("rBox").querySelectorAll("[data-redit]"), function (bt) {
         bt.onclick = function () {
           var tr = bt.closest("tr"), nx = tr.nextElementSibling; if (nx && nx.classList.contains("redit")) { nx.remove(); return; }

@@ -862,6 +862,30 @@ module.exports = async function handler(req, res) {
       const pg = await notion("pages/" + id32(b.id), "PATCH", { archived: true });
       return pg ? send(200, { ok: true }) : send(502, { error: "notion", msg: "지우지 못했어요.", debug: lastErr });
     }
+    if (act === "t_rec_add") { // 📊 응시 결과: 미응시 학생이 나중에 종이로 본 점수 넣기
+      const pp = await getPaper(b.paper); if (!pp) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." });
+      if (!me.master && pp.teacher && pp.teacher !== me.name) return send(403, { error: "owner", msg: pp.teacher + "이(가) 만든 시험지의 기록은 " + pp.teacher + "이나 관리자만 넣을 수 있어요." });
+      const sid = normId(clip(b.sid, 60)), st = sid && await notion("pages/" + id32(sid), "GET", null, 2);
+      if (!st || st.archived || normId(st.parent && st.parent.database_id) !== normId(STUDENT_DB())) return send(404, { error: "nf", msg: "학생을 찾지 못했어요." });
+      const att = await findAttempt(pp.id, sid);
+      if (att === undefined) return send(502, { error: "notion", msg: "기록을 확인하지 못했어요. 잠시 뒤 다시 해 주세요.", debug: lastErr });
+      if (att) return send(409, { error: "dup", msg: "이 학생은 이미 기록이 있어요. 표를 새로고침한 뒤 ✏️ 고치기로 바꿔 주세요." });
+      const total = Number(b.total), score = Number(b.score);
+      if (!(total > 0 && total <= 1000) || !(score >= 0 && score <= total) || Math.round(score * 2) !== score * 2) return send(400, { error: "input", msg: "점수는 0~만점 사이로 써 주세요." });
+      const date = /^\d{4}-\d{2}-\d{2}$/.test(b.date || "") ? b.date : today(), pct = Math.round(score / total * 1000) / 10;
+      const GR = ["우수", "양호", "보통", "노력 필요"];
+      let rec2 = "";
+      if (pp.kind === "반배정시험" || (pp.cfg && pp.cfg.place)) { const grade = P.sel(st, "학년"); rec2 = (placeRec(pp.cfg.place, grade, pct) || (pp.cfg.place ? "기준에 맞는 반 없음" : "기준 미설정")) + " (" + (grade || "학년 ?") + " · " + pct + "점)"; }
+      const props = {
+        "시험명": { title: rt(pp.title) }, "학생": { relation: [{ id: uuid(sid) }] }, "시험지": { relation: [{ id: uuid(pp.id) }] }, "반": sel(pp.cls), "종류": sel(pp.kind || "월간평가"),
+        "시험일": { date: { start: date } }, "시험 범위": { rich_text: rt(clip(pp.range || "", 1900)) }, "점수": { number: score }, "만점": { number: total },
+        "종합 평가": sel(GR.includes(b.grade) ? b.grade : gradeOf(pct)), "코멘트": { rich_text: rt(clip(typeof b.comment === "string" && b.comment.trim() ? b.comment : "종이 시험", 1900)) }, "응시 방식": sel("종이"),
+        ...(Number.isInteger(score) && Number.isInteger(total) ? { "오답 수": { number: total - score } } : {}),
+        ...(rec2 ? { "추천 반": { rich_text: rt(rec2) } } : {}),
+      };
+      const pg = await notion("pages", "POST", { parent: { database_id: EXAM_DB() }, properties: props }, 2);
+      return pg ? send(200, { ok: true, rec: normId(pg.id) }) : send(502, { error: "notion", msg: "기록을 넣지 못했어요. 노션 연결을 확인해 주세요.", debug: lastErr });
+    }
     if (act === "t_rec_edit") { // 📊 응시 결과에서 점수·만점·평가·코멘트 직접 고치기 (여러 기록 만점 한꺼번에도)
       const pp = await getPaper(b.paper); if (!pp) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." });
       if (!me.master && pp.teacher && pp.teacher !== me.name) return send(403, { error: "owner", msg: pp.teacher + "이(가) 만든 시험지의 기록은 " + pp.teacher + "이나 관리자만 고칠 수 있어요." });
@@ -994,7 +1018,7 @@ module.exports = async function handler(req, res) {
       const done = new Map([...byS].map(([k, v]) => [k, v[0]]));
       const list = (ros || []).map((s) => ({ name: s.name, sid: s.id })).concat([...done.keys()].filter((k) => !(ros || []).some((s) => s.id === k)).map((k) => ({ name: "(다른 반 학생)", sid: k })));
       const info = new Map((ros || []).map((s) => [s.id, s]));
-      const recRow = (s, st, p) => Object.assign({ name: s.name, sid: s.sid, sgrade: st.grade || "", school: st.school || "", rec2: P.text(p, "추천 반"), url: p.url, rec: normId(p.id), made: String(p.created_time || "").slice(0, 16), report: (p.properties["분석 리포트"] || {}).url || "", mins: P.num(p, "소요시간(분)"), away: P.num(p, "자리비움"), units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }, attemptSummary(p));
+      const recRow = (s, st, p) => Object.assign({ name: s.name, sid: s.sid, sgrade: st.grade || "", school: st.school || "", rec2: P.text(p, "추천 반"), url: p.url, rec: normId(p.id), made: String(p.created_time || "").slice(0, 16), how: P.sel(p, "응시 방식"), report: (p.properties["분석 리포트"] || {}).url || "", mins: P.num(p, "소요시간(분)"), away: P.num(p, "자리비움"), units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }, attemptSummary(p));
       const out = list.map((s) => { const p = done.get(s.sid), st = info.get(s.sid) || {}; return p ? recRow(s, st, p) : { name: s.name, sid: s.sid, sgrade: st.grade || "", school: st.school || "", missing: true }; });
       list.forEach((s) => (byS.get(s.sid) || []).slice(1).forEach((p) => out.push(Object.assign(recRow(s, info.get(s.sid) || {}, p), { dup: true }))));
       return send(200, { ok: true, paper: pub(pp), rows: out });
