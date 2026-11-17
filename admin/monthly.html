@@ -24,7 +24,7 @@ button:disabled{background:#B9CDD0;color:#fff;cursor:default}
 .hint{font-size:12.5px;color:#7A8896;margin-top:6px;line-height:1.55}
 .msg{font-size:14px;line-height:1.5;margin-top:8px}.ok{color:var(--green)}.er{color:var(--red)}
 .tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;position:sticky;top:0;z-index:5;background:#F0F8F8;padding:6px 0}
-.tab{background:#fff;color:var(--ac-ink);border:1px solid var(--line)}.tabs .tg{align-self:center;font-size:11.5px;font-weight:800;color:#8A99A6;padding:0 2px 0 8px;white-space:nowrap}.tabs .tgrp{display:inline-flex;gap:6px;align-items:center;flex-wrap:nowrap;flex:0 0 auto}.tabs .tgrp:first-child .tg{padding-left:0}.tabs .tab{padding:9px 12px;font-size:14px}.tab.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+tr.dupr td{background:#FFF8E1}tr.picked td{background:#FDECEC!important}.recdel{margin:8px 0 4px;gap:10px}.tab{background:#fff;color:var(--ac-ink);border:1px solid var(--line)}.tabs .tg{align-self:center;font-size:11.5px;font-weight:800;color:#8A99A6;padding:0 2px 0 8px;white-space:nowrap}.tabs .tgrp{display:inline-flex;gap:6px;align-items:center;flex-wrap:nowrap;flex:0 0 auto}.tabs .tgrp:first-child .tg{padding-left:0}.tabs .tab{padding:9px 12px;font-size:14px}.tab.on{background:var(--ac);color:#fff;border-color:var(--ac)}
 .pill{display:inline-block;font-size:12px;font-weight:700;padding:3px 8px;border-radius:999px;background:#EEF1F3;color:var(--muted);white-space:nowrap}
 .pill.go{background:#DFF5E8;color:var(--green)}.pill.end{background:var(--red-bg);color:var(--red)}.pill.m{background:var(--amber-bg);color:var(--amber)}.pill.q{background:#F1E6FA;color:#6B3FA0}.pill.v{background:#E3F0FF;color:#1F5FA8}
 table.vt{border-collapse:collapse;font-size:13px;width:100%}table.vt th{position:sticky;top:0;background:#F0F8F8;text-align:left;padding:6px 8px;white-space:nowrap}table.vt td{padding:5px 8px;border-top:1px solid var(--line);vertical-align:top}table.vt td.e{background:#FFF6E5}.pill.w{background:#E6F6F4;color:#11706A}.pill.p{background:#FDE8E8;color:#A12A2A}
@@ -2489,6 +2489,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     post({ action: "t_results", id: id }).then(function (j) {
       if (!j.ok) { $("rBox").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; }
       var PL = j.paper.kind === "반배정시험";
+      var DUPS = j.rows.filter(function (r) { return r.dup; }); j.rows = j.rows.filter(function (r) { return !r.dup; }); j.dups = DUPS;
       LAST_RES = j; $("rRep").style.display = j.rows.some(function (r) { return !r.missing; }) ? "" : "none"; $("rProg").innerHTML = ""; $("contactCard").style.display = "";
       var done = j.rows.filter(function (r) { return !r.missing; }), ps = done.map(function (r) { return r.pct || 0; });
       var avg = ps.length ? ps.reduce(function (a, b) { return a + b; }, 0) / ps.length : null;
@@ -2498,12 +2499,28 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       var ul = Object.keys(um).map(function (k) { return um[k]; }).sort(function (a, b) { return a.r / a.t - b.r / b.t; });
       $("rBox").innerHTML = '<h3>' + esc(j.paper.title) + "</h3>" +
         '<div class="stat"><div><b>응시</b><span>' + done.length + " / " + j.rows.length + '</span></div><div><b>반 평균</b><span>' + round1(avg) + '</span></div><div><b>최고</b><span>' + (ps.length ? Math.max.apply(null, ps) : "-") + '</span></div><div><b>최저</b><span>' + (ps.length ? Math.min.apply(null, ps) : "-") + "</span></div></div>" +
-        '<div class="tw"><table><thead><tr><th>순위</th><th>이름</th><th>점수</th><th>환산</th>' + (PL ? "<th>추천 반</th><th>반 배정</th>" : "") + '<th>평가</th><th>소요</th><th>자리비움</th><th>코멘트</th><th>분석 리포트</th><th></th></tr></thead><tbody>' +
-        sorted.map(function (r, i) { return "<tr><td class=num>" + (i + 1) + "</td><td><b>" + esc(r.name) + "</b>" + (r.sgrade || r.school ? '<div class="hint" style="margin:0">' + esc([r.sgrade, r.school].filter(Boolean).join(" · ")) + "</div>" : "") + "</td><td class=num>" + r.score + "/" + r.total + "</td><td class=num>" + round1(r.pct) + "</td>" + (PL ? "<td><b>" + esc(r.rec2 || "-") + "</b></td><td>" + assignCell(r) + "</td>" : "") + "<td>" + esc(r.grade) + "</td><td class=num>" + (r.mins || "-") + "분</td><td class=num>" + (r.away || 0) + "</td><td>" + esc(r.comment) + "</td><td>" + (r.report ? '<a href="' + esc(r.report) + '" target="_blank">📄 보기</a>' : '<span class="hint">-</span>') + '</td><td><a href="' + esc(r.url) + '" target="_blank">기록</a></td></tr>'; }).join("") +
-        j.rows.filter(function (r) { return r.missing; }).map(function (r) { return '<tr class="miss"><td>-</td><td>' + esc(r.name) + (r.sgrade || r.school ? '<div class="hint" style="margin:0">' + esc([r.sgrade, r.school].filter(Boolean).join(" · ")) + "</div>" : "") + '</td><td colspan="' + (PL ? 10 : 8) + '">미응시' + (PL ? " · " + assignCell(r) : "") + "</td></tr>"; }).join("") +
+        '<div class="row recdel"><label style="margin:0;font-size:13.5px"><input type="checkbox" id="rAll"> 기록 모두 고르기</label><button class="sm sub" id="rDel" disabled>🗑 고른 기록 지우기</button><span class="hint" style="margin:0">잘못 만든 기록만 골라 지워요. 노션 휴지통으로 가서 30일 안에 되살릴 수 있어요.</span></div>' +
+        (DUPS.length ? '<p class="hint" style="margin:6px 0"><span class="pill p">기록 겹침</span> 같은 학생의 기록이 둘 이상인 경우가 ' + DUPS.length + "개 있어요. 아래 표 맨 끝(노란 줄)에 따로 보여 줘요. 위 표의 점수는 가장 최근 기록이에요.</p>" : "") +
+        '<div class="tw"><table><thead><tr><th></th><th>순위</th><th>이름</th><th>점수</th><th>환산</th>' + (PL ? "<th>추천 반</th><th>반 배정</th>" : "") + '<th>평가</th><th>소요</th><th>자리비움</th><th>코멘트</th><th>분석 리포트</th><th></th></tr></thead><tbody>' +
+        sorted.concat(DUPS).map(function (r, i) { return "<tr" + (r.dup ? ' class="dupr"' : "") + '><td><input type="checkbox" class="rck" value="' + esc(r.rec) + '" data-name="' + esc(r.name) + '" aria-label="' + esc(r.name) + ' 기록 고르기"></td><td class=num>' + (r.dup ? '<span class="pill p" title="' + esc(r.made) + ' 기록">겹침</span>' : i + 1) + "</td><td><b>" + esc(r.name) + "</b>" + (r.sgrade || r.school ? '<div class="hint" style="margin:0">' + esc([r.sgrade, r.school].filter(Boolean).join(" · ")) + "</div>" : "") + "</td><td class=num>" + r.score + "/" + r.total + "</td><td class=num>" + round1(r.pct) + "</td>" + (PL ? "<td><b>" + esc(r.rec2 || "-") + "</b></td><td>" + assignCell(r) + "</td>" : "") + "<td>" + esc(r.grade) + "</td><td class=num>" + (r.mins || "-") + "분</td><td class=num>" + (r.away || 0) + "</td><td>" + esc(r.comment) + "</td><td>" + (r.report ? '<a href="' + esc(r.report) + '" target="_blank">📄 보기</a>' : '<span class="hint">-</span>') + '</td><td><a href="' + esc(r.url) + '" target="_blank">기록</a></td></tr>'; }).join("") +
+        j.rows.filter(function (r) { return r.missing; }).map(function (r) { return '<tr class="miss"><td></td><td>-</td><td>' + esc(r.name) + (r.sgrade || r.school ? '<div class="hint" style="margin:0">' + esc([r.sgrade, r.school].filter(Boolean).join(" · ")) + "</div>" : "") + '</td><td colspan="' + (PL ? 10 : 8) + '">미응시' + (PL ? " · " + assignCell(r) : "") + "</td></tr>"; }).join("") +
         "</tbody></table></div>" +
         (ul.length ? "<h3>반 전체 단원별 정답률 (낮은 순)</h3>" + ul.map(function (u) { var p = pct(u.r, u.t); return '<div class="ub"><span>' + esc(u.k) + '</span><span class="bar"><i class="' + (p < 60 ? "low" : "") + '" style="width:' + p + '%"></i></span><b class="num">' + p + "%</b></div>"; }).join("") : "");
       $("rPrint").style.display = done.length ? "" : "none";
+      var cks = $("rBox").querySelectorAll(".rck"), sync = function () { var n = 0; Array.prototype.forEach.call(cks, function (c) { if (c.checked) n++; c.closest("tr").classList.toggle("picked", c.checked); }); $("rDel").disabled = !n; $("rDel").textContent = "🗑 고른 기록 지우기" + (n ? " (" + n + ")" : ""); $("rAll").checked = !!n && n === cks.length; };
+      if (!cks.length) $("rBox").querySelector(".recdel").style.display = "none";
+      Array.prototype.forEach.call(cks, function (c) { c.onchange = sync; });
+      $("rAll").onchange = function () { var on = this.checked; Array.prototype.forEach.call(cks, function (c) { c.checked = on; }); sync(); };
+      $("rDel").onclick = function () {
+        var pick = Array.prototype.filter.call(cks, function (c) { return c.checked; }); if (!pick.length) return;
+        var names = pick.map(function (c) { return c.getAttribute("data-name"); });
+        if (!confirm("「" + j.paper.title + "」 기록 " + pick.length + "개를 지울까요?\n\n" + names.slice(0, 12).join(", ") + (names.length > 12 ? " 외 " + (names.length - 12) + "명" : "") + "\n\n지운 기록은 점수·리포트·모아 보기에서 빠지고, 학생은 다시 응시할 수 있어요. (노션 휴지통에서 30일 안에 되살릴 수 있어요)")) return;
+        var btn = this; btn.disabled = true; btn.textContent = "지우는 중…";
+        post({ action: "t_rec_delete", paper: j.paper.id, ids: pick.map(function (c) { return c.value; }) }).then(function (d) {
+          if (!d.ok) { btn.disabled = false; sync(); alert(d.msg || "지우지 못했어요."); return; }
+          loadResults(function () { $("rProg").innerHTML = '<p class="' + (d.failed ? "er" : "ok") + '">기록 ' + d.deleted + "개를 지웠어요." + (d.failed ? " " + d.failed + "개는 지우지 못했어요(이미 지워졌거나 이 시험지 기록이 아니에요)." : " ✓") + "</p>"; });
+        });
+      };
       Array.prototype.forEach.call($("rBox").querySelectorAll("[data-assign]"), function (bt) {
         bt.onclick = function () {
           var sel = bt.previousElementSibling, sid = bt.getAttribute("data-assign"), cls = sel.value; if (!cls) return;

@@ -862,6 +862,21 @@ module.exports = async function handler(req, res) {
       const pg = await notion("pages/" + id32(b.id), "PATCH", { archived: true });
       return pg ? send(200, { ok: true }) : send(502, { error: "notion", msg: "지우지 못했어요.", debug: lastErr });
     }
+    if (act === "t_rec_delete") { // 📊 응시 결과에서 고른 기록 지우기 (노션 휴지통으로, 30일 안에 되살릴 수 있어요)
+      const pp = await getPaper(b.paper); if (!pp) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." });
+      if (!me.master && pp.teacher && pp.teacher !== me.name) return send(403, { error: "owner", msg: pp.teacher + "이(가) 만든 시험지의 기록은 " + pp.teacher + "이나 관리자만 지울 수 있어요." });
+      const ids = [...new Set((Array.isArray(b.ids) ? b.ids : []).map((x) => normId(clip(x, 60))).filter(Boolean))].slice(0, 100);
+      if (!ids.length) return send(400, { error: "input", msg: "지울 기록을 골라 주세요." });
+      const res = [];
+      for (const id of ids) {
+        const p = await notion("pages/" + id32(id), "GET", null, 2);
+        // 이 시험지의 기록만 지울 수 있어요 (다른 DB·다른 시험지 기록은 건드리지 않아요)
+        if (!p || p.archived || !p.parent || normId(p.parent.database_id) !== normId(EXAM_DB()) || !P.rel(p, "시험지").map(normId).includes(normId(pp.id))) { res.push({ id, ok: false }); continue; }
+        res.push({ id, ok: !!(await notion("pages/" + id32(id), "PATCH", { archived: true }, 2)) });
+      }
+      const n = res.filter((x) => x.ok).length;
+      return send(200, { ok: true, deleted: n, failed: res.length - n });
+    }
     if (act === "t_students") { const l = await roster(clip(b.cls, 40)); return l ? send(200, { ok: true, students: l.map((x) => ({ id: x.id, name: x.name, hasPin: x.hasPin, grade: x.grade, school: x.school, phone: x.phone, mute: x.mute })) }) : send(502, { error: "notion", msg: "명단을 불러오지 못했어요.", debug: lastErr }); }
     if (act === "t_students_all") { const a = await STU().all(); return a ? send(200, Object.assign({ ok: true }, a)) : send(502, { error: "notion", msg: "학생 명단을 불러오지 못했어요.", debug: lastErr }); }
     if (act === "t_class_add" || act === "t_class_rename" || act === "t_class_delete") { // 🏫 반 만들기·이름 바꾸기·지우기
@@ -956,10 +971,14 @@ module.exports = async function handler(req, res) {
       const pp = await getPaper(b.id); if (!pp) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." });
       const [rows, ros] = await Promise.all([queryAll(EXAM_DB(), { filter: { property: "시험지", relation: { contains: uuid(pp.id) } } }, 3), roster(pp.cls)]);
       if (!rows) return send(502, { error: "notion", msg: "결과를 불러오지 못했어요.", debug: lastErr });
-      const done = new Map(rows.map((p) => [P.rel(p, "학생")[0], p]));
+      // 학생 한 명의 기록이 둘 이상이면(잘못 두 번 저장 등) 최신 기록을 대표로, 나머지는 따로 보여 줘서 골라 지울 수 있게 해요
+      const byS = new Map(); rows.slice().sort((x, y) => String(y.created_time).localeCompare(String(x.created_time))).forEach((p) => { const k = P.rel(p, "학생")[0]; (byS.get(k) || byS.set(k, []).get(k)).push(p); });
+      const done = new Map([...byS].map(([k, v]) => [k, v[0]]));
       const list = (ros || []).map((s) => ({ name: s.name, sid: s.id })).concat([...done.keys()].filter((k) => !(ros || []).some((s) => s.id === k)).map((k) => ({ name: "(다른 반 학생)", sid: k })));
       const info = new Map((ros || []).map((s) => [s.id, s]));
-      const out = list.map((s) => { const p = done.get(s.sid), st = info.get(s.sid) || {}; return p ? Object.assign({ name: s.name, sid: s.sid, sgrade: st.grade || "", school: st.school || "", rec2: P.text(p, "추천 반"), url: p.url, rec: normId(p.id), report: (p.properties["분석 리포트"] || {}).url || "", mins: P.num(p, "소요시간(분)"), away: P.num(p, "자리비움"), units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }, attemptSummary(p)) : { name: s.name, sid: s.sid, sgrade: st.grade || "", school: st.school || "", missing: true }; });
+      const recRow = (s, st, p) => Object.assign({ name: s.name, sid: s.sid, sgrade: st.grade || "", school: st.school || "", rec2: P.text(p, "추천 반"), url: p.url, rec: normId(p.id), made: String(p.created_time || "").slice(0, 16), report: (p.properties["분석 리포트"] || {}).url || "", mins: P.num(p, "소요시간(분)"), away: P.num(p, "자리비움"), units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }, attemptSummary(p));
+      const out = list.map((s) => { const p = done.get(s.sid), st = info.get(s.sid) || {}; return p ? recRow(s, st, p) : { name: s.name, sid: s.sid, sgrade: st.grade || "", school: st.school || "", missing: true }; });
+      list.forEach((s) => (byS.get(s.sid) || []).slice(1).forEach((p) => out.push(Object.assign(recRow(s, info.get(s.sid) || {}, p), { dup: true }))));
       return send(200, { ok: true, paper: pub(pp), rows: out });
     }
     if (act === "t_report") { // 분기(또는 기간) 리포트: 반의 월간·분기 평가를 학생별로 모음
