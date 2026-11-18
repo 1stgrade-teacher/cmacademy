@@ -1848,10 +1848,11 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     $("pvInfo").textContent = "만드는 중…"; $("pvBtn").disabled = true;
     var seed = EDIT && !RESEED ? (EDIT.cfg.seed || EDIT.id) : (PV_SEED = PV_SEED || Math.random().toString(36).slice(2, 10));
     var aiS = aiSend(); if (aiS.variant || aiS.extra) $("pvInfo").textContent = "🧠 AI가 문제를 만드는 중… (처음엔 30초~1분 걸려요)";
-    post({ action: "t_preview", kind: $("eKind").value, units: units.slice(0, 300), count: +$("eCount").value, level: level(), exclude: EXCL, seed: seed, vtypes: vtSend(), mode: mode(), aiOpt: aiS }).then(function (j) {
+    post({ action: "t_preview", kind: $("eKind").value, units: units.slice(0, 300), count: +$("eCount").value, level: level(), exclude: EXCL, seed: seed, vtypes: vtSend(), mode: mode(), aiOpt: aiS, sections: $("eKind").value === "반배정시험" ? secGet() : undefined }).then(function (j) {
       $("pvBtn").disabled = false;
       if (!j.ok) { $("pvInfo").textContent = j.msg || "미리보기를 만들지 못했어요."; return; }
       var empty = j.stats.filter(function (s) { return !s.bank && !s.ai; });
+      if (j.sections && j.lack && j.lack.length) setTimeout(function () { $("pvInfo").innerHTML += ' · <span class="er">⚠ 문제가 모자라는 영역: ' + esc(j.lack.join(", ")) + "</span>"; }, 0);
       $("pvInfo").innerHTML = (mode() === "choice" ? "예시 시험지 (학생마다 달라요) · " : "") + "고른 범위 문항 " + j.total + "개 중 " + j.items.length + "문항" + (j.total < +$("eCount").value ? ' · <span class="er">문항이 모자라요</span>' : "") + (empty.length ? ' · <span class="er">문제 없는 과 ' + empty.length + "개</span>" : "");
       var nAiV = j.items.filter(function (q) { return q.kind === "AI 변형"; }).length, nAiN = j.items.filter(function (q) { return q.ai && q.kind !== "AI 변형"; }).length;
       if (nAiV || nAiN) $("pvInfo").innerHTML += " · 🧠 AI 변형 " + nAiV + "개 · AI 새 문제 " + nAiN + "개";

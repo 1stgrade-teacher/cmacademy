@@ -905,6 +905,12 @@ module.exports = async function handler(req, res) {
         return send(200, { ok: true, listen: true, stats: uids.map((u) => ({ u, name: unitIndex.get(u).name, bank: (unitData(u) || { qs: [] }).qs.filter((q) => q.type === "mc").length, ai: 0 })), total: all.length, range: rangeText(uids),
           items: picked.map((q) => ({ id: q.id, type: q.type, lv: q.lv, ai: false, kind: q.kind || "", q: q.q, sub: q.sub, opts: q.opts, ans: q.ans, answer: q.answer, exp: q.exp, audio: q.audio || "", unit: (unitIndex.get(q.u) || {}).name })) });
       }
+      const psec = cleanSections(b.sections);
+      if (psec.length) { // 📐 영역별 구성(반배정시험): 영역 순서대로, 시험지에 실제로 들어갈 문항 그대로
+        const sp = sectionPick({ cfg: { sections: psec, exclude: (b.exclude || []).slice(0, 500) } }, uids), items = [];
+        let k = 0; psec.forEach((sec) => { let c = 0; sp.picked.filter((q) => (unitIndex.get(q.u) || {}).area === sec.area).forEach((q) => { c++; k++; items.push({ id: q.id, type: q.type, lv: q.lv, ai: false, kind: q.kind || "", q: q.q, sub: q.sub, opts: q.opts, ans: q.ans, anss: q.anss, accept: q.accept, answer: q.answer, words: q.words, exp: q.exp, audio: q.audio || "", area: sec.area, ch: sec.area + " " + c + "/" + sec.n + " · " + sec.pts + "점 만점", unit: (unitIndex.get(q.u) || {}).name, custom: true }); }); });
+        return send(200, { ok: true, sections: true, lack: sp.lack, stats: uids.map((u) => ({ u, name: unitIndex.get(u).name, bank: (unitData(u) || { qs: [] }).qs.length, ai: 0 })), total: items.length, range: rangeText(uids), items });
+      }
       const opt = aiOpt(pp.cfg);
       if (opt) {
         const r = await composeSheet(pp, uids, pp.cfg.seed, opt);
@@ -1570,4 +1576,4 @@ module.exports = async function handler(req, res) {
   return send(400, { error: "action" });
 };
 // 시험용 내부 함수 (로컬 점검에서 씀)
-module.exports._t = { audioPath, AUDIO_TYPES, canTake, targetOf, targetText, cleanAudioDir, listenMode, cleanSections, assignPoints, hasSections, placeRec, expandAccept, shortOk, pick, buildSheet, seal, unseal, grade, unitStats, rangeText, loadCatalog, unitData, poolFor, rngOf };
+module.exports._t = { sectionPick, get unitIndex() { return unitIndex; }, custom, audioPath, AUDIO_TYPES, canTake, targetOf, targetText, cleanAudioDir, listenMode, cleanSections, assignPoints, hasSections, placeRec, expandAccept, shortOk, pick, buildSheet, seal, unseal, grade, unitStats, rangeText, loadCatalog, unitData, poolFor, rngOf };
