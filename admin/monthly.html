@@ -225,7 +225,11 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
           <tr data-a="독해"><td>📖 독해</td><td><input class="sn" type="number" min="0" max="100" style="width:80px"></td><td><input class="sp" type="number" min="0" max="1000" step="0.5" style="width:80px"></td><td class="sq"></td></tr>
           <tr data-a="어휘"><td>🔤 어휘</td><td><input class="sn" type="number" min="0" max="100" style="width:80px"></td><td><input class="sp" type="number" min="0" max="1000" step="0.5" style="width:80px"></td><td class="sq"></td></tr></table>
         <div id="secSum" class="hint" style="margin:0 0 6px"></div>
-        <label style="display:flex;gap:8px;align-items:center;margin:4px 0 14px;font-size:14px"><input type="checkbox" id="eSpeaker" style="width:auto"> 🔊 <b>스피커 모드</b> — 듣기는 교실 스피커로 틀고, 학생 화면에는 번호와 ①~⑤ 답안카드만 보여요</label>
+        <div style="margin:6px 0 14px;font-size:14px"><b>🎧 듣기 방식</b>
+          <select id="eListen" style="width:auto;margin-left:8px"><option value="both">현장에서 고르기 (학생 화면에 두 가지 버튼)</option><option value="speaker">🔊 교실 스피커로 듣기 (답안카드만)</option><option value="device">🎧 태블릿에서 직접 듣기 (문제마다 ▶ 재생)</option></select>
+          <div class="row" style="margin:8px 0 0;gap:6px;align-items:center"><span>음원 폴더</span><input id="eAudio" placeholder="예: /듣기/반배정/초6/" style="max-width:260px"><button type="button" class="sm sub" id="eAudioTry">▶ 1번 들어보기</button></div>
+          <div class="hint" style="margin:4px 0 0">태블릿에서 들을 때 쓰는 음원이에요. 이 폴더의 <b>1.mp3 ~ 20.mp3</b>가 듣기 1~20번 음원이 돼요. 스피커로만 볼 땐 비워 둬도 돼요.</div>
+          <audio id="eAudioPv" controls preload="none" style="display:none;margin-top:6px;width:100%;max-width:360px"></audio></div>
         <b>🆕 반배정 추천 기준</b> <span class="hint" style="margin:0">학생은 못 보고, 결과 화면과 노션에만 「추천 반」으로 나와요. 비워 두면 점수만 보여요.</span>
         <textarea id="ePlace" rows="4" style="margin-top:8px" placeholder="학년: 점수 반, 점수 반 … (높은 점수부터, 한 줄에 한 학년)&#10;중1: 90 중1 사관반, 70 중1 S반, 0 중1 I반&#10;중2: 85 중2 일등급반, 60 중2 S반, 0 중2 I반&#10;80 중3 일등급반, 0 기타   ← 학년 없이 쓰면 나머지 학년 모두"></textarea>
         <div class="hint" style="margin:4px 0 0">학생 화면 → <b>🆕 처음 왔어요</b>에서 신입생이 이름·학교·학년을 쓰고 스스로 등록하면 「신입 반배정」 반 학생이 돼요. 이 시험지의 반은 <b>신입 반배정</b>으로 두세요.</div>
@@ -1598,7 +1602,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   function secUi(secs, sp) { // 영역별 구성 칸 채우기 (저장된 값이 없으면 기본: 듣기20·문법20·독해10·어휘20 / 20·30·30·20점)
     var by = {}; (secs || []).forEach(function (x) { by[x.area] = x; });
     Array.prototype.forEach.call($("secTbl").querySelectorAll("tr[data-a]"), function (tr) { var a = tr.getAttribute("data-a"), d = (secs && secs.length) ? (by[a] || { n: 0, pts: 0 }) : { n: SECD[a][0], pts: SECD[a][1] }; tr.querySelector(".sn").value = d.n; tr.querySelector(".sp").value = d.pts; });
-    $("eSpeaker").checked = !!sp; secSum();
+    $("eListen").value = sp && sp.listen ? sp.listen : sp === true || (sp && sp.speaker) ? "speaker" : "both"; $("eAudio").value = (sp && sp.audioDir) || ""; $("eAudioPv").style.display = "none"; secSum();
   }
   function secGet() {
     var out = []; Array.prototype.forEach.call($("secTbl").querySelectorAll("tr[data-a]"), function (tr) { var n = +tr.querySelector(".sn").value || 0, p = +tr.querySelector(".sp").value || 0; if (n > 0 && p > 0) out.push({ area: tr.getAttribute("data-a"), n: n, pts: p }); }); return out;
@@ -1608,6 +1612,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     $("secSum").innerHTML = "합계 <b>" + n + "문제 · " + (Math.round(p * 10) / 10) + "점</b>" + (Math.round(p * 10) / 10 === 100 ? " ✅" : ' <span class="er">⚠ 합이 100점이 아니에요</span>'); if (n) $("eCount").value = Math.min(100, n);
   }
   document.addEventListener("input", function (e) { if (e.target && e.target.closest && e.target.closest("#secTbl")) secSum(); });
+  $("eAudioTry").onclick = function () { var d = $("eAudio").value.trim(); if (!d) { alert("음원 폴더를 먼저 써 주세요."); return; } if (d.slice(-1) !== "/") d += "/"; var a = $("eAudioPv"); a.style.display = ""; a.src = encodeURI(d + "1.mp3"); a.onerror = function () { alert("1.mp3를 찾지 못했어요. 폴더 주소를 확인해 주세요."); }; a.play().catch(function () {}); };
   // ---------- 👥 공통 시험 대상 ----------
   var COMMON_CLS = "공통 시험", TG = { type: "", grades: [], classes: [] };
   var GR_ALL = ["초1", "초2", "초3", "초4", "초5", "초6", "중1", "중2", "중3", "고1", "고2", "고3"];
@@ -1761,7 +1766,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     setRadio("mode", "fixed"); setRadio("lv", "2"); $("eCount").value = 20; $("eMin").value = 30; $("eStatus").value = "준비중"; $("eShow").checked = true;
     $("eKind").value = "월간평가"; $("eStart").value = kst(); $("eEnd").value = kst(Date.now() + 6 * 864e5);
     $("aiVar").value = "0"; $("aiExtra").value = "0"; $("aiFill").checked = true;
-    $("ePlace").value = ""; PG = []; passLoad(null); tgtLoad(null); secUi(null, false); buildPeriods(); autoTitle(); modeUi(); buildBookFilters(); renderBooks(); vtUi(); placeUi(); $("pv").innerHTML = ""; $("pvInfo").textContent = ""; $("fillBtn").style.display = "none"; $("saveMsg").textContent = "";
+    $("ePlace").value = ""; PG = []; passLoad(null); tgtLoad(null); secUi(null, null); buildPeriods(); autoTitle(); modeUi(); buildBookFilters(); renderBooks(); vtUi(); placeUi(); $("pv").innerHTML = ""; $("pvInfo").textContent = ""; $("fillBtn").style.display = "none"; $("saveMsg").textContent = "";
   }
   function editPaper(p) {
     if (!mayEdit(p)) { alert((p.teacher || "다른 선생님") + "이(가) 만든 시험지예요. 📄 복제해서 써 주세요."); return; }
@@ -1774,7 +1779,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     $("eStart").value = p.start || ""; $("eEnd").value = p.end || ""; $("eStatus").value = p.status; $("eShow").checked = !!p.show;
     (p.cfg.units || []).forEach(function (u) { SEL[u] = 1; }); (p.cfg.books || []).forEach(function (b) { SELB[b] = 1; }); EXCL = (p.cfg.exclude || []).slice();
     var ai = (p.cfg && p.cfg.ai) || {}; $("aiVar").value = String(ai.variant || 0); $("aiExtra").value = String(ai.extra || 0); $("aiFill").checked = ai.fill !== false;
-    passLoad(p.cfg && p.cfg.pass); $("ePlace").value = (p.cfg && p.cfg.place) || ""; PG = (p.cfg && p.cfg.grades) || []; secUi(p.cfg && p.cfg.sections, p.cfg && p.cfg.speaker); modeUi(); renderBooks(); vtUi(); placeUi(); tab("edit");
+    passLoad(p.cfg && p.cfg.pass); $("ePlace").value = (p.cfg && p.cfg.place) || ""; PG = (p.cfg && p.cfg.grades) || []; secUi(p.cfg && p.cfg.sections, p.cfg); modeUi(); renderBooks(); vtUi(); placeUi(); tab("edit");
     if (p.takers) $("saveMsg").innerHTML = '<span class="er">⚠ 이미 ' + p.takers + "명이 응시했어요. 범위·문항을 바꾸면 학생마다 시험지가 달라질 수 있어요.</span>";
   }
   function actbarH() { var a = document.querySelector(".actbar"); if (a) document.documentElement.style.setProperty("--abh", a.offsetHeight + "px"); }
@@ -1791,7 +1796,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     setRadio("mode", p.mode); setRadio("lv", String(["기본", "표준", "심화"].indexOf(p.level) + 1)); $("eCount").value = p.count; $("eMin").value = p.minutes; $("eShow").checked = !!p.show;
     (c.units || []).forEach(function (u) { SEL[u] = 1; }); (c.books || []).forEach(function (b) { SELB[b] = 1; }); EXCL = (c.exclude || []).slice();
     var ai = c.ai || {}; $("aiVar").value = String(ai.variant || 0); $("aiExtra").value = String(ai.extra || 0); $("aiFill").checked = ai.fill !== false;
-    passLoad(c.pass); $("ePlace").value = c.place || ""; PG = (c.grades || []).slice(); secUi(c.sections, c.speaker);
+    passLoad(c.pass); $("ePlace").value = c.place || ""; PG = (c.grades || []).slice(); secUi(c.sections, c);
     PV_SEED = String(c.seed || p.id).replace(/[^\w-]/g, ""); // 원본과 같은 문제
     $("eTitle").value = p.title + " (복제)"; titleTouched = true;
     $("editTitle").textContent = "새 시험지 · 📄 " + p.title + " 복제";
@@ -1939,7 +1944,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     if (!countOk()) { $("saveMsg").innerHTML = '<span class="er">문항 수는 5~100 사이로 넣어 주세요.</span>'; $("eCount").focus(); return; }
     if ($("eStart").value && $("eEnd").value && $("eEnd").value < $("eStart").value) { $("saveMsg").innerHTML = '<span class="er">응시 마감일이 시작일보다 빨라요. 날짜를 확인해 주세요.</span>'; $("eEnd").focus(); return; }
     var paper = { id: EDIT && EDIT.id, title: $("eTitle").value.trim(), cls: tgtSend() ? COMMON_CLS : $("eCls").value, target: tgtSend(), kind: $("eKind").value, period: $("ePeriod").value, status: $("eStatus").value, mode: m, level: level(),
-      count: +$("eCount").value, minutes: +$("eMin").value, start: $("eStart").value, end: $("eEnd").value, show: $("eShow").checked, units: units, books: books, exclude: EXCL, reseed: RESEED, vtypes: vtSend(), ai: aiSend(), place: $("ePlace").value.trim(), sections: $("eKind").value === "반배정시험" ? secGet() : [], speaker: $("eKind").value === "반배정시험" && $("eSpeaker").checked, grades: $("eKind").value === "반배정시험" ? PG.slice() : [], pass: passSend() };
+      count: +$("eCount").value, minutes: +$("eMin").value, start: $("eStart").value, end: $("eEnd").value, show: $("eShow").checked, units: units, books: books, exclude: EXCL, reseed: RESEED, vtypes: vtSend(), ai: aiSend(), place: $("ePlace").value.trim(), sections: $("eKind").value === "반배정시험" ? secGet() : [], listen: $("eListen").value, audioDir: $("eAudio").value.trim(), grades: $("eKind").value === "반배정시험" ? PG.slice() : [], pass: passSend() };
     if (!paper.title) { autoTitle(); paper.title = $("eTitle").value; }
     if (paper.target && !tgtOk()) { $("saveMsg").innerHTML = '<span class="er">공통 시험을 볼 ' + ($("eTgt").value === "grade" ? "학년을" : "반을") + " 골라 주세요.</span>"; return; }
     if (!paper.target) lsSet("cm-teacher-cls", paper.cls);

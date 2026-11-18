@@ -433,6 +433,9 @@ function listenPick(uids, exclude, count) {
 }
 // 🆕 반배정시험: 영역별 구성(문항 수·배점). 영역 순서대로, 원래 순서 그대로 (듣기가 항상 1~20번)
 const cleanSections = (a) => (Array.isArray(a) ? a : []).slice(0, 8).map((x) => ({ area: clip(x && x.area, 10), n: num(x && x.n, 0, 100, 0), pts: Math.round(Math.min(1000, Math.max(0, Number(x && x.pts) || 0)) * 100) / 100 })).filter((x) => x.area && x.n > 0 && x.pts > 0);
+// 🎧 듣기 방식: speaker(교실 스피커) | device(태블릿에서 듣기) | both(학생 화면에서 고르기)
+const listenMode = (c) => (c && ["speaker", "device", "both"].includes(c.listen) ? c.listen : c && c.speaker ? "speaker" : "device");
+const cleanAudioDir = (s) => { s = String(s || "").trim().slice(0, 200); if (!s) return ""; if (!/^\/[^<>"'`\\?#]*$/.test(s) || /\.\./.test(s) || /^\/\//.test(s)) return ""; return s.endsWith("/") ? s : s + "/"; };
 const hasSections = (pp) => !!(pp && pp.cfg && Array.isArray(pp.cfg.sections) && pp.cfg.sections.length);
 function sectionPick(pp, uids) {
   const ex = new Set(pp.cfg.exclude || []), picked = [], lack = [];
@@ -542,7 +545,7 @@ async function canTakeWho(pp, who) {
   const st = await notion("pages/" + id32(who.sid), "GET", null, 1);
   return !!st && canTake(pp, who.cls, P.sel(st, "학년"));
 }
-const pub = (pp) => ({ sections: (hasSections(pp) ? pp.cfg.sections : []), speaker: !!(pp.cfg && pp.cfg.speaker), target: targetOf(pp), targetText: targetText(targetOf(pp)), pass: passCfg(pp.cfg && pp.cfg.pass), grades: (pp.cfg && Array.isArray(pp.cfg.grades) ? pp.cfg.grades : []), id: pp.id, title: pp.title, cls: pp.cls, kind: pp.kind, period: pp.period, status: pp.status, mode: pp.mode, level: LEVELS[pp.level - 1], count: pp.count, minutes: pp.minutes, start: pp.start, end: pp.end, range: pp.mode === "fixed" ? pp.range : "", teacher: pp.teacher || "" });
+const pub = (pp) => ({ sections: (hasSections(pp) ? pp.cfg.sections : []), speaker: listenMode(pp.cfg) === "speaker", listen: listenMode(pp.cfg), target: targetOf(pp), targetText: targetText(targetOf(pp)), pass: passCfg(pp.cfg && pp.cfg.pass), grades: (pp.cfg && Array.isArray(pp.cfg.grades) ? pp.cfg.grades : []), id: pp.id, title: pp.title, cls: pp.cls, kind: pp.kind, period: pp.period, status: pp.status, mode: pp.mode, level: LEVELS[pp.level - 1], count: pp.count, minutes: pp.minutes, start: pp.start, end: pp.end, range: pp.mode === "fixed" ? pp.range : "", teacher: pp.teacher || "" });
 async function getPaper(id) {
   const p = await notion("pages/" + id32(id), "GET");
   if (!p || p.archived || normId(p.parent && p.parent.database_id) !== normId(PAPER_DB())) return null;
@@ -894,7 +897,7 @@ module.exports = async function handler(req, res) {
       let old = null;
       if (f.id) { old = await getPaper(f.id); if (!old) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." }); }
       if (old && !me.master && old.teacher && old.teacher !== me.name) return send(403, { error: "owner", msg: old.teacher + "이(가) 만든 시험지는 고칠 수 없어요. 목록에서 📄 복제해서 써 주세요." });
-      const cfg = { units, books, seed: (old && old.cfg.seed) || clip(f.seed, 40).replace(/[^\w-]/g, "") || hash(Date.now() + title, 12), exclude: (Array.isArray(f.exclude) ? f.exclude : (old && old.cfg.exclude) || []).slice(0, 500), vtypes: (Array.isArray(f.vtypes) ? f.vtypes : (old && old.cfg.vtypes) || []).filter((t) => V.VT_IDS.includes(t)), place: clip(f.place != null ? f.place : (old && old.cfg.place) || "", 1500), sections: f.sections !== undefined ? cleanSections(f.sections) : (old && old.cfg.sections) || [], speaker: f.speaker !== undefined ? !!f.speaker : !!(old && old.cfg.speaker), grades: (Array.isArray(f.grades) ? f.grades : (old && old.cfg.grades) || []).filter((g) => GRADES.includes(g)),
+      const cfg = { units, books, seed: (old && old.cfg.seed) || clip(f.seed, 40).replace(/[^\w-]/g, "") || hash(Date.now() + title, 12), exclude: (Array.isArray(f.exclude) ? f.exclude : (old && old.cfg.exclude) || []).slice(0, 500), vtypes: (Array.isArray(f.vtypes) ? f.vtypes : (old && old.cfg.vtypes) || []).filter((t) => V.VT_IDS.includes(t)), place: clip(f.place != null ? f.place : (old && old.cfg.place) || "", 1500), sections: f.sections !== undefined ? cleanSections(f.sections) : (old && old.cfg.sections) || [], speaker: f.listen !== undefined ? f.listen === "speaker" : f.speaker !== undefined ? !!f.speaker : !!(old && old.cfg.speaker), listen: f.listen !== undefined ? listenMode({ listen: f.listen }) : (old && old.cfg.listen) || undefined, audioDir: f.audioDir !== undefined ? cleanAudioDir(f.audioDir) : (old && old.cfg.audioDir) || "", grades: (Array.isArray(f.grades) ? f.grades : (old && old.cfg.grades) || []).filter((g) => GRADES.includes(g)),
         pass: f.pass !== undefined ? passCfg(f.pass) || undefined : (old && passCfg(old.cfg.pass)) || undefined,
         target: f.target !== undefined ? targetOf({ cfg: { target: f.target } }) || undefined : (old && targetOf(old)) || undefined,
         ai: f.ai && typeof f.ai === "object" ? { fill: f.ai.fill !== false, variant: num(f.ai.variant, 0, 100, 0), extra: num(f.ai.extra, 0, 60, 0) } : (old && old.cfg.ai) || undefined };
@@ -1416,7 +1419,12 @@ module.exports = async function handler(req, res) {
     if (lack && lack.length) return send(409, { error: "few", msg: "시험 문제가 아직 다 준비되지 않았어요. 선생님께 알려 주세요. (" + lack.join(", ") + ")" });
     if (picked.length < Math.min(keep ? 1 : 5, pp.count)) return send(409, { error: "few", msg: "고른 범위에 문제가 부족해요. 과를 더 골라 주세요." });
     const sheet = buildSheet(picked, rngOf((pp.cfg.seed || pp.id) + "|" + who.sid + "|" + Date.now()), keep);
-    if (hasSections(pp)) assignPoints(sheet, pp.cfg.sections);
+    if (hasSections(pp)) {
+      assignPoints(sheet, pp.cfg.sections);
+      // 🎧 태블릿 듣기용 음원: 문제에 음원이 없으면 「음원 폴더/1.mp3, 2.mp3 …」(듣기 영역 안에서의 번호)
+      const dir = cleanAudioDir(pp.cfg.audioDir); let ln = 0;
+      if (dir) sheet.view.forEach((v) => { if (v.area === "듣기") { ln++; if (!v.audio) v.audio = encodeURI(dir + ln + ".mp3"); } });
+    }
     const t0 = Date.now(), dl = pp.minutes ? t0 + pp.minutes * 60000 : 0;
     const key = seal({ sid: who.sid, pid: pp.id, t0, dl, units: uids, items: sheet.key });
     return send(200, { ok: true, paper: pub(pp), questions: sheet.view, key, t0, deadline: dl, range: pp.mode === "choice" ? rangeText(uids) : pp.range });
@@ -1483,4 +1491,4 @@ module.exports = async function handler(req, res) {
   return send(400, { error: "action" });
 };
 // 시험용 내부 함수 (로컬 점검에서 씀)
-module.exports._t = { cleanSections, assignPoints, hasSections, placeRec, expandAccept, shortOk, pick, buildSheet, seal, unseal, grade, unitStats, rangeText, loadCatalog, unitData, poolFor, rngOf };
+module.exports._t = { cleanAudioDir, listenMode, cleanSections, assignPoints, hasSections, placeRec, expandAccept, shortOk, pick, buildSheet, seal, unseal, grade, unitStats, rangeText, loadCatalog, unitData, poolFor, rngOf };
