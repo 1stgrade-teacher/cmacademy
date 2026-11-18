@@ -1129,7 +1129,7 @@ module.exports = async function handler(req, res) {
       const m = b.meta || {};
       const book = clip(m.book, 80), chapter = clip(m.chapter, 80) || "단원", unit = clip(m.unit, 120) || "자료";
       if (!book) return send(400, { error: "input", msg: "교재 이름을 넣어 주세요." });
-      const area = ["문법", "구문", "독해", "교과서", "어휘", "기타"].includes(m.area) ? m.area : "기타";
+      const area = ["문법", "구문", "독해", "교과서", "어휘", "듣기", "기타"].includes(m.area) ? m.area : "기타";
       const gradeV = ["초등", "중1", "중2", "중3", "고등"].includes(m.grade) ? m.grade : null;
       const uid = "x" + hash(book + "|" + chapter + "|" + unit, 10);
       const bad = [];

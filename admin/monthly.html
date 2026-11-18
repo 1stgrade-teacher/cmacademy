@@ -2099,7 +2099,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   };
   function renderImport() {
     Array.prototype.forEach.call($("impUnits").querySelectorAll(".card[data-u]"), function (c) { if (c.__sync) c.__sync(); }); // 다시 그리기 전에 손본 내용 보존
-    var areas = ["문법", "구문", "독해", "교과서", "어휘", "기타"], grades = ["", "초등", "중1", "중2", "중3", "고등"];
+    var areas = ["문법", "구문", "독해", "교과서", "어휘", "듣기", "기타"], grades = ["", "초등", "중1", "중2", "중3", "고등"];
     var VLAB = { w: "단어", pos: "품사", m: "뜻", ex: "예문", exk: "해석", def: "영영정의", syn: "동의어", ant: "반의어" };
     function vocabCard(u, ui) {
       var has = function (k) { return u.words.filter(function (x) { return x[k]; }).length; }, n = u.words.length, miss = ["m", "ex", "def", "syn", "ant"].filter(function (k) { return has(k) < n; });
