@@ -527,13 +527,14 @@ const targetOf = (pp) => {
   const t = pp && pp.cfg && pp.cfg.target; if (!t || !["grade", "classes", "all"].includes(t.type)) return null;
   const grades = (Array.isArray(t.grades) ? t.grades : []).filter((g) => T_GRADES.includes(g)), classes = (Array.isArray(t.classes) ? t.classes : []).map((c) => String(c).slice(0, 40)).filter(Boolean).slice(0, 60);
   if (t.type === "grade" && !grades.length) return null; if (t.type === "classes" && !classes.length) return null;
-  return { type: t.type, grades: t.type === "grade" ? grades : [], classes: t.type === "classes" ? classes : [] };
+  return Object.assign({ type: t.type, grades: t.type === "grade" ? grades : [], classes: t.type === "classes" ? classes : [] }, t.newbies ? { newbies: true } : {}); // newbies: 🆕 신입 반배정 학생도 함께
 };
-const targetText = (t) => !t ? "" : t.type === "all" ? "모든 학생" : t.type === "grade" ? t.grades.join("·") + " 전체" : t.classes.join(", ");
+const targetText = (t) => !t ? "" : (t.type === "all" ? "모든 학생" : t.type === "grade" ? t.grades.join("·") + " 전체" : t.classes.join(", ")) + (t.newbies ? " + 신입생" : "");
 // 이 학생(반·학년)이 이 시험지를 볼 수 있나요?
 function canTake(pp, cls, grade) {
   const t = targetOf(pp); if (!t) return pp.cls === cls;
-  if (!cls || cls === PLACE_CLS()) return false; // 신입 반배정 학생은 공통 시험 대상이 아니에요
+  if (!cls) return false;
+  if (cls === PLACE_CLS()) return !!t.newbies; // 신입 반배정 학생은 「신입생도 함께」를 고른 공통 시험만 (학년은 따지지 않아요: 다른 학년 시험도 골라 볼 수 있게)
   if (t.type === "all") return true;
   if (t.type === "classes") return t.classes.includes(cls);
   return t.grades.includes(grade) || t.grades.includes(gradeOfCls(cls));
@@ -624,7 +625,10 @@ async function targetRoster(pp) {
   else if (t.type === "classes") f = { or: t.classes.map((c) => ({ property: "반", select: { equals: c } })) };
   else { const cl = (await classList()) || []; f = { or: t.grades.map((g) => ({ property: "학년", select: { equals: g } })).concat(cl.filter((c) => t.grades.includes(gradeOfCls(c))).map((c) => ({ property: "반", select: { equals: c } }))).slice(0, 100) }; }
   const r = await rosterBy(f, 15);
-  return r && r.filter((s) => s.cls !== PLACE_CLS() && canTake(pp, s.cls, s.grade));
+  const out = r && r.filter((s) => s.cls !== PLACE_CLS() && canTake(pp, s.cls, s.grade));
+  if (!out || !t.newbies) return out;
+  const nb = await roster(PLACE_CLS()); // 🆕 신입생 (학년이 맞는 학생만, 학년 대상일 때)
+  return nb ? out.concat(nb.filter((s) => t.type !== "grade" || !s.grade || t.grades.includes(s.grade))) : out;
 }
 async function rosterBy(filter, pages) {
   const rows = await queryAll(STUDENT_DB(), { filter, sorts: [{ property: "이름", direction: "ascending" }] }, pages || 4);
@@ -1353,7 +1357,7 @@ module.exports = async function handler(req, res) {
     if (!pg) return send(502, { error: "notion", msg: "등록하지 못했어요. 선생님께 알려 주세요.", debug: lastErr });
     const sid = normId(pg.id);
     await notion("pages/" + id32(sid), "PATCH", { properties: { [PIN_PROP]: { rich_text: rt(pinHash(pin, sid)) } } });
-    return send(200, { ok: true, token: signToken({ sid, name, cls: PLACE_CLS(), exp: Date.now() + 4 * 3600 * 1000 }), name, cls: PLACE_CLS(), grade });
+    return send(200, { ok: true, token: signToken({ sid, name, cls: PLACE_CLS(), grade, exp: Date.now() + 4 * 3600 * 1000 }), name, cls: PLACE_CLS(), grade });
   }
 
   if (act === "p_hw") { // 👪 부모님 전용 링크로 아이의 과제 사진 보기 (링크 = 학생 + 비밀 키)
@@ -1491,4 +1495,4 @@ module.exports = async function handler(req, res) {
   return send(400, { error: "action" });
 };
 // 시험용 내부 함수 (로컬 점검에서 씀)
-module.exports._t = { cleanAudioDir, listenMode, cleanSections, assignPoints, hasSections, placeRec, expandAccept, shortOk, pick, buildSheet, seal, unseal, grade, unitStats, rangeText, loadCatalog, unitData, poolFor, rngOf };
+module.exports._t = { canTake, targetOf, targetText, cleanAudioDir, listenMode, cleanSections, assignPoints, hasSections, placeRec, expandAccept, shortOk, pick, buildSheet, seal, unseal, grade, unitStats, rangeText, loadCatalog, unitData, poolFor, rngOf };

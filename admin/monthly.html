@@ -192,6 +192,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       </div>
       <div id="tgtBox" style="display:none;margin-top:10px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px">
         <div id="tgtPick" class="row" style="flex-wrap:wrap;gap:6px 14px"></div>
+        <label style="display:flex;gap:8px;align-items:center;margin:8px 0 0;font-size:14px"><input type="checkbox" id="eNewbies" style="width:auto"> 🆕 <b>신입생(신입 반배정)도 함께</b> — 「처음 왔어요」로 등록한 외부 신입생도 이 시험지를 봐요</label>
         <div class="hint" id="tgtHint" style="margin:8px 0 0"></div>
       </div>
       <div class="grid" style="margin-top:12px">
@@ -1620,14 +1621,15 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   function realClasses() { return (DATA.classes || []).filter(function (c) { return c !== PLACE_CLS && c !== COMMON_CLS; }); }
   // 이 시험지를 이 반 학생이 보나요? (공통 시험이면 대상으로)
   function paperFor(p, c) {
-    if (!c) return true; if (p.cls === c) return true; var t = p.target; if (!t || c === PLACE_CLS) return false;
+    if (!c) return true; if (p.cls === c) return true; var t = p.target; if (!t) return false; if (c === PLACE_CLS) return !!t.newbies;
     return t.type === "all" || (t.type === "classes" && t.classes.indexOf(c) >= 0) || (t.type === "grade" && t.grades.indexOf(gradeOfCls(c)) >= 0);
   }
+  $("eNewbies").onchange = function () { tgtHintUi(); };
   function tgtClasses(t) { return realClasses().filter(function (c) { return paperFor({ cls: "", target: t }, c); }); }
-  function tgtSend() { var ty = $("eTgt").value; if (!ty) return null; return { type: ty, grades: ty === "grade" ? TG.grades.slice() : [], classes: ty === "classes" ? TG.classes.slice() : [] }; }
+  function tgtSend() { var ty = $("eTgt").value; if (!ty) return null; return { type: ty, grades: ty === "grade" ? TG.grades.slice() : [], classes: ty === "classes" ? TG.classes.slice() : [], newbies: $("eNewbies").checked || undefined }; }
   function tgtOk() { var t = tgtSend(); return !t || t.type === "all" || (t.type === "grade" ? t.grades.length : t.classes.length) > 0; }
   function clsLabel() { var t = tgtSend(); if (!t) return $("eCls").value; return t.type === "all" ? "전체 공통" : t.type === "grade" ? (t.grades.join("·") || "학년") + " 공통" : (t.classes.length ? (t.classes.length <= 2 ? t.classes.join("·") : t.classes.length + "개 반") : "여러 반") + " 공통"; }
-  function tgtLoad(t) { TG = { type: t ? t.type : "", grades: t && t.grades ? t.grades.slice() : [], classes: t && t.classes ? t.classes.slice() : [] }; $("eTgt").value = TG.type; tgtUi(); }
+  function tgtLoad(t) { TG = { type: t ? t.type : "", grades: t && t.grades ? t.grades.slice() : [], classes: t && t.classes ? t.classes.slice() : [] }; $("eTgt").value = TG.type; $("eNewbies").checked = !!(t && t.newbies); tgtUi(); }
   function tgtUi() {
     var ty = $("eTgt").value; $("eClsWrap").style.display = ty ? "none" : ""; $("tgtBox").style.display = ty ? "" : "none";
     if (!ty) return;
@@ -1642,7 +1644,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   function tgtHintUi() {
     var t = tgtSend(); if (!t) return; var cl = tgtClasses(t);
     $("tgtHint").innerHTML = "<b>공통 시험</b>: 시험지 하나로 " + (cl.length ? "<b>" + esc(cl.join(", ")) + "</b>" : "고른 대상") + (t.type === "grade" ? " (그리고 학년이 " + esc(t.grades.join("·") || "?") + "인 학생 모두)" : "") +
-      " 학생들이 함께 봐요. 학생은 자기 반 시험 목록에서 보고, 기록은 학생의 실제 반으로 남아요. 📊 응시 결과에서 <b>전체 순위·평균</b>과 <b>반별 평균</b>을 한눈에 볼 수 있어요. (신입 반배정 학생은 빠져요)";
+      " 학생들이 함께 봐요." + (t.newbies ? " <b>🆕 신입생(신입 반배정)도 함께 봐요.</b>" : "") + " 학생은 자기 반 시험 목록에서 보고, 기록은 학생의 실제 반으로 남아요. 📊 응시 결과에서 <b>전체 순위·평균</b>과 <b>반별 평균</b>을 한눈에 볼 수 있어요. " + (t.newbies ? "" : "(신입 반배정 학생은 빠져요. 같이 보려면 위 🆕 칸을 체크하세요)");
   }
   $("eTgt").onchange = function () { TG.type = this.value; tgtUi(); autoTitle(); };
   // ---------- ✅ 통과 기준 ----------
