@@ -298,7 +298,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       <h2>🎧 듣기 문제 만들기</h2>
       <p class="hint" style="margin-top:0"><b>① 문항 넣기</b> → <b>② 문항별 음원 올리기</b> 순서예요. 스피커로만 볼 땐 ①만 하면 돼요(음원은 선생님 컴퓨터에서 틀어요). 태블릿에서 들으려면 ②까지 해 주세요.</p>
       <details class="libf" open><summary><b>① 문항 넣기</b></summary>
-        <div class="hint" style="margin:6px 0">• <b>📄 문제지 파일로 한 번에</b>: 20문제가 든 PDF·한글(.hwpx)·워드 파일을 아래 칸에 끌어다 놓으면 문제·보기·정답을 읽어요. 정답은 ⓐ 문제지 맨 끝 「정답」 줄, ⓑ 이름에 「정답」이 들어간 파일을 함께 올리기, ⓒ 아래 정답 칸에 쓰기 중 하나면 돼요. 그림 보기 문제는 ①~⑤ 답안카드로 바뀌어요.<br>• <b>정답만 빠르게</b>: 아래에 정답을 순서대로 쓰면 「듣기 1번 ①~⑤」 답안 문항이 만들어져요. (학생 화면에 번호와 ①~⑤만 보여요)<br>• <b>문제·보기까지 보여 주려면</b>: 위 <b>✍️ 직접 문제 만들기 → 📋 글로 붙여넣기</b>로 문제를 넣고, 저장할 때 영역을 <b>듣기</b>로 고르세요.</div>
+        <div class="hint" style="margin:6px 0">• <b>✏️ 직접 만들기·고치기</b>: 아래 <b>✏️ 한 문제씩 입력하기</b>로 빈 표를 열거나, <b>저장한 듣기 불러와 고치기</b>로 열어서 문제·보기·정답·그림을 한 화면에서 써요. 보기 칸을 비우면 그림 보기(①~⑤)가 돼요.<br>• <b>📄 문제지 파일로 한 번에</b>: 20문제가 든 PDF·한글(.hwpx)·워드 파일을 아래 칸에 끌어다 놓으면 문제·보기·정답을 읽어요. 정답은 ⓐ 문제지 맨 끝 「정답」 줄, ⓑ 이름에 「정답」이 들어간 파일을 함께 올리기, ⓒ 아래 정답 칸에 쓰기 중 하나면 돼요. 그림 보기 문제는 ①~⑤ 답안카드로 바뀌어요.<br>• <b>정답만 빠르게</b>: 아래에 정답을 순서대로 쓰면 「듣기 1번 ①~⑤」 답안 문항이 만들어져요. (학생 화면에 번호와 ①~⑤만 보여요)<br></div>
         <div class="grid">
           <div><label class="l">교재</label><input id="lsBook" value="예비중 반배정"></div>
           <div><label class="l">단원</label><input id="lsCh" placeholder="예: 초6" value="초6"></div>
@@ -306,6 +306,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
           <div><label class="l">학년</label><select id="lsGrade"><option value="초등">초등</option><option value="중1">중1</option><option value="중2">중2</option><option value="중3">중3</option><option value="">(없음)</option></select></div>
           <div><label class="l">보기 수</label><select id="lsOpt"><option value="5">①~⑤</option><option value="4">①~④</option></select></div>
         </div>
+        <div class="row" style="margin-top:10px;gap:6px"><button id="lsNew">✏️ 한 문제씩 입력하기</button><select id="lsEditSel" style="width:auto;max-width:340px"><option value="">— 저장한 듣기 불러와 고치기 —</option></select><button class="sub sm" id="lsEditLoad">불러오기</button></div>
         <div class="drop" id="lsPdfDrop" style="margin-top:10px"><b>📄 듣기 문제지(PDF·한글·워드)를 끌어다 놓거나 눌러서 고르세요</b><br><span class="hint">정답지 파일을 같이 올려도 돼요 (파일 이름에 「정답」)</span>
           <input type="file" id="lsPdfFiles" multiple accept=".pdf,.hwpx,.hwp,.docx,.txt" style="display:none"></div>
         <div class="msg" id="lsPdfMsg"></div>
@@ -2040,6 +2041,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   function lsUnits() { var o = []; (DATA.catalog || []).filter(function (b) { return b.custom && b.area === "듣기"; }).forEach(function (b) { b.chapters.forEach(function (c) { c.units.forEach(function (u) { o.push({ id: u.id, name: b.name.replace(/^📁 /, "") + " › " + (c.name && c.name !== "단원" ? c.name + " › " : "") + u.name + " (" + (u.n || 0) + "문항)" }); }); }); }); return o; }
   function lsFillSel(keep) {
     var cur = keep || $("lsSel").value, list = lsUnits();
+    $("lsEditSel").innerHTML = '<option value="">— 저장한 듣기 불러와 고치기 (' + list.length + "개) —</option>" + list.map(function (u) { return '<option value="' + esc(u.id) + '">' + esc(u.name) + "</option>"; }).join("");
     $("lsSel").innerHTML = '<option value="">— 듣기 자료 고르기 (' + list.length + "개) —</option>" + list.map(function (u) { return '<option value="' + esc(u.id) + '"' + (u.id === cur ? " selected" : "") + ">" + esc(u.name) + "</option>"; }).join("");
     if ($("lsSel").value) lsLoad(); else { LS = { uid: "", qs: [] }; $("lsList").innerHTML = ""; }
   }
@@ -2080,7 +2082,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         '<div class="row" style="margin:4px 0 0;gap:6px;align-items:center">' + (q.img ? '<img src="' + esc(q.img) + '" alt="" style="max-height:70px;max-width:320px;border:1px solid var(--line);border-radius:6px">' : "") + '<button class="sm sub" data-lsi="' + q.n + '">🖼 ' + (q.img ? "그림 바꾸기" : "그림") + "</button>" + (q.img ? '<button class="sm sub" data-lsx="' + q.n + '">빼기</button>' : "") + (LSI === q.n ? '<span class="hint" style="margin:0">지금 <b>Ctrl+V</b>로 붙여넣거나 <a href="#" data-lsf="' + q.n + '">파일 고르기</a></span>' : "") + (state["i" + q.n] ? "<span>" + state["i" + q.n] + "</span>" : "") + '</div></td><td style="padding:6px;width:260px;vertical-align:top">' +
         (q.audio ? '<audio controls preload="none" src="' + esc(q.audio) + '" style="height:32px;width:100%"></audio>' : '<span class="hint" style="margin:0">음원 없음</span>') + '</td><td style="padding:6px;width:110px">' + st + "</td></tr>";
     }).join("") + "</table>";
-    Array.prototype.forEach.call($("lsList").querySelectorAll("[data-lsi]"), function (b) { b.onclick = function () { LSI = +b.getAttribute("data-lsi"); lsPaint(LSST); }; });
+    Array.prototype.forEach.call($("lsList").querySelectorAll("[data-lsi]"), function (b) { b.onclick = function () { LSI = +b.getAttribute("data-lsi"); if (LSE >= 0) { LSE = -1; lsPvPaint(); } lsPaint(LSST); }; });
     Array.prototype.forEach.call($("lsList").querySelectorAll("[data-lsf]"), function (a) { a.onclick = function (e) { e.preventDefault(); $("lsImgFile").click(); }; });
     Array.prototype.forEach.call($("lsList").querySelectorAll("[data-lsx]"), function (b) { b.onclick = function () { var n = +b.getAttribute("data-lsx"); if (!confirm(n + "번 그림을 뺄까요?")) return; post({ action: "t_img_del", uid: LS.uid, n: n }).then(function (j) { if (j.ok) { LS.qs[n - 1].img = ""; lsPaint(LSST); } else alert(j.msg || "빼지 못했어요."); }); }; });
     Array.prototype.forEach.call($("lsList").querySelectorAll("[data-lsr]"), function (tr) { tr.ondragover = function (e) { e.preventDefault(); }; tr.ondrop = function (e) { var f = e.dataTransfer.files && e.dataTransfer.files[0]; if (f && /^image\//.test(f.type)) { e.preventDefault(); e.stopPropagation(); lsImgUp(+tr.getAttribute("data-lsr"), f); } }; });
@@ -2101,6 +2103,8 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     im.src = url;
   }
   document.addEventListener("paste", function (e) {
+    var it0 = Array.prototype.filter.call((e.clipboardData || {}).items || [], function (x) { return /^image\//.test(x.type); })[0];
+    if (LSE >= 0 && LSP && LSP[LSE]) { if (!it0) { alert("복사한 그림이 없어요. 먼저 캡처(Win+Shift+S)해 주세요."); return; } e.preventDefault(); lsEditImg(LSE, it0.getAsFile()); return; }
     if (!LSI || !LS.uid) return; var it = Array.prototype.filter.call((e.clipboardData || {}).items || [], function (x) { return /^image\//.test(x.type); })[0];
     if (!it) { LSST["i" + LSI] = '<span class="er">복사한 그림이 없어요. 먼저 캡처(Win+Shift+S)해 주세요.</span>'; lsPaint(LSST); return; }
     e.preventDefault(); lsImgUp(LSI, it.getAsFile());
@@ -2155,43 +2159,101 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         var opts = (q.opts || []).map(function (o) { return String(o || "").trim(); }), pic = opts.length < 2 || opts.every(function (o) { return !o; });
         if (pic) opts = CIR.slice(0, Math.max(opts.length, 5) > 5 ? 5 : 5).split(""); else opts = opts.map(function (o, k) { return o || CIR[k]; });
         var a = typed.length ? (typed[i] ? typed[i] - 1 : -1) : (q.ans >= 0 ? q.ans : -1);
-        return { no: String(i + 1), type: "mc", q: q.q || "듣기 " + (i + 1) + "번", sub: q.sub || "", opts: opts, ans: a < opts.length ? a : -1, exp: q.exp || "", lv: 2, pic: pic };
+        return { q: q.q || "", sub: q.sub || "", opts: pic ? opts.map(function () { return ""; }) : opts, ans: a < opts.length ? a : -1, exp: q.exp || "", img: "", pend: "", del: false };
       });
       lsPvPaint();
       var miss = LSP.filter(function (q) { return q.ans < 0; }).length;
       $("lsPdfMsg").innerHTML = '<span class="ok">' + LSP.length + "문항을 읽었어요</span>" + (miss ? ' · <span class="er">정답 없는 문항 ' + miss + "개 → 표에서 골라 주세요</span>" : "") + (LSP.length !== 20 ? ' · <span class="er">⚠ 20문항이 아니에요. 문제지를 확인해 주세요</span>' : "") + " — 확인 후 아래 💾 저장을 누르세요.";
     } catch (err) { $("lsPdfMsg").innerHTML = '<span class="er">파일을 읽지 못했어요: ' + esc(err.message) + "</span><br>한글(.hwp)이 안 읽히면 한글에서 <b>다른 이름으로 저장 → .hwpx 또는 PDF</b>로 저장해서 올려 주세요."; }
   }
+  var LSE = -1; // ✏️ 그림을 붙일 편집 줄
+  function lsIsCir(o) { return /^[①②③④⑤⑥]$/.test(String(o || "").trim()); }
+  function lsBlank(n) { var k = +$("lsOpt").value || 5, out = []; for (var i = 0; i < n; i++) out.push({ q: "", sub: "", opts: new Array(k).fill(""), ans: -1, exp: "", img: "", pend: "", del: false }); return out; }
   function lsPvPaint() {
     if (!LSP) { $("lsPv").innerHTML = ""; return; }
-    $("lsPv").innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:8px">' + LSP.map(function (q, i) {
-      return '<tr style="border-top:1px solid var(--line)' + (q.ans < 0 ? ";background:#FFF4F2" : "") + '"><td style="padding:6px 6px 6px 0;width:34px;vertical-align:top"><b>' + (i + 1) + '</b></td><td style="padding:6px">' + esc(q.q) + (q.sub ? '<div class="hint" style="margin:2px 0 0">' + esc(q.sub) + "</div>" : "") +
-        '<div style="margin-top:3px;font-size:13px">' + (q.pic ? '<span class="pill">그림 보기 → ①~⑤ 답안카드</span>' : q.opts.map(function (o, k) { return CIR[k] + " " + esc(o); }).join("&nbsp;&nbsp; ")) + '</div></td><td style="padding:6px;width:120px;vertical-align:top"><select data-lsa="' + i + '" style="width:auto">' +
-        '<option value="-1"' + (q.ans < 0 ? " selected" : "") + ">정답?</option>" + q.opts.map(function (o, k) { return '<option value="' + k + '"' + (q.ans === k ? " selected" : "") + ">정답 " + CIR[k] + "</option>"; }).join("") + "</select></td></tr>";
-    }).join("") + '</table><div class="row" style="margin-top:8px"><button id="lsPvSave">💾 듣기 ' + LSP.length + '문항 저장</button><button class="sub" id="lsPvCancel">취소</button><span class="msg" id="lsPvMsg" style="margin:0"></span></div>';
-    Array.prototype.forEach.call($("lsPv").querySelectorAll("[data-lsa]"), function (s) { s.onchange = function () { LSP[+s.getAttribute("data-lsa")].ans = +s.value; lsPvPaint(); }; });
-    $("lsPvCancel").onclick = function () { LSP = null; lsPvPaint(); $("lsPdfMsg").textContent = ""; };
-    $("lsPvSave").onclick = function () {
-      var miss = LSP.map(function (q, i) { return q.ans < 0 ? i + 1 : 0; }).filter(Boolean), book = $("lsBook").value.trim(), ch = $("lsCh").value.trim(), unit = $("lsUnit").value.trim() || "듣기";
-      if (miss.length) { $("lsPvMsg").innerHTML = '<span class="er">' + miss.join(", ") + "번 정답을 골라 주세요.</span>"; return; }
-      if (!book) { $("lsPvMsg").innerHTML = '<span class="er">위의 교재 이름을 써 주세요.</span>'; return; }
-      if (!confirm(book + " › " + ch + " › " + unit + "\n듣기 " + LSP.length + "문항으로 저장할까요?\n(같은 이름의 과가 있으면 문항이 바뀌어요. 이미 올린 음원은 번호대로 그대로 남아요.)")) return;
-      $("lsPvSave").disabled = true; $("lsPvMsg").textContent = "저장하는 중…";
-      post({ action: "t_import_save", meta: { book: book, chapter: ch, unit: unit, area: "듣기", grade: $("lsGrade").value, file: "🎧 듣기 문제지" }, questions: LSP.map(function (q) { return { no: q.no, type: "mc", q: q.q, sub: q.sub, opts: q.opts, ans: q.ans, exp: q.exp, lv: 2 }; }), text: "", replace: true }).then(function (j) {
-        $("lsPvSave").disabled = false;
-        if (!j.ok) { $("lsPvMsg").innerHTML = '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; return; }
-        DATA.catalog = j.catalog || DATA.catalog; LSP = null; lsPvPaint();
-        $("lsPdfMsg").innerHTML = "✅ 듣기 " + j.n + "문항 저장" + (j.skipped && j.skipped.length ? ' · <span class="er">저장 안 된 문항: ' + j.skipped.join(", ") + "번</span>" : "") + ". 이제 ② 음원을 올리거나, 새 시험지에서 이 과를 고르세요.";
-        if (typeof buildBookFilters === "function") { try { buildBookFilters(); renderBooks(); } catch (e) {} }
-        lsFillSel(j.uid);
-      });
-    };
+    var k = Math.max(4, Math.min(5, LSP.reduce(function (m, q) { return Math.max(m, q.opts.length); }, +$("lsOpt").value || 5)));
+    $("lsPv").innerHTML = '<div class="hint" style="margin:10px 0 4px">✏️ 칸을 고친 뒤 <b>💾 저장</b>을 누르세요. 보기를 모두 비우면 <b>그림 보기</b>예요 → <b>🖼 그림</b>을 누르고 캡처(Win+Shift+S)를 <b>Ctrl+V</b>.</div>' +
+      LSP.map(function (q, i) {
+        var pic = q.opts.every(function (o) { return !String(o).trim(); }), src = q.pend || (q.del ? "" : q.img);
+        return '<div class="iq" style="border:1px solid ' + (LSE === i ? "#F1D98A;background:#FFFBEF" : q.ans < 0 ? "#F3C4BC;background:#FFF8F6" : "var(--line)") + ';border-radius:10px;padding:8px 10px;margin-top:6px">' +
+          '<div class="row" style="margin:0;gap:6px;align-items:center"><b style="min-width:34px">' + (i + 1) + '번</b><input data-f="q" data-i="' + i + '" value="' + esc(q.q) + '" placeholder="문제 (예: 대화를 듣고, 내일의 날씨로 가장 적절한 것을 고르시오.)" style="flex:1">' +
+          '<select data-f="ans" data-i="' + i + '" style="width:auto"><option value="-1">정답?</option>' + q.opts.map(function (o, j) { return '<option value="' + j + '"' + (q.ans === j ? " selected" : "") + ">정답 " + CIR[j] + "</option>"; }).join("") + "</select></div>" +
+          '<input data-f="sub" data-i="' + i + '" value="' + esc(q.sub) + '" placeholder="(선택) 묶음 문제의 개별 질문·보충 글" style="margin-top:4px;font-size:13px">' +
+          '<div class="row" style="margin:4px 0 0;gap:4px;flex-wrap:nowrap">' + q.opts.map(function (o, j) { return '<input data-f="o" data-i="' + i + '" data-j="' + j + '" value="' + esc(lsIsCir(o) ? "" : o) + '" placeholder="' + CIR[j] + (pic ? " (그림)" : "") + '" style="flex:1;min-width:0;font-size:13px">'; }).join("") + "</div>" +
+          '<div class="row" style="margin:6px 0 0;gap:6px;align-items:center">' + (src ? '<img src="' + esc(src) + '" alt="" style="max-height:64px;max-width:300px;border:1px solid var(--line);border-radius:6px">' : "") +
+          '<button class="sm sub" data-pi="' + i + '">🖼 ' + (src ? "그림 바꾸기" : "그림") + "</button>" + (src ? '<button class="sm sub" data-px="' + i + '">그림 빼기</button>' : "") +
+          (LSE === i ? '<span class="hint" style="margin:0">지금 <b>Ctrl+V</b>로 붙여넣거나 <a href="#" data-pf="' + i + '">파일 고르기</a></span>' : pic && !src ? '<span class="hint" style="margin:0">보기 글이 없어요 → 그림 보기면 🖼 그림을 넣어 주세요</span>' : "") + "</div></div>";
+      }).join("") +
+      '<div class="row" style="margin-top:8px;gap:6px"><button class="sub sm" id="lsAddQ">＋ 문항 추가</button><button class="sub sm" id="lsDelQ">맨 끝 문항 빼기</button></div>' +
+      '<div class="row" style="margin-top:8px"><button id="lsPvSave">💾 듣기 ' + LSP.length + '문항 저장</button><button class="sub" id="lsPvCancel">닫기</button><span class="msg" id="lsPvMsg" style="margin:0"></span></div>';
+    var box = $("lsPv");
+    Array.prototype.forEach.call(box.querySelectorAll("[data-f]"), function (el) {
+      el.oninput = el.onchange = function () { var q = LSP[+el.getAttribute("data-i")], f = el.getAttribute("data-f");
+        if (f === "ans") { q.ans = +el.value; lsPvPaint(); } else if (f === "o") q.opts[+el.getAttribute("data-j")] = el.value; else q[f] = el.value; };
+    });
+    Array.prototype.forEach.call(box.querySelectorAll("[data-pi]"), function (b) { b.onclick = function () { LSE = +b.getAttribute("data-pi"); LSI = 0; lsPvPaint(); }; });
+    Array.prototype.forEach.call(box.querySelectorAll("[data-pf]"), function (a) { a.onclick = function (e) { e.preventDefault(); $("lsImgFile").click(); }; });
+    Array.prototype.forEach.call(box.querySelectorAll("[data-px]"), function (b) { b.onclick = function () { var q = LSP[+b.getAttribute("data-px")]; q.pend = ""; if (q.img) q.del = true; lsPvPaint(); }; });
+    Array.prototype.forEach.call(box.querySelectorAll(".iq"), function (d, i) { d.ondragover = function (e) { e.preventDefault(); }; d.ondrop = function (e) { var f = e.dataTransfer.files && e.dataTransfer.files[0]; if (f && /^image\//.test(f.type)) { e.preventDefault(); e.stopPropagation(); lsEditImg(i, f); } }; });
+    $("lsAddQ").onclick = function () { LSP = LSP.concat(lsBlank(1)); lsPvPaint(); };
+    $("lsDelQ").onclick = function () { if (LSP.length > 1 && confirm(LSP.length + "번 문항을 뺄까요?")) { LSP.pop(); lsPvPaint(); } };
+    $("lsPvCancel").onclick = function () { if (confirm("저장하지 않은 내용은 사라져요. 닫을까요?")) { LSP = null; LSE = -1; lsPvPaint(); $("lsPdfMsg").textContent = ""; } };
+    $("lsPvSave").onclick = lsEditSave;
   }
+  function lsEditImg(i, blob) { // 편집 줄 그림: 저장할 때 같이 올려요 (가로 1400 jpg로 줄여 두기)
+    LSE = -1; var url = URL.createObjectURL(blob), im = new Image();
+    im.onload = function () { var w = Math.min(1400, im.naturalWidth), h = Math.round(im.naturalHeight * w / im.naturalWidth), c = document.createElement("canvas"); c.width = w; c.height = h; var g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, w, h); g.drawImage(im, 0, 0, w, h); URL.revokeObjectURL(url); LSP[i].pend = c.toDataURL("image/jpeg", 0.88); LSP[i].del = false; lsPvPaint(); };
+    im.onerror = function () { alert("그림을 읽지 못했어요."); lsPvPaint(); }; im.src = url;
+  }
+  function lsEditSave() {
+    var book = $("lsBook").value.trim(), ch = $("lsCh").value.trim(), unit = $("lsUnit").value.trim() || "듣기", msg = function (h) { $("lsPvMsg").innerHTML = h; };
+    var noQ = [], miss = [];
+    LSP.forEach(function (q, i) { if (!String(q.q).trim()) noQ.push(i + 1); if (q.ans < 0) miss.push(i + 1); });
+    if (!book) return msg('<span class="er">위의 교재 이름을 써 주세요.</span>');
+    if (!ch) return msg('<span class="er">위의 단원(예: 초6, 중1)을 써 주세요.</span>');
+    if (miss.length) return msg('<span class="er">' + miss.join(", ") + "번 정답을 골라 주세요.</span>");
+    if (noQ.length && !confirm(noQ.join(", ") + "번은 문제 글이 비어 있어요. 「듣기 N번」으로 저장할까요?")) return;
+    if (!confirm(book + " › " + ch + " › " + unit + "\n듣기 " + LSP.length + "문항으로 저장할까요?\n(같은 이름의 과가 있으면 문항이 바뀌어요. 이미 올린 음원은 번호대로 남아요.)")) return;
+    var qs = LSP.map(function (q, i) { var opts = q.opts.map(function (o) { return String(o || "").trim(); }); if (opts.every(function (o) { return !o; })) opts = CIR.slice(0, opts.length).split(""); else opts = opts.map(function (o, j) { return o || CIR[j]; });
+      return { no: String(i + 1), type: "mc", q: String(q.q).trim() || "듣기 " + (i + 1) + "번", sub: String(q.sub || "").trim(), opts: opts, ans: q.ans, exp: q.exp || "", lv: 2 }; });
+    $("lsPvSave").disabled = true; msg("저장하는 중…");
+    post({ action: "t_import_save", meta: { book: book, chapter: ch, unit: unit, area: "듣기", grade: $("lsGrade").value, file: "🎧 듣기 직접 입력" }, questions: qs, text: "", replace: true }).then(function (j) {
+      if (!j.ok) { $("lsPvSave").disabled = false; return msg('<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"); }
+      DATA.catalog = j.catalog || DATA.catalog;
+      var jobs = []; LSP.forEach(function (q, i) { if (q.pend) jobs.push({ n: i + 1, b64: q.pend.split(",")[1] }); else if (q.del) jobs.push({ n: i + 1, del: true }); });
+      var bad = [];
+      (function next(t) {
+        if (t >= jobs.length) {
+          $("lsPvSave").disabled = false; LSP = null; LSE = -1; lsPvPaint();
+          $("lsPdfMsg").innerHTML = "✅ 듣기 " + j.n + "문항 저장" + (jobs.length ? " · 그림 " + (jobs.length - bad.length) + "개" : "") + (bad.length ? ' · <span class="er">그림 못 올림: ' + bad.join(", ") + "번 (② 표에서 다시 넣어 주세요)</span>" : "") + ". ② 표에서 음원·그림을 확인하세요.";
+          if (typeof buildBookFilters === "function") { try { buildBookFilters(); renderBooks(); } catch (e) {} }
+          lsFillSel(j.uid); return;
+        }
+        var x = jobs[t]; msg("그림 올리는 중… " + (t + 1) + " / " + jobs.length);
+        post(x.del ? { action: "t_img_del", uid: j.uid, n: x.n } : { action: "t_img_up", uid: j.uid, n: x.n, type: "image/jpeg", b64: x.b64 }).then(function (r) { if (!r.ok) bad.push(x.n); next(t + 1); });
+      })(0);
+    });
+  }
+  function lsEditOpen(uid) { // 저장한 듣기 → 편집 표
+    $("lsPdfMsg").textContent = "불러오는 중…";
+    Promise.all([post({ action: "t_unit_get", uid: uid }), post({ action: "t_audio_list", uid: uid })]).then(function (r) {
+      var a = r[0], b = r[1]; if (!a.ok) { $("lsPdfMsg").innerHTML = '<span class="er">' + esc(a.msg || "불러오지 못했어요.") + "</span>"; return; }
+      $("lsBook").value = a.meta.book || ""; $("lsCh").value = a.meta.chapter && a.meta.chapter !== "단원" ? a.meta.chapter : ""; $("lsUnit").value = a.meta.unit || "듣기"; if (a.meta.grade) $("lsGrade").value = a.meta.grade;
+      LSP = a.questions.map(function (q, i) { var im = b.ok && b.qs[i] ? b.qs[i].img : ""; return { q: /^듣기 \d+번$/.test(q.q) ? "" : q.q, sub: q.sub || "", opts: (q.opts || []).map(function (o) { return lsIsCir(o) ? "" : o; }), ans: q.ans >= 0 ? q.ans : -1, exp: q.exp || "", img: im, pend: "", del: false }; });
+      LSE = -1; lsPvPaint(); $("lsPdfMsg").innerHTML = "✏️ <b>" + esc(a.meta.book + " › " + (a.meta.chapter || "") + " › " + a.meta.unit) + "</b> " + LSP.length + "문항을 열었어요. 고친 뒤 💾 저장을 누르세요.";
+    });
+  }
+  $("lsNew").onclick = function () {
+    if (LSP && !confirm("지금 열린 표를 닫고 새로 만들까요?")) return;
+    var n = +prompt("몇 문항을 만들까요?", "20"); if (!(n >= 1 && n <= 60)) return;
+    LSP = lsBlank(n); LSE = -1; lsPvPaint(); $("lsPdfMsg").innerHTML = "✏️ 빈 표 " + n + "문항을 열었어요. 위의 <b>교재·단원·과</b>를 확인하고 문제를 써 주세요.";
+  };
+  $("lsEditLoad").onclick = function () { var u = $("lsEditSel").value; if (!u) { alert("불러올 듣기 자료를 골라 주세요."); return; } if (LSP && !confirm("지금 열린 표를 닫고 불러올까요?")) return; lsEditOpen(u); };
   $("lsPdfDrop").onclick = function () { $("lsPdfFiles").click(); };
   $("lsPdfFiles").onchange = function () { lsReadPdf(this.files); this.value = ""; };
   $("lsPdfDrop").ondragover = function (e) { e.preventDefault(); };
   $("lsPdfDrop").ondrop = function (e) { e.preventDefault(); lsReadPdf(e.dataTransfer.files); };
-  $("lsImgFile").onchange = function () { var f = this.files[0], n = LSI; this.value = ""; if (f && n) lsImgUp(n, f); };
+  $("lsImgFile").onchange = function () { var f = this.files[0], n = LSI, e = LSE; this.value = ""; if (!f) return; if (e >= 0 && LSP) lsEditImg(e, f); else if (n) lsImgUp(n, f); };
   $("lsSel").onchange = lsLoad;
   $("lsReload").onclick = function () { lsFillSel(); };
   $("lsDrop").onclick = function () { $("lsFiles").click(); };
