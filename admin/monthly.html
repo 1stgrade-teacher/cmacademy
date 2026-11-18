@@ -318,7 +318,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       <details class="libf" open style="margin-top:10px"><summary><b>② 문항별 음원(mp3) · 🖼 그림 보기 올리기</b></summary>
         <div class="hint" style="margin:6px 0 0">🖼 <b>그림 보기</b>(날씨·사물 그림 ①~⑤): 시험지에서 그 문제의 그림 부분을 <b>캡처</b>(윈도우 <b>Win+Shift+S</b>)한 뒤, 아래 표에서 그 문제의 <b>🖼 그림</b>을 누르고 <b>Ctrl+V</b>로 붙여넣어요. 그림 파일을 그 줄에 끌어다 놓아도 돼요.</div>
         <div class="row" style="margin-top:8px"><select id="lsSel" style="max-width:420px"><option value="">— 듣기 자료 고르기 —</option></select><button class="sub sm" id="lsReload">새로고침</button></div>
-        <div class="drop" id="lsDrop" style="margin-top:8px"><b>mp3 파일을 끌어다 놓거나 눌러서 고르세요</b><br><span class="hint">여러 개 한꺼번에 · 파일 이름의 숫자로 번호를 맞춰요 (1.mp3, 02.mp3, 듣기_3.mp3) · 한 문항 3MB까지</span>
+        <div class="drop" id="lsDrop" style="margin-top:8px"><b>mp3 파일을 끌어다 놓거나 눌러서 고르세요</b><br><span class="hint">여러 개 한꺼번에 · 파일 이름의 숫자로 번호를 맞춰요 (1.mp3, 02.mp3, 듣기_3.mp3) · 한 문항 3MB까지 · <b>올리면 바로 저장돼요 (따로 저장 버튼 없음)</b></span>
           <input type="file" id="lsFiles" multiple accept="audio/*,.mp3,.m4a,.wav" style="display:none"></div>
         <input type="file" id="lsImgFile" accept="image/*" style="display:none">
         <div class="msg" id="lsMsg"></div>
@@ -2095,7 +2095,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       var w = Math.min(1400, im.naturalWidth), h = Math.round(im.naturalHeight * w / im.naturalWidth), c = document.createElement("canvas"); c.width = w; c.height = h;
       var g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, w, h); g.drawImage(im, 0, 0, w, h); URL.revokeObjectURL(url);
       post({ action: "t_img_up", uid: LS.uid, n: n, type: "image/jpeg", b64: c.toDataURL("image/jpeg", 0.88).split(",")[1] }).then(function (j) {
-        if (j.ok) { LS.qs[n - 1].img = j.img + "&v=" + Date.now(); LSST["i" + n] = "✅"; } else LSST["i" + n] = '<span class="er">' + esc(j.msg || "실패") + "</span>";
+        if (j.ok) { LS.qs[n - 1].img = j.img + "&v=" + Date.now(); LSST["i" + n] = "✅ 저장됨"; } else LSST["i" + n] = '<span class="er">' + esc(j.msg || "실패") + "</span>";
         lsPaint(LSST);
       });
     };
@@ -2127,7 +2127,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     var typeOf = function (f) { var e = (f.name.match(/\.(\w+)$/) || [])[1] || ""; e = e.toLowerCase(); return f.type && /^audio\//.test(f.type) ? f.type : { mp3: "audio/mpeg", m4a: "audio/mp4", wav: "audio/wav", ogg: "audio/ogg", aac: "audio/aac" }[e] || ""; };
     jobs.forEach(function (x) { state[x.n] = "⏳ 기다리는 중"; }); lsPaint(state);
     (function next(i) {
-      if (i >= jobs.length) { $("lsMsg").innerHTML = (fail ? '<span class="er">' : "") + "✅ " + ok + "개 올림" + (fail ? " · ❌ " + fail + "개 실패 (표에서 이유를 확인하세요)</span>" : ""); return; }
+      if (i >= jobs.length) { $("lsMsg").innerHTML = (fail ? '<span class="er">' : "") + "✅ " + ok + "개 올림 · 자동 저장 완료" + (fail ? " · ❌ " + fail + "개 실패 (표에서 이유를 확인하세요)</span>" : ""); return; }
       var x = jobs[i]; state[x.n] = "⬆ 올리는 중…"; lsPaint(state); $("lsMsg").textContent = (i + 1) + " / " + jobs.length + " 올리는 중… (창을 닫지 마세요)";
       if (x.f.size > 3.2 * 1048576) { state[x.n] = '<span class="er">3MB 넘음</span>'; fail++; next(i + 1); return; }
       var rd = new FileReader();
