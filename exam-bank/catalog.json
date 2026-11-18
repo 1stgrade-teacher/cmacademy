@@ -1,5 +1,5 @@
 {
- "built": "2026-11-11T05:44:53.226Z",
+ "built": "2026-11-17T10:49:10.410Z",
  "books": [
   {
    "id": "bb391852c",
@@ -5162,6 +5162,166 @@
    ]
   },
   {
+   "id": "bf24cf120",
+   "area": "독해",
+   "grade": "중등",
+   "name": "What’s Reading 왓츠 리딩 70A",
+   "path": "독해/whatsreading-70a",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "chapter01",
+     "name": "Chapter 1 Panda",
+     "units": [
+      {
+       "id": "uee93901f",
+       "name": "01 Cute Bears",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2d4605e7",
+       "name": "02 Panda and Polar Bear",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc59396be",
+       "name": "03 Pandas in the World",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf2d31992",
+       "name": "04 Sad Pandas",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter02",
+     "name": "Chapter 2 Red Food",
+     "units": [
+      {
+       "id": "u2bb26e53",
+       "name": "01 I Like the Sun!",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u650e7039",
+       "name": "02 Poison Apple",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0ab34cd6",
+       "name": "03 A Ball in the Garden",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uffead4a6",
+       "name": "04 Delicious Sauce!",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter03",
+     "name": "Chapter 3 Cow",
+     "units": [
+      {
+       "id": "ub9211ce5",
+       "name": "01 Granfather’s Farm",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf20126c5",
+       "name": "02 Charging Bull",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc5e79802",
+       "name": "03 Raju and the Farmer",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2d64d331",
+       "name": "04 Cows: Giving Animals",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter04",
+     "name": "Chapter 4 The Sun",
+     "units": [
+      {
+       "id": "ue330d163",
+       "name": "01 Maui vs. the Sun God",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u21891a02",
+       "name": "02 Teotihuacan",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc75dc88f",
+       "name": "03 Fox Fire",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub312439f",
+       "name": "04 How’s the Weather?",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter05",
+     "name": "Chapter 5 Slowness",
+     "units": [
+      {
+       "id": "u8b9518fe",
+       "name": "01 My Special Pet",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0f880e64",
+       "name": "02 Slow Sloth",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u25adfe04",
+       "name": "03 A Young Man and Apples",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf60297e0",
+       "name": "04 A Slow Life",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
    "id": "bd72d860f",
    "area": "교과서",
    "grade": "중1",
@@ -5997,7 +6157,7 @@
    "grade": "중1",
    "name": "중1 천재이 교과서",
    "path": "교과서/중1/천재이",
-   "n": 20,
+   "n": 40,
    "chapters": [
     {
      "key": "1과",
@@ -6189,6 +6349,30 @@
      "key": "8과",
      "name": "Lesson 8",
      "units": [
+      {
+       "id": "ue4d6e4eb",
+       "name": "듣기 · 중1 천재(이) 8과 대화문 A. Listen and Watch (1) — A. Listen and Watch (1)",
+       "n": 5,
+       "lv": 1.4
+      },
+      {
+       "id": "u340200b4",
+       "name": "듣기 · 중1 천재(이) 8과 대화문 A. Listen and Watch (2) — A. Listen and Watch (2)",
+       "n": 5,
+       "lv": 1.4
+      },
+      {
+       "id": "u2c2e75f8",
+       "name": "듣기 · 중1 천재(이) 8과 대화문 A. Listen and Watch (3) — . Listen and Watch (3)",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "u11282453",
+       "name": "듣기 · 중1 천재(이) 8과 대화문 C. Watch and Do — C. Watch and Do",
+       "n": 5,
+       "lv": 1.2
+      },
       {
        "id": "uad8d5cec",
        "name": "문법 · 중1 천재(이) 8과 문법1 접속사 when — 접속사 when",
@@ -7076,19 +7260,19 @@
        "lv": 2.3
       },
       {
-       "id": "u2f94e1a4",
+       "id": "u8c586594",
        "name": "본문 · 중2 2학기 기말고사 중2 비상(황) 7과 본문1",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u51b8993d",
+       "id": "ueb111a48",
        "name": "본문 · 중2 2학기 기말고사 중2 비상(황) 7과 본문2",
        "n": 0,
        "lv": null
       },
       {
-       "id": "uc830bdaa",
+       "id": "u4c675d07",
        "name": "본문 · 중2 2학기 기말고사 중2 비상(황) 7과 본문3",
        "n": 0,
        "lv": null
