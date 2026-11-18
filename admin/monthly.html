@@ -2073,7 +2073,10 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         (q.audio ? '<audio controls preload="none" src="' + esc(q.audio) + '" style="height:32px;width:100%"></audio>' : '<span class="hint" style="margin:0">음원 없음</span>') + '</td><td style="padding:6px;width:110px">' + st + "</td></tr>";
     }).join("") + "</table>";
   }
-  function lsNum(name, i) { var m = String(name).replace(/\.[^.]+$/, "").match(/(\d{1,3})(?!.*\d)/); return m ? +m[1] : i + 1; }
+  function lsNum(name, i) { // 파일 이름에서 문항 번호: 「3번」이 있으면 그것, 아니면 학년(초6·중1)·연도(2024)·회차(1회)를 빼고 마지막 숫자
+    var b = String(name).replace(/\.[^.]+$/, ""), m = b.match(/(\d{1,3})\s*번/); if (m) return +m[1];
+    b = b.replace(/[초중고]\s*\d/g, " ").replace(/(19|20)\d{2}/g, " ").replace(/\d+\s*(회|학년|차시|월|일|강)/g, " ").replace(/(lv|level|unit|day)\s*\d+/gi, " ");
+    m = b.match(/(\d{1,3})(?!.*\d)/); return m ? +m[1] : i + 1; }
   function lsUpload(files) {
     if (!LS.uid) { $("lsMsg").innerHTML = '<span class="er">먼저 위에서 듣기 자료를 고르세요.</span>'; return; }
     var list = Array.prototype.slice.call(files).filter(function (f) { return /\.(mp3|m4a|wav|ogg|aac)$/i.test(f.name) || /^audio\//.test(f.type); });
@@ -2082,6 +2085,9 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     var jobs = list.map(function (f, i) { return { f: f, n: lsNum(f.name, i) }; }), state = {}, ok = 0, fail = 0;
     var bad = jobs.filter(function (x) { return x.n < 1 || x.n > LS.qs.length; });
     if (bad.length) { $("lsMsg").innerHTML = '<span class="er">이 과는 ' + LS.qs.length + "문항이에요. 번호가 맞지 않는 파일: " + esc(bad.map(function (x) { return x.f.name; }).join(", ")) + "</span>"; return; }
+    var seen = {}, dup = []; jobs.forEach(function (x) { if (seen[x.n]) dup.push(x.n + "번: " + seen[x.n] + " / " + x.f.name); else seen[x.n] = x.f.name; });
+    if (dup.length) { $("lsMsg").innerHTML = '<span class="er">같은 번호로 읽힌 파일이 있어요. 파일 이름에 번호를 넣어 주세요 (예: 듣기 3번.mp3).<br>' + esc(dup.join(" · ")) + "</span>"; return; }
+    if (!confirm(jobs.length + "개 파일을 올릴까요?\n\n" + jobs.map(function (x) { return x.n + "번 ← " + x.f.name; }).join("\n"))) return;
     var typeOf = function (f) { var e = (f.name.match(/\.(\w+)$/) || [])[1] || ""; e = e.toLowerCase(); return f.type && /^audio\//.test(f.type) ? f.type : { mp3: "audio/mpeg", m4a: "audio/mp4", wav: "audio/wav", ogg: "audio/ogg", aac: "audio/aac" }[e] || ""; };
     jobs.forEach(function (x) { state[x.n] = "⏳ 기다리는 중"; }); lsPaint(state);
     (function next(i) {
