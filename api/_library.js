@@ -40,7 +40,8 @@ module.exports = function (ctx) {
     const level = num(f.level, 1, 3, 2);
     const cfg = { units, count: num(f.count, 5, 100, 20), minutes: num(f.minutes, 0, 180, 30), level, vtypes: (Array.isArray(f.vtypes) ? f.vtypes : []).map((x) => clip(x, 20)).slice(0, 20),
       exclude: (Array.isArray(f.exclude) ? f.exclude : []).map((x) => clip(x, 40)).slice(0, 500), seed: clip(f.seed, 40).replace(/[^\w-]/g, ""),
-      ai: f.ai && typeof f.ai === "object" ? { fill: f.ai.fill !== false, variant: num(f.ai.variant, 0, 100, 0), extra: num(f.ai.extra, 0, 60, 0) } : undefined };
+      ai: f.ai && typeof f.ai === "object" ? { fill: f.ai.fill !== false, variant: num(f.ai.variant, 0, 100, 0), extra: num(f.ai.extra, 0, 60, 0) } : undefined,
+      pass: f.pass && typeof f.pass === "object" && (f.pass.by === "cnt" || f.pass.by === "pct") && Number(f.pass.v) > 0 ? { by: f.pass.by, v: Math.min(f.pass.by === "pct" ? 100 : 1000, Number(f.pass.v)) } : undefined };
     const props = {
       "이름": { title: rt(name) }, "단어장": { rich_text: rt(clip(bookOf(units), 100)) }, "종류": sel(KINDS.includes(f.kind) ? f.kind : "단어시험"),
       "범위": { rich_text: rt(clip(rangeText(units), 1900)) }, "문항 수": { number: cfg.count }, "제한시간(분)": { number: cfg.minutes }, "난이도": sel(LEVELS[level - 1]),
