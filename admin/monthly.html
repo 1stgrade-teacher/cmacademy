@@ -314,10 +314,12 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         <textarea id="lsAns" rows="3" placeholder="3 1 4 2 5 3 3 1 2 4 5 2 1 3 4 4 2 5 1 3&#10;또는 ③①④②⑤…  또는 1. ③ 2. ① 3. ④ …"></textarea>
         <div class="row" style="margin-top:8px"><button id="lsMake">💾 듣기 문항 저장</button><span class="msg" id="lsMakeMsg" style="margin:0"></span></div>
       </details>
-      <details class="libf" open style="margin-top:10px"><summary><b>② 문항별 음원(mp3) 올리기</b></summary>
+      <details class="libf" open style="margin-top:10px"><summary><b>② 문항별 음원(mp3) · 🖼 그림 보기 올리기</b></summary>
+        <div class="hint" style="margin:6px 0 0">🖼 <b>그림 보기</b>(날씨·사물 그림 ①~⑤): 시험지에서 그 문제의 그림 부분을 <b>캡처</b>(윈도우 <b>Win+Shift+S</b>)한 뒤, 아래 표에서 그 문제의 <b>🖼 그림</b>을 누르고 <b>Ctrl+V</b>로 붙여넣어요. 그림 파일을 그 줄에 끌어다 놓아도 돼요.</div>
         <div class="row" style="margin-top:8px"><select id="lsSel" style="max-width:420px"><option value="">— 듣기 자료 고르기 —</option></select><button class="sub sm" id="lsReload">새로고침</button></div>
         <div class="drop" id="lsDrop" style="margin-top:8px"><b>mp3 파일을 끌어다 놓거나 눌러서 고르세요</b><br><span class="hint">여러 개 한꺼번에 · 파일 이름의 숫자로 번호를 맞춰요 (1.mp3, 02.mp3, 듣기_3.mp3) · 한 문항 3MB까지</span>
           <input type="file" id="lsFiles" multiple accept="audio/*,.mp3,.m4a,.wav" style="display:none"></div>
+        <input type="file" id="lsImgFile" accept="image/*" style="display:none">
         <div class="msg" id="lsMsg"></div>
         <div id="lsList" style="margin-top:8px"></div>
       </details>
@@ -2067,17 +2069,42 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     var uid = $("lsSel").value; if (!uid) return; $("lsList").innerHTML = '<p class="hint">불러오는 중…</p>';
     post({ action: "t_audio_list", uid: uid }).then(function (j) {
       if (!j.ok) { $("lsList").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; }
-      LS = { uid: uid, qs: j.qs }; lsPaint();
+      LS = { uid: uid, qs: j.qs }; LSI = 0; LSST = {}; lsPaint();
     });
   }
   function lsPaint(state) {
-    state = state || {}; var have = LS.qs.filter(function (q) { return q.audio; }).length;
+    state = state || LSST; var have = LS.qs.filter(function (q) { return q.audio; }).length;
     $("lsList").innerHTML = '<div class="hint" style="margin:0 0 6px">음원 <b>' + have + " / " + LS.qs.length + '</b>문항</div><table style="width:100%;border-collapse:collapse;font-size:14px">' + LS.qs.map(function (q) {
       var st = state[q.n] || "";
-      return '<tr style="border-top:1px solid var(--line)"><td style="padding:6px 6px 6px 0;width:34px"><b>' + q.n + '</b></td><td style="padding:6px">' + esc(q.q) + ' <span class="hint" style="margin:0">정답 ' + esc(q.answer) + '</span></td><td style="padding:6px;width:260px">' +
+      return '<tr data-lsr="' + q.n + '" style="border-top:1px solid var(--line)' + (LSI === q.n ? ";background:#FFF8E6;outline:2px solid #F1D98A" : "") + '"><td style="padding:6px 6px 6px 0;width:34px;vertical-align:top"><b>' + q.n + '</b></td><td style="padding:6px">' + esc(q.q) + ' <span class="hint" style="margin:0">정답 ' + esc(q.answer) + "</span>" +
+        '<div class="row" style="margin:4px 0 0;gap:6px;align-items:center">' + (q.img ? '<img src="' + esc(q.img) + '" alt="" style="max-height:70px;max-width:320px;border:1px solid var(--line);border-radius:6px">' : "") + '<button class="sm sub" data-lsi="' + q.n + '">🖼 ' + (q.img ? "그림 바꾸기" : "그림") + "</button>" + (q.img ? '<button class="sm sub" data-lsx="' + q.n + '">빼기</button>' : "") + (LSI === q.n ? '<span class="hint" style="margin:0">지금 <b>Ctrl+V</b>로 붙여넣거나 <a href="#" data-lsf="' + q.n + '">파일 고르기</a></span>' : "") + (state["i" + q.n] ? "<span>" + state["i" + q.n] + "</span>" : "") + '</div></td><td style="padding:6px;width:260px;vertical-align:top">' +
         (q.audio ? '<audio controls preload="none" src="' + esc(q.audio) + '" style="height:32px;width:100%"></audio>' : '<span class="hint" style="margin:0">음원 없음</span>') + '</td><td style="padding:6px;width:110px">' + st + "</td></tr>";
     }).join("") + "</table>";
+    Array.prototype.forEach.call($("lsList").querySelectorAll("[data-lsi]"), function (b) { b.onclick = function () { LSI = +b.getAttribute("data-lsi"); lsPaint(LSST); }; });
+    Array.prototype.forEach.call($("lsList").querySelectorAll("[data-lsf]"), function (a) { a.onclick = function (e) { e.preventDefault(); $("lsImgFile").click(); }; });
+    Array.prototype.forEach.call($("lsList").querySelectorAll("[data-lsx]"), function (b) { b.onclick = function () { var n = +b.getAttribute("data-lsx"); if (!confirm(n + "번 그림을 뺄까요?")) return; post({ action: "t_img_del", uid: LS.uid, n: n }).then(function (j) { if (j.ok) { LS.qs[n - 1].img = ""; lsPaint(LSST); } else alert(j.msg || "빼지 못했어요."); }); }; });
+    Array.prototype.forEach.call($("lsList").querySelectorAll("[data-lsr]"), function (tr) { tr.ondragover = function (e) { e.preventDefault(); }; tr.ondrop = function (e) { var f = e.dataTransfer.files && e.dataTransfer.files[0]; if (f && /^image\//.test(f.type)) { e.preventDefault(); e.stopPropagation(); lsImgUp(+tr.getAttribute("data-lsr"), f); } }; });
   }
+  var LSI = 0, LSST = {}; // 🖼 그림을 붙일 문항 번호
+  function lsImgUp(n, blob) { // 큰 그림은 줄여서(가로 1400) jpg로 올려요
+    LSI = 0; LSST["i" + n] = "⬆ 그림 올리는 중…"; lsPaint(LSST);
+    var url = URL.createObjectURL(blob), im = new Image();
+    im.onload = function () {
+      var w = Math.min(1400, im.naturalWidth), h = Math.round(im.naturalHeight * w / im.naturalWidth), c = document.createElement("canvas"); c.width = w; c.height = h;
+      var g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, w, h); g.drawImage(im, 0, 0, w, h); URL.revokeObjectURL(url);
+      post({ action: "t_img_up", uid: LS.uid, n: n, type: "image/jpeg", b64: c.toDataURL("image/jpeg", 0.88).split(",")[1] }).then(function (j) {
+        if (j.ok) { LS.qs[n - 1].img = j.img + "&v=" + Date.now(); LSST["i" + n] = "✅"; } else LSST["i" + n] = '<span class="er">' + esc(j.msg || "실패") + "</span>";
+        lsPaint(LSST);
+      });
+    };
+    im.onerror = function () { LSST["i" + n] = '<span class="er">그림을 못 읽었어요</span>'; lsPaint(LSST); };
+    im.src = url;
+  }
+  document.addEventListener("paste", function (e) {
+    if (!LSI || !LS.uid) return; var it = Array.prototype.filter.call((e.clipboardData || {}).items || [], function (x) { return /^image\//.test(x.type); })[0];
+    if (!it) { LSST["i" + LSI] = '<span class="er">복사한 그림이 없어요. 먼저 캡처(Win+Shift+S)해 주세요.</span>'; lsPaint(LSST); return; }
+    e.preventDefault(); lsImgUp(LSI, it.getAsFile());
+  });
   function lsNum(name, i) { // 파일 이름에서 문항 번호: 「3번」이 있으면 그것, 아니면 학년(초6·중1)·연도(2024)·회차(1회)를 빼고 마지막 숫자
     var b = String(name).replace(/\.[^.]+$/, ""), m = b.match(/(\d{1,3})\s*번/); if (m) return +m[1];
     b = b.replace(/[초중고]\s*\d/g, " ").replace(/(19|20)\d{2}/g, " ").replace(/\d+\s*(회|학년|차시|월|일|강)/g, " ").replace(/(lv|level|unit|day)\s*\d+/gi, " ");
@@ -2087,7 +2114,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     var list = Array.prototype.slice.call(files).filter(function (f) { return /\.(mp3|m4a|wav|ogg|aac)$/i.test(f.name) || /^audio\//.test(f.type); });
     if (!list.length) { $("lsMsg").innerHTML = '<span class="er">음원 파일(mp3)을 골라 주세요.</span>'; return; }
     list.sort(function (a, b) { return a.name.localeCompare(b.name, "ko", { numeric: true }); });
-    var jobs = list.map(function (f, i) { return { f: f, n: lsNum(f.name, i) }; }), state = {}, ok = 0, fail = 0;
+    var jobs = list.map(function (f, i) { return { f: f, n: lsNum(f.name, i) }; }), state = LSST, ok = 0, fail = 0;
     var bad = jobs.filter(function (x) { return x.n < 1 || x.n > LS.qs.length; });
     if (bad.length) { $("lsMsg").innerHTML = '<span class="er">이 과는 ' + LS.qs.length + "문항이에요. 번호가 맞지 않는 파일: " + esc(bad.map(function (x) { return x.f.name; }).join(", ")) + "</span>"; return; }
     var seen = {}, dup = []; jobs.forEach(function (x) { if (seen[x.n]) dup.push(x.n + "번: " + seen[x.n] + " / " + x.f.name); else seen[x.n] = x.f.name; });
@@ -2164,6 +2191,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   $("lsPdfFiles").onchange = function () { lsReadPdf(this.files); this.value = ""; };
   $("lsPdfDrop").ondragover = function (e) { e.preventDefault(); };
   $("lsPdfDrop").ondrop = function (e) { e.preventDefault(); lsReadPdf(e.dataTransfer.files); };
+  $("lsImgFile").onchange = function () { var f = this.files[0], n = LSI; this.value = ""; if (f && n) lsImgUp(n, f); };
   $("lsSel").onchange = lsLoad;
   $("lsReload").onclick = function () { lsFillSel(); };
   $("lsDrop").onclick = function () { $("lsFiles").click(); };

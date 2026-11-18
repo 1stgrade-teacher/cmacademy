@@ -470,7 +470,7 @@ function buildSheet(picked, rnd, keep) {
     const k = { id: q.id, u: q.u, ar: u.area || "", t: q.type, q: clip(q.q, 300), sub: clip(q.sub, 700), exp: clip(q.exp, 300), unit: clip(u.name, 80), ch: clip(u.chapter, 60), book: clip(u.book, 40) };
     if (q.type === "mc") {
       const ord = keep ? q.opts.map((_, j) => j) : placeAns(q); const opts = ord.map((j) => q.opts[j]);
-      view.push(Object.assign({ n: i + 1, type: "mc", q: q.q, sub: q.sub, opts, unit: u.chapter }, q.audio ? { audio: q.audio } : {}));
+      view.push(Object.assign({ n: i + 1, type: "mc", q: q.q, sub: q.sub, opts, unit: u.chapter }, q.audio ? { audio: q.audio } : {}, q.img ? { img: q.img } : {}));
       Object.assign(k, { a: ord.indexOf(q.ans), opts: opts.map((o) => clip(o, 120)), answer: clip(q.opts[q.ans], 200) });
     } else if (q.type === "multi") {
       const ord = shuffle(q.opts.map((_, j) => j), rnd); const opts = ord.map((j) => q.opts[j]);
@@ -781,7 +781,7 @@ async function audioBlocks(pid) {
   for (let i = 0; i < 3; i++) {
     const j = await notion("blocks/" + id32(pid) + "/children?page_size=100" + (cur ? "&start_cursor=" + cur : ""), "GET");
     if (!j) return null;
-    (j.results || []).filter((x) => x.type === "audio").forEach((x) => { const a = x.audio || {}; out.push({ id: x.id, n: (a.caption || []).map((c) => c.plain_text || "").join("").trim(), url: (a.file && a.file.url) || (a.external && a.external.url) || "", exp: (a.file && a.file.expiry_time) || "" }); });
+    (j.results || []).filter((x) => x.type === "audio" || x.type === "image").forEach((x) => { const a = x[x.type] || {}; out.push({ id: x.id, kind: x.type, n: (a.caption || []).map((c) => c.plain_text || "").join("").trim(), url: (a.file && a.file.url) || (a.external && a.external.url) || "", exp: (a.file && a.file.expiry_time) || "" }); });
     if (!j.has_more) break; cur = j.next_cursor;
   }
   return out;
@@ -810,6 +810,14 @@ module.exports = async function handler(req, res) {
     const cs = String(process.env.CRON_SECRET || "").trim(), au = String(req.headers.authorization || "");
     if (cs ? au !== "Bearer " + cs : !/vercel-cron/i.test(String(req.headers["user-agent"] || ""))) return send(401, { error: "cron" });
     return send(200, await PLUS().tick(true));
+  }
+  if (req.method === "GET" && /[?&]im=/.test(req.url || "")) { // 🖼 듣기 그림 보기 (설명 = "그림 3")
+    if (!siteOk(req)) return send(401, { error: "site" });
+    const sp = new URL(req.url, "http://x").searchParams, uid = clip(sp.get("im"), 20), n = num(sp.get("n"), 1, 300, 0);
+    loadCatalog(); await loadCustom();
+    const d = custom.data.get(uid); if (!d || !n) return send(404, { error: "nf" });
+    const url = await audioUrl(d.pid, "그림 " + n); if (!url) return send(404, { error: "nf" });
+    res.statusCode = 302; res.setHeader("Location", url); res.setHeader("Cache-Control", "private, max-age=600"); return res.end();
   }
   if (req.method === "GET" && /[?&]au=/.test(req.url || "")) { // 🎧 듣기 음원: 들을 때마다 노션의 새 주소로 보내 줘요 (노션 주소는 1시간이면 바뀌어요)
     if (!siteOk(req)) return send(401, { error: "site" });
@@ -1176,7 +1184,39 @@ module.exports = async function handler(req, res) {
       loadCatalog(); await loadCustom(true);
       const uid = clip(b.uid, 20), d = custom.data.get(uid), u = unitIndex.get(uid);
       if (!d || !u) return send(404, { error: "nf", msg: "자료를 찾지 못했어요." });
-      return send(200, { ok: true, uid, name: u.book + " › " + u.chapter + " › " + u.name, area: u.area, qs: d.qs.map((q, i) => ({ n: i + 1, q: clip(q.q, 80), answer: clip(q.answer, 40), audio: q.audio || "" })) });
+      return send(200, { ok: true, uid, name: u.book + " › " + u.chapter + " › " + u.name, area: u.area, qs: d.qs.map((q, i) => ({ n: i + 1, q: clip(q.q, 80), answer: clip(q.answer, 40), audio: q.audio || "", img: q.img || "" })) });
+    }
+    if (act === "t_img_up" || act === "t_img_del") { // 🖼 문항 그림 (①~⑤ 그림 보기 한 장). 같은 번호에 다시 올리면 바꿔요
+      loadCatalog(); await loadCustom(true);
+      const uid = clip(b.uid, 20), d = custom.data.get(uid), n = num(b.n, 1, 300, 0), cap = "그림 " + n;
+      if (!d) return send(404, { error: "nf", msg: "자료를 찾지 못했어요." });
+      if (!n || n > d.qs.length) return send(400, { error: "input", msg: n + "번 문항이 없어요." });
+      let fid = "";
+      if (act === "t_img_up") {
+        const type = String(b.type || "").toLowerCase();
+        if (!/^image\/(jpeg|png|webp|gif)$/.test(type)) return send(400, { error: "input", msg: "그림 파일(jpg·png)만 올릴 수 있어요." });
+        const buf = Buffer.from(String(b.b64 || ""), "base64");
+        if (!buf.length || buf.length > AUDIO_MAX) return send(400, { error: "big", msg: "그림이 비었거나 너무 커요 (3MB까지)." });
+        const H = { Authorization: "Bearer " + process.env.NOTION_TOKEN, "Notion-Version": NOTION_VER }, fname = "q" + n + "." + type.split("/")[1].replace("jpeg", "jpg");
+        try {
+          let r = await fetch("https://api.notion.com/v1/file_uploads", { method: "POST", headers: Object.assign({ "Content-Type": "application/json" }, H), body: JSON.stringify({ filename: fname, content_type: type }) });
+          const j = await r.json().catch(() => ({})); if (!r.ok || !j.id) return send(502, { error: "notion", msg: "그림을 올리지 못했어요. (" + (j.message || r.status) + ")" });
+          const fd = new FormData(); fd.append("file", new Blob([buf], { type }), fname);
+          r = await fetch("https://api.notion.com/v1/file_uploads/" + j.id + "/send", { method: "POST", headers: H, body: fd });
+          const s2 = await r.json().catch(() => ({})); if (!r.ok || (s2.status && s2.status !== "uploaded")) return send(502, { error: "notion", msg: "그림을 보내지 못했어요. (" + (s2.message || r.status) + ")" });
+          fid = j.id;
+        } catch (e) { return send(502, { error: "net", msg: "그림을 올리지 못했어요. 인터넷 연결을 확인해 주세요." }); }
+      }
+      const old = (await audioBlocks(d.pid)) || [];
+      if (fid) { const add = await notion("blocks/" + id32(d.pid) + "/children", "PATCH", { children: [{ object: "block", type: "image", image: { type: "file_upload", file_upload: { id: fid }, caption: rt(cap) } }] }); if (!add) return send(502, { error: "notion", msg: "그림을 붙이지 못했어요.", debug: lastErr }); }
+      for (const x of old.filter((x) => x.n === cap)) await notion("blocks/" + id32(x.id), "DELETE");
+      audioCache.delete(d.pid);
+      const path = fid ? "/api/monthly?im=" + encodeURIComponent(uid) + "&n=" + n : "";
+      const pg = await notion("pages/" + id32(d.pid), "GET");
+      let qs = []; try { qs = JSON.parse(P.text(pg, "문항") || "[]"); } catch (e) { qs = []; }
+      if (qs[n - 1] && (qs[n - 1].img || "") !== path) { if (path) qs[n - 1].img = path; else delete qs[n - 1].img; await notion("pages/" + id32(d.pid), "PATCH", { properties: { "문항": { rich_text: rtLong(JSON.stringify(qs)) } } }); }
+      await loadCustom(true);
+      return send(200, { ok: true, n, img: path });
     }
     if (act === "t_audio_up") { // 🎧 문항 하나의 음원 올리기 (같은 번호에 다시 올리면 바꿔요)
       loadCatalog(); await loadCustom(true);
@@ -1258,7 +1298,7 @@ module.exports = async function handler(req, res) {
       }
       if (found[0] && b.replace && !vocabWords) { // 🎧 다시 저장해도 같은 번호의 음원은 그대로
         let old = []; try { old = JSON.parse(P.text(found[0], "문항") || "[]"); } catch (e) { old = []; }
-        all.forEach((q, i) => { if (old[i] && old[i].audio && !q.audio) q.audio = old[i].audio; });
+        all.forEach((q, i) => { if (old[i] && old[i].audio && !q.audio) q.audio = old[i].audio; if (old[i] && old[i].img && !q.img) q.img = old[i].img; });
       }
       if (found[0] && !b.replace) { // 같은 과에 더 올리면 기존 문항 뒤에 합침 (같은 문항은 한 번만)
         let old = []; try { old = JSON.parse(P.text(found[0], "문항") || "[]"); } catch (e) { old = []; }
