@@ -298,7 +298,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       <h2>🎧 듣기 문제 만들기</h2>
       <p class="hint" style="margin-top:0"><b>① 문항 넣기</b> → <b>② 문항별 음원 올리기</b> 순서예요. 스피커로만 볼 땐 ①만 하면 돼요(음원은 선생님 컴퓨터에서 틀어요). 태블릿에서 들으려면 ②까지 해 주세요.</p>
       <details class="libf" open><summary><b>① 문항 넣기</b></summary>
-        <div class="hint" style="margin:6px 0">• <b>정답만 빠르게</b>: 아래에 정답을 순서대로 쓰면 「듣기 1번 ①~⑤」 답안 문항이 만들어져요. (학생 화면에 번호와 ①~⑤만 보여요)<br>• <b>문제·보기까지 보여 주려면</b>: 위 <b>✍️ 직접 문제 만들기 → 📋 글로 붙여넣기</b>로 문제를 넣고, 저장할 때 영역을 <b>듣기</b>로 고르세요.</div>
+        <div class="hint" style="margin:6px 0">• <b>📄 문제지 파일로 한 번에</b>: 20문제가 든 PDF·한글(.hwpx)·워드 파일을 아래 칸에 끌어다 놓으면 문제·보기·정답을 읽어요. 정답은 ⓐ 문제지 맨 끝 「정답」 줄, ⓑ 이름에 「정답」이 들어간 파일을 함께 올리기, ⓒ 아래 정답 칸에 쓰기 중 하나면 돼요. 그림 보기 문제는 ①~⑤ 답안카드로 바뀌어요.<br>• <b>정답만 빠르게</b>: 아래에 정답을 순서대로 쓰면 「듣기 1번 ①~⑤」 답안 문항이 만들어져요. (학생 화면에 번호와 ①~⑤만 보여요)<br>• <b>문제·보기까지 보여 주려면</b>: 위 <b>✍️ 직접 문제 만들기 → 📋 글로 붙여넣기</b>로 문제를 넣고, 저장할 때 영역을 <b>듣기</b>로 고르세요.</div>
         <div class="grid">
           <div><label class="l">교재</label><input id="lsBook" value="예비중 반배정"></div>
           <div><label class="l">단원</label><input id="lsCh" placeholder="예: 초6" value="초6"></div>
@@ -306,6 +306,10 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
           <div><label class="l">학년</label><select id="lsGrade"><option value="초등">초등</option><option value="중1">중1</option><option value="중2">중2</option><option value="중3">중3</option><option value="">(없음)</option></select></div>
           <div><label class="l">보기 수</label><select id="lsOpt"><option value="5">①~⑤</option><option value="4">①~④</option></select></div>
         </div>
+        <div class="drop" id="lsPdfDrop" style="margin-top:10px"><b>📄 듣기 문제지(PDF·한글·워드)를 끌어다 놓거나 눌러서 고르세요</b><br><span class="hint">정답지 파일을 같이 올려도 돼요 (파일 이름에 「정답」)</span>
+          <input type="file" id="lsPdfFiles" multiple accept=".pdf,.hwpx,.hwp,.docx,.txt" style="display:none"></div>
+        <div class="msg" id="lsPdfMsg"></div>
+        <div id="lsPv"></div>
         <label class="l" style="margin-top:8px">정답 (순서대로)</label>
         <textarea id="lsAns" rows="3" placeholder="3 1 4 2 5 3 3 1 2 4 5 2 1 3 4 4 2 5 1 3&#10;또는 ③①④②⑤…  또는 1. ③ 2. ① 3. ④ …"></textarea>
         <div class="row" style="margin-top:8px"><button id="lsMake">💾 듣기 문항 저장</button><span class="msg" id="lsMakeMsg" style="margin:0"></span></div>
@@ -2106,6 +2110,60 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       rd.readAsDataURL(x.f);
     })(0);
   }
+  // 📄 듣기 문제지 파일 → 문항 (기존 「내 자료로 문제은행 채우기」의 읽기 기능을 그대로 써요)
+  var LSP = null, CIR = "①②③④⑤⑥";
+  async function lsReadPdf(list) {
+    var files = Array.prototype.slice.call(list || []); if (!files.length) return;
+    var P = window.ImportParser, keyF = files.filter(isKey), qF = files.filter(function (f) { return !isKey(f); });
+    if (!qF.length) { $("lsPdfMsg").innerHTML = '<span class="er">문제지 파일이 없어요. (정답지만 올리셨다면 문제지도 함께 올려 주세요)</span>'; return; }
+    $("lsPdfMsg").textContent = "파일을 읽는 중…"; $("lsPv").innerHTML = "";
+    try {
+      var keyLines = []; for (var f of keyF) keyLines = keyLines.concat(await P.fileLines(f));
+      var lines = []; for (var g of qF) lines = lines.concat(await P.fileLines(g));
+      var part = P.splitAnswerSection(lines), key = P.parseAnswers(keyLines.length ? keyLines : part.a), qs = P.parseQuestions(part.q, key);
+      var typed = lsParseAns($("lsAns").value); // ⓒ 정답 칸에 쓴 정답이 있으면 그걸 먼저
+      qs = qs.filter(function (q) { return q.type === "mc" || q.type === "multi"; });
+      if (!qs.length) { $("lsPdfMsg").innerHTML = '<span class="er">문항을 찾지 못했어요. 문제 앞에 「1.」 번호가 있는지 확인해 주세요. 스캔한 PDF(사진)라면 글자를 읽을 수 없어요 → 아래 「정답만 빠르게」를 써 주세요.</span>'; return; }
+      LSP = qs.map(function (q, i) {
+        var opts = (q.opts || []).map(function (o) { return String(o || "").trim(); }), pic = opts.length < 2 || opts.every(function (o) { return !o; });
+        if (pic) opts = CIR.slice(0, Math.max(opts.length, 5) > 5 ? 5 : 5).split(""); else opts = opts.map(function (o, k) { return o || CIR[k]; });
+        var a = typed.length ? (typed[i] ? typed[i] - 1 : -1) : (q.ans >= 0 ? q.ans : -1);
+        return { no: String(i + 1), type: "mc", q: q.q || "듣기 " + (i + 1) + "번", sub: q.sub || "", opts: opts, ans: a < opts.length ? a : -1, exp: q.exp || "", lv: 2, pic: pic };
+      });
+      lsPvPaint();
+      var miss = LSP.filter(function (q) { return q.ans < 0; }).length;
+      $("lsPdfMsg").innerHTML = '<span class="ok">' + LSP.length + "문항을 읽었어요</span>" + (miss ? ' · <span class="er">정답 없는 문항 ' + miss + "개 → 표에서 골라 주세요</span>" : "") + (LSP.length !== 20 ? ' · <span class="er">⚠ 20문항이 아니에요. 문제지를 확인해 주세요</span>' : "") + " — 확인 후 아래 💾 저장을 누르세요.";
+    } catch (err) { $("lsPdfMsg").innerHTML = '<span class="er">파일을 읽지 못했어요: ' + esc(err.message) + "</span><br>한글(.hwp)이 안 읽히면 한글에서 <b>다른 이름으로 저장 → .hwpx 또는 PDF</b>로 저장해서 올려 주세요."; }
+  }
+  function lsPvPaint() {
+    if (!LSP) { $("lsPv").innerHTML = ""; return; }
+    $("lsPv").innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:8px">' + LSP.map(function (q, i) {
+      return '<tr style="border-top:1px solid var(--line)' + (q.ans < 0 ? ";background:#FFF4F2" : "") + '"><td style="padding:6px 6px 6px 0;width:34px;vertical-align:top"><b>' + (i + 1) + '</b></td><td style="padding:6px">' + esc(q.q) + (q.sub ? '<div class="hint" style="margin:2px 0 0">' + esc(q.sub) + "</div>" : "") +
+        '<div style="margin-top:3px;font-size:13px">' + (q.pic ? '<span class="pill">그림 보기 → ①~⑤ 답안카드</span>' : q.opts.map(function (o, k) { return CIR[k] + " " + esc(o); }).join("&nbsp;&nbsp; ")) + '</div></td><td style="padding:6px;width:120px;vertical-align:top"><select data-lsa="' + i + '" style="width:auto">' +
+        '<option value="-1"' + (q.ans < 0 ? " selected" : "") + ">정답?</option>" + q.opts.map(function (o, k) { return '<option value="' + k + '"' + (q.ans === k ? " selected" : "") + ">정답 " + CIR[k] + "</option>"; }).join("") + "</select></td></tr>";
+    }).join("") + '</table><div class="row" style="margin-top:8px"><button id="lsPvSave">💾 듣기 ' + LSP.length + '문항 저장</button><button class="sub" id="lsPvCancel">취소</button><span class="msg" id="lsPvMsg" style="margin:0"></span></div>';
+    Array.prototype.forEach.call($("lsPv").querySelectorAll("[data-lsa]"), function (s) { s.onchange = function () { LSP[+s.getAttribute("data-lsa")].ans = +s.value; lsPvPaint(); }; });
+    $("lsPvCancel").onclick = function () { LSP = null; lsPvPaint(); $("lsPdfMsg").textContent = ""; };
+    $("lsPvSave").onclick = function () {
+      var miss = LSP.map(function (q, i) { return q.ans < 0 ? i + 1 : 0; }).filter(Boolean), book = $("lsBook").value.trim(), ch = $("lsCh").value.trim(), unit = $("lsUnit").value.trim() || "듣기";
+      if (miss.length) { $("lsPvMsg").innerHTML = '<span class="er">' + miss.join(", ") + "번 정답을 골라 주세요.</span>"; return; }
+      if (!book) { $("lsPvMsg").innerHTML = '<span class="er">위의 교재 이름을 써 주세요.</span>'; return; }
+      if (!confirm(book + " › " + ch + " › " + unit + "\n듣기 " + LSP.length + "문항으로 저장할까요?\n(같은 이름의 과가 있으면 문항이 바뀌어요. 이미 올린 음원은 번호대로 그대로 남아요.)")) return;
+      $("lsPvSave").disabled = true; $("lsPvMsg").textContent = "저장하는 중…";
+      post({ action: "t_import_save", meta: { book: book, chapter: ch, unit: unit, area: "듣기", grade: $("lsGrade").value, file: "🎧 듣기 문제지" }, questions: LSP.map(function (q) { return { no: q.no, type: "mc", q: q.q, sub: q.sub, opts: q.opts, ans: q.ans, exp: q.exp, lv: 2 }; }), text: "", replace: true }).then(function (j) {
+        $("lsPvSave").disabled = false;
+        if (!j.ok) { $("lsPvMsg").innerHTML = '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; return; }
+        DATA.catalog = j.catalog || DATA.catalog; LSP = null; lsPvPaint();
+        $("lsPdfMsg").innerHTML = "✅ 듣기 " + j.n + "문항 저장" + (j.skipped && j.skipped.length ? ' · <span class="er">저장 안 된 문항: ' + j.skipped.join(", ") + "번</span>" : "") + ". 이제 ② 음원을 올리거나, 새 시험지에서 이 과를 고르세요.";
+        if (typeof buildBookFilters === "function") { try { buildBookFilters(); renderBooks(); } catch (e) {} }
+        lsFillSel(j.uid);
+      });
+    };
+  }
+  $("lsPdfDrop").onclick = function () { $("lsPdfFiles").click(); };
+  $("lsPdfFiles").onchange = function () { lsReadPdf(this.files); this.value = ""; };
+  $("lsPdfDrop").ondragover = function (e) { e.preventDefault(); };
+  $("lsPdfDrop").ondrop = function (e) { e.preventDefault(); lsReadPdf(e.dataTransfer.files); };
   $("lsSel").onchange = lsLoad;
   $("lsReload").onclick = function () { lsFillSel(); };
   $("lsDrop").onclick = function () { $("lsFiles").click(); };
