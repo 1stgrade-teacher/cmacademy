@@ -294,6 +294,30 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       </div>
       <datalist id="bookList"></datalist>
     </div>
+    <div class="card" id="lsCard">
+      <h2>🎧 듣기 문제 만들기</h2>
+      <p class="hint" style="margin-top:0"><b>① 문항 넣기</b> → <b>② 문항별 음원 올리기</b> 순서예요. 스피커로만 볼 땐 ①만 하면 돼요(음원은 선생님 컴퓨터에서 틀어요). 태블릿에서 들으려면 ②까지 해 주세요.</p>
+      <details class="libf" open><summary><b>① 문항 넣기</b></summary>
+        <div class="hint" style="margin:6px 0">• <b>정답만 빠르게</b>: 아래에 정답을 순서대로 쓰면 「듣기 1번 ①~⑤」 답안 문항이 만들어져요. (학생 화면에 번호와 ①~⑤만 보여요)<br>• <b>문제·보기까지 보여 주려면</b>: 위 <b>✍️ 직접 문제 만들기 → 📋 글로 붙여넣기</b>로 문제를 넣고, 저장할 때 영역을 <b>듣기</b>로 고르세요.</div>
+        <div class="grid">
+          <div><label class="l">교재</label><input id="lsBook" value="예비중 반배정"></div>
+          <div><label class="l">단원</label><input id="lsCh" placeholder="예: 초6" value="초6"></div>
+          <div><label class="l">과</label><input id="lsUnit" value="듣기"></div>
+          <div><label class="l">학년</label><select id="lsGrade"><option value="초등">초등</option><option value="중1">중1</option><option value="중2">중2</option><option value="중3">중3</option><option value="">(없음)</option></select></div>
+          <div><label class="l">보기 수</label><select id="lsOpt"><option value="5">①~⑤</option><option value="4">①~④</option></select></div>
+        </div>
+        <label class="l" style="margin-top:8px">정답 (순서대로)</label>
+        <textarea id="lsAns" rows="3" placeholder="3 1 4 2 5 3 3 1 2 4 5 2 1 3 4 4 2 5 1 3&#10;또는 ③①④②⑤…  또는 1. ③ 2. ① 3. ④ …"></textarea>
+        <div class="row" style="margin-top:8px"><button id="lsMake">💾 듣기 문항 저장</button><span class="msg" id="lsMakeMsg" style="margin:0"></span></div>
+      </details>
+      <details class="libf" open style="margin-top:10px"><summary><b>② 문항별 음원(mp3) 올리기</b></summary>
+        <div class="row" style="margin-top:8px"><select id="lsSel" style="max-width:420px"><option value="">— 듣기 자료 고르기 —</option></select><button class="sub sm" id="lsReload">새로고침</button></div>
+        <div class="drop" id="lsDrop" style="margin-top:8px"><b>mp3 파일을 끌어다 놓거나 눌러서 고르세요</b><br><span class="hint">여러 개 한꺼번에 · 파일 이름의 숫자로 번호를 맞춰요 (1.mp3, 02.mp3, 듣기_3.mp3) · 한 문항 3MB까지</span>
+          <input type="file" id="lsFiles" multiple accept="audio/*,.mp3,.m4a,.wav" style="display:none"></div>
+        <div class="msg" id="lsMsg"></div>
+        <div id="lsList" style="margin-top:8px"></div>
+      </details>
+    </div>
     <div class="card" id="qzCard">
       <h2>🃏 Quizlet 단어 가져오기</h2>
       <p class="hint" style="margin-top:0">Quizlet 세트의 단어·뜻을 복사해 붙여 넣으면 📒 단어장으로 바뀌어요. 저장하면 단어시험 출제·단어 게임에 바로 쓰여요. (Quizlet이 주소로 직접 가져오는 것을 막아 두어서 복사해 붙여 넣는 방식이에요)</p>
@@ -2004,6 +2028,85 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     } catch (err) { $("impMsg").innerHTML = '<span class="er">파일을 읽지 못했어요: ' + esc(err.message) + "</span><br>한글(.hwp)이 안 읽히면 한글에서 <b>다른 이름으로 저장 → .hwpx 또는 PDF</b>로 저장해서 올려 주세요."; }
   }
   var TYPES = { mc: "객관식", multi: "모두 고르기", short: "서술형(직접 쓰기)", arrange: "배열" };
+  // ---------- 🎧 듣기 문제 만들기 ----------
+  var LS = { uid: "", qs: [] };
+  function lsUnits() { var o = []; (DATA.catalog || []).filter(function (b) { return b.custom && b.area === "듣기"; }).forEach(function (b) { b.chapters.forEach(function (c) { c.units.forEach(function (u) { o.push({ id: u.id, name: b.name.replace(/^📁 /, "") + " › " + (c.name && c.name !== "단원" ? c.name + " › " : "") + u.name + " (" + (u.n || 0) + "문항)" }); }); }); }); return o; }
+  function lsFillSel(keep) {
+    var cur = keep || $("lsSel").value, list = lsUnits();
+    $("lsSel").innerHTML = '<option value="">— 듣기 자료 고르기 (' + list.length + "개) —</option>" + list.map(function (u) { return '<option value="' + esc(u.id) + '"' + (u.id === cur ? " selected" : "") + ">" + esc(u.name) + "</option>"; }).join("");
+    if ($("lsSel").value) lsLoad(); else { LS = { uid: "", qs: [] }; $("lsList").innerHTML = ""; }
+  }
+  function lsParseAns(t) { // "3 1 4", "③①④", "1. ③ 2. ①" 모두
+    t = String(t || "").replace(/[①②③④⑤]/g, function (c) { return " " + ("①②③④⑤".indexOf(c) + 1) + " "; }).replace(/(^|\s)\d{1,2}\s*[.)번:]\s*/g, " ");
+    return (t.match(/\d/g) || []).map(Number);
+  }
+  $("lsMake").onclick = function () {
+    var k = +$("lsOpt").value, ans = lsParseAns($("lsAns").value), book = $("lsBook").value.trim(), ch = $("lsCh").value.trim(), unit = $("lsUnit").value.trim() || "듣기";
+    if (!book) { $("lsMakeMsg").innerHTML = '<span class="er">교재 이름을 써 주세요.</span>'; return; }
+    if (!ans.length) { $("lsMakeMsg").innerHTML = '<span class="er">정답을 써 주세요.</span>'; return; }
+    var bad = ans.map(function (a, i) { return a < 1 || a > k ? i + 1 : 0; }).filter(Boolean);
+    if (bad.length) { $("lsMakeMsg").innerHTML = '<span class="er">' + bad.join(", ") + "번 정답이 1~" + k + " 밖이에요.</span>"; return; }
+    if (!confirm(book + " › " + ch + " › " + unit + "\n듣기 " + ans.length + "문항으로 저장할까요?\n(같은 이름의 과가 있으면 문항이 바뀌어요. 이미 올린 음원은 번호대로 그대로 남아요.)")) return;
+    var opts = "①②③④⑤".slice(0, k).split("");
+    var qs = ans.map(function (a, i) { return { no: String(i + 1), type: "mc", q: "듣기 " + (i + 1) + "번", sub: "", opts: opts.slice(), ans: a - 1, exp: "", lv: 2 }; });
+    $("lsMake").disabled = true; $("lsMakeMsg").textContent = "저장하는 중…";
+    post({ action: "t_import_save", meta: { book: book, chapter: ch, unit: unit, area: "듣기", grade: $("lsGrade").value, file: "🎧 정답만 입력" }, questions: qs, text: "", replace: true }).then(function (j) {
+      $("lsMake").disabled = false;
+      if (!j.ok) { $("lsMakeMsg").innerHTML = '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; return; }
+      DATA.catalog = j.catalog || DATA.catalog; $("lsMakeMsg").innerHTML = "✅ 듣기 " + j.n + "문항 저장. 이제 ② 음원을 올리거나, 새 시험지에서 이 과를 고르세요.";
+      if (typeof buildBookFilters === "function") { try { buildBookFilters(); renderBooks(); } catch (e) {} }
+      lsFillSel(j.uid);
+    });
+  };
+  function lsLoad() {
+    var uid = $("lsSel").value; if (!uid) return; $("lsList").innerHTML = '<p class="hint">불러오는 중…</p>';
+    post({ action: "t_audio_list", uid: uid }).then(function (j) {
+      if (!j.ok) { $("lsList").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; }
+      LS = { uid: uid, qs: j.qs }; lsPaint();
+    });
+  }
+  function lsPaint(state) {
+    state = state || {}; var have = LS.qs.filter(function (q) { return q.audio; }).length;
+    $("lsList").innerHTML = '<div class="hint" style="margin:0 0 6px">음원 <b>' + have + " / " + LS.qs.length + '</b>문항</div><table style="width:100%;border-collapse:collapse;font-size:14px">' + LS.qs.map(function (q) {
+      var st = state[q.n] || "";
+      return '<tr style="border-top:1px solid var(--line)"><td style="padding:6px 6px 6px 0;width:34px"><b>' + q.n + '</b></td><td style="padding:6px">' + esc(q.q) + ' <span class="hint" style="margin:0">정답 ' + esc(q.answer) + '</span></td><td style="padding:6px;width:260px">' +
+        (q.audio ? '<audio controls preload="none" src="' + esc(q.audio) + '" style="height:32px;width:100%"></audio>' : '<span class="hint" style="margin:0">음원 없음</span>') + '</td><td style="padding:6px;width:110px">' + st + "</td></tr>";
+    }).join("") + "</table>";
+  }
+  function lsNum(name, i) { var m = String(name).replace(/\.[^.]+$/, "").match(/(\d{1,3})(?!.*\d)/); return m ? +m[1] : i + 1; }
+  function lsUpload(files) {
+    if (!LS.uid) { $("lsMsg").innerHTML = '<span class="er">먼저 위에서 듣기 자료를 고르세요.</span>'; return; }
+    var list = Array.prototype.slice.call(files).filter(function (f) { return /\.(mp3|m4a|wav|ogg|aac)$/i.test(f.name) || /^audio\//.test(f.type); });
+    if (!list.length) { $("lsMsg").innerHTML = '<span class="er">음원 파일(mp3)을 골라 주세요.</span>'; return; }
+    list.sort(function (a, b) { return a.name.localeCompare(b.name, "ko", { numeric: true }); });
+    var jobs = list.map(function (f, i) { return { f: f, n: lsNum(f.name, i) }; }), state = {}, ok = 0, fail = 0;
+    var bad = jobs.filter(function (x) { return x.n < 1 || x.n > LS.qs.length; });
+    if (bad.length) { $("lsMsg").innerHTML = '<span class="er">이 과는 ' + LS.qs.length + "문항이에요. 번호가 맞지 않는 파일: " + esc(bad.map(function (x) { return x.f.name; }).join(", ")) + "</span>"; return; }
+    var typeOf = function (f) { var e = (f.name.match(/\.(\w+)$/) || [])[1] || ""; e = e.toLowerCase(); return f.type && /^audio\//.test(f.type) ? f.type : { mp3: "audio/mpeg", m4a: "audio/mp4", wav: "audio/wav", ogg: "audio/ogg", aac: "audio/aac" }[e] || ""; };
+    jobs.forEach(function (x) { state[x.n] = "⏳ 기다리는 중"; }); lsPaint(state);
+    (function next(i) {
+      if (i >= jobs.length) { $("lsMsg").innerHTML = (fail ? '<span class="er">' : "") + "✅ " + ok + "개 올림" + (fail ? " · ❌ " + fail + "개 실패 (표에서 이유를 확인하세요)</span>" : ""); return; }
+      var x = jobs[i]; state[x.n] = "⬆ 올리는 중…"; lsPaint(state); $("lsMsg").textContent = (i + 1) + " / " + jobs.length + " 올리는 중… (창을 닫지 마세요)";
+      if (x.f.size > 3.2 * 1048576) { state[x.n] = '<span class="er">3MB 넘음</span>'; fail++; next(i + 1); return; }
+      var rd = new FileReader();
+      rd.onload = function () {
+        post({ action: "t_audio_up", uid: LS.uid, n: x.n, type: typeOf(x.f), name: x.f.name, b64: String(rd.result).split(",")[1] || "" }).then(function (j) {
+          if (j.ok) { ok++; state[x.n] = "✅ " + esc(x.f.name); LS.qs[x.n - 1].audio = j.audio + "&v=" + Date.now(); } else { fail++; state[x.n] = '<span class="er">' + esc(j.msg || "실패") + "</span>"; }
+          lsPaint(state); next(i + 1);
+        });
+      };
+      rd.onerror = function () { fail++; state[x.n] = '<span class="er">파일을 못 읽음</span>'; next(i + 1); };
+      rd.readAsDataURL(x.f);
+    })(0);
+  }
+  $("lsSel").onchange = lsLoad;
+  $("lsReload").onclick = function () { lsFillSel(); };
+  $("lsDrop").onclick = function () { $("lsFiles").click(); };
+  $("lsFiles").onchange = function () { lsUpload(this.files); this.value = ""; };
+  $("lsDrop").ondragover = function (e) { e.preventDefault(); };
+  $("lsDrop").ondrop = function (e) { e.preventDefault(); lsUpload(e.dataTransfer.files); };
+  document.addEventListener("click", function (e) { var t = e.target && e.target.closest && e.target.closest('.tab[data-tab="import"]'); if (t) setTimeout(function () { lsFillSel(); }, 0); });
+
   // ---------- ✍️ 직접 문제 만들기 ----------
   function blankQ(prev) { return { no: "", type: prev ? prev.type : "mc", lv: prev ? prev.lv : 2, q: prev && prev.type !== "short" ? prev.q : "", sub: "", opts: [], ans: -1, anss: [], answer: "", frame: "", words: [], exp: "", warn: [] }; }
   function mkMeta() { var last = lsGet("cm-mk-book"); return { book: last || "", chapter: "", unit: "", area: "문법", grade: "", file: "✍️ 직접 입력" }; }

@@ -772,6 +772,32 @@ function reporter() {
   return _rep;
 }
 
+// ---------- 🎧 직접 올린 듣기 음원 (노션 과 페이지 안의 오디오 블록, 설명 = 문항 번호) ----------
+const AUDIO_TYPES = { "audio/mpeg": "mp3", "audio/mp3": "mp3", "audio/mp4": "m4a", "audio/x-m4a": "m4a", "audio/aac": "aac", "audio/wav": "wav", "audio/x-wav": "wav", "audio/wave": "wav", "audio/ogg": "ogg" };
+const AUDIO_MAX = 3.2 * 1024 * 1024; // 서버 요청 한도(4.5MB) 안
+const audioCache = new Map(); // 과 페이지 id → { t, until, map: { 번호: 주소 } }
+async function audioBlocks(pid) {
+  const out = []; let cur;
+  for (let i = 0; i < 3; i++) {
+    const j = await notion("blocks/" + id32(pid) + "/children?page_size=100" + (cur ? "&start_cursor=" + cur : ""), "GET");
+    if (!j) return null;
+    (j.results || []).filter((x) => x.type === "audio").forEach((x) => { const a = x.audio || {}; out.push({ id: x.id, n: (a.caption || []).map((c) => c.plain_text || "").join("").trim(), url: (a.file && a.file.url) || (a.external && a.external.url) || "", exp: (a.file && a.file.expiry_time) || "" }); });
+    if (!j.has_more) break; cur = j.next_cursor;
+  }
+  return out;
+}
+async function audioUrl(pid, n) {
+  let c = audioCache.get(pid);
+  if (!c || Date.now() > c.until) {
+    const bl = await audioBlocks(pid); if (!bl) return "";
+    const map = {}; let until = Date.now() + 40 * 60000;
+    bl.forEach((x) => { if (x.n && x.url) { map[x.n] = x.url; const e = Date.parse(x.exp); if (e) until = Math.min(until, e - 5 * 60000); } });
+    c = { until: Math.max(Date.now() + 60000, until), map }; audioCache.set(pid, c); if (audioCache.size > 300) audioCache.clear();
+  }
+  return c.map[String(n)] || "";
+}
+const audioPath = (uid, n) => "/api/monthly?au=" + encodeURIComponent(uid) + "&n=" + n;
+
 module.exports = async function handler(req, res) {
   const send = (code, obj) => sendTo(res, code, obj);
   const tcode = String(process.env.TEACHER_CODE || "").trim();
@@ -784,6 +810,14 @@ module.exports = async function handler(req, res) {
     const cs = String(process.env.CRON_SECRET || "").trim(), au = String(req.headers.authorization || "");
     if (cs ? au !== "Bearer " + cs : !/vercel-cron/i.test(String(req.headers["user-agent"] || ""))) return send(401, { error: "cron" });
     return send(200, await PLUS().tick(true));
+  }
+  if (req.method === "GET" && /[?&]au=/.test(req.url || "")) { // 🎧 듣기 음원: 들을 때마다 노션의 새 주소로 보내 줘요 (노션 주소는 1시간이면 바뀌어요)
+    if (!siteOk(req)) return send(401, { error: "site" });
+    const sp = new URL(req.url, "http://x").searchParams, uid = clip(sp.get("au"), 20), n = num(sp.get("n"), 1, 300, 0);
+    loadCatalog(); await loadCustom();
+    const d = custom.data.get(uid); if (!d || !n) return send(404, { error: "nf" });
+    const url = await audioUrl(d.pid, n); if (!url) return send(404, { error: "nf", msg: "음원이 없어요." });
+    res.statusCode = 302; res.setHeader("Location", url); res.setHeader("Cache-Control", "private, max-age=600"); return res.end();
   }
   if (req.method === "GET") return send(200, { ok: true, ready: !!process.env.NOTION_TOKEN && process.env.MONTHLY_OFF !== "1", bank: !!loadCatalog(), ai: aiOn(), ais: AI.list().map((x) => x.id), teacher: !!tcode, drive: drive.configured() });
   if (req.method !== "POST") return send(405, { error: "method" });
@@ -1132,6 +1166,43 @@ module.exports = async function handler(req, res) {
       return send(200, { ok: true, uid, meta: { book: u.book, chapter: u.chapter, unit: u.name, area: u.area, grade: u.grade || "" }, text: d.text || "",
         questions: d.qs.map((q) => ({ no: "", type: q.type || "mc", q: q.q || "", sub: q.sub || "", opts: q.opts || [], ans: q.ans, anss: q.anss, answer: q.answer || "", frame: q.frame || "", words: q.words || [], exp: q.exp || "", lv: q.lv || 2, warn: [] })) });
     }
+    if (act === "t_audio_list") { // 🎧 듣기 과의 문항별 음원 현황
+      loadCatalog(); await loadCustom(true);
+      const uid = clip(b.uid, 20), d = custom.data.get(uid), u = unitIndex.get(uid);
+      if (!d || !u) return send(404, { error: "nf", msg: "자료를 찾지 못했어요." });
+      return send(200, { ok: true, uid, name: u.book + " › " + u.chapter + " › " + u.name, area: u.area, qs: d.qs.map((q, i) => ({ n: i + 1, q: clip(q.q, 80), answer: clip(q.answer, 40), audio: q.audio || "" })) });
+    }
+    if (act === "t_audio_up") { // 🎧 문항 하나의 음원 올리기 (같은 번호에 다시 올리면 바꿔요)
+      loadCatalog(); await loadCustom(true);
+      const uid = clip(b.uid, 20), d = custom.data.get(uid), n = num(b.n, 1, 300, 0);
+      if (!d) return send(404, { error: "nf", msg: "자료를 찾지 못했어요." });
+      if (!n || n > d.qs.length) return send(400, { error: "input", msg: n + "번 문항이 없어요. (이 과는 " + d.qs.length + "문항)" });
+      const type = String(b.type || "").toLowerCase(), ext = AUDIO_TYPES[type];
+      if (!ext) return send(400, { error: "input", msg: "mp3·m4a·wav 음원만 올릴 수 있어요." });
+      const buf = Buffer.from(String(b.b64 || ""), "base64");
+      if (!buf.length) return send(400, { error: "input", msg: "파일이 비어 있어요." });
+      if (buf.length > AUDIO_MAX) return send(400, { error: "big", msg: "파일이 너무 커요 (" + (buf.length / 1048576).toFixed(1) + "MB). 한 문항에 3MB까지예요." });
+      const H = { Authorization: "Bearer " + process.env.NOTION_TOKEN, "Notion-Version": NOTION_VER }, fname = n + "." + ext;
+      let fid;
+      try {
+        let r = await fetch("https://api.notion.com/v1/file_uploads", { method: "POST", headers: Object.assign({ "Content-Type": "application/json" }, H), body: JSON.stringify({ filename: fname, content_type: type === "audio/mp3" ? "audio/mpeg" : type }) });
+        const j = await r.json().catch(() => ({})); if (!r.ok || !j.id) return send(502, { error: "notion", msg: "음원을 올리지 못했어요. (" + (j.message || r.status) + ")" });
+        const fd = new FormData(); fd.append("file", new Blob([buf], { type: type === "audio/mp3" ? "audio/mpeg" : type }), fname);
+        r = await fetch("https://api.notion.com/v1/file_uploads/" + j.id + "/send", { method: "POST", headers: H, body: fd });
+        const s = await r.json().catch(() => ({})); if (!r.ok || (s.status && s.status !== "uploaded")) return send(502, { error: "notion", msg: "음원을 보내지 못했어요. (" + (s.message || r.status) + ")" });
+        fid = j.id;
+      } catch (e) { return send(502, { error: "net", msg: "음원을 올리지 못했어요. 인터넷 연결을 확인해 주세요." }); }
+      const old = (await audioBlocks(d.pid)) || [];
+      const add = await notion("blocks/" + id32(d.pid) + "/children", "PATCH", { children: [{ object: "block", type: "audio", audio: { type: "file_upload", file_upload: { id: fid }, caption: rt(String(n)) } }] });
+      if (!add) return send(502, { error: "notion", msg: "음원을 붙이지 못했어요.", debug: lastErr });
+      for (const x of old.filter((x) => x.n === String(n))) await notion("blocks/" + id32(x.id), "DELETE"); // 예전 음원은 지워요
+      audioCache.delete(d.pid);
+      const pg = await notion("pages/" + id32(d.pid), "GET");
+      let qs = []; try { qs = JSON.parse(P.text(pg, "문항") || "[]"); } catch (e) { qs = []; }
+      if (qs[n - 1] && qs[n - 1].audio !== audioPath(uid, n)) { qs[n - 1].audio = audioPath(uid, n); await notion("pages/" + id32(d.pid), "PATCH", { properties: { "문항": { rich_text: rtLong(JSON.stringify(qs)) } } }); }
+      await loadCustom(true);
+      return send(200, { ok: true, n, audio: audioPath(uid, n) });
+    }
     if (act === "t_import_save") { // 📚 자료 올리기: 검토한 문항(또는 본문)을 한 과로 저장
       const m = b.meta || {};
       const book = clip(m.book, 80), chapter = clip(m.chapter, 80) || "단원", unit = clip(m.unit, 120) || "자료";
@@ -1177,6 +1248,10 @@ module.exports = async function handler(req, res) {
         let old = []; try { old = JSON.parse(P.text(found[0], "문항") || "[]"); } catch (e) { old = []; }
         const keys = new Set(vocabWords.map((e) => CTX.mainKey(e.w)));
         all = qs.concat(old.filter((q) => AI_VT[q.vt] && keys.has(CTX.mainKey(q.w))));
+      }
+      if (found[0] && b.replace && !vocabWords) { // 🎧 다시 저장해도 같은 번호의 음원은 그대로
+        let old = []; try { old = JSON.parse(P.text(found[0], "문항") || "[]"); } catch (e) { old = []; }
+        all.forEach((q, i) => { if (old[i] && old[i].audio && !q.audio) q.audio = old[i].audio; });
       }
       if (found[0] && !b.replace) { // 같은 과에 더 올리면 기존 문항 뒤에 합침 (같은 문항은 한 번만)
         let old = []; try { old = JSON.parse(P.text(found[0], "문항") || "[]"); } catch (e) { old = []; }
@@ -1495,4 +1570,4 @@ module.exports = async function handler(req, res) {
   return send(400, { error: "action" });
 };
 // 시험용 내부 함수 (로컬 점검에서 씀)
-module.exports._t = { canTake, targetOf, targetText, cleanAudioDir, listenMode, cleanSections, assignPoints, hasSections, placeRec, expandAccept, shortOk, pick, buildSheet, seal, unseal, grade, unitStats, rangeText, loadCatalog, unitData, poolFor, rngOf };
+module.exports._t = { audioPath, AUDIO_TYPES, canTake, targetOf, targetText, cleanAudioDir, listenMode, cleanSections, assignPoints, hasSections, placeRec, expandAccept, shortOk, pick, buildSheet, seal, unseal, grade, unitStats, rangeText, loadCatalog, unitData, poolFor, rngOf };

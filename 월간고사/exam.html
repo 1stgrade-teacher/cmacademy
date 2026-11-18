@@ -264,7 +264,10 @@
           if (!SPK && q.area === "듣기") pre += '<div class="spk" style="background:#EEF7FF;border-color:#A9CDEE;color:#1F4E79">🎧 이어폰을 끼고, 문제마다 ▶ 버튼을 눌러 들어요. 한 번에 하나만 재생돼요.</div>';
           if (SPK && q.area === "듣기") pre += '<div class="spk">🔊 교실 스피커로 나오는 소리를 잘 들으세요. 문제는 화면에 나오지 않아요. 들으면서 번호에 맞는 답을 눌러 주세요. 답은 다시 눌러 바꿀 수 있어요.</div>';
         }
-        if (SPK && q.area === "듣기" && q.type === "mc") return pre + '<div class="q lrow" id="q' + i + '"><span class="qn">' + q.n + '</span><div class="lopts">' + q.opts.map(function (o, k) { return '<button class="opt" data-i="' + i + '" data-k="' + k + '" aria-label="' + q.n + "번 " + NUM[k] + '"><b>' + NUM[k] + "</b></button>"; }).join("") + "</div></div>";
+        var AO = q.type === "mc" && (q.opts || []).every(function (o) { return /^[①②③④⑤⑥]$/.test(String(o).trim()); }); // 🎧 정답만 넣은 듣기 문항 (보기 = ①~⑤)
+        if ((SPK || AO) && q.area === "듣기" && q.type === "mc" && !SPK && q.audio) pre += '<div class="au" style="margin-top:12px">🎧 <b style="flex:0 0 auto">' + q.n + '번</b> <audio controls preload="none" controlsList="nodownload" src="' + esc(q.audio) + '" aria-label="' + q.n + '번 듣기"></audio></div>';
+        else if (AO && !SPK && q.area === "듣기" && SECS.length) pre += '<div class="spk" style="margin-top:12px">⚠ ' + q.n + '번 음원이 아직 없어요. 선생님께 알려 주세요.</div>';
+        if ((SPK || AO) && q.area === "듣기" && q.type === "mc") return pre + '<div class="q lrow" id="q' + i + '"><span class="qn">' + q.n + '</span><div class="lopts">' + q.opts.map(function (o, k) { return '<button class="opt" data-i="' + i + '" data-k="' + k + '" aria-label="' + q.n + "번 " + NUM[k] + '"><b>' + NUM[k] + "</b></button>"; }).join("") + "</div></div>";
         var h = '<div class="q" id="q' + i + '"><div class="qh"><span class="qn">' + q.n + '</span><div><div class="qt">' + fmt(q.q) + (q.type === "multi" ? ' <span style="color:#A2342A">(정답 모두 고르기)</span>' : "") + "</div>" + (q.unit && q.unit !== "단원" ? '<div class="qu">' + esc(q.unit) + "</div>" : "") + "</div></div>";
         if (q.sub) h += '<div class="qs">' + fmt(q.sub) + "</div>";
         if (!q.audio && SECS.length && q.area === "듣기") h += '<div class="spk">⚠ 이 문제의 음원이 아직 없어요. 선생님께 알려 주세요.</div>';
