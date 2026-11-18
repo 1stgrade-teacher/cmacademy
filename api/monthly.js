@@ -193,6 +193,7 @@ async function loadCustom(force) {
   rows.forEach((p) => {
     const uid = P.text(p, "과ID"); if (!/^x[0-9a-f]{8,}$/.test(uid)) return;
     let qs = []; try { qs = JSON.parse(P.text(p, "문항") || "[]"); } catch (e) { qs = []; }
+    const asV = V.asVocab(qs, uid); if (asV) qs = asV; // 「뜻 → 영어 쓰기」로만 된 묶음(숙어 엑셀 등)은 단어장으로
     if (qs.some((q) => q.vt === "meaning") && !qs.some((q) => q.vt === "mwrite")) qs = qs.concat(qs.map(V.mwriteFrom).filter(Boolean)); // 예전 단어장에도 '뜻 쓰기'
     if (qs.some((q) => q.vt === "spell") && !qs.some((q) => q.vt === "spellgap" || q.vt === "unscramble")) qs = qs.concat(...qs.map(V.spellExtrasFrom)); // 예전 단어장에도 '철자 빈칸 채우기'·'철자 순서 맞추기'
     const text = P.text(p, "본문");
@@ -391,7 +392,8 @@ async function poolFor(uids, exclude, vtypes) {
   const pool = new Map();
   uids.forEach((uid) => {
     const u = unitData(uid); if (!u) return;
-    pool.set(uid, u.qs.concat(ai.get(uid) || []).filter((q) => !ex.has(q.id) && (!q.vt || !vt.size || vt.has(q.vt))).map((q) => Object.assign({ u: uid }, q)));
+    // 단어 유형을 골랐으면 그 유형만 (유형이 없는 일반 문제는 섞지 않아요)
+    pool.set(uid, u.qs.concat(ai.get(uid) || []).filter((q) => !ex.has(q.id) && (!vt.size || (q.vt && vt.has(q.vt)))).map((q) => Object.assign({ u: uid }, q)));
   });
   return pool;
 }
