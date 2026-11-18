@@ -156,7 +156,7 @@
           go.disabled = false;
           if (j.needSet) { L.stu.hasPin = false; stepPin(); return; }
           if (!j.token) { er.textContent = j.msg || "확인하지 못했어요."; return; }
-          ME = { token: j.token, name: j.name, cls: j.cls, exp: Date.now() + 3.8 * 3600 * 1000 };
+          ME = { token: j.token, name: j.name, cls: j.cls, grade: j.grade || "", exp: Date.now() + 3.8 * 3600 * 1000 };
           ss.set("cm-monthly-me", ME); openPaper();
         });
       };

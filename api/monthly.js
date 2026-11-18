@@ -495,7 +495,34 @@ function readPaper(p) {
 }
 // ✅ 통과 기준: { by: "cnt"(맞힌 개수) | "pct"(100점 환산), v: 숫자 } — 없으면 null
 const passCfg = (x) => { if (!x || typeof x !== "object") return null; const by = x.by === "pct" ? "pct" : x.by === "cnt" ? "cnt" : ""; const v = Number(x.v); return by && v > 0 && v <= (by === "pct" ? 100 : 1000) ? { by, v: Math.round(v * 10) / 10 } : null; };
-const pub = (pp) => ({ pass: passCfg(pp.cfg && pp.cfg.pass), grades: (pp.cfg && Array.isArray(pp.cfg.grades) ? pp.cfg.grades : []), id: pp.id, title: pp.title, cls: pp.cls, kind: pp.kind, period: pp.period, status: pp.status, mode: pp.mode, level: LEVELS[pp.level - 1], count: pp.count, minutes: pp.minutes, start: pp.start, end: pp.end, range: pp.mode === "fixed" ? pp.range : "", teacher: pp.teacher || "" });
+// 👥 공통 시험: 시험지 하나를 여러 반이 함께 봐요. 설정.target = { type: "grade"(학년 전체) | "classes"(여러 반) | "all"(모든 학생), grades, classes }
+//   시험지의 「반」 칸은 COMMON_CLS("공통 시험"), 학생 기록의 「반」은 그 학생의 실제 반으로 남겨요 (반별 평균·모아 보기에 그대로 쓰여요)
+const COMMON_CLS = "공통 시험";
+const T_GRADES = ["초1", "초2", "초3", "초4", "초5", "초6", "중1", "중2", "중3", "고1", "고2", "고3"];
+const gradeOfCls = (cls) => (String(cls || "").match(/^(초[1-6]|중[1-3]|고[1-3])/) || [])[1] || "";
+const targetOf = (pp) => {
+  const t = pp && pp.cfg && pp.cfg.target; if (!t || !["grade", "classes", "all"].includes(t.type)) return null;
+  const grades = (Array.isArray(t.grades) ? t.grades : []).filter((g) => T_GRADES.includes(g)), classes = (Array.isArray(t.classes) ? t.classes : []).map((c) => String(c).slice(0, 40)).filter(Boolean).slice(0, 60);
+  if (t.type === "grade" && !grades.length) return null; if (t.type === "classes" && !classes.length) return null;
+  return { type: t.type, grades: t.type === "grade" ? grades : [], classes: t.type === "classes" ? classes : [] };
+};
+const targetText = (t) => !t ? "" : t.type === "all" ? "모든 학생" : t.type === "grade" ? t.grades.join("·") + " 전체" : t.classes.join(", ");
+// 이 학생(반·학년)이 이 시험지를 볼 수 있나요?
+function canTake(pp, cls, grade) {
+  const t = targetOf(pp); if (!t) return pp.cls === cls;
+  if (!cls || cls === PLACE_CLS()) return false; // 신입 반배정 학생은 공통 시험 대상이 아니에요
+  if (t.type === "all") return true;
+  if (t.type === "classes") return t.classes.includes(cls);
+  return t.grades.includes(grade) || t.grades.includes(gradeOfCls(cls));
+}
+// 토큰에 학년이 없으면(예전 로그인) 노션에서 학년을 한 번 확인해요
+async function canTakeWho(pp, who) {
+  if (canTake(pp, who.cls, who.grade)) return true;
+  const t = targetOf(pp); if (!t || t.type !== "grade" || who.grade) return false;
+  const st = await notion("pages/" + id32(who.sid), "GET", null, 1);
+  return !!st && canTake(pp, who.cls, P.sel(st, "학년"));
+}
+const pub = (pp) => ({ target: targetOf(pp), targetText: targetText(targetOf(pp)), pass: passCfg(pp.cfg && pp.cfg.pass), grades: (pp.cfg && Array.isArray(pp.cfg.grades) ? pp.cfg.grades : []), id: pp.id, title: pp.title, cls: pp.cls, kind: pp.kind, period: pp.period, status: pp.status, mode: pp.mode, level: LEVELS[pp.level - 1], count: pp.count, minutes: pp.minutes, start: pp.start, end: pp.end, range: pp.mode === "fixed" ? pp.range : "", teacher: pp.teacher || "" });
 async function getPaper(id) {
   const p = await notion("pages/" + id32(id), "GET");
   if (!p || p.archived || normId(p.parent && p.parent.database_id) !== normId(PAPER_DB())) return null;
@@ -564,9 +591,20 @@ async function classList() {
   const o = db && db.properties && db.properties["반"] && db.properties["반"].select && db.properties["반"].select.options;
   return o ? o.map((x) => x.name).filter((x) => x !== "기타") : null;
 }
-async function roster(cls) {
-  const rows = await queryAll(STUDENT_DB(), { filter: { property: "반", select: { equals: cls } }, sorts: [{ property: "이름", direction: "ascending" }] }, 4);
-  return rows && rows.filter((p) => !["휴원", "퇴원"].includes(P.sel(p, "상태"))).map((p) => ({ id: normId(p.id), name: P.title(p, "이름"), hasPin: !!P.text(p, PIN_PROP), grade: P.sel(p, "학년") || "", school: P.text(p, "학교") || "", phone: (p.properties["학부모 연락처"] || {}).phone_number || "", mute: P.chk(p, "알림 끄기") }));
+async function roster(cls) { return rosterBy({ property: "반", select: { equals: cls } }, 4); }
+// 👥 공통 시험의 대상 학생 모두 (반·학년으로)
+async function targetRoster(pp) {
+  const t = targetOf(pp); if (!t) return roster(pp.cls);
+  let f;
+  if (t.type === "all") f = { property: "반", select: { does_not_equal: PLACE_CLS() } };
+  else if (t.type === "classes") f = { or: t.classes.map((c) => ({ property: "반", select: { equals: c } })) };
+  else { const cl = (await classList()) || []; f = { or: t.grades.map((g) => ({ property: "학년", select: { equals: g } })).concat(cl.filter((c) => t.grades.includes(gradeOfCls(c))).map((c) => ({ property: "반", select: { equals: c } }))).slice(0, 100) }; }
+  const r = await rosterBy(f, 15);
+  return r && r.filter((s) => s.cls !== PLACE_CLS() && canTake(pp, s.cls, s.grade));
+}
+async function rosterBy(filter, pages) {
+  const rows = await queryAll(STUDENT_DB(), { filter, sorts: [{ property: "이름", direction: "ascending" }] }, pages || 4);
+  return rows && rows.filter((p) => !["휴원", "퇴원"].includes(P.sel(p, "상태"))).map((p) => ({ id: normId(p.id), name: P.title(p, "이름"), cls: P.sel(p, "반") || "", hasPin: !!P.text(p, PIN_PROP), grade: P.sel(p, "학년") || "", school: P.text(p, "학교") || "", phone: (p.properties["학부모 연락처"] || {}).phone_number || "", mute: P.chk(p, "알림 끄기") }));
 }
 
 // ---------- 🧑‍🎓 선생님 화면에서 학생 추가·수정 ----------
@@ -598,7 +636,7 @@ async function login(id, pin, setPin) {
   if (pinLocked(id)) return { status: 429, msg: "번호를 여러 번 틀려서 잠시 잠겼어요. 10분 뒤에 다시 해 주세요." };
   const pg = await notion("pages/" + id32(id), "GET");
   if (!pg || normId(pg.parent && pg.parent.database_id) !== normId(STUDENT_DB())) return { status: 404, msg: "학생을 찾지 못했어요." };
-  const name = P.title(pg, "이름"), cls = P.sel(pg, "반") || "기타", stored = P.text(pg, PIN_PROP);
+  const name = P.title(pg, "이름"), cls = P.sel(pg, "반") || "기타", grade = P.sel(pg, "학년") || "", stored = P.text(pg, PIN_PROP);
   if (!/^\d{4}$/.test(pin)) return { status: 400, msg: "번호는 숫자 4자리예요." };
   if (!stored) {
     if (!setPin) return { status: 409, msg: "처음이에요. 번호를 새로 정해 주세요.", needSet: true };
@@ -606,7 +644,7 @@ async function login(id, pin, setPin) {
     if (!up) return { status: 502, msg: "번호를 저장하지 못했어요. 다시 해 주세요." };
   } else if (stored !== pinHash(pin, id)) { pinFail(id); return { status: 401, msg: "번호가 달라요. 다시 확인해 주세요." }; }
   pinFails.delete(id);
-  return { status: 200, name, cls, sid: normId(id), token: signToken({ sid: normId(id), name, cls, exp: Date.now() + 4 * 3600 * 1000 }) };
+  return { status: 200, name, cls, grade, sid: normId(id), token: signToken({ sid: normId(id), name, cls, grade, exp: Date.now() + 4 * 3600 * 1000 }) };
 }
 
 // ---------- 채점 + 노션 기록 ----------
@@ -837,11 +875,12 @@ module.exports = async function handler(req, res) {
       if (old && !me.master && old.teacher && old.teacher !== me.name) return send(403, { error: "owner", msg: old.teacher + "이(가) 만든 시험지는 고칠 수 없어요. 목록에서 📄 복제해서 써 주세요." });
       const cfg = { units, books, seed: (old && old.cfg.seed) || clip(f.seed, 40).replace(/[^\w-]/g, "") || hash(Date.now() + title, 12), exclude: (Array.isArray(f.exclude) ? f.exclude : (old && old.cfg.exclude) || []).slice(0, 500), vtypes: (Array.isArray(f.vtypes) ? f.vtypes : (old && old.cfg.vtypes) || []).filter((t) => V.VT_IDS.includes(t)), place: clip(f.place != null ? f.place : (old && old.cfg.place) || "", 1500), grades: (Array.isArray(f.grades) ? f.grades : (old && old.cfg.grades) || []).filter((g) => GRADES.includes(g)),
         pass: f.pass !== undefined ? passCfg(f.pass) || undefined : (old && passCfg(old.cfg.pass)) || undefined,
+        target: f.target !== undefined ? targetOf({ cfg: { target: f.target } }) || undefined : (old && targetOf(old)) || undefined,
         ai: f.ai && typeof f.ai === "object" ? { fill: f.ai.fill !== false, variant: num(f.ai.variant, 0, 100, 0), extra: num(f.ai.extra, 0, 60, 0) } : (old && old.cfg.ai) || undefined };
       if (f.reseed) cfg.seed = hash(Date.now() + Math.random(), 12);
       const range = mode === "fixed" ? rangeText(units) : "학생 선택: " + (books.length ? allBooks().filter((x) => books.includes(x.id)).map((x) => x.name).join(", ") : rangeText(units));
       const props = {
-        "시험명": { title: rt(title) }, "반": sel(cls), "종류": sel(kind), "시기": sel(clip(f.period, 40)), "상태": sel(STATUSES.includes(f.status) ? f.status : "준비중"),
+        "시험명": { title: rt(title) }, "반": sel(cfg.target ? COMMON_CLS : cls), "종류": sel(kind), "시기": sel(clip(f.period, 40)), "상태": sel(STATUSES.includes(f.status) ? f.status : "준비중"),
         "출제 방식": sel(MODES[mode]), "난이도": sel(LEVELS[num(f.level, 1, 3, 2) - 1]), "문항 수": { number: num(f.count, 5, 100, 20) }, "제한시간(분)": { number: num(f.minutes, 0, 180, 40) },
         "결과 공개": { checkbox: !!f.show }, "시험 범위": { rich_text: rt(range) }, "설정": { rich_text: rtLong(JSON.stringify(cfg)) },
         "시험 기간": /^\d{4}-\d{2}-\d{2}$/.test(f.start || "") ? { date: { start: f.start, end: /^\d{4}-\d{2}-\d{2}$/.test(f.end || "") && f.end > f.start ? f.end : null } } : { date: null },
@@ -887,7 +926,7 @@ module.exports = async function handler(req, res) {
       let rec2 = "";
       if (pp.kind === "반배정시험" || (pp.cfg && pp.cfg.place)) { const grade = P.sel(st, "학년"); rec2 = (placeRec(pp.cfg.place, grade, pct) || (pp.cfg.place ? "기준에 맞는 반 없음" : "기준 미설정")) + " (" + (grade || "학년 ?") + " · " + pct + "점)"; }
       const props = {
-        "시험명": { title: rt(pp.title) }, "학생": { relation: [{ id: uuid(sid) }] }, "시험지": { relation: [{ id: uuid(pp.id) }] }, "반": sel(pp.cls), "종류": sel(pp.kind || "월간평가"),
+        "시험명": { title: rt(pp.title) }, "학생": { relation: [{ id: uuid(sid) }] }, "시험지": { relation: [{ id: uuid(pp.id) }] }, "반": sel(targetOf(pp) ? P.sel(st, "반") || pp.cls : pp.cls), "종류": sel(pp.kind || "월간평가"),
         "시험일": { date: { start: date } }, "시험 범위": { rich_text: rt(clip(pp.range || "", 1900)) }, "점수": { number: score }, "만점": { number: total },
         "종합 평가": sel(GR.includes(b.grade) ? b.grade : gradeOf(pct)), "코멘트": { rich_text: rt(clip(typeof b.comment === "string" && b.comment.trim() ? b.comment : "종이 시험", 1900)) }, "응시 방식": sel("종이"),
         ...(Number.isInteger(score) && Number.isInteger(total) ? { "오답 수": { number: total - score } } : {}),
@@ -1021,15 +1060,17 @@ module.exports = async function handler(req, res) {
     }
     if (act === "t_results") { // 한 시험지의 응시 현황 (안 본 학생 포함)
       const pp = await getPaper(b.id); if (!pp) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." });
-      const [rows, ros] = await Promise.all([queryAll(EXAM_DB(), { filter: { property: "시험지", relation: { contains: uuid(pp.id) } } }, 3), roster(pp.cls)]);
+      const [rows, ros] = await Promise.all([queryAll(EXAM_DB(), { filter: { property: "시험지", relation: { contains: uuid(pp.id) } } }, 3), targetRoster(pp)]);
       if (!rows) return send(502, { error: "notion", msg: "결과를 불러오지 못했어요.", debug: lastErr });
       // 학생 한 명의 기록이 둘 이상이면(잘못 두 번 저장 등) 최신 기록을 대표로, 나머지는 따로 보여 줘서 골라 지울 수 있게 해요
       const byS = new Map(); rows.slice().sort((x, y) => String(y.created_time).localeCompare(String(x.created_time))).forEach((p) => { const k = P.rel(p, "학생")[0]; (byS.get(k) || byS.set(k, []).get(k)).push(p); });
       const done = new Map([...byS].map(([k, v]) => [k, v[0]]));
-      const list = (ros || []).map((s) => ({ name: s.name, sid: s.id })).concat([...done.keys()].filter((k) => !(ros || []).some((s) => s.id === k)).map((k) => ({ name: "(다른 반 학생)", sid: k })));
-      const info = new Map((ros || []).map((s) => [s.id, s]));
-      const recRow = (s, st, p) => Object.assign({ name: s.name, sid: s.sid, sgrade: st.grade || "", school: st.school || "", rec2: P.text(p, "추천 반"), url: p.url, rec: normId(p.id), made: String(p.created_time || "").slice(0, 16), how: P.sel(p, "응시 방식"), report: (p.properties["분석 리포트"] || {}).url || "", mins: P.num(p, "소요시간(분)"), away: P.num(p, "자리비움"), units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }, attemptSummary(p));
-      const out = list.map((s) => { const p = done.get(s.sid), st = info.get(s.sid) || {}; return p ? recRow(s, st, p) : { name: s.name, sid: s.sid, sgrade: st.grade || "", school: st.school || "", missing: true }; });
+      const extraIds = [...done.keys()].filter((k) => !(ros || []).some((s) => s.id === k));
+      let nm = new Map(); if (extraIds.length) { const a = await STU().all().catch(() => null); nm = new Map(((a && a.students) || []).map((x) => [x.id, x])); }
+      const list = (ros || []).map((s) => ({ name: s.name, sid: s.id })).concat(extraIds.map((k) => ({ name: nm.get(k) ? nm.get(k).name : "(다른 반 학생)", sid: k })));
+      const info = new Map((ros || []).map((s) => [s.id, s]).concat(extraIds.filter((k) => nm.get(k)).map((k) => [k, { cls: nm.get(k).cls, grade: nm.get(k).grade || "" }])));
+      const recRow = (s, st, p) => Object.assign({ name: s.name, sid: s.sid, cls: st.cls || P.sel(p, "반") || "", sgrade: st.grade || "", school: st.school || "", rec2: P.text(p, "추천 반"), url: p.url, rec: normId(p.id), made: String(p.created_time || "").slice(0, 16), how: P.sel(p, "응시 방식"), report: (p.properties["분석 리포트"] || {}).url || "", mins: P.num(p, "소요시간(분)"), away: P.num(p, "자리비움"), units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }, attemptSummary(p));
+      const out = list.map((s) => { const p = done.get(s.sid), st = info.get(s.sid) || {}; return p ? recRow(s, st, p) : { name: s.name, sid: s.sid, cls: st.cls || "", sgrade: st.grade || "", school: st.school || "", missing: true }; });
       list.forEach((s) => (byS.get(s.sid) || []).slice(1).forEach((p) => out.push(Object.assign(recRow(s, info.get(s.sid) || {}, p), { dup: true }))));
       return send(200, { ok: true, paper: pub(pp), rows: out });
     }
@@ -1264,13 +1305,14 @@ module.exports = async function handler(req, res) {
     const r = await login(clip(b.id, 60), clip(b.pin, 10), !!b.setPin);
     if (r.status === 200 && b.game) // 🏆 단어 게임: 게임 기록만 남길 수 있는 30일짜리 토큰 (시험·과제에는 못 씀)
       return send(200, { ok: true, gtoken: signToken({ sid: r.sid, name: r.name, cls: r.cls, sc: "g", exp: Date.now() + 30 * 864e5 }), name: r.name, cls: r.cls });
-    return r.status === 200 ? send(200, { ok: true, token: r.token, name: r.name, cls: r.cls }) : send(r.status, { ok: false, msg: r.msg, needSet: r.needSet });
+    return r.status === 200 ? send(200, { ok: true, token: r.token, name: r.name, cls: r.cls, grade: r.grade }) : send(r.status, { ok: false, msg: r.msg, needSet: r.needSet });
   }
   if (act === "s_list") { // 반의 시험 목록 (시기별)
     const cls = clip(b.cls, 40); if (!cls) return send(400, { error: "input" });
-    const rows = await queryAll(PAPER_DB(), { filter: { and: [{ property: "반", select: { equals: cls } }, { or: [{ property: "상태", select: { equals: "응시중" } }, { property: "상태", select: { equals: "마감" } }] }] }, sorts: [{ timestamp: "created_time", direction: "descending" }] }, 2);
+    const rows = await queryAll(PAPER_DB(), { filter: { and: [{ or: [{ property: "반", select: { equals: cls } }, { property: "반", select: { equals: COMMON_CLS } }] }, { or: [{ property: "상태", select: { equals: "응시중" } }, { property: "상태", select: { equals: "마감" } }] }] }, sorts: [{ timestamp: "created_time", direction: "descending" }] }, 2);
     if (!rows) return send(502, { error: "notion", msg: "시험 목록을 불러오지 못했어요." });
-    return send(200, { ok: true, papers: rows.map((p) => { const pp = readPaper(p); return Object.assign(pub(pp), { closed: openNow(pp) }); }) });
+    const grade = T_GRADES.includes(b.grade) ? b.grade : "";
+    return send(200, { ok: true, papers: rows.map(readPaper).filter((pp) => canTake(pp, cls, grade)).map((pp) => Object.assign(pub(pp), { closed: openNow(pp) })) });
   }
 
   if (act === "s_join") { // 🆕 신입생: 이름·학교·학년·번호로 스스로 등록 → '신입 반배정' 반 학생이 돼요
@@ -1321,7 +1363,7 @@ module.exports = async function handler(req, res) {
 
   if (act === "s_open") {
     const pp = await getPaper(b.id); if (!pp) return send(404, { error: "nf", msg: "시험을 찾지 못했어요." });
-    if (pp.cls !== who.cls) return send(403, { error: "cls", msg: "우리 반 시험이 아니에요." });
+    if (!(await canTakeWho(pp, who))) return send(403, { error: "cls", msg: targetOf(pp) ? "이 공통 시험(" + targetText(targetOf(pp)) + ") 대상이 아니에요." : "우리 반 시험이 아니에요." });
     const att = await findAttempt(pp.id, who.sid);
     if (att === undefined) return send(502, { error: "notion", msg: "응시 기록을 확인하지 못했어요. 잠시 뒤 다시 해 주세요.", debug: lastErr });
     if (att) return send(200, { ok: true, paper: pub(pp), taken: true, result: pp.show ? Object.assign(attemptSummary(att), { url: undefined }) : null });
@@ -1339,7 +1381,7 @@ module.exports = async function handler(req, res) {
 
   if (act === "s_start") {
     const pp = await getPaper(b.id); if (!pp) return send(404, { error: "nf", msg: "시험을 찾지 못했어요." });
-    if (pp.cls !== who.cls) return send(403, { error: "cls", msg: "우리 반 시험이 아니에요." });
+    if (!(await canTakeWho(pp, who))) return send(403, { error: "cls", msg: targetOf(pp) ? "이 공통 시험(" + targetText(targetOf(pp)) + ") 대상이 아니에요." : "우리 반 시험이 아니에요." });
     const closed = openNow(pp); if (closed) return send(403, { error: "closed", msg: closed });
     const att = await findAttempt(pp.id, who.sid);
     if (att) return send(409, { error: "taken", msg: "이미 응시한 시험이에요." });
@@ -1383,7 +1425,7 @@ module.exports = async function handler(req, res) {
       if (st) { const memo = P.text(st, "메모"); await notion("pages/" + id32(who.sid), "PATCH", { properties: { "메모": { rich_text: rt(clip((memo ? memo + "\n" : "") + today() + " " + pp.title + " " + right + "/" + total + " → 추천 " + rec2, 1900)) } } }); }
     }
     const props = {
-      "시험명": { title: rt(pp.title) }, "학생": { relation: [{ id: uuid(who.sid) }] }, "시험지": { relation: [{ id: uuid(pp.id) }] }, "반": sel(pp.cls), "종류": sel(pp.kind || "월간평가"),
+      "시험명": { title: rt(pp.title) }, "학생": { relation: [{ id: uuid(who.sid) }] }, "시험지": { relation: [{ id: uuid(pp.id) }] }, "반": sel(targetOf(pp) ? who.cls || pp.cls : pp.cls), "종류": sel(pp.kind || "월간평가"),
       "시험일": { date: { start: today() } }, "시험 범위": { rich_text: rt(range) }, "점수": { number: right }, "만점": { number: total }, "오답 수": { number: total - right },
       "종합 평가": sel(gradeOf(pct)), "코멘트": { rich_text: rt(comment) }, "응시 방식": sel("온라인"), "소요시간(분)": { number: mins }, "자리비움": { number: away },
       "단원 분석": { rich_text: rtLong(JSON.stringify(units)) },
