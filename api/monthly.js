@@ -1229,6 +1229,7 @@ module.exports = async function handler(req, res) {
         const q = { type: t, q: clip(x.q, 600), sub: clip(x.sub, 2500), exp: clip(x.exp, 600), lv: num(x.lv, 1, 3, 2), kind: clip(x.kind, 40), no: clip(x.no, 10) };
         if (t === "mc" || t === "multi") {
           q.opts = (Array.isArray(x.opts) ? x.opts : []).map((o) => clip(o, 300)).filter(Boolean).slice(0, 6);
+          if (area === "듣기" && q.opts.length < 2) { const n0 = Array.isArray(x.opts) && x.opts.length >= 2 ? Math.min(5, x.opts.length) : 5; q.opts = "①②③④⑤".slice(0, n0).split(""); } // 🎧 그림 보기 듣기 문항 → ①~⑤ 답안카드
           if (q.opts.length < 2) { bad.push(i + 1); return null; }
           if (t === "mc") { q.ans = num(x.ans, 0, q.opts.length - 1, -1); if (q.ans < 0) { bad.push(i + 1); return null; } q.answer = q.opts[q.ans]; }
           else { q.anss = [...new Set((x.anss || []).map(Number).filter((k) => k >= 0 && k < q.opts.length))].sort(); if (q.anss.length < 1) { bad.push(i + 1); return null; } q.answer = q.anss.map((k) => q.opts[k]).join(" / "); }
