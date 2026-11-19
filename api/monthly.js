@@ -548,7 +548,7 @@ async function canTakeWho(pp, who) {
   const st = await notion("pages/" + id32(who.sid), "GET", null, 1);
   return !!st && canTake(pp, who.cls, P.sel(st, "학년"));
 }
-const pub = (pp) => ({ sections: (hasSections(pp) ? pp.cfg.sections : []), speaker: listenMode(pp.cfg) === "speaker", listen: listenMode(pp.cfg), target: targetOf(pp), targetText: targetText(targetOf(pp)), pass: passCfg(pp.cfg && pp.cfg.pass), grades: (pp.cfg && Array.isArray(pp.cfg.grades) ? pp.cfg.grades : []), id: pp.id, title: pp.title, cls: pp.cls, kind: pp.kind, period: pp.period, status: pp.status, mode: pp.mode, level: LEVELS[pp.level - 1], count: pp.count, minutes: pp.minutes, start: pp.start, end: pp.end, range: pp.mode === "fixed" ? pp.range : "", teacher: pp.teacher || "" });
+const pub = (pp) => ({ skip: Array.isArray(pp.cfg && pp.cfg.skip) ? pp.cfg.skip : [], sections: (hasSections(pp) ? pp.cfg.sections : []), speaker: listenMode(pp.cfg) === "speaker", listen: listenMode(pp.cfg), target: targetOf(pp), targetText: targetText(targetOf(pp)), pass: passCfg(pp.cfg && pp.cfg.pass), grades: (pp.cfg && Array.isArray(pp.cfg.grades) ? pp.cfg.grades : []), id: pp.id, title: pp.title, cls: pp.cls, kind: pp.kind, period: pp.period, status: pp.status, mode: pp.mode, level: LEVELS[pp.level - 1], count: pp.count, minutes: pp.minutes, start: pp.start, end: pp.end, range: pp.mode === "fixed" ? pp.range : "", teacher: pp.teacher || "" });
 async function getPaper(id) {
   const p = await notion("pages/" + id32(id), "GET");
   if (!p || p.archived || normId(p.parent && p.parent.database_id) !== normId(PAPER_DB())) return null;
@@ -953,6 +953,7 @@ module.exports = async function handler(req, res) {
       if (old && !me.master && old.teacher && old.teacher !== me.name) return send(403, { error: "owner", msg: old.teacher + "이(가) 만든 시험지는 고칠 수 없어요. 목록에서 📄 복제해서 써 주세요." });
       const cfg = { units, books, seed: (old && old.cfg.seed) || clip(f.seed, 40).replace(/[^\w-]/g, "") || hash(Date.now() + title, 12), exclude: (Array.isArray(f.exclude) ? f.exclude : (old && old.cfg.exclude) || []).slice(0, 500), vtypes: (Array.isArray(f.vtypes) ? f.vtypes : (old && old.cfg.vtypes) || []).filter((t) => V.VT_IDS.includes(t)), place: clip(f.place != null ? f.place : (old && old.cfg.place) || "", 1500), sections: f.sections !== undefined ? cleanSections(f.sections) : (old && old.cfg.sections) || [], speaker: f.listen !== undefined ? f.listen === "speaker" : f.speaker !== undefined ? !!f.speaker : !!(old && old.cfg.speaker), listen: f.listen !== undefined ? listenMode({ listen: f.listen }) : (old && old.cfg.listen) || undefined, audioDir: f.audioDir !== undefined ? cleanAudioDir(f.audioDir) : (old && old.cfg.audioDir) || "", grades: (Array.isArray(f.grades) ? f.grades : (old && old.cfg.grades) || []).filter((g) => GRADES.includes(g)),
         pass: f.pass !== undefined ? passCfg(f.pass) || undefined : (old && passCfg(old.cfg.pass)) || undefined,
+        skip: old && Array.isArray(old.cfg.skip) && old.cfg.skip.length ? old.cfg.skip : undefined, // 「다른 시험으로 봄」 학생은 고쳐 저장해도 그대로
         target: f.target !== undefined ? targetOf({ cfg: { target: f.target } }) || undefined : (old && targetOf(old)) || undefined,
         ai: f.ai && typeof f.ai === "object" ? { fill: f.ai.fill !== false, variant: num(f.ai.variant, 0, 100, 0), extra: num(f.ai.extra, 0, 60, 0) } : (old && old.cfg.ai) || undefined };
       if (f.reseed) cfg.seed = hash(Date.now() + Math.random(), 12);
@@ -968,6 +969,16 @@ module.exports = async function handler(req, res) {
       if (!pg) return send(502, { error: "notion", msg: "시험지를 저장하지 못했어요.", debug: lastErr });
       if (!old && f.libId) await LIB().used(f.libId).catch(() => {});
       return send(200, { ok: true, paper: Object.assign(pub(readPaper(pg)), { cfg: readPaper(pg).cfg, show: P.chk(pg, "결과 공개"), url: pg.url }) });
+    }
+    if (act === "t_skip_set") { // 📊 응시 결과: 미응시 학생을 「다른 시험으로 봄」으로 표시(미응시 수에서 빼요) / 되돌리기
+      const old = await getPaper(b.id); if (!old) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." });
+      if (!me.master && old.teacher && old.teacher !== me.name) return send(403, { error: "owner", msg: old.teacher + "이(가) 만든 시험지라 바꿀 수 없어요." });
+      const sid = normId(clip(b.sid, 60)); if (!sid) return send(400, { error: "input", msg: "학생을 골라 주세요." });
+      const cfg = Object.assign({}, old.cfg), set = new Set(Array.isArray(cfg.skip) ? cfg.skip : []);
+      if (b.on) set.add(sid); else set.delete(sid);
+      cfg.skip = [...set].slice(0, 300); if (!cfg.skip.length) delete cfg.skip;
+      const pg = await notion("pages/" + id32(old.id), "PATCH", { properties: { "설정": { rich_text: rtLong(JSON.stringify(cfg)) } } });
+      return pg ? send(200, { ok: true, skip: cfg.skip || [] }) : send(502, { error: "notion", msg: "저장하지 못했어요.", debug: lastErr });
     }
     if (act === "t_pass_set") { // 📊 응시 결과에서 통과 기준만 바로 바꾸기
       const old = await getPaper(b.id); if (!old) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." });
