@@ -47,7 +47,7 @@ function placeRec(rules, grade, pct) {
   return hit ? hit.cls : "";
 }
 const joinHits = new Map();
-function joinLimited(ip) { const e = joinHits.get(ip), now = Date.now(); if (!e || now - e.t > 3600000) { joinHits.set(ip, { n: 1, t: now }); return false; } e.n++; if (joinHits.size > 3000) joinHits.clear(); return e.n > 40; }
+function joinLimited(ip) { const e = joinHits.get(ip), now = Date.now(); if (!e || now - e.t > 3600000) { joinHits.set(ip, { n: 1, t: now }); return false; } e.n++; if (joinHits.size > 3000) joinHits.clear(); return e.n > (Number(process.env.JOIN_LIMIT) || 300); }
 const STATUSES = ["준비중", "응시중", "마감"];
 const MODES = { fixed: "선생님 지정", choice: "학생 선택" };
 const LEVELS = ["기본", "표준", "심화"];
@@ -193,6 +193,7 @@ async function loadCustom(force) {
   rows.forEach((p) => {
     const uid = P.text(p, "과ID"); if (!/^x[0-9a-f]{8,}$/.test(uid)) return;
     let qs = []; try { qs = JSON.parse(P.text(p, "문항") || "[]"); } catch (e) { qs = []; }
+    const asV = V.asVocab(qs, uid); if (asV) qs = asV; // 「뜻 → 영어 쓰기」로만 된 묶음(숙어 엑셀 등)은 단어장으로
     if (qs.some((q) => q.vt === "meaning") && !qs.some((q) => q.vt === "mwrite")) qs = qs.concat(qs.map(V.mwriteFrom).filter(Boolean)); // 예전 단어장에도 '뜻 쓰기'
     if (qs.some((q) => q.vt === "spell") && !qs.some((q) => q.vt === "spellgap" || q.vt === "unscramble")) qs = qs.concat(...qs.map(V.spellExtrasFrom)); // 예전 단어장에도 '철자 빈칸 채우기'·'철자 순서 맞추기'
     const text = P.text(p, "본문");
@@ -391,7 +392,8 @@ async function poolFor(uids, exclude, vtypes) {
   const pool = new Map();
   uids.forEach((uid) => {
     const u = unitData(uid); if (!u) return;
-    pool.set(uid, u.qs.concat(ai.get(uid) || []).filter((q) => !ex.has(q.id) && (!q.vt || !vt.size || vt.has(q.vt))).map((q) => Object.assign({ u: uid }, q)));
+    // 단어 유형을 골랐으면 그 유형만 (유형이 없는 일반 문제는 섞지 않아요)
+    pool.set(uid, u.qs.concat(ai.get(uid) || []).filter((q) => !ex.has(q.id) && (!vt.size || (q.vt && vt.has(q.vt)))).map((q) => Object.assign({ u: uid }, q)));
   });
   return pool;
 }
@@ -431,6 +433,28 @@ function listenPick(uids, exclude, count) {
   uids.forEach((u) => { const d = unitData(u); if (d) d.qs.filter((q) => !ex.has(q.id) && q.type === "mc").forEach((q) => out.push(Object.assign({ u }, q))); });
   return out.slice(0, count || 100);
 }
+// 🆕 반배정시험: 영역별 구성(문항 수·배점). 영역 순서대로, 원래 순서 그대로 (듣기가 항상 1~20번)
+const cleanSections = (a) => (Array.isArray(a) ? a : []).slice(0, 8).map((x) => ({ area: clip(x && x.area, 10), n: num(x && x.n, 0, 100, 0), pts: Math.round(Math.min(1000, Math.max(0, Number(x && x.pts) || 0)) * 100) / 100 })).filter((x) => x.area && x.n > 0 && x.pts > 0);
+// 🎧 듣기 방식: speaker(교실 스피커) | device(태블릿에서 듣기) | both(학생 화면에서 고르기)
+const listenMode = (c) => (c && ["speaker", "device", "both"].includes(c.listen) ? c.listen : c && c.speaker ? "speaker" : "device");
+const cleanAudioDir = (s) => { s = String(s || "").trim().slice(0, 200); if (!s) return ""; if (!/^\/[^<>"'`\\?#]*$/.test(s) || /\.\./.test(s) || /^\/\//.test(s)) return ""; return s.endsWith("/") ? s : s + "/"; };
+const hasSections = (pp) => !!(pp && pp.cfg && Array.isArray(pp.cfg.sections) && pp.cfg.sections.length);
+function sectionPick(pp, uids) {
+  const ex = new Set(pp.cfg.exclude || []), picked = [], lack = [];
+  pp.cfg.sections.forEach((sec) => {
+    const got = [];
+    uids.filter((u) => (unitIndex.get(u) || {}).area === sec.area).forEach((u) => { const d = unitData(u); if (d) d.qs.filter((q) => !ex.has(q.id)).forEach((q) => got.push(Object.assign({ u }, q))); });
+    if (got.length < sec.n) lack.push(sec.area + " " + got.length + "/" + sec.n + "문항");
+    picked.push(...got.slice(0, sec.n));
+  });
+  return { picked, have: picked.length, keep: true, lack };
+}
+// 영역마다 배점을 문항 수로 나눠 문제당 점수를 정함
+function assignPoints(sheet, secs) {
+  const cnt = {}; sheet.key.forEach((k) => { cnt[k.ar] = (cnt[k.ar] || 0) + 1; });
+  const pts = {}; secs.forEach((x) => { pts[x.area] = x.pts; });
+  sheet.key.forEach((k) => { k.pt = cnt[k.ar] && pts[k.ar] ? Math.round((pts[k.ar] / cnt[k.ar]) * 10000) / 10000 : 0; });
+}
 function buildSheet(picked, rnd, keep) {
   const T = (t) => (keep ? picked.filter((q) => (q.type || "mc") === t) : shuffle(picked.filter((q) => (q.type || "mc") === t), rnd));
   const ordered = keep ? picked.slice() : T("mc").concat(T("multi"), T("arrange"), T("short"));
@@ -445,10 +469,10 @@ function buildSheet(picked, rnd, keep) {
   };
   ordered.forEach((q, i) => {
     const u = unitIndex.get(q.u) || {};
-    const k = { id: q.id, u: q.u, t: q.type, q: clip(q.q, 300), sub: clip(q.sub, 700), exp: clip(q.exp, 300), unit: clip(u.name, 80), ch: clip(u.chapter, 60), book: clip(u.book, 40) };
+    const k = { id: q.id, u: q.u, ar: u.area || "", t: q.type, q: clip(q.q, 300), sub: clip(q.sub, 700), exp: clip(q.exp, 300), unit: clip(u.name, 80), ch: clip(u.chapter, 60), book: clip(u.book, 40) };
     if (q.type === "mc") {
       const ord = keep ? q.opts.map((_, j) => j) : placeAns(q); const opts = ord.map((j) => q.opts[j]);
-      view.push(Object.assign({ n: i + 1, type: "mc", q: q.q, sub: q.sub, opts, unit: u.chapter }, q.audio ? { audio: q.audio } : {}));
+      view.push(Object.assign({ n: i + 1, type: "mc", q: q.q, sub: q.sub, opts, unit: u.chapter }, q.audio ? { audio: q.audio } : {}, q.img ? { img: q.img } : {}));
       Object.assign(k, { a: ord.indexOf(q.ans), opts: opts.map((o) => clip(o, 120)), answer: clip(q.opts[q.ans], 200) });
     } else if (q.type === "multi") {
       const ord = shuffle(q.opts.map((_, j) => j), rnd); const opts = ord.map((j) => q.opts[j]);
@@ -466,6 +490,7 @@ function buildSheet(picked, rnd, keep) {
     }
     key.push(k);
   });
+  view.forEach((v, i) => { v.area = key[i].ar; });
   return { view, key };
 }
 const SECRET = () => crypto.createHash("sha256").update("cm-monthly|" + (process.env.REPORT_SECRET || process.env.NOTION_TOKEN || "cm")).digest();
@@ -495,7 +520,35 @@ function readPaper(p) {
 }
 // ✅ 통과 기준: { by: "cnt"(맞힌 개수) | "pct"(100점 환산), v: 숫자 } — 없으면 null
 const passCfg = (x) => { if (!x || typeof x !== "object") return null; const by = x.by === "pct" ? "pct" : x.by === "cnt" ? "cnt" : ""; const v = Number(x.v); return by && v > 0 && v <= (by === "pct" ? 100 : 1000) ? { by, v: Math.round(v * 10) / 10 } : null; };
-const pub = (pp) => ({ pass: passCfg(pp.cfg && pp.cfg.pass), grades: (pp.cfg && Array.isArray(pp.cfg.grades) ? pp.cfg.grades : []), id: pp.id, title: pp.title, cls: pp.cls, kind: pp.kind, period: pp.period, status: pp.status, mode: pp.mode, level: LEVELS[pp.level - 1], count: pp.count, minutes: pp.minutes, start: pp.start, end: pp.end, range: pp.mode === "fixed" ? pp.range : "", teacher: pp.teacher || "" });
+// 👥 공통 시험: 시험지 하나를 여러 반이 함께 봐요. 설정.target = { type: "grade"(학년 전체) | "classes"(여러 반) | "all"(모든 학생), grades, classes }
+//   시험지의 「반」 칸은 COMMON_CLS("공통 시험"), 학생 기록의 「반」은 그 학생의 실제 반으로 남겨요 (반별 평균·모아 보기에 그대로 쓰여요)
+const COMMON_CLS = "공통 시험";
+const T_GRADES = ["초1", "초2", "초3", "초4", "초5", "초6", "중1", "중2", "중3", "고1", "고2", "고3"];
+const gradeOfCls = (cls) => (String(cls || "").match(/^(초[1-6]|중[1-3]|고[1-3])/) || [])[1] || "";
+const targetOf = (pp) => {
+  const t = pp && pp.cfg && pp.cfg.target; if (!t || !["grade", "classes", "all"].includes(t.type)) return null;
+  const grades = (Array.isArray(t.grades) ? t.grades : []).filter((g) => T_GRADES.includes(g)), classes = (Array.isArray(t.classes) ? t.classes : []).map((c) => String(c).slice(0, 40)).filter(Boolean).slice(0, 60);
+  if (t.type === "grade" && !grades.length) return null; if (t.type === "classes" && !classes.length) return null;
+  return Object.assign({ type: t.type, grades: t.type === "grade" ? grades : [], classes: t.type === "classes" ? classes : [] }, t.newbies ? { newbies: true } : {}); // newbies: 🆕 신입 반배정 학생도 함께
+};
+const targetText = (t) => !t ? "" : (t.type === "all" ? "모든 학생" : t.type === "grade" ? t.grades.join("·") + " 전체" : t.classes.join(", ")) + (t.newbies ? " + 신입생" : "");
+// 이 학생(반·학년)이 이 시험지를 볼 수 있나요?
+function canTake(pp, cls, grade) {
+  const t = targetOf(pp); if (!t) return pp.cls === cls;
+  if (!cls) return false;
+  if (cls === PLACE_CLS()) return !!t.newbies; // 신입 반배정 학생은 「신입생도 함께」를 고른 공통 시험만 (학년은 따지지 않아요: 다른 학년 시험도 골라 볼 수 있게)
+  if (t.type === "all") return true;
+  if (t.type === "classes") return t.classes.includes(cls);
+  return t.grades.includes(grade) || t.grades.includes(gradeOfCls(cls));
+}
+// 토큰에 학년이 없으면(예전 로그인) 노션에서 학년을 한 번 확인해요
+async function canTakeWho(pp, who) {
+  if (canTake(pp, who.cls, who.grade)) return true;
+  const t = targetOf(pp); if (!t || t.type !== "grade" || who.grade) return false;
+  const st = await notion("pages/" + id32(who.sid), "GET", null, 1);
+  return !!st && canTake(pp, who.cls, P.sel(st, "학년"));
+}
+const pub = (pp) => ({ sections: (hasSections(pp) ? pp.cfg.sections : []), speaker: listenMode(pp.cfg) === "speaker", listen: listenMode(pp.cfg), target: targetOf(pp), targetText: targetText(targetOf(pp)), pass: passCfg(pp.cfg && pp.cfg.pass), grades: (pp.cfg && Array.isArray(pp.cfg.grades) ? pp.cfg.grades : []), id: pp.id, title: pp.title, cls: pp.cls, kind: pp.kind, period: pp.period, status: pp.status, mode: pp.mode, level: LEVELS[pp.level - 1], count: pp.count, minutes: pp.minutes, start: pp.start, end: pp.end, range: pp.mode === "fixed" ? pp.range : "", teacher: pp.teacher || "" });
 async function getPaper(id) {
   const p = await notion("pages/" + id32(id), "GET");
   if (!p || p.archived || normId(p.parent && p.parent.database_id) !== normId(PAPER_DB())) return null;
@@ -517,6 +570,7 @@ function attemptSummary(p) {
   return { score: P.num(p, "점수"), total: P.num(p, "만점"), pct: P.formula(p, "환산점수"), grade: P.sel(p, "종합 평가"), date: (P.date(p, "시험일") || {}).start || "", comment: P.text(p, "코멘트") };
 }
 async function makeSheet(pp, uids, sid) {
+  if (hasSections(pp)) return sectionPick(pp, uids);
   if (isListen(pp, uids)) { const picked = listenPick(uids, pp.cfg.exclude, pp.count); return { picked, have: picked.length, keep: true }; }
   const opt = aiOpt(pp.cfg);
   if (opt) { const pickSeed = pp.mode === "fixed" ? (pp.cfg.seed || pp.id) : (pp.cfg.seed || pp.id) + "|" + sid + "|" + uids.join(","); const r = await composeSheet(pp, uids, pickSeed, opt); return { picked: r.picked, have: r.have }; }
@@ -564,9 +618,23 @@ async function classList() {
   const o = db && db.properties && db.properties["반"] && db.properties["반"].select && db.properties["반"].select.options;
   return o ? o.map((x) => x.name).filter((x) => x !== "기타") : null;
 }
-async function roster(cls) {
-  const rows = await queryAll(STUDENT_DB(), { filter: { property: "반", select: { equals: cls } }, sorts: [{ property: "이름", direction: "ascending" }] }, 4);
-  return rows && rows.filter((p) => !["휴원", "퇴원"].includes(P.sel(p, "상태"))).map((p) => ({ id: normId(p.id), name: P.title(p, "이름"), hasPin: !!P.text(p, PIN_PROP), grade: P.sel(p, "학년") || "", school: P.text(p, "학교") || "", phone: (p.properties["학부모 연락처"] || {}).phone_number || "", mute: P.chk(p, "알림 끄기") }));
+async function roster(cls) { return rosterBy({ property: "반", select: { equals: cls } }, 4); }
+// 👥 공통 시험의 대상 학생 모두 (반·학년으로)
+async function targetRoster(pp) {
+  const t = targetOf(pp); if (!t) return roster(pp.cls);
+  let f;
+  if (t.type === "all") f = { property: "반", select: { does_not_equal: PLACE_CLS() } };
+  else if (t.type === "classes") f = { or: t.classes.map((c) => ({ property: "반", select: { equals: c } })) };
+  else { const cl = (await classList()) || []; f = { or: t.grades.map((g) => ({ property: "학년", select: { equals: g } })).concat(cl.filter((c) => t.grades.includes(gradeOfCls(c))).map((c) => ({ property: "반", select: { equals: c } }))).slice(0, 100) }; }
+  const r = await rosterBy(f, 15);
+  const out = r && r.filter((s) => s.cls !== PLACE_CLS() && canTake(pp, s.cls, s.grade));
+  if (!out || !t.newbies) return out;
+  const nb = await roster(PLACE_CLS()); // 🆕 신입생 (학년이 맞는 학생만, 학년 대상일 때)
+  return nb ? out.concat(nb.filter((s) => t.type !== "grade" || !s.grade || t.grades.includes(s.grade))) : out;
+}
+async function rosterBy(filter, pages) {
+  const rows = await queryAll(STUDENT_DB(), { filter, sorts: [{ property: "이름", direction: "ascending" }] }, pages || 4);
+  return rows && rows.filter((p) => !["휴원", "퇴원"].includes(P.sel(p, "상태"))).map((p) => ({ id: normId(p.id), name: P.title(p, "이름"), cls: P.sel(p, "반") || "", hasPin: !!P.text(p, PIN_PROP), grade: P.sel(p, "학년") || "", school: P.text(p, "학교") || "", phone: (p.properties["학부모 연락처"] || {}).phone_number || "", mute: P.chk(p, "알림 끄기") }));
 }
 
 // ---------- 🧑‍🎓 선생님 화면에서 학생 추가·수정 ----------
@@ -598,7 +666,7 @@ async function login(id, pin, setPin) {
   if (pinLocked(id)) return { status: 429, msg: "번호를 여러 번 틀려서 잠시 잠겼어요. 10분 뒤에 다시 해 주세요." };
   const pg = await notion("pages/" + id32(id), "GET");
   if (!pg || normId(pg.parent && pg.parent.database_id) !== normId(STUDENT_DB())) return { status: 404, msg: "학생을 찾지 못했어요." };
-  const name = P.title(pg, "이름"), cls = P.sel(pg, "반") || "기타", stored = P.text(pg, PIN_PROP);
+  const name = P.title(pg, "이름"), cls = P.sel(pg, "반") || "기타", grade = P.sel(pg, "학년") || "", stored = P.text(pg, PIN_PROP);
   if (!/^\d{4}$/.test(pin)) return { status: 400, msg: "번호는 숫자 4자리예요." };
   if (!stored) {
     if (!setPin) return { status: 409, msg: "처음이에요. 번호를 새로 정해 주세요.", needSet: true };
@@ -606,7 +674,7 @@ async function login(id, pin, setPin) {
     if (!up) return { status: 502, msg: "번호를 저장하지 못했어요. 다시 해 주세요." };
   } else if (stored !== pinHash(pin, id)) { pinFail(id); return { status: 401, msg: "번호가 달라요. 다시 확인해 주세요." }; }
   pinFails.delete(id);
-  return { status: 200, name, cls, sid: normId(id), token: signToken({ sid: normId(id), name, cls, exp: Date.now() + 4 * 3600 * 1000 }) };
+  return { status: 200, name, cls, grade, sid: normId(id), token: signToken({ sid: normId(id), name, cls, grade, exp: Date.now() + 4 * 3600 * 1000 }) };
 }
 
 // ---------- 채점 + 노션 기록 ----------
@@ -706,6 +774,32 @@ function reporter() {
   return _rep;
 }
 
+// ---------- 🎧 직접 올린 듣기 음원 (노션 과 페이지 안의 오디오 블록, 설명 = 문항 번호) ----------
+const AUDIO_TYPES = { "audio/mpeg": "mp3", "audio/mp3": "mp3", "audio/mp4": "m4a", "audio/x-m4a": "m4a", "audio/aac": "aac", "audio/wav": "wav", "audio/x-wav": "wav", "audio/wave": "wav", "audio/ogg": "ogg" };
+const AUDIO_MAX = 3.2 * 1024 * 1024; // 서버 요청 한도(4.5MB) 안
+const audioCache = new Map(); // 과 페이지 id → { t, until, map: { 번호: 주소 } }
+async function audioBlocks(pid) {
+  const out = []; let cur;
+  for (let i = 0; i < 3; i++) {
+    const j = await notion("blocks/" + id32(pid) + "/children?page_size=100" + (cur ? "&start_cursor=" + cur : ""), "GET");
+    if (!j) return null;
+    (j.results || []).filter((x) => x.type === "audio" || x.type === "image").forEach((x) => { const a = x[x.type] || {}; out.push({ id: x.id, kind: x.type, n: (a.caption || []).map((c) => c.plain_text || "").join("").trim(), url: (a.file && a.file.url) || (a.external && a.external.url) || "", exp: (a.file && a.file.expiry_time) || "" }); });
+    if (!j.has_more) break; cur = j.next_cursor;
+  }
+  return out;
+}
+async function audioUrl(pid, n) {
+  let c = audioCache.get(pid);
+  if (!c || Date.now() > c.until) {
+    const bl = await audioBlocks(pid); if (!bl) return "";
+    const map = {}; let until = Date.now() + 40 * 60000;
+    bl.forEach((x) => { if (x.n && x.url) { map[x.n] = x.url; const e = Date.parse(x.exp); if (e) until = Math.min(until, e - 5 * 60000); } });
+    c = { until: Math.max(Date.now() + 60000, until), map }; audioCache.set(pid, c); if (audioCache.size > 300) audioCache.clear();
+  }
+  return c.map[String(n)] || "";
+}
+const audioPath = (uid, n) => "/api/monthly?au=" + encodeURIComponent(uid) + "&n=" + n;
+
 module.exports = async function handler(req, res) {
   const send = (code, obj) => sendTo(res, code, obj);
   const tcode = String(process.env.TEACHER_CODE || "").trim();
@@ -718,6 +812,22 @@ module.exports = async function handler(req, res) {
     const cs = String(process.env.CRON_SECRET || "").trim(), au = String(req.headers.authorization || "");
     if (cs ? au !== "Bearer " + cs : !/vercel-cron/i.test(String(req.headers["user-agent"] || ""))) return send(401, { error: "cron" });
     return send(200, await PLUS().tick(true));
+  }
+  if (req.method === "GET" && /[?&]im=/.test(req.url || "")) { // 🖼 듣기 그림 보기 (설명 = "그림 3")
+    if (!siteOk(req)) return send(401, { error: "site" });
+    const sp = new URL(req.url, "http://x").searchParams, uid = clip(sp.get("im"), 20), n = num(sp.get("n"), 1, 300, 0);
+    loadCatalog(); await loadCustom();
+    const d = custom.data.get(uid); if (!d || !n) return send(404, { error: "nf" });
+    const url = await audioUrl(d.pid, "그림 " + n); if (!url) return send(404, { error: "nf" });
+    res.statusCode = 302; res.setHeader("Location", url); res.setHeader("Cache-Control", "private, max-age=600"); return res.end();
+  }
+  if (req.method === "GET" && /[?&]au=/.test(req.url || "")) { // 🎧 듣기 음원: 들을 때마다 노션의 새 주소로 보내 줘요 (노션 주소는 1시간이면 바뀌어요)
+    if (!siteOk(req)) return send(401, { error: "site" });
+    const sp = new URL(req.url, "http://x").searchParams, uid = clip(sp.get("au"), 20), n = num(sp.get("n"), 1, 300, 0);
+    loadCatalog(); await loadCustom();
+    const d = custom.data.get(uid); if (!d || !n) return send(404, { error: "nf" });
+    const url = await audioUrl(d.pid, n); if (!url) return send(404, { error: "nf", msg: "음원이 없어요." });
+    res.statusCode = 302; res.setHeader("Location", url); res.setHeader("Cache-Control", "private, max-age=600"); return res.end();
   }
   if (req.method === "GET") return send(200, { ok: true, ready: !!process.env.NOTION_TOKEN && process.env.MONTHLY_OFF !== "1", bank: !!loadCatalog(), ai: aiOn(), ais: AI.list().map((x) => x.id), teacher: !!tcode, drive: drive.configured() });
   if (req.method !== "POST") return send(405, { error: "method" });
@@ -805,6 +915,12 @@ module.exports = async function handler(req, res) {
         return send(200, { ok: true, listen: true, stats: uids.map((u) => ({ u, name: unitIndex.get(u).name, bank: (unitData(u) || { qs: [] }).qs.filter((q) => q.type === "mc").length, ai: 0 })), total: all.length, range: rangeText(uids),
           items: picked.map((q) => ({ id: q.id, type: q.type, lv: q.lv, ai: false, kind: q.kind || "", q: q.q, sub: q.sub, opts: q.opts, ans: q.ans, answer: q.answer, exp: q.exp, audio: q.audio || "", unit: (unitIndex.get(q.u) || {}).name })) });
       }
+      const psec = cleanSections(b.sections);
+      if (psec.length) { // 📐 영역별 구성(반배정시험): 영역 순서대로, 시험지에 실제로 들어갈 문항 그대로
+        const sp = sectionPick({ cfg: { sections: psec, exclude: (b.exclude || []).slice(0, 500) } }, uids), items = [];
+        let k = 0; psec.forEach((sec) => { let c = 0; sp.picked.filter((q) => (unitIndex.get(q.u) || {}).area === sec.area).forEach((q) => { c++; k++; items.push({ id: q.id, type: q.type, lv: q.lv, ai: false, kind: q.kind || "", q: q.q, sub: q.sub, opts: q.opts, ans: q.ans, anss: q.anss, accept: q.accept, answer: q.answer, words: q.words, exp: q.exp, audio: q.audio || "", area: sec.area, ch: sec.area + " " + c + "/" + sec.n + " · " + sec.pts + "점 만점", unit: (unitIndex.get(q.u) || {}).name, custom: true }); }); });
+        return send(200, { ok: true, sections: true, lack: sp.lack, stats: uids.map((u) => ({ u, name: unitIndex.get(u).name, bank: (unitData(u) || { qs: [] }).qs.length, ai: 0 })), total: items.length, range: rangeText(uids), items });
+      }
       const opt = aiOpt(pp.cfg);
       if (opt) {
         const r = await composeSheet(pp, uids, pp.cfg.seed, opt);
@@ -835,14 +951,15 @@ module.exports = async function handler(req, res) {
       let old = null;
       if (f.id) { old = await getPaper(f.id); if (!old) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." }); }
       if (old && !me.master && old.teacher && old.teacher !== me.name) return send(403, { error: "owner", msg: old.teacher + "이(가) 만든 시험지는 고칠 수 없어요. 목록에서 📄 복제해서 써 주세요." });
-      const cfg = { units, books, seed: (old && old.cfg.seed) || clip(f.seed, 40).replace(/[^\w-]/g, "") || hash(Date.now() + title, 12), exclude: (Array.isArray(f.exclude) ? f.exclude : (old && old.cfg.exclude) || []).slice(0, 500), vtypes: (Array.isArray(f.vtypes) ? f.vtypes : (old && old.cfg.vtypes) || []).filter((t) => V.VT_IDS.includes(t)), place: clip(f.place != null ? f.place : (old && old.cfg.place) || "", 1500), grades: (Array.isArray(f.grades) ? f.grades : (old && old.cfg.grades) || []).filter((g) => GRADES.includes(g)),
+      const cfg = { units, books, seed: (old && old.cfg.seed) || clip(f.seed, 40).replace(/[^\w-]/g, "") || hash(Date.now() + title, 12), exclude: (Array.isArray(f.exclude) ? f.exclude : (old && old.cfg.exclude) || []).slice(0, 500), vtypes: (Array.isArray(f.vtypes) ? f.vtypes : (old && old.cfg.vtypes) || []).filter((t) => V.VT_IDS.includes(t)), place: clip(f.place != null ? f.place : (old && old.cfg.place) || "", 1500), sections: f.sections !== undefined ? cleanSections(f.sections) : (old && old.cfg.sections) || [], speaker: f.listen !== undefined ? f.listen === "speaker" : f.speaker !== undefined ? !!f.speaker : !!(old && old.cfg.speaker), listen: f.listen !== undefined ? listenMode({ listen: f.listen }) : (old && old.cfg.listen) || undefined, audioDir: f.audioDir !== undefined ? cleanAudioDir(f.audioDir) : (old && old.cfg.audioDir) || "", grades: (Array.isArray(f.grades) ? f.grades : (old && old.cfg.grades) || []).filter((g) => GRADES.includes(g)),
         pass: f.pass !== undefined ? passCfg(f.pass) || undefined : (old && passCfg(old.cfg.pass)) || undefined,
+        target: f.target !== undefined ? targetOf({ cfg: { target: f.target } }) || undefined : (old && targetOf(old)) || undefined,
         ai: f.ai && typeof f.ai === "object" ? { fill: f.ai.fill !== false, variant: num(f.ai.variant, 0, 100, 0), extra: num(f.ai.extra, 0, 60, 0) } : (old && old.cfg.ai) || undefined };
       if (f.reseed) cfg.seed = hash(Date.now() + Math.random(), 12);
       const range = mode === "fixed" ? rangeText(units) : "학생 선택: " + (books.length ? allBooks().filter((x) => books.includes(x.id)).map((x) => x.name).join(", ") : rangeText(units));
       const props = {
-        "시험명": { title: rt(title) }, "반": sel(cls), "종류": sel(kind), "시기": sel(clip(f.period, 40)), "상태": sel(STATUSES.includes(f.status) ? f.status : "준비중"),
-        "출제 방식": sel(MODES[mode]), "난이도": sel(LEVELS[num(f.level, 1, 3, 2) - 1]), "문항 수": { number: num(f.count, 5, 100, 20) }, "제한시간(분)": { number: num(f.minutes, 0, 180, 40) },
+        "시험명": { title: rt(title) }, "반": sel(cfg.target ? COMMON_CLS : cls), "종류": sel(kind), "시기": sel(clip(f.period, 40)), "상태": sel(STATUSES.includes(f.status) ? f.status : "준비중"),
+        "출제 방식": sel(MODES[mode]), "난이도": sel(LEVELS[num(f.level, 1, 3, 2) - 1]), "문항 수": { number: cfg.sections.length ? Math.min(100, cfg.sections.reduce((t, x) => t + x.n, 0)) : num(f.count, 5, 100, 20) }, "제한시간(분)": { number: num(f.minutes, 0, 180, 40) },
         "결과 공개": { checkbox: !!f.show }, "시험 범위": { rich_text: rt(range) }, "설정": { rich_text: rtLong(JSON.stringify(cfg)) },
         "시험 기간": /^\d{4}-\d{2}-\d{2}$/.test(f.start || "") ? { date: { start: f.start, end: /^\d{4}-\d{2}-\d{2}$/.test(f.end || "") && f.end > f.start ? f.end : null } } : { date: null },
       };
@@ -887,7 +1004,7 @@ module.exports = async function handler(req, res) {
       let rec2 = "";
       if (pp.kind === "반배정시험" || (pp.cfg && pp.cfg.place)) { const grade = P.sel(st, "학년"); rec2 = (placeRec(pp.cfg.place, grade, pct) || (pp.cfg.place ? "기준에 맞는 반 없음" : "기준 미설정")) + " (" + (grade || "학년 ?") + " · " + pct + "점)"; }
       const props = {
-        "시험명": { title: rt(pp.title) }, "학생": { relation: [{ id: uuid(sid) }] }, "시험지": { relation: [{ id: uuid(pp.id) }] }, "반": sel(pp.cls), "종류": sel(pp.kind || "월간평가"),
+        "시험명": { title: rt(pp.title) }, "학생": { relation: [{ id: uuid(sid) }] }, "시험지": { relation: [{ id: uuid(pp.id) }] }, "반": sel(targetOf(pp) ? P.sel(st, "반") || pp.cls : pp.cls), "종류": sel(pp.kind || "월간평가"),
         "시험일": { date: { start: date } }, "시험 범위": { rich_text: rt(clip(pp.range || "", 1900)) }, "점수": { number: score }, "만점": { number: total },
         "종합 평가": sel(GR.includes(b.grade) ? b.grade : gradeOf(pct)), "코멘트": { rich_text: rt(clip(typeof b.comment === "string" && b.comment.trim() ? b.comment : "종이 시험", 1900)) }, "응시 방식": sel("종이"),
         ...(Number.isInteger(score) && Number.isInteger(total) ? { "오답 수": { number: total - score } } : {}),
@@ -1021,15 +1138,17 @@ module.exports = async function handler(req, res) {
     }
     if (act === "t_results") { // 한 시험지의 응시 현황 (안 본 학생 포함)
       const pp = await getPaper(b.id); if (!pp) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." });
-      const [rows, ros] = await Promise.all([queryAll(EXAM_DB(), { filter: { property: "시험지", relation: { contains: uuid(pp.id) } } }, 3), roster(pp.cls)]);
+      const [rows, ros] = await Promise.all([queryAll(EXAM_DB(), { filter: { property: "시험지", relation: { contains: uuid(pp.id) } } }, 3), targetRoster(pp)]);
       if (!rows) return send(502, { error: "notion", msg: "결과를 불러오지 못했어요.", debug: lastErr });
       // 학생 한 명의 기록이 둘 이상이면(잘못 두 번 저장 등) 최신 기록을 대표로, 나머지는 따로 보여 줘서 골라 지울 수 있게 해요
       const byS = new Map(); rows.slice().sort((x, y) => String(y.created_time).localeCompare(String(x.created_time))).forEach((p) => { const k = P.rel(p, "학생")[0]; (byS.get(k) || byS.set(k, []).get(k)).push(p); });
       const done = new Map([...byS].map(([k, v]) => [k, v[0]]));
-      const list = (ros || []).map((s) => ({ name: s.name, sid: s.id })).concat([...done.keys()].filter((k) => !(ros || []).some((s) => s.id === k)).map((k) => ({ name: "(다른 반 학생)", sid: k })));
-      const info = new Map((ros || []).map((s) => [s.id, s]));
-      const recRow = (s, st, p) => Object.assign({ name: s.name, sid: s.sid, sgrade: st.grade || "", school: st.school || "", rec2: P.text(p, "추천 반"), url: p.url, rec: normId(p.id), made: String(p.created_time || "").slice(0, 16), how: P.sel(p, "응시 방식"), report: (p.properties["분석 리포트"] || {}).url || "", mins: P.num(p, "소요시간(분)"), away: P.num(p, "자리비움"), units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }, attemptSummary(p));
-      const out = list.map((s) => { const p = done.get(s.sid), st = info.get(s.sid) || {}; return p ? recRow(s, st, p) : { name: s.name, sid: s.sid, sgrade: st.grade || "", school: st.school || "", missing: true }; });
+      const extraIds = [...done.keys()].filter((k) => !(ros || []).some((s) => s.id === k));
+      let nm = new Map(); if (extraIds.length) { const a = await STU().all().catch(() => null); nm = new Map(((a && a.students) || []).map((x) => [x.id, x])); }
+      const list = (ros || []).map((s) => ({ name: s.name, sid: s.id })).concat(extraIds.map((k) => ({ name: nm.get(k) ? nm.get(k).name : "(다른 반 학생)", sid: k })));
+      const info = new Map((ros || []).map((s) => [s.id, s]).concat(extraIds.filter((k) => nm.get(k)).map((k) => [k, { cls: nm.get(k).cls, grade: nm.get(k).grade || "" }])));
+      const recRow = (s, st, p) => Object.assign({ name: s.name, sid: s.sid, cls: st.cls || P.sel(p, "반") || "", sgrade: st.grade || "", school: st.school || "", rec2: P.text(p, "추천 반"), url: p.url, rec: normId(p.id), made: String(p.created_time || "").slice(0, 16), how: P.sel(p, "응시 방식"), report: (p.properties["분석 리포트"] || {}).url || "", mins: P.num(p, "소요시간(분)"), away: P.num(p, "자리비움"), units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }, attemptSummary(p));
+      const out = list.map((s) => { const p = done.get(s.sid), st = info.get(s.sid) || {}; return p ? recRow(s, st, p) : { name: s.name, sid: s.sid, cls: st.cls || "", sgrade: st.grade || "", school: st.school || "", missing: true }; });
       list.forEach((s) => (byS.get(s.sid) || []).slice(1).forEach((p) => out.push(Object.assign(recRow(s, info.get(s.sid) || {}, p), { dup: true }))));
       return send(200, { ok: true, paper: pub(pp), rows: out });
     }
@@ -1063,11 +1182,80 @@ module.exports = async function handler(req, res) {
       return send(200, { ok: true, uid, meta: { book: u.book, chapter: u.chapter, unit: u.name, area: u.area, grade: u.grade || "" }, text: d.text || "",
         questions: d.qs.map((q) => ({ no: "", type: q.type || "mc", q: q.q || "", sub: q.sub || "", opts: q.opts || [], ans: q.ans, anss: q.anss, answer: q.answer || "", frame: q.frame || "", words: q.words || [], exp: q.exp || "", lv: q.lv || 2, warn: [] })) });
     }
+    if (act === "t_audio_list") { // 🎧 듣기 과의 문항별 음원 현황
+      loadCatalog(); await loadCustom(true);
+      const uid = clip(b.uid, 20), d = custom.data.get(uid), u = unitIndex.get(uid);
+      if (!d || !u) return send(404, { error: "nf", msg: "자료를 찾지 못했어요." });
+      return send(200, { ok: true, uid, name: u.book + " › " + u.chapter + " › " + u.name, area: u.area, qs: d.qs.map((q, i) => ({ n: i + 1, q: clip(q.q, 80), answer: clip(q.answer, 40), audio: q.audio || "", img: q.img || "" })) });
+    }
+    if (act === "t_img_up" || act === "t_img_del") { // 🖼 문항 그림 (①~⑤ 그림 보기 한 장). 같은 번호에 다시 올리면 바꿔요
+      loadCatalog(); await loadCustom(true);
+      const uid = clip(b.uid, 20), d = custom.data.get(uid), n = num(b.n, 1, 300, 0), cap = "그림 " + n;
+      if (!d) return send(404, { error: "nf", msg: "자료를 찾지 못했어요." });
+      if (!n || n > d.qs.length) return send(400, { error: "input", msg: n + "번 문항이 없어요." });
+      let fid = "";
+      if (act === "t_img_up") {
+        const type = String(b.type || "").toLowerCase();
+        if (!/^image\/(jpeg|png|webp|gif)$/.test(type)) return send(400, { error: "input", msg: "그림 파일(jpg·png)만 올릴 수 있어요." });
+        const buf = Buffer.from(String(b.b64 || ""), "base64");
+        if (!buf.length || buf.length > AUDIO_MAX) return send(400, { error: "big", msg: "그림이 비었거나 너무 커요 (3MB까지)." });
+        const H = { Authorization: "Bearer " + process.env.NOTION_TOKEN, "Notion-Version": NOTION_VER }, fname = "q" + n + "." + type.split("/")[1].replace("jpeg", "jpg");
+        try {
+          let r = await fetch("https://api.notion.com/v1/file_uploads", { method: "POST", headers: Object.assign({ "Content-Type": "application/json" }, H), body: JSON.stringify({ filename: fname, content_type: type }) });
+          const j = await r.json().catch(() => ({})); if (!r.ok || !j.id) return send(502, { error: "notion", msg: "그림을 올리지 못했어요. (" + (j.message || r.status) + ")" });
+          const fd = new FormData(); fd.append("file", new Blob([buf], { type }), fname);
+          r = await fetch("https://api.notion.com/v1/file_uploads/" + j.id + "/send", { method: "POST", headers: H, body: fd });
+          const s2 = await r.json().catch(() => ({})); if (!r.ok || (s2.status && s2.status !== "uploaded")) return send(502, { error: "notion", msg: "그림을 보내지 못했어요. (" + (s2.message || r.status) + ")" });
+          fid = j.id;
+        } catch (e) { return send(502, { error: "net", msg: "그림을 올리지 못했어요. 인터넷 연결을 확인해 주세요." }); }
+      }
+      const old = (await audioBlocks(d.pid)) || [];
+      if (fid) { const add = await notion("blocks/" + id32(d.pid) + "/children", "PATCH", { children: [{ object: "block", type: "image", image: { type: "file_upload", file_upload: { id: fid }, caption: rt(cap) } }] }); if (!add) return send(502, { error: "notion", msg: "그림을 붙이지 못했어요.", debug: lastErr }); }
+      for (const x of old.filter((x) => x.n === cap)) await notion("blocks/" + id32(x.id), "DELETE");
+      audioCache.delete(d.pid);
+      const path = fid ? "/api/monthly?im=" + encodeURIComponent(uid) + "&n=" + n : "";
+      const pg = await notion("pages/" + id32(d.pid), "GET");
+      let qs = []; try { qs = JSON.parse(P.text(pg, "문항") || "[]"); } catch (e) { qs = []; }
+      if (qs[n - 1] && (qs[n - 1].img || "") !== path) { if (path) qs[n - 1].img = path; else delete qs[n - 1].img; await notion("pages/" + id32(d.pid), "PATCH", { properties: { "문항": { rich_text: rtLong(JSON.stringify(qs)) } } }); }
+      await loadCustom(true);
+      return send(200, { ok: true, n, img: path });
+    }
+    if (act === "t_audio_up") { // 🎧 문항 하나의 음원 올리기 (같은 번호에 다시 올리면 바꿔요)
+      loadCatalog(); await loadCustom(true);
+      const uid = clip(b.uid, 20), d = custom.data.get(uid), n = num(b.n, 1, 300, 0);
+      if (!d) return send(404, { error: "nf", msg: "자료를 찾지 못했어요." });
+      if (!n || n > d.qs.length) return send(400, { error: "input", msg: n + "번 문항이 없어요. (이 과는 " + d.qs.length + "문항)" });
+      const type = String(b.type || "").toLowerCase(), ext = AUDIO_TYPES[type];
+      if (!ext) return send(400, { error: "input", msg: "mp3·m4a·wav 음원만 올릴 수 있어요." });
+      const buf = Buffer.from(String(b.b64 || ""), "base64");
+      if (!buf.length) return send(400, { error: "input", msg: "파일이 비어 있어요." });
+      if (buf.length > AUDIO_MAX) return send(400, { error: "big", msg: "파일이 너무 커요 (" + (buf.length / 1048576).toFixed(1) + "MB). 한 문항에 3MB까지예요." });
+      const H = { Authorization: "Bearer " + process.env.NOTION_TOKEN, "Notion-Version": NOTION_VER }, fname = n + "." + ext;
+      let fid;
+      try {
+        let r = await fetch("https://api.notion.com/v1/file_uploads", { method: "POST", headers: Object.assign({ "Content-Type": "application/json" }, H), body: JSON.stringify({ filename: fname, content_type: type === "audio/mp3" ? "audio/mpeg" : type }) });
+        const j = await r.json().catch(() => ({})); if (!r.ok || !j.id) return send(502, { error: "notion", msg: "음원을 올리지 못했어요. (" + (j.message || r.status) + ")" });
+        const fd = new FormData(); fd.append("file", new Blob([buf], { type: type === "audio/mp3" ? "audio/mpeg" : type }), fname);
+        r = await fetch("https://api.notion.com/v1/file_uploads/" + j.id + "/send", { method: "POST", headers: H, body: fd });
+        const s = await r.json().catch(() => ({})); if (!r.ok || (s.status && s.status !== "uploaded")) return send(502, { error: "notion", msg: "음원을 보내지 못했어요. (" + (s.message || r.status) + ")" });
+        fid = j.id;
+      } catch (e) { return send(502, { error: "net", msg: "음원을 올리지 못했어요. 인터넷 연결을 확인해 주세요." }); }
+      const old = (await audioBlocks(d.pid)) || [];
+      const add = await notion("blocks/" + id32(d.pid) + "/children", "PATCH", { children: [{ object: "block", type: "audio", audio: { type: "file_upload", file_upload: { id: fid }, caption: rt(String(n)) } }] });
+      if (!add) return send(502, { error: "notion", msg: "음원을 붙이지 못했어요.", debug: lastErr });
+      for (const x of old.filter((x) => x.n === String(n))) await notion("blocks/" + id32(x.id), "DELETE"); // 예전 음원은 지워요
+      audioCache.delete(d.pid);
+      const pg = await notion("pages/" + id32(d.pid), "GET");
+      let qs = []; try { qs = JSON.parse(P.text(pg, "문항") || "[]"); } catch (e) { qs = []; }
+      if (qs[n - 1] && qs[n - 1].audio !== audioPath(uid, n)) { qs[n - 1].audio = audioPath(uid, n); await notion("pages/" + id32(d.pid), "PATCH", { properties: { "문항": { rich_text: rtLong(JSON.stringify(qs)) } } }); }
+      await loadCustom(true);
+      return send(200, { ok: true, n, audio: audioPath(uid, n) });
+    }
     if (act === "t_import_save") { // 📚 자료 올리기: 검토한 문항(또는 본문)을 한 과로 저장
       const m = b.meta || {};
       const book = clip(m.book, 80), chapter = clip(m.chapter, 80) || "단원", unit = clip(m.unit, 120) || "자료";
       if (!book) return send(400, { error: "input", msg: "교재 이름을 넣어 주세요." });
-      const area = ["문법", "구문", "독해", "교과서", "어휘", "기타"].includes(m.area) ? m.area : "기타";
+      const area = ["문법", "구문", "독해", "교과서", "어휘", "듣기", "기타"].includes(m.area) ? m.area : "기타";
       const gradeV = ["초등", "중1", "중2", "중3", "고등"].includes(m.grade) ? m.grade : null;
       const uid = "x" + hash(book + "|" + chapter + "|" + unit, 10);
       const bad = [];
@@ -1083,6 +1271,7 @@ module.exports = async function handler(req, res) {
         const q = { type: t, q: clip(x.q, 600), sub: clip(x.sub, 2500), exp: clip(x.exp, 600), lv: num(x.lv, 1, 3, 2), kind: clip(x.kind, 40), no: clip(x.no, 10) };
         if (t === "mc" || t === "multi") {
           q.opts = (Array.isArray(x.opts) ? x.opts : []).map((o) => clip(o, 300)).filter(Boolean).slice(0, 6);
+          if (area === "듣기" && q.opts.length < 2) { const n0 = Array.isArray(x.opts) && x.opts.length >= 2 ? Math.min(5, x.opts.length) : 5; q.opts = "①②③④⑤".slice(0, n0).split(""); } // 🎧 그림 보기 듣기 문항 → ①~⑤ 답안카드
           if (q.opts.length < 2) { bad.push(i + 1); return null; }
           if (t === "mc") { q.ans = num(x.ans, 0, q.opts.length - 1, -1); if (q.ans < 0) { bad.push(i + 1); return null; } q.answer = q.opts[q.ans]; }
           else { q.anss = [...new Set((x.anss || []).map(Number).filter((k) => k >= 0 && k < q.opts.length))].sort(); if (q.anss.length < 1) { bad.push(i + 1); return null; } q.answer = q.anss.map((k) => q.opts[k]).join(" / "); }
@@ -1108,6 +1297,10 @@ module.exports = async function handler(req, res) {
         let old = []; try { old = JSON.parse(P.text(found[0], "문항") || "[]"); } catch (e) { old = []; }
         const keys = new Set(vocabWords.map((e) => CTX.mainKey(e.w)));
         all = qs.concat(old.filter((q) => AI_VT[q.vt] && keys.has(CTX.mainKey(q.w))));
+      }
+      if (found[0] && b.replace && !vocabWords) { // 🎧 다시 저장해도 같은 번호의 음원은 그대로
+        let old = []; try { old = JSON.parse(P.text(found[0], "문항") || "[]"); } catch (e) { old = []; }
+        all.forEach((q, i) => { if (old[i] && old[i].audio && !q.audio) q.audio = old[i].audio; if (old[i] && old[i].img && !q.img) q.img = old[i].img; });
       }
       if (found[0] && !b.replace) { // 같은 과에 더 올리면 기존 문항 뒤에 합침 (같은 문항은 한 번만)
         let old = []; try { old = JSON.parse(P.text(found[0], "문항") || "[]"); } catch (e) { old = []; }
@@ -1264,13 +1457,14 @@ module.exports = async function handler(req, res) {
     const r = await login(clip(b.id, 60), clip(b.pin, 10), !!b.setPin);
     if (r.status === 200 && b.game) // 🏆 단어 게임: 게임 기록만 남길 수 있는 30일짜리 토큰 (시험·과제에는 못 씀)
       return send(200, { ok: true, gtoken: signToken({ sid: r.sid, name: r.name, cls: r.cls, sc: "g", exp: Date.now() + 30 * 864e5 }), name: r.name, cls: r.cls });
-    return r.status === 200 ? send(200, { ok: true, token: r.token, name: r.name, cls: r.cls }) : send(r.status, { ok: false, msg: r.msg, needSet: r.needSet });
+    return r.status === 200 ? send(200, { ok: true, token: r.token, name: r.name, cls: r.cls, grade: r.grade }) : send(r.status, { ok: false, msg: r.msg, needSet: r.needSet });
   }
   if (act === "s_list") { // 반의 시험 목록 (시기별)
     const cls = clip(b.cls, 40); if (!cls) return send(400, { error: "input" });
-    const rows = await queryAll(PAPER_DB(), { filter: { and: [{ property: "반", select: { equals: cls } }, { or: [{ property: "상태", select: { equals: "응시중" } }, { property: "상태", select: { equals: "마감" } }] }] }, sorts: [{ timestamp: "created_time", direction: "descending" }] }, 2);
+    const rows = await queryAll(PAPER_DB(), { filter: { and: [{ or: [{ property: "반", select: { equals: cls } }, { property: "반", select: { equals: COMMON_CLS } }] }, { or: [{ property: "상태", select: { equals: "응시중" } }, { property: "상태", select: { equals: "마감" } }] }] }, sorts: [{ timestamp: "created_time", direction: "descending" }] }, 2);
     if (!rows) return send(502, { error: "notion", msg: "시험 목록을 불러오지 못했어요." });
-    return send(200, { ok: true, papers: rows.map((p) => { const pp = readPaper(p); return Object.assign(pub(pp), { closed: openNow(pp) }); }) });
+    const grade = T_GRADES.includes(b.grade) ? b.grade : "";
+    return send(200, { ok: true, papers: rows.map(readPaper).filter((pp) => canTake(pp, cls, grade)).map((pp) => Object.assign(pub(pp), { closed: openNow(pp) })) });
   }
 
   if (act === "s_join") { // 🆕 신입생: 이름·학교·학년·번호로 스스로 등록 → '신입 반배정' 반 학생이 돼요
@@ -1287,7 +1481,7 @@ module.exports = async function handler(req, res) {
     if (!pg) return send(502, { error: "notion", msg: "등록하지 못했어요. 선생님께 알려 주세요.", debug: lastErr });
     const sid = normId(pg.id);
     await notion("pages/" + id32(sid), "PATCH", { properties: { [PIN_PROP]: { rich_text: rt(pinHash(pin, sid)) } } });
-    return send(200, { ok: true, token: signToken({ sid, name, cls: PLACE_CLS(), exp: Date.now() + 4 * 3600 * 1000 }), name, cls: PLACE_CLS(), grade });
+    return send(200, { ok: true, token: signToken({ sid, name, cls: PLACE_CLS(), grade, exp: Date.now() + 4 * 3600 * 1000 }), name, cls: PLACE_CLS(), grade });
   }
 
   if (act === "p_hw") { // 👪 부모님 전용 링크로 아이의 과제 사진 보기 (링크 = 학생 + 비밀 키)
@@ -1321,7 +1515,7 @@ module.exports = async function handler(req, res) {
 
   if (act === "s_open") {
     const pp = await getPaper(b.id); if (!pp) return send(404, { error: "nf", msg: "시험을 찾지 못했어요." });
-    if (pp.cls !== who.cls) return send(403, { error: "cls", msg: "우리 반 시험이 아니에요." });
+    if (!(await canTakeWho(pp, who))) return send(403, { error: "cls", msg: targetOf(pp) ? "이 공통 시험(" + targetText(targetOf(pp)) + ") 대상이 아니에요." : "우리 반 시험이 아니에요." });
     const att = await findAttempt(pp.id, who.sid);
     if (att === undefined) return send(502, { error: "notion", msg: "응시 기록을 확인하지 못했어요. 잠시 뒤 다시 해 주세요.", debug: lastErr });
     if (att) return send(200, { ok: true, paper: pub(pp), taken: true, result: pp.show ? Object.assign(attemptSummary(att), { url: undefined }) : null });
@@ -1339,7 +1533,7 @@ module.exports = async function handler(req, res) {
 
   if (act === "s_start") {
     const pp = await getPaper(b.id); if (!pp) return send(404, { error: "nf", msg: "시험을 찾지 못했어요." });
-    if (pp.cls !== who.cls) return send(403, { error: "cls", msg: "우리 반 시험이 아니에요." });
+    if (!(await canTakeWho(pp, who))) return send(403, { error: "cls", msg: targetOf(pp) ? "이 공통 시험(" + targetText(targetOf(pp)) + ") 대상이 아니에요." : "우리 반 시험이 아니에요." });
     const closed = openNow(pp); if (closed) return send(403, { error: "closed", msg: closed });
     const att = await findAttempt(pp.id, who.sid);
     if (att) return send(409, { error: "taken", msg: "이미 응시한 시험이에요." });
@@ -1349,9 +1543,16 @@ module.exports = async function handler(req, res) {
       uids = [...new Set((Array.isArray(b.units) ? b.units : []).filter((u) => { const x = unitIndex.get(u); return x && (allowU.has(u) || allowB.has(x.bid)); }))].slice(0, 80);
       if (!uids.length) return send(400, { error: "input", msg: "공부한 교재와 과를 골라 주세요." });
     }
-    const { picked, keep } = await makeSheet(pp, uids, who.sid);
+    const { picked, keep, lack } = await makeSheet(pp, uids, who.sid);
+    if (lack && lack.length) return send(409, { error: "few", msg: "시험 문제가 아직 다 준비되지 않았어요. 선생님께 알려 주세요. (" + lack.join(", ") + ")" });
     if (picked.length < Math.min(keep ? 1 : 5, pp.count)) return send(409, { error: "few", msg: "고른 범위에 문제가 부족해요. 과를 더 골라 주세요." });
     const sheet = buildSheet(picked, rngOf((pp.cfg.seed || pp.id) + "|" + who.sid + "|" + Date.now()), keep);
+    if (hasSections(pp)) {
+      assignPoints(sheet, pp.cfg.sections);
+      // 🎧 태블릿 듣기용 음원: 문제에 음원이 없으면 「음원 폴더/1.mp3, 2.mp3 …」(듣기 영역 안에서의 번호)
+      const dir = cleanAudioDir(pp.cfg.audioDir); let ln = 0;
+      if (dir) sheet.view.forEach((v) => { if (v.area === "듣기") { ln++; if (!v.audio) v.audio = encodeURI(dir + ln + ".mp3"); } });
+    }
     const t0 = Date.now(), dl = pp.minutes ? t0 + pp.minutes * 60000 : 0;
     const key = seal({ sid: who.sid, pid: pp.id, t0, dl, units: uids, items: sheet.key });
     return send(200, { ok: true, paper: pub(pp), questions: sheet.view, key, t0, deadline: dl, range: pp.mode === "choice" ? rangeText(uids) : pp.range });
@@ -1366,7 +1567,13 @@ module.exports = async function handler(req, res) {
     const answers = Array.isArray(b.answers) ? b.answers.slice(0, key.items.length) : [];
     const res1 = grade(key, answers);
     await judgeMeanings(key, res1); // 📒 뜻 쓰기: 비슷한 뜻은 AI가 확인해서 정답 처리
-    const right = res1.filter((x) => x.ok).length, total = key.items.length, pct = Math.round((right / total) * 1000) / 10;
+    const nRight = res1.filter((x) => x.ok).length, nTot = key.items.length;
+    const weighted = key.items.some((k) => k.pt > 0); // 🆕 배점이 있는 시험(반배정): 점수 = 맞힌 문제의 배점 합
+    const secPts = weighted ? key.items.reduce((t, k) => t + (k.pt || 0), 0) : 0, gotPts = weighted ? key.items.reduce((t, k, i) => t + (res1[i].ok ? (k.pt || 0) : 0), 0) : 0;
+    const right = weighted ? Math.round(gotPts * 10) / 10 : nRight, total = weighted ? Math.round(secPts * 10) / 10 : nTot, pct = Math.round((right / total) * 1000) / 10;
+    const areaSum = []; // 영역별 점수
+    if (weighted) { const m = new Map(); key.items.forEach((k, i) => { const e = m.get(k.ar) || { a: k.ar || "기타", r: 0, t: 0, p: 0, g: 0 }; e.t++; e.p += k.pt || 0; if (res1[i].ok) { e.r++; e.g += k.pt || 0; } m.set(k.ar, e); }); m.forEach((e) => areaSum.push({ a: e.a, r: e.r, t: e.t, g: Math.round(e.g * 10) / 10, p: Math.round(e.p * 10) / 10 })); }
+    const areaText = areaSum.map((e) => e.a + " " + e.g + "/" + e.p + "점(" + e.r + "/" + e.t + ")").join(" · ");
     const units = unitStats(key, res1);
     const mins = Math.max(1, Math.round((Date.now() - key.t0) / 60000)), late = key.dl && Date.now() > key.dl + 120000;
     const away = num(b.away, 0, 999, 0);
@@ -1374,29 +1581,29 @@ module.exports = async function handler(req, res) {
     units.forEach((u) => { const k = (u.c && u.c !== "단원" ? u.c : u.u); const e = chs.get(k) || { k, r: 0, t: 0 }; e.r += u.r; e.t += u.t; chs.set(k, e); });
     const weak = [...chs.values()].filter((u) => u.r / u.t < 0.6).sort((a, c) => a.r / a.t - c.r / c.t).slice(0, 4).map((u) => u.k + "(" + u.r + "/" + u.t + ")");
     const strong = [...chs.values()].filter((u) => u.t >= 2 && u.r === u.t).slice(0, 3).map((u) => u.k);
-    const comment = [weak.length ? "보충 필요: " + weak.join(", ") : "모든 단원 60% 이상", strong.length ? "강점: " + strong.join(", ") : "", late ? "⏰ 제한시간 초과 제출" : "", away ? "자리비움 " + away + "회" : ""].filter(Boolean).join(" · ");
+    const comment = [areaText ? "영역별: " + areaText : "", weak.length ? "보충 필요: " + weak.join(", ") : "모든 단원 60% 이상", strong.length ? "강점: " + strong.join(", ") : "", late ? "⏰ 제한시간 초과 제출" : "", away ? "자리비움 " + away + "회" : ""].filter(Boolean).join(" · ");
     const range = rangeText(key.units);
     let rec2 = "";
     if (pp.kind === "반배정시험" || (pp.cfg && pp.cfg.place)) {
       const st = await notion("pages/" + id32(who.sid), "GET"), grade = st ? P.sel(st, "학년") : "";
       rec2 = (placeRec(pp.cfg.place, grade, pct) || (pp.cfg.place ? "기준에 맞는 반 없음" : "기준 미설정")) + " (" + (grade || "학년 ?") + " · " + pct + "점)";
-      if (st) { const memo = P.text(st, "메모"); await notion("pages/" + id32(who.sid), "PATCH", { properties: { "메모": { rich_text: rt(clip((memo ? memo + "\n" : "") + today() + " " + pp.title + " " + right + "/" + total + " → 추천 " + rec2, 1900)) } } }); }
+      if (st) { const memo = P.text(st, "메모"); await notion("pages/" + id32(who.sid), "PATCH", { properties: { "메모": { rich_text: rt(clip((memo ? memo + "\n" : "") + today() + " " + pp.title + " " + right + "/" + total + (weighted ? "점" : "") + " → 추천 " + rec2, 1900)) } } }); }
     }
     const props = {
-      "시험명": { title: rt(pp.title) }, "학생": { relation: [{ id: uuid(who.sid) }] }, "시험지": { relation: [{ id: uuid(pp.id) }] }, "반": sel(pp.cls), "종류": sel(pp.kind || "월간평가"),
-      "시험일": { date: { start: today() } }, "시험 범위": { rich_text: rt(range) }, "점수": { number: right }, "만점": { number: total }, "오답 수": { number: total - right },
+      "시험명": { title: rt(pp.title) }, "학생": { relation: [{ id: uuid(who.sid) }] }, "시험지": { relation: [{ id: uuid(pp.id) }] }, "반": sel(targetOf(pp) ? who.cls || pp.cls : pp.cls), "종류": sel(pp.kind || "월간평가"),
+      "시험일": { date: { start: today() } }, "시험 범위": { rich_text: rt(range) }, "점수": { number: right }, "만점": { number: total }, "오답 수": { number: nTot - nRight },
       "종합 평가": sel(gradeOf(pct)), "코멘트": { rich_text: rt(comment) }, "응시 방식": sel("온라인"), "소요시간(분)": { number: mins }, "자리비움": { number: away },
       "단원 분석": { rich_text: rtLong(JSON.stringify(units)) },
       ...(rec2 ? { "추천 반": { rich_text: rt(rec2) } } : {}),
       // 분석 리포트용: 문항마다 영역·단원·학생 답·정답 (짧게)
       "문항 기록": { rich_text: rtLong(JSON.stringify(key.items.map((k, i) => {
         const ui = unitIndex.get(k.u) || {};
-        return { n: i + 1, u: k.u, a: ui.area || "", c: k.ch, un: k.unit, t: k.t, q: clip(k.q, 160), s: clip(k.sub, 160), o: k.opts ? k.opts.map((o) => clip(o, 60)) : undefined, g: clip(res1[i].given, 100), r: clip(k.answer, 120), ok: res1[i].ok, x: clip(k.exp, 160), ai: res1[i].ai || undefined };
+        return { n: i + 1, u: k.u, a: ui.area || "", c: k.ch, un: k.unit, t: k.t, q: clip(k.q, 160), s: clip(k.sub, 160), o: k.opts ? k.opts.map((o) => clip(o, 60)) : undefined, g: clip(res1[i].given, 100), r: clip(k.answer, 120), ok: res1[i].ok, x: clip(k.exp, 160), ai: res1[i].ai || undefined, p: k.pt || undefined };
       }))) },
     };
     const wrongs = key.items.map((k, i) => ({ k, r: res1[i], i })).filter((x) => !x.r.ok);
     const children = [
-      { object: "block", type: "callout", callout: { icon: { type: "emoji", emoji: pct >= 80 ? "🎉" : pct >= 60 ? "🙂" : "💪" }, rich_text: rt(who.name + " · " + right + " / " + total + "문항 (" + pct + "점) · " + gradeOf(pct) + " · 소요 " + mins + "분" + (away ? " · 자리비움 " + away + "회" : "") + "\n범위: " + range) } },
+      { object: "block", type: "callout", callout: { icon: { type: "emoji", emoji: pct >= 80 ? "🎉" : pct >= 60 ? "🙂" : "💪" }, rich_text: rt(who.name + " · " + (weighted ? right + " / " + total + "점" : right + " / " + total + "문항 (" + pct + "점)") + " · " + gradeOf(pct) + " · 소요 " + mins + "분" + (away ? " · 자리비움 " + away + "회" : "") + "\n범위: " + range) } },
       H("단원별 결과"),
       tableBlock([["교재", "단원", "맞은 수", "정답률"]].concat(units.map((u) => [u.b, (u.c ? u.c + " › " : "") + u.u, u.r + " / " + u.t, Math.round((u.r / u.t) * 100) + "%"])), true),
       H("문항별 결과"),
@@ -1405,11 +1612,11 @@ module.exports = async function handler(req, res) {
     if (wrongs.length) { children.push(H("틀린 문제 해설")); wrongs.slice(0, 40).forEach((w) => children.push({ object: "block", type: "bulleted_list_item", bulleted_list_item: { rich_text: rt((w.i + 1) + "번 · 정답 " + w.k.answer + (w.k.exp ? " — " + w.k.exp : "")) } })); }
     const pg = await notion("pages", "POST", { parent: { database_id: EXAM_DB() }, properties: props, children });
     if (!pg) return send(502, { error: "notion", msg: "결과를 저장하지 못했어요. 다시 제출해 주세요. (답은 그대로 남아 있어요)", debug: lastErr });
-    const out = { ok: true, show: pp.show, saved: true };
+    const out = { ok: true, show: pp.show, saved: true, areas: pp.show ? areaSum : undefined };
     if (pp.show) Object.assign(out, { result: { score: right, total, pct, grade: gradeOf(pct), comment, mins }, units, items: key.items.map((k, i) => ({ n: i + 1, q: k.q, sub: k.sub, given: res1[i].given, answer: k.answer, ok: res1[i].ok, exp: k.exp, unit: k.ch || k.unit, ai: res1[i].ai || "" })) });
     return send(200, out);
   }
   return send(400, { error: "action" });
 };
 // 시험용 내부 함수 (로컬 점검에서 씀)
-module.exports._t = { placeRec, expandAccept, shortOk, pick, buildSheet, seal, unseal, grade, unitStats, rangeText, loadCatalog, unitData, poolFor, rngOf };
+module.exports._t = { sectionPick, get unitIndex() { return unitIndex; }, custom, audioPath, AUDIO_TYPES, canTake, targetOf, targetText, cleanAudioDir, listenMode, cleanSections, assignPoints, hasSections, placeRec, expandAccept, shortOk, pick, buildSheet, seal, unseal, grade, unitStats, rangeText, loadCatalog, unitData, poolFor, rngOf };

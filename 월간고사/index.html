@@ -113,7 +113,8 @@
     document.getElementById("clsTitle").textContent = cls + " 시험";
     var box = document.getElementById("list");
     box.innerHTML = '<div class="msgbox">시험 목록을 불러오는 중…</div>';
-    post({ action: "s_list", cls: cls }).then(function (j) {
+    var me0 = null; try { me0 = JSON.parse(sessionStorage.getItem("cm-monthly-me") || "null"); } catch (e) {}
+    post({ action: "s_list", cls: cls, grade: me0 && me0.cls === cls ? me0.grade || "" : "" }).then(function (j) {
       if (!j.papers) { box.innerHTML = '<div class="msgbox">' + esc(j.msg || "목록을 불러오지 못했어요.") + "</div>"; return; }
       if (!j.papers.length) { box.innerHTML = '<div class="msgbox">아직 열린 시험이 없어요.<br>선생님이 시험을 열면 여기에 나타나요.</div>'; return; }
       // 시기별로 묶기 (최근 시기가 위로) — 반배정 시험은 학년별로, 내 학년이 맨 위
@@ -128,7 +129,7 @@
       box.innerHTML = order.map(function (k) {
         return '<section class="period"><h2>' + (place ? "" : "📅 ") + esc(k) + ' <span class="cnt">' + groups[k].length + "개</span></h2>" + groups[k].map(function (p) {
           var off = !!p.closed;
-          var meta = [p.grades && p.grades.length ? "대상 " + p.grades.join("·") : "", p.mode === "choice" ? "내가 배운 교재·과 선택" : (p.range || ""), p.count + "문항", p.minutes ? p.minutes + "분" : "시간 제한 없음", p.level].filter(Boolean).join(" · ");
+          var meta = [p.target ? "👥 공통 시험(" + (p.targetText || "") + ")" : "", p.grades && p.grades.length ? "대상 " + p.grades.join("·") : "", p.mode === "choice" ? "내가 배운 교재·과 선택" : (p.range || ""), p.count + "문항", p.minutes ? p.minutes + "분" : "시간 제한 없음", p.level].filter(Boolean).join(" · ");
           return '<a class="paper' + (off ? " off" : "") + '" href="exam.html?id=' + encodeURIComponent(p.id) + "&c=" + encodeURIComponent(cls) + '">' +
             '<span class="kind' + (({ "분기평가": " q", "단어시험": " v", "주간평가": " w", "반배정시험": " p" })[p.kind] || "") + '">' + esc(({ "분기평가": "분기", "주간평가": "주간", "단어시험": "단어", "반배정시험": "반배정" })[p.kind] || "월간") + "</span>" +
             '<span class="body"><div class="t">' + esc(p.title) + '</div><div class="m">' + esc(meta) + (p.end ? " · ~" + esc(p.end.slice(5).replace("-", "/")) : "") + "</div></span>" +

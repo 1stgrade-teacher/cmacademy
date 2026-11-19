@@ -211,6 +211,21 @@ function wordsFrom(qs) {
   });
   return [...map.entries()].map(([k, e]) => Object.assign(e, { w: e.w || k })).filter((e) => e.w && e.m);
 }
+// 「우리말 뜻 → 영어 쓰기」 서술형으로만 된 묶음(예: 숙어 엑셀을 문제지로 읽은 것)이면 단어장으로 바꿔요.
+// 그래야 단어시험에서 고른 유형(뜻 고르기·철자 빈칸 등)으로 나와요. 아니면 null.
+function asVocab(qs, uid) {
+  if (!Array.isArray(qs) || qs.length < 4 || qs.some((q) => q && q.vt)) return null;
+  const HAN = /[가-힣]/g, LAT = /[A-Za-z]/g;
+  const ok = qs.filter((q) => {
+    if (!q || q.type !== "short") return false;
+    const a = String(q.answer || "").trim(), s = String(q.sub || "").trim();
+    return a && s && a.length <= 60 && /^[A-Za-z]/.test(a) && (a.match(LAT) || []).length > (a.match(HAN) || []).length * 2 && (s.match(HAN) || []).length > 0 && !/\n/.test(s);
+  });
+  if (ok.length < qs.length * 0.8) return null;
+  const words = ok.map((q) => ({ w: String(q.answer).trim(), pos: "", m: String(q.sub).trim() }));
+  const out = build(words, uid).questions;
+  return out.length ? out : null;
+}
 // 이 단어장으로 만들 수 있는 유형별 문항 수
 function typeCounts(qs) { const c = {}; (qs || []).forEach((q) => { if (q.vt) c[q.vt] = (c[q.vt] || 0) + 1; }); return c; }
 
@@ -225,4 +240,4 @@ function boxShape(q) {
   return forms.every((f) => shape(f.toLowerCase()) === shape(forms[0].toLowerCase())) ? sh : null;
 }
 
-module.exports = { VTYPES, VT_IDS, build, spellExtrasFrom, wordsFrom, cleanWord, typeCounts, mwriteOk, mwriteFrom, meaningAccept, formsOf, isFormOf, mainForm, boxShape, _t: { findToken, inflect, koNorm } };
+module.exports = { VTYPES, VT_IDS, build, asVocab, spellExtrasFrom, wordsFrom, cleanWord, typeCounts, mwriteOk, mwriteFrom, meaningAccept, formsOf, isFormOf, mainForm, boxShape, _t: { findToken, inflect, koNorm } };
