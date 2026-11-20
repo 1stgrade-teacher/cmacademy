@@ -211,6 +211,20 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       </div>
       <div class="hint" id="modeHint"></div>
       </div>
+      <div style="margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px">
+        <label style="margin:0;font-weight:800"><input type="checkbox" id="eKbd"> ⌨️ 학생 화면에 자체 키보드 (자동완성 막기)</label>
+        <span class="hint" style="margin:0">휴대폰·태블릿에서 쓰기 문제(철자·뜻 쓰기·서술형)를 누르면 휴대폰 키보드 대신 시험용 키보드가 떠요. 단어 추천·자동완성이 없어요. 한글·영어·숫자 모두 돼요. (만든 학생: 김태호)</span>
+      </div>
+      <div id="omrBox" style="margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px">
+        <label style="margin:0;font-weight:800"><input type="checkbox" id="eOmrOn"> 📝 종이 시험지 + OMR 답만 입력</label>
+        <span class="hint" style="margin:0">문제는 종이로 풀고, 학생은 휴대폰·태블릿에서 번호마다 답만 눌러요. 제출하면 바로 채점·영역별 점수·추천 반이 나와요.</span>
+        <div id="omrIn" style="display:none;margin-top:8px">
+          <label class="l" for="eOmr">정답표 (한 줄 = 영역 하나 · 「영역 배점: 정답들」)</label>
+          <textarea id="eOmr" rows="6" placeholder="어휘 2: 3 1 4 2 5 1 2 3 4 5&#10;문법 3: 2 4 1 5 3 3 2 1 4 5&#10;독해 4: 1 2 3 4 5 2 3 4 1 2&#10;서술형 5: [have gone / has gone] [was built]"></textarea>
+          <div class="hint" style="margin:6px 0 0;line-height:1.7">· 영역 이름 다음 숫자 = <b>한 문제 배점</b> (없으면 1점) · 객관식 정답은 1~5 (①~⑤도 돼요, 3142처럼 붙여 써도 돼요) · 서술형은 <b>[정답]</b>, 정답이 여러 개면 <b>[답1 / 답2]</b><br>· 번호는 위에서부터 차례로 1번, 2번… 이에요. 종이 시험지 번호와 같은 순서로 써 주세요.</div>
+          <div id="eOmrSum" class="msg" style="margin:6px 0 0"></div>
+        </div>
+      </div>
       <div id="passBox" style="margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px">
         <b>✅ 통과 기준</b> <span class="hint" style="margin:0">정해 두면 📊 응시 결과에 <b>통과 / 재시험</b>이 자동으로 표시돼요. (단어시험에 쓰기 좋아요)</span>
         <div class="row" style="margin-top:8px;gap:8px"><select id="ePassBy" style="width:auto"><option value="">정하지 않음</option><option value="cnt">맞힌 개수가</option><option value="pct">100점 환산 점수가</option></select>
@@ -1678,6 +1692,36 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       " 학생들이 함께 봐요." + (t.newbies ? " <b>🆕 신입생(신입 반배정)도 함께 봐요.</b>" : "") + " 학생은 자기 반 시험 목록에서 보고, 기록은 학생의 실제 반으로 남아요. 📊 응시 결과에서 <b>전체 순위·평균</b>과 <b>반별 평균</b>을 한눈에 볼 수 있어요. " + (t.newbies ? "" : "(신입 반배정 학생은 빠져요. 같이 보려면 위 🆕 칸을 체크하세요)");
   }
   $("eTgt").onchange = function () { TG.type = this.value; tgtUi(); autoTitle(); };
+  // ---------- 📝 종이 시험지 + OMR ----------
+  function omrParse(t) {
+    var items = [], errs = [], NUMS = { "①": 1, "②": 2, "③": 3, "④": 4, "⑤": 5 };
+    String(t || "").split("\n").forEach(function (line, li) {
+      line = line.trim(); if (!line) return;
+      var m = line.match(/^([^:：]+?)\s*(?:\(?\s*(?:각\s*)?(\d+(?:\.\d+)?)\s*점?\s*\)?)?\s*[:：]\s*(.*)$/);
+      if (!m) { errs.push((li + 1) + "번째 줄: 「영역: 정답」 모양이 아니에요"); return; }
+      var ar = m[1].trim() || "문제", pt = m[2] ? +m[2] : 1;
+      (m[3].match(/\[[^\]]*\]|[①②③④⑤]|\d+/g) || []).forEach(function (tk) {
+        if (tk[0] === "[") { if (tk.slice(1, -1).trim()) items.push({ ar: ar, pt: pt, s: 1 }); return; }
+        if (NUMS[tk]) { items.push({ ar: ar, pt: pt }); return; }
+        tk.split("").forEach(function (d) { if (+d >= 1 && +d <= 5) items.push({ ar: ar, pt: pt }); else errs.push((li + 1) + "번째 줄: 객관식 정답은 1~5만 돼요 (" + d + ")"); });
+      });
+    });
+    return { items: items, errs: errs };
+  }
+  function omrOn() { return $("eOmrOn").checked; }
+  function omrUi() {
+    var on = omrOn(); $("omrIn").style.display = on ? "" : "none";
+    var rc = $("rangeTitle").closest(".card"); if (rc) rc.style.display = on ? "none" : "";
+    ["vtBox"].forEach(function (id) { var x = $(id); if (x) x.style.opacity = on ? ".4" : ""; });
+    if (!on) { $("eOmrSum").innerHTML = ""; return; }
+    var r = omrParse($("eOmr").value), by = {}, order = [];
+    r.items.forEach(function (x) { if (!by[x.ar]) { by[x.ar] = { n: 0, p: 0, s: 0 }; order.push(x.ar); } by[x.ar].n++; by[x.ar].p += x.pt; if (x.s) by[x.ar].s++; });
+    var tot = r.items.reduce(function (t, x) { return t + x.pt; }, 0);
+    $("eOmrSum").innerHTML = r.errs.length ? '<span class="er">' + esc(r.errs.slice(0, 3).join(" / ")) + "</span>" : !r.items.length ? '<span class="hint">정답표를 쓰면 여기에 영역별 문항 수와 총점이 나와요.</span>' :
+      '<span class="ok">총 ' + r.items.length + "문항 · " + Math.round(tot * 100) / 100 + "점 만점</span> — " + order.map(function (a) { var e = by[a], n0 = 0; r.items.forEach(function (x, i) { if (x.ar === a && !n0) n0 = i + 1; }); return esc(a) + " " + n0 + "~" + (n0 + e.n - 1) + "번 (" + e.n + "문항 · " + Math.round(e.p * 100) / 100 + "점" + (e.s ? " · 서술형 " + e.s : "") + ")"; }).join(" · ");
+  }
+  function omrLoad(o) { $("eOmrOn").checked = !!(o && o.text); $("eOmr").value = o && o.text ? o.text : ""; omrUi(); }
+  $("eOmrOn").onchange = omrUi; $("eOmr").oninput = omrUi;
   // ---------- ✅ 통과 기준 ----------
   function passOk(ps, r) { if (!ps || !r || r.missing || r.score == null) return null; return ps.by === "cnt" ? r.score >= ps.v : (r.total ? r.score / r.total * 100 : 0) >= ps.v - 1e-9; }
   function passText(ps) { return !ps ? "" : ps.by === "cnt" ? ps.v + "개 이상 맞히면 통과" : "100점 환산 " + ps.v + "점 이상이면 통과"; }
@@ -1799,7 +1843,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     setRadio("mode", "fixed"); setRadio("lv", "2"); $("eCount").value = 20; $("eMin").value = 30; $("eStatus").value = "준비중"; $("eShow").checked = true;
     $("eKind").value = "월간평가"; $("eStart").value = kst(); $("eEnd").value = kst(Date.now() + 6 * 864e5);
     $("aiVar").value = "0"; $("aiExtra").value = "0"; $("aiFill").checked = true;
-    $("ePlace").value = ""; PG = []; passLoad(null); tgtLoad(null); secUi(null, null); buildPeriods(); autoTitle(); modeUi(); buildBookFilters(); renderBooks(); vtUi(); placeUi(); $("pv").innerHTML = ""; $("pvInfo").textContent = ""; $("fillBtn").style.display = "none"; $("saveMsg").textContent = "";
+    $("ePlace").value = ""; PG = []; passLoad(null); omrLoad(null); $("eKbd").checked = true; tgtLoad(null); secUi(null, null); buildPeriods(); autoTitle(); modeUi(); buildBookFilters(); renderBooks(); vtUi(); placeUi(); $("pv").innerHTML = ""; $("pvInfo").textContent = ""; $("fillBtn").style.display = "none"; $("saveMsg").textContent = "";
   }
   function editPaper(p) {
     if (!mayEdit(p)) { alert((p.teacher || "다른 선생님") + "이(가) 만든 시험지예요. 📄 복제해서 써 주세요."); return; }
@@ -1812,7 +1856,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     $("eStart").value = p.start || ""; $("eEnd").value = p.end || ""; $("eStatus").value = p.status; $("eShow").checked = !!p.show;
     (p.cfg.units || []).forEach(function (u) { SEL[u] = 1; }); (p.cfg.books || []).forEach(function (b) { SELB[b] = 1; }); EXCL = (p.cfg.exclude || []).slice();
     var ai = (p.cfg && p.cfg.ai) || {}; $("aiVar").value = String(ai.variant || 0); $("aiExtra").value = String(ai.extra || 0); $("aiFill").checked = ai.fill !== false;
-    passLoad(p.cfg && p.cfg.pass); $("ePlace").value = (p.cfg && p.cfg.place) || ""; PG = (p.cfg && p.cfg.grades) || []; secUi(p.cfg && p.cfg.sections, p.cfg); modeUi(); renderBooks(); vtUi(); placeUi(); tab("edit");
+    passLoad(p.cfg && p.cfg.pass); omrLoad(p.cfg && p.cfg.omr); $("eKbd").checked = !!(p.cfg && p.cfg.kbd); $("ePlace").value = (p.cfg && p.cfg.place) || ""; PG = (p.cfg && p.cfg.grades) || []; secUi(p.cfg && p.cfg.sections, p.cfg); modeUi(); renderBooks(); vtUi(); placeUi(); tab("edit");
     if (p.takers) $("saveMsg").innerHTML = '<span class="er">⚠ 이미 ' + p.takers + "명이 응시했어요. 범위·문항을 바꾸면 학생마다 시험지가 달라질 수 있어요.</span>";
   }
   function actbarH() { var a = document.querySelector(".actbar"); if (a) document.documentElement.style.setProperty("--abh", a.offsetHeight + "px"); }
@@ -1829,7 +1873,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     setRadio("mode", p.mode); setRadio("lv", String(["기본", "표준", "심화"].indexOf(p.level) + 1)); $("eCount").value = p.count; $("eMin").value = p.minutes; $("eShow").checked = !!p.show;
     (c.units || []).forEach(function (u) { SEL[u] = 1; }); (c.books || []).forEach(function (b) { SELB[b] = 1; }); EXCL = (c.exclude || []).slice();
     var ai = c.ai || {}; $("aiVar").value = String(ai.variant || 0); $("aiExtra").value = String(ai.extra || 0); $("aiFill").checked = ai.fill !== false;
-    passLoad(c.pass); $("ePlace").value = c.place || ""; PG = (c.grades || []).slice(); secUi(c.sections, c);
+    passLoad(c.pass); omrLoad(c.omr); $("eKbd").checked = c.kbd !== false; $("ePlace").value = c.place || ""; PG = (c.grades || []).slice(); secUi(c.sections, c);
     PV_SEED = String(c.seed || p.id).replace(/[^\w-]/g, ""); // 원본과 같은 문제
     $("eTitle").value = p.title + " (복제)"; titleTouched = true;
     $("editTitle").textContent = "새 시험지 · 📄 " + p.title + " 복제";
@@ -1972,14 +2016,17 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   // ---------- 저장 ----------
   $("saveBtn").onclick = function () {
     var m = mode(), units = Object.keys(SEL), books = Object.keys(SELB);
-    if (m === "fixed" && !units.length) { $("saveMsg").innerHTML = '<span class="er">출제할 과를 골라 주세요.</span>'; return; }
-    if (m === "choice" && !units.length && !books.length) { $("saveMsg").innerHTML = '<span class="er">학생이 고를 교재를 골라 주세요.</span>'; return; }
-    if (vtNeed()) { $("saveMsg").innerHTML = '<span class="er">📒 단어 문제 유형을 하나 이상 체크해 주세요.</span>'; $("vtBox").scrollIntoView({ block: "center" }); return; }
-    if (!countOk()) { $("saveMsg").innerHTML = '<span class="er">문항 수는 5~100 사이로 넣어 주세요.</span>'; $("eCount").focus(); return; }
+    var OM = omrOn() ? omrParse($("eOmr").value) : null;
+    if (OM && (!OM.items.length || OM.errs.length)) { $("saveMsg").innerHTML = '<span class="er">📝 OMR 정답표를 확인해 주세요. ' + esc(OM.errs.slice(0, 2).join(" / ")) + "</span>"; $("eOmr").focus(); return; }
+    if (!OM && m === "fixed" && !units.length) { $("saveMsg").innerHTML = '<span class="er">출제할 과를 골라 주세요.</span>'; return; }
+    if (!OM && m === "choice" && !units.length && !books.length) { $("saveMsg").innerHTML = '<span class="er">학생이 고를 교재를 골라 주세요.</span>'; return; }
+    if (!OM && vtNeed()) { $("saveMsg").innerHTML = '<span class="er">📒 단어 문제 유형을 하나 이상 체크해 주세요.</span>'; $("vtBox").scrollIntoView({ block: "center" }); return; }
+    if (!OM && !countOk()) { $("saveMsg").innerHTML = '<span class="er">문항 수는 5~100 사이로 넣어 주세요.</span>'; $("eCount").focus(); return; }
     if ($("eStart").value && $("eEnd").value && $("eEnd").value < $("eStart").value) { $("saveMsg").innerHTML = '<span class="er">응시 마감일이 시작일보다 빨라요. 날짜를 확인해 주세요.</span>'; $("eEnd").focus(); return; }
     var paper = { id: EDIT && EDIT.id, title: $("eTitle").value.trim(), cls: tgtSend() ? COMMON_CLS : $("eCls").value, target: tgtSend(), kind: $("eKind").value, period: $("ePeriod").value, status: $("eStatus").value, mode: m, level: level(),
       count: +$("eCount").value, minutes: +$("eMin").value, start: $("eStart").value, end: $("eEnd").value, show: $("eShow").checked, units: units, books: books, exclude: EXCL, reseed: RESEED, vtypes: vtSend(), ai: aiSend(), place: $("ePlace").value.trim(), sections: $("eKind").value === "반배정시험" ? secGet() : [], listen: $("eListen").value, audioDir: $("eAudio").value.trim(), grades: $("eKind").value === "반배정시험" ? PG.slice() : [], pass: passSend() };
     if (!paper.title) { autoTitle(); paper.title = $("eTitle").value; }
+    paper.kbd = $("eKbd").checked; paper.omr = OM ? { text: $("eOmr").value } : null; if (OM) { paper.sections = []; paper.units = []; paper.mode = "fixed"; }
     if (paper.target && !tgtOk()) { $("saveMsg").innerHTML = '<span class="er">공통 시험을 볼 ' + ($("eTgt").value === "grade" ? "학년을" : "반을") + " 골라 주세요.</span>"; return; }
     if (!paper.target) lsSet("cm-teacher-cls", paper.cls);
     $("saveBtn").disabled = true; $("saveMsg").textContent = "저장하는 중…";

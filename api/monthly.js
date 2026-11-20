@@ -438,6 +438,37 @@ const cleanSections = (a) => (Array.isArray(a) ? a : []).slice(0, 8).map((x) => 
 // 🎧 듣기 방식: speaker(교실 스피커) | device(태블릿에서 듣기) | both(학생 화면에서 고르기)
 const listenMode = (c) => (c && ["speaker", "device", "both"].includes(c.listen) ? c.listen : c && c.speaker ? "speaker" : "device");
 const cleanAudioDir = (s) => { s = String(s || "").trim().slice(0, 200); if (!s) return ""; if (!/^\/[^<>"'`\\?#]*$/.test(s) || /\.\./.test(s) || /^\/\//.test(s)) return ""; return s.endsWith("/") ? s : s + "/"; };
+// 📝 OMR(종이 시험지 + 휴대폰으로 답만 입력): 설정.omr = { items: [{ ar: 영역, a: 0~4(객관식 정답 칸) | answer: 서술형 정답, accept: [], pt: 배점, n: 보기 수 }] }
+//   선생님이 적는 정답표(한 줄 = 영역 하나):  「문법 2: 3 1 4 2 5」  「독해 3점: 2 4 [have gone / has gone]」
+//   영역 이름 다음 숫자 = 한 문제 배점(없으면 1점). 숫자 1~5·①~⑤ = 객관식 정답, [ ] 안 = 서술형 정답(여러 개는 / 로)
+const OMR_NUM = { "①": 1, "②": 2, "③": 3, "④": 4, "⑤": 5 };
+function parseOmr(text) {
+  const items = [], errs = [];
+  String(text || "").replace(/\r/g, "").split("\n").forEach((line, li) => {
+    line = line.trim(); if (!line) return;
+    const m = line.match(/^([^:：]+?)\s*(?:\(?\s*(?:각\s*)?(\d+(?:\.\d+)?)\s*점?\s*\)?)?\s*[:：]\s*(.*)$/);
+    if (!m) { errs.push((li + 1) + "번째 줄: 「영역: 정답」 모양이 아니에요"); return; }
+    const ar = m[1].trim().slice(0, 20) || "문제", pt = m[2] ? Math.min(100, Number(m[2])) : 1;
+    const toks = m[3].match(/\[[^\]]*\]|[①②③④⑤]|\d+/g) || [];
+    toks.forEach((t) => {
+      if (t[0] === "[") { const acc = t.slice(1, -1).split("/").map((x) => x.trim()).filter(Boolean).slice(0, 8); if (acc.length) items.push({ ar, pt, answer: acc[0].slice(0, 200), accept: acc.map((x) => x.slice(0, 200)) }); return; }
+      if (OMR_NUM[t]) { items.push({ ar, pt, a: OMR_NUM[t] - 1 }); return; }
+      // 숫자: 「31425」처럼 붙여 써도 한 글자씩 (1~5)
+      String(t).split("").forEach((d) => { const v = +d; if (v >= 1 && v <= 5) items.push({ ar, pt, a: v - 1 }); else errs.push((li + 1) + "번째 줄: 객관식 정답은 1~5만 돼요 (" + d + ")"); });
+    });
+  });
+  return { items: items.slice(0, 150), errs };
+}
+const omrOf = (pp) => (pp && pp.cfg && pp.cfg.omr && Array.isArray(pp.cfg.omr.items) && pp.cfg.omr.items.length ? pp.cfg.omr : null);
+function omrSections(o) { const m = new Map(); o.items.forEach((x) => { const e = m.get(x.ar) || { area: x.ar, n: 0, pts: 0 }; e.n++; e.pts = Math.round((e.pts + (x.pt || 0)) * 100) / 100; m.set(x.ar, e); }); return [...m.values()]; }
+function omrSheet(o) {
+  const picked = o.items.map((x, i) => x.answer != null ? { id: "omr" + i, u: "", type: "short", q: (i + 1) + "번", sub: "", answer: x.answer, accept: x.accept && x.accept.length ? x.accept : [x.answer] }
+    : { id: "omr" + i, u: "", type: "mc", q: (i + 1) + "번", sub: "", opts: ["①", "②", "③", "④", "⑤"], ans: x.a });
+  const sheet = buildSheet(picked, () => 0.5, true);
+  sheet.key.forEach((k, i) => { const x = o.items[i]; Object.assign(k, { ar: x.ar, pt: x.pt || 1, unit: x.ar, ch: x.ar, book: "종이 시험지" }); });
+  sheet.view.forEach((v, i) => { v.area = o.items[i].ar; v.unit = ""; });
+  return sheet;
+}
 const hasSections = (pp) => !!(pp && pp.cfg && Array.isArray(pp.cfg.sections) && pp.cfg.sections.length);
 function sectionPick(pp, uids) {
   const ex = new Set(pp.cfg.exclude || []), picked = [], lack = [];
@@ -548,7 +579,7 @@ async function canTakeWho(pp, who) {
   const st = await notion("pages/" + id32(who.sid), "GET", null, 1);
   return !!st && canTake(pp, who.cls, P.sel(st, "학년"));
 }
-const pub = (pp) => ({ skip: Array.isArray(pp.cfg && pp.cfg.skip) ? pp.cfg.skip : [], sections: (hasSections(pp) ? pp.cfg.sections : []), speaker: listenMode(pp.cfg) === "speaker", listen: listenMode(pp.cfg), target: targetOf(pp), targetText: targetText(targetOf(pp)), pass: passCfg(pp.cfg && pp.cfg.pass), grades: (pp.cfg && Array.isArray(pp.cfg.grades) ? pp.cfg.grades : []), id: pp.id, title: pp.title, cls: pp.cls, kind: pp.kind, period: pp.period, status: pp.status, mode: pp.mode, level: LEVELS[pp.level - 1], count: pp.count, minutes: pp.minutes, start: pp.start, end: pp.end, range: pp.mode === "fixed" ? pp.range : "", teacher: pp.teacher || "" });
+const pub = (pp) => ({ kbd: !!(pp.cfg && pp.cfg.kbd), omr: !!omrOf(pp), skip: Array.isArray(pp.cfg && pp.cfg.skip) ? pp.cfg.skip : [], sections: (hasSections(pp) ? pp.cfg.sections : []), speaker: listenMode(pp.cfg) === "speaker", listen: listenMode(pp.cfg), target: targetOf(pp), targetText: targetText(targetOf(pp)), pass: passCfg(pp.cfg && pp.cfg.pass), grades: (pp.cfg && Array.isArray(pp.cfg.grades) ? pp.cfg.grades : []), id: pp.id, title: pp.title, cls: pp.cls, kind: pp.kind, period: pp.period, status: pp.status, mode: pp.mode, level: LEVELS[pp.level - 1], count: pp.count, minutes: pp.minutes, start: pp.start, end: pp.end, range: pp.mode === "fixed" ? pp.range : "", teacher: pp.teacher || "" });
 async function getPaper(id) {
   const p = await notion("pages/" + id32(id), "GET");
   if (!p || p.archived || normId(p.parent && p.parent.database_id) !== normId(PAPER_DB())) return null;
@@ -946,21 +977,26 @@ module.exports = async function handler(req, res) {
       const mode = f.mode === "choice" ? "choice" : "fixed";
       const units = (Array.isArray(f.units) ? f.units : []).filter((u) => unitIndex.has(u)).slice(0, 300);
       const books = (Array.isArray(f.books) ? f.books : []).filter((x) => allBooks().some((bk) => bk.id === x)).slice(0, 40);
-      if (mode === "fixed" && !units.length) return send(400, { error: "input", msg: "출제할 과를 골라 주세요." });
+      const omr = f.omr && typeof f.omr === "object" ? parseOmr(f.omr.text) : null; // 📝 종이 시험지(OMR)
+      if (omr && !omr.items.length) return send(400, { error: "input", msg: "OMR 정답표를 써 주세요. (예: 문법 2: 3 1 4 2 5)" });
+      if (omr && omr.errs.length) return send(400, { error: "input", msg: "정답표를 확인해 주세요 — " + omr.errs.slice(0, 3).join(" / ") });
+      if (!omr && mode === "fixed" && !units.length) return send(400, { error: "input", msg: "출제할 과를 골라 주세요." });
       if (mode === "choice" && !books.length && !units.length) return send(400, { error: "input", msg: "학생이 고를 수 있는 교재를 골라 주세요." });
       let old = null;
       if (f.id) { old = await getPaper(f.id); if (!old) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." }); }
       if (old && !me.master && old.teacher && old.teacher !== me.name) return send(403, { error: "owner", msg: old.teacher + "이(가) 만든 시험지는 고칠 수 없어요. 목록에서 📄 복제해서 써 주세요." });
       const cfg = { units, books, seed: (old && old.cfg.seed) || clip(f.seed, 40).replace(/[^\w-]/g, "") || hash(Date.now() + title, 12), exclude: (Array.isArray(f.exclude) ? f.exclude : (old && old.cfg.exclude) || []).slice(0, 500), vtypes: (Array.isArray(f.vtypes) ? f.vtypes : (old && old.cfg.vtypes) || []).filter((t) => V.VT_IDS.includes(t)), place: clip(f.place != null ? f.place : (old && old.cfg.place) || "", 1500), sections: f.sections !== undefined ? cleanSections(f.sections) : (old && old.cfg.sections) || [], speaker: f.listen !== undefined ? f.listen === "speaker" : f.speaker !== undefined ? !!f.speaker : !!(old && old.cfg.speaker), listen: f.listen !== undefined ? listenMode({ listen: f.listen }) : (old && old.cfg.listen) || undefined, audioDir: f.audioDir !== undefined ? cleanAudioDir(f.audioDir) : (old && old.cfg.audioDir) || "", grades: (Array.isArray(f.grades) ? f.grades : (old && old.cfg.grades) || []).filter((g) => GRADES.includes(g)),
         pass: f.pass !== undefined ? passCfg(f.pass) || undefined : (old && passCfg(old.cfg.pass)) || undefined,
+        omr: omr ? { text: clip(f.omr.text, 6000), items: omr.items } : undefined,
+        kbd: f.kbd !== undefined ? !!f.kbd : old ? old.cfg.kbd : undefined, // ⌨️ 학생 화면 자체 키보드 (자동완성 막기)
         skip: old && Array.isArray(old.cfg.skip) && old.cfg.skip.length ? old.cfg.skip : undefined, // 「다른 시험으로 봄」 학생은 고쳐 저장해도 그대로
         target: f.target !== undefined ? targetOf({ cfg: { target: f.target } }) || undefined : (old && targetOf(old)) || undefined,
         ai: f.ai && typeof f.ai === "object" ? { fill: f.ai.fill !== false, variant: num(f.ai.variant, 0, 100, 0), extra: num(f.ai.extra, 0, 60, 0) } : (old && old.cfg.ai) || undefined };
       if (f.reseed) cfg.seed = hash(Date.now() + Math.random(), 12);
-      const range = mode === "fixed" ? rangeText(units) : "학생 선택: " + (books.length ? allBooks().filter((x) => books.includes(x.id)).map((x) => x.name).join(", ") : rangeText(units));
+      const range = omr ? "종이 시험지 (OMR 답 입력) · " + omrSections(cfg.omr).map((x) => x.area + " " + x.n).join(" · ") : mode === "fixed" ? rangeText(units) : "학생 선택: " + (books.length ? allBooks().filter((x) => books.includes(x.id)).map((x) => x.name).join(", ") : rangeText(units));
       const props = {
         "시험명": { title: rt(title) }, "반": sel(cfg.target ? COMMON_CLS : cls), "종류": sel(kind), "시기": sel(clip(f.period, 40)), "상태": sel(STATUSES.includes(f.status) ? f.status : "준비중"),
-        "출제 방식": sel(MODES[mode]), "난이도": sel(LEVELS[num(f.level, 1, 3, 2) - 1]), "문항 수": { number: cfg.sections.length ? Math.min(100, cfg.sections.reduce((t, x) => t + x.n, 0)) : num(f.count, 5, 100, 20) }, "제한시간(분)": { number: num(f.minutes, 0, 180, 40) },
+        "출제 방식": sel(MODES[mode]), "난이도": sel(LEVELS[num(f.level, 1, 3, 2) - 1]), "문항 수": { number: cfg.omr ? cfg.omr.items.length : cfg.sections.length ? Math.min(100, cfg.sections.reduce((t, x) => t + x.n, 0)) : num(f.count, 5, 100, 20) }, "제한시간(분)": { number: num(f.minutes, 0, 180, 40) },
         "결과 공개": { checkbox: !!f.show }, "시험 범위": { rich_text: rt(range) }, "설정": { rich_text: rtLong(JSON.stringify(cfg)) },
         "시험 기간": /^\d{4}-\d{2}-\d{2}$/.test(f.start || "") ? { date: { start: f.start, end: /^\d{4}-\d{2}-\d{2}$/.test(f.end || "") && f.end > f.start ? f.end : null } } : { date: null },
       };
@@ -1472,7 +1508,8 @@ module.exports = async function handler(req, res) {
   }
   if (act === "s_list") { // 반의 시험 목록 (시기별)
     const cls = clip(b.cls, 40); if (!cls) return send(400, { error: "input" });
-    const rows = await queryAll(PAPER_DB(), { filter: { and: [{ or: [{ property: "반", select: { equals: cls } }, { property: "반", select: { equals: COMMON_CLS } }] }, { or: [{ property: "상태", select: { equals: "응시중" } }, { property: "상태", select: { equals: "마감" } }] }] }, sorts: [{ timestamp: "created_time", direction: "descending" }] }, 2);
+    // 반 이름으로 노션에 묻지 않아요: 시험지 DB에 아직 그 반 선택지가 없으면(그 반 전용 시험을 한 번도 안 만든 반) 노션이 오류를 내서 공통 시험까지 안 보였어요
+    const rows = await queryAll(PAPER_DB(), { filter: { or: [{ property: "상태", select: { equals: "응시중" } }, { property: "상태", select: { equals: "마감" } }] }, sorts: [{ timestamp: "created_time", direction: "descending" }] }, 4);
     if (!rows) return send(502, { error: "notion", msg: "시험 목록을 불러오지 못했어요." });
     const grade = T_GRADES.includes(b.grade) ? b.grade : "";
     return send(200, { ok: true, papers: rows.map(readPaper).filter((pp) => canTake(pp, cls, grade)).map((pp) => Object.assign(pub(pp), { closed: openNow(pp) })) });
@@ -1554,6 +1591,11 @@ module.exports = async function handler(req, res) {
       uids = [...new Set((Array.isArray(b.units) ? b.units : []).filter((u) => { const x = unitIndex.get(u); return x && (allowU.has(u) || allowB.has(x.bid)); }))].slice(0, 80);
       if (!uids.length) return send(400, { error: "input", msg: "공부한 교재와 과를 골라 주세요." });
     }
+    if (omrOf(pp)) { // 📝 종이 시험지 + OMR 답만 입력
+      const sheet = omrSheet(omrOf(pp)), t0 = Date.now(), dl = pp.minutes ? t0 + pp.minutes * 60000 : 0;
+      const key = seal({ sid: who.sid, pid: pp.id, t0, dl, units: [], items: sheet.key });
+      return send(200, { ok: true, paper: Object.assign(pub(pp), { sections: omrSections(omrOf(pp)) }), questions: sheet.view, key, t0, deadline: dl, range: "종이 시험지" });
+    }
     const { picked, keep, lack } = await makeSheet(pp, uids, who.sid);
     if (lack && lack.length) return send(409, { error: "few", msg: "시험 문제가 아직 다 준비되지 않았어요. 선생님께 알려 주세요. (" + lack.join(", ") + ")" });
     if (picked.length < Math.min(keep ? 1 : 5, pp.count)) return send(409, { error: "few", msg: "고른 범위에 문제가 부족해요. 과를 더 골라 주세요." });
@@ -1630,4 +1672,4 @@ module.exports = async function handler(req, res) {
   return send(400, { error: "action" });
 };
 // 시험용 내부 함수 (로컬 점검에서 씀)
-module.exports._t = { sectionPick, get unitIndex() { return unitIndex; }, custom, audioPath, AUDIO_TYPES, canTake, targetOf, targetText, cleanAudioDir, listenMode, cleanSections, assignPoints, hasSections, placeRec, expandAccept, shortOk, pick, buildSheet, seal, unseal, grade, unitStats, rangeText, loadCatalog, unitData, poolFor, rngOf };
+module.exports._t = { parseOmr, omrSheet, sectionPick, get unitIndex() { return unitIndex; }, custom, audioPath, AUDIO_TYPES, canTake, targetOf, targetText, cleanAudioDir, listenMode, cleanSections, assignPoints, hasSections, placeRec, expandAccept, shortOk, pick, buildSheet, seal, unseal, grade, unitStats, rangeText, loadCatalog, unitData, poolFor, rngOf };
