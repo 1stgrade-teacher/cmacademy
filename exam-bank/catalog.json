@@ -1,5 +1,5 @@
 {
- "built": "2026-11-19T04:53:28.764Z",
+ "built": "2026-11-20T04:20:27.547Z",
  "books": [
   {
    "id": "bb391852c",
@@ -1449,41 +1449,221 @@
    "grade": "중등",
    "name": "Grammar Inside Level 1",
    "path": "문법/grammar-inside-lv1",
-   "n": 16,
+   "n": 74,
    "chapters": [
     {
-     "key": "chapter01",
-     "name": "Chapter 01 be동사",
+     "key": "_",
+     "name": "단원",
      "units": [
       {
-       "id": "u41d16eac",
-       "name": "Unit 01 be동사의 현재형과 과거형",
-       "n": 3,
+       "id": "ufca9d5e2",
+       "name": "Ch01-01 be동사의 현재형과 과거형 — 일등급샘",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u73c8e913",
+       "name": "Ch01-02 be동사의 부정문과 의문문 — 일등급샘",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u1d1fe418",
+       "name": "Ch02-01 일반동사의 현재형 — 일등급샘",
+       "n": 1,
        "lv": 1
       },
       {
-       "id": "ub79a258b",
-       "name": "Unit 02 be동사의 부정문과 의문문",
-       "n": 4,
-       "lv": 1.3
-      }
-     ]
-    },
-    {
-     "key": "chapter02",
-     "name": "Chapter 02 일반동사",
-     "units": [
+       "id": "ub99f7585",
+       "name": "Ch02-02 일반동사의 과거형 — 일등급샘",
+       "n": 2,
+       "lv": 1.5
+      },
       {
-       "id": "u3652cba0",
-       "name": "Unit 01 일반동사의 현재형",
-       "n": 4,
+       "id": "u276a603c",
+       "name": "Ch02-03 일반동사의 부정문 — 일등급샘",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "ufce6726c",
+       "name": "Ch02-04 일반동사의 의문문 — 일등급샘",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u8ec75057",
+       "name": "Ch03-01 can, may — 일등급샘",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u2febd5a5",
+       "name": "Ch03-02 must, have to, should — 일등급샘",
+       "n": 2,
        "lv": 2
       },
       {
-       "id": "u025a155c",
-       "name": "Unit 02 일반동사의 과거형",
-       "n": 5,
-       "lv": 1.4
+       "id": "ue0903e4d",
+       "name": "Ch04-01 진행형 — 일등급샘",
+       "n": 2,
+       "lv": 2.5
+      },
+      {
+       "id": "uc3bae01c",
+       "name": "Ch04-02 will, be going to — 일등급샘",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u8ae44a72",
+       "name": "Ch05-01 감각동사 + 형용사 — 일등급샘",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u5143fde3",
+       "name": "Ch05-02 목적어가 두 개 필요한 동사 — 일등급샘",
+       "n": 2,
+       "lv": 2
+      },
+      {
+       "id": "u034964d5",
+       "name": "Ch05-03 목적격 보어가 필요한 동사 — 일등급샘",
+       "n": 3,
+       "lv": 2
+      },
+      {
+       "id": "u346a4c68",
+       "name": "Ch06-01 셀 수 있는 명사 vs. 셀 수 없는 명사 — 일등급샘",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u62da4c4f",
+       "name": "Ch06-02 관사 — 일등급샘",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "ufd94cc9d",
+       "name": "Ch07-01 인칭대명사, 재귀대명사 — 일등급샘",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u2504d0f2",
+       "name": "Ch07-02 this, that, it — 일등급샘",
+       "n": 1,
+       "lv": 2
+      },
+      {
+       "id": "u5fccf367",
+       "name": "Ch07-03 one, some, any — 일등급샘",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u4f857bb3",
+       "name": "Ch08-01 형용사 — 일등급샘",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "ub9d58a84",
+       "name": "Ch08-02 부사 — 일등급샘",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "u4f3ff854",
+       "name": "Ch08-03 원급, 비교급, 최상급 — 일등급샘",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u713eeddd",
+       "name": "Ch09-01 to부정사의 명사적 용법 — 일등급샘",
+       "n": 2,
+       "lv": 2
+      },
+      {
+       "id": "ubcdaec54",
+       "name": "Ch09-02 to부정사의 형용사적, 부사적 용법 — 일등급샘",
+       "n": 3,
+       "lv": 2
+      },
+      {
+       "id": "u55ec282b",
+       "name": "Ch09-03 동명사의 역할 — 일등급샘",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u809b1ec1",
+       "name": "Ch10-01 장소를 나타내는 전치사 — 일등급샘",
+       "n": 3,
+       "lv": 2.3
+      },
+      {
+       "id": "u81b99739",
+       "name": "Ch10-02 시간을 나타내는 전치사 — 일등급샘",
+       "n": 2,
+       "lv": 2
+      },
+      {
+       "id": "uc218009e",
+       "name": "Ch10-03 기타 전치사 — 일등급샘",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u0fcd080b",
+       "name": "Ch11-01 and, but, or, so — 일등급샘",
+       "n": 2,
+       "lv": 2
+      },
+      {
+       "id": "u6e5f5b68",
+       "name": "Ch11-02 when, before, after, until — 일등급샘",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "uab48793f",
+       "name": "Ch11-03 because, if, that — 일등급샘",
+       "n": 2,
+       "lv": 2
+      },
+      {
+       "id": "u8e95b078",
+       "name": "Ch12-01 의문사 who, what, which — 일등급샘",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u83c1589c",
+       "name": "Ch12-02 의문사 when, where, why, how — 일등급샘",
+       "n": 3,
+       "lv": 2
+      },
+      {
+       "id": "u4a340d65",
+       "name": "Ch12-03 부가의문문 — 일등급샘",
+       "n": 2,
+       "lv": 2
+      },
+      {
+       "id": "ude010e99",
+       "name": "Ch12-04 부정의문문, 선택의문문 — 일등급샘",
+       "n": 2,
+       "lv": 1.5
+      },
+      {
+       "id": "u1f7cddd5",
+       "name": "Ch12-05 명령문, 감탄문 — 일등급샘",
+       "n": 2,
+       "lv": 2
       }
      ]
     }
@@ -5482,6 +5662,278 @@
    ]
   },
   {
+   "id": "b6ff5439d",
+   "area": "독해",
+   "grade": "중등",
+   "name": "What’s Reading 왓츠 리딩 80B",
+   "path": "독해/whatsreading-80b",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "_",
+     "name": "단원",
+     "units": [
+      {
+       "id": "u5ab7389d",
+       "name": "What's Reading 80 B Ch1 Unit 01",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc0818ac0",
+       "name": "What's Reading 80 B Ch1 Unit 02",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub7278569",
+       "name": "What's Reading 80 B Ch1 Unit 03",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2238d510",
+       "name": "What's Reading 80 B Ch1 Unit 04",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u52c16ff2",
+       "name": "What's Reading 80 B Ch2 Unit 01",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u64638c98",
+       "name": "What's Reading 80 B Ch2 Unit 02",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ua240a1dc",
+       "name": "What's Reading 80 B Ch2 Unit 03",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u42f4d0a4",
+       "name": "What's Reading 80 B Ch2 Unit 04",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8a9e8ef2",
+       "name": "What's Reading 80 B Ch3 Unit 01",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "udc099658",
+       "name": "What's Reading 80 B Ch3 Unit 02",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u84905bbb",
+       "name": "What's Reading 80 B Ch3 Unit 03",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue3a7912f",
+       "name": "What's Reading 80 B Ch3 Unit 04",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub439c273",
+       "name": "What's Reading 80 B Ch4 Unit 01",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u7401c081",
+       "name": "What's Reading 80 B Ch4 Unit 02",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u972a64b5",
+       "name": "What's Reading 80 B Ch4 Unit 03",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u7753a93d",
+       "name": "What's Reading 80 B Ch4 Unit 04",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2131ed81",
+       "name": "What's Reading 80 B Ch5 Unit 01",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ua5de2fee",
+       "name": "What's Reading 80 B Ch5 Unit 02",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue0236ad8",
+       "name": "What's Reading 80 B Ch5 Unit 03",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u93a20164",
+       "name": "What's Reading 80 B Ch5 Unit 04",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bf11513ec",
+   "area": "독해",
+   "grade": "중등",
+   "name": "What’s Reading 왓츠 리딩 90A",
+   "path": "독해/whatsreading-90a",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "_",
+     "name": "단원",
+     "units": [
+      {
+       "id": "u9d6eef89",
+       "name": "What's Reading 90 A Ch1 Unit 01",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud9bae553",
+       "name": "What's Reading 90 A Ch1 Unit 02",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u7a2f8f87",
+       "name": "What's Reading 90 A Ch1 Unit 03",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u005ccf45",
+       "name": "What's Reading 90 A Ch1 Unit 04",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u25aa16b1",
+       "name": "What's Reading 90 A Ch2 Unit 01",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u486ccd60",
+       "name": "What's Reading 90 A Ch2 Unit 02",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc78fd05c",
+       "name": "What's Reading 90 A Ch2 Unit 03",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8462e21f",
+       "name": "What's Reading 90 A Ch2 Unit 04",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5cac1228",
+       "name": "What's Reading 90 A Ch3 Unit 01",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1a056488",
+       "name": "What's Reading 90 A Ch3 Unit 02",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc322be3e",
+       "name": "What's Reading 90 A Ch3 Unit 03",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u78e06c4a",
+       "name": "What's Reading 90 A Ch3 Unit 04",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1d04bae4",
+       "name": "What's Reading 90 A Ch4 Unit 01",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue632dd54",
+       "name": "What's Reading 90 A Ch4 Unit 02",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8a24b060",
+       "name": "What's Reading 90 A Ch4 Unit 03",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ucf0e6db1",
+       "name": "What's Reading 90 A Ch4 Unit 04",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ua1d54535",
+       "name": "What's Reading 90 A Ch5 Unit 01",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u15262ee4",
+       "name": "What's Reading 90 A Ch5 Unit 02",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uef76a9a8",
+       "name": "What's Reading 90 A Ch5 Unit 03",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ucd85bd0d",
+       "name": "What's Reading 90 A Ch5 Unit 04",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
    "id": "b80d47539",
    "area": "독해",
    "grade": "중등",
@@ -5634,6 +6086,332 @@
       {
        "id": "u3c3882f6",
        "name": "04 A Sheep in the Garden",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bbab42297",
+   "area": "독해",
+   "grade": "중등",
+   "name": "What’s Reading 왓츠 리딩 100A",
+   "path": "독해/whatsreading-100a",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "chapter01",
+     "name": "Chapter 1 Colors",
+     "units": [
+      {
+       "id": "u144cc1a2",
+       "name": "01 Crayola",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u9d370a82",
+       "name": "02 A Box of Crayons",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud35df833",
+       "name": "03 How Do You Feel?",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uaf3b53c6",
+       "name": "04 The Colorful World",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter02",
+     "name": "Chapter 2 Difference",
+     "units": [
+      {
+       "id": "u554dad06",
+       "name": "01-1 Friends on the Other Side (Part 1)",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ude779b5a",
+       "name": "01-2 Friends on the Other Side (Part 2)",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue2c5a25f",
+       "name": "02 Table Manners",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u02056cb9",
+       "name": "03 Different Shapes of Us",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u65530a90",
+       "name": "04 Jim Crow Laws",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter03",
+     "name": "Chapter 3 Environment",
+     "units": [
+      {
+       "id": "u1e2cff1a",
+       "name": "01 Fuels around Us",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ufec7da4e",
+       "name": "02 The Warm Arctic",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u12043be8",
+       "name": "03 Footprints in the Air",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u78d664ae",
+       "name": "04 New Journey!",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter04",
+     "name": "Chapter 4 Creatures",
+     "units": [
+      {
+       "id": "u37bff110",
+       "name": "01 Life in the Rainforests",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u25923e7c",
+       "name": "02 Liam’s Insect Report",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ucf7addbd",
+       "name": "03 Under the Sea",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u9e0876e3",
+       "name": "04 A River Dolphin",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter05",
+     "name": "Chapter 5 Unfairness",
+     "units": [
+      {
+       "id": "u697a020b",
+       "name": "01 Mike and Milly’s Bird",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4aa1b59d",
+       "name": "02 Money for Hard Work",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0a5d6368",
+       "name": "03 Banana Farmers",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub6b1ad23",
+       "name": "04 Countries Full of Waste",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b7674af6d",
+   "area": "독해",
+   "grade": "중등",
+   "name": "What’s Reading 왓츠 리딩 100B",
+   "path": "독해/whatsreading-100b",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "chapter01",
+     "name": "Chapter 1 Desert",
+     "units": [
+      {
+       "id": "u4591afaf",
+       "name": "01 A Beautiful Cactus",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc5e3fef2",
+       "name": "02 A Giant Cactus in the Desert",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud3b778c6",
+       "name": "03 The Sad Mother Volcano",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u24fb623b",
+       "name": "04 The Land Full of Salt",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter02",
+     "name": "Chapter 2 Fungi",
+     "units": [
+      {
+       "id": "ucf145760",
+       "name": "01 Come and Find Me!",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "udce8dc49",
+       "name": "02 Old Friends of Humans",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u7f3d54da",
+       "name": "03 A Day in the Woods",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5b210d80",
+       "name": "04 Poison in Nature",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter03",
+     "name": "Chapter 3 Soul Culture",
+     "units": [
+      {
+       "id": "u60898e43",
+       "name": "01 Soul Food",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u98a9111d",
+       "name": "02 Hush Puppies",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue4e54c13",
+       "name": "03 A Special Day in June",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uca8c5b49",
+       "name": "04 Ray Charles",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter04",
+     "name": "Chapter 4 Trees",
+     "units": [
+      {
+       "id": "u3e3b2395",
+       "name": "01 A Mysterious Bat",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u83017723",
+       "name": "02 Thankful Trees",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u33c3d380",
+       "name": "03 Apollo and Daphne",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u497b8d24",
+       "name": "04 Christmas Tree",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter05",
+     "name": "Chapter 5 Relations",
+     "units": [
+      {
+       "id": "u3b974859",
+       "name": "01 The Giraffe in Paris",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u66178d33",
+       "name": "02 A Gift for a Country",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u63b165e5",
+       "name": "03 My Dad’s Work",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ufa30911b",
+       "name": "04 Yi Ye",
        "n": 0,
        "lv": null
       }
@@ -7643,7 +8421,7 @@
    "grade": "중2",
    "name": "중2 시사김 교과서",
    "path": "교과서/중2/시사김",
-   "n": 0,
+   "n": 17,
    "chapters": [
     {
      "key": "5과",
@@ -7758,6 +8536,18 @@
      "name": "Lesson 7",
      "units": [
       {
+       "id": "uad708952",
+       "name": "문법 · 중2 시사(김) 7과 문법1 분사 — 분사",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u352efbd2",
+       "name": "문법 · 중2 시사(김) 7과 문법2 의문사+to부정사 — 의문사+to부정사",
+       "n": 4,
+       "lv": 2
+      },
+      {
        "id": "u2136d97e",
        "name": "본문 · 중2 2학기 기말고사 중2 시사(김) 7과 본문1",
        "n": 0,
@@ -7787,6 +8577,18 @@
      "key": "8과",
      "name": "Lesson 8",
      "units": [
+      {
+       "id": "ua7ae86ff",
+       "name": "문법 · 중2 시사(김) 8과 문법1 간접의문문 — 간접의문문",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u40deb8c5",
+       "name": "문법 · 중2 시사(김) 8과 문법2 지각동사 — 지각동사",
+       "n": 5,
+       "lv": 1.8
+      },
       {
        "id": "ufd721bf7",
        "name": "본문 · 중2 2학기 기말고사 중2 시사(김) 8과 본문1",
