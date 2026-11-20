@@ -1,5 +1,5 @@
 {
- "built": "2026-11-20T04:20:27.547Z",
+ "built": "2026-11-20T04:45:52.856Z",
  "books": [
   {
    "id": "bb391852c",
@@ -1452,216 +1452,282 @@
    "n": 74,
    "chapters": [
     {
-     "key": "_",
-     "name": "단원",
+     "key": "chapter01",
+     "name": "Chapter 01 be동사",
      "units": [
       {
-       "id": "ufca9d5e2",
-       "name": "Ch01-01 be동사의 현재형과 과거형 — 일등급샘",
+       "id": "u41d16eac",
+       "name": "Unit 01 be동사의 현재형과 과거형",
        "n": 2,
        "lv": 1.5
       },
       {
-       "id": "u73c8e913",
-       "name": "Ch01-02 be동사의 부정문과 의문문 — 일등급샘",
+       "id": "ub79a258b",
+       "name": "Unit 02 be동사의 부정문과 의문문",
        "n": 2,
        "lv": 1.5
-      },
+      }
+     ]
+    },
+    {
+     "key": "chapter02",
+     "name": "Chapter 02 일반동사",
+     "units": [
       {
-       "id": "u1d1fe418",
-       "name": "Ch02-01 일반동사의 현재형 — 일등급샘",
+       "id": "u3652cba0",
+       "name": "Unit 01 일반동사의 현재형",
        "n": 1,
        "lv": 1
       },
       {
-       "id": "ub99f7585",
-       "name": "Ch02-02 일반동사의 과거형 — 일등급샘",
+       "id": "u025a155c",
+       "name": "Unit 02 일반동사의 과거형",
        "n": 2,
        "lv": 1.5
       },
       {
-       "id": "u276a603c",
-       "name": "Ch02-03 일반동사의 부정문 — 일등급샘",
+       "id": "uac2cb95d",
+       "name": "Unit 03 일반동사의 부정문",
        "n": 2,
        "lv": 1.5
       },
       {
-       "id": "ufce6726c",
-       "name": "Ch02-04 일반동사의 의문문 — 일등급샘",
+       "id": "u49c40055",
+       "name": "Unit 04 일반동사의 의문문",
+       "n": 2,
+       "lv": 1.5
+      }
+     ]
+    },
+    {
+     "key": "chapter03",
+     "name": "Chapter 03 조동사",
+     "units": [
+      {
+       "id": "u68e3c105",
+       "name": "Unit 01 can, may",
        "n": 2,
        "lv": 1.5
       },
       {
-       "id": "u8ec75057",
-       "name": "Ch03-01 can, may — 일등급샘",
-       "n": 2,
-       "lv": 1.5
-      },
-      {
-       "id": "u2febd5a5",
-       "name": "Ch03-02 must, have to, should — 일등급샘",
+       "id": "u9a7a35fb",
+       "name": "Unit 02 must, have to, should",
        "n": 2,
        "lv": 2
-      },
+      }
+     ]
+    },
+    {
+     "key": "chapter04",
+     "name": "Chapter 04 진행형과 미래시제",
+     "units": [
       {
-       "id": "ue0903e4d",
-       "name": "Ch04-01 진행형 — 일등급샘",
+       "id": "u6ed6c796",
+       "name": "Unit 01 진행형",
        "n": 2,
        "lv": 2.5
       },
       {
-       "id": "uc3bae01c",
-       "name": "Ch04-02 will, be going to — 일등급샘",
+       "id": "ub10c52e2",
+       "name": "Unit 02 will, be going to",
+       "n": 2,
+       "lv": 1.5
+      }
+     ]
+    },
+    {
+     "key": "chapter05",
+     "name": "Chapter 05 동사의 종류",
+     "units": [
+      {
+       "id": "u47f08709",
+       "name": "Unit 01 감각동사 + 형용사",
        "n": 2,
        "lv": 1.5
       },
       {
-       "id": "u8ae44a72",
-       "name": "Ch05-01 감각동사 + 형용사 — 일등급샘",
-       "n": 2,
-       "lv": 1.5
-      },
-      {
-       "id": "u5143fde3",
-       "name": "Ch05-02 목적어가 두 개 필요한 동사 — 일등급샘",
+       "id": "udadeb5bc",
+       "name": "Unit 02 목적어가 두 개 필요한 동사",
        "n": 2,
        "lv": 2
       },
       {
-       "id": "u034964d5",
-       "name": "Ch05-03 목적격 보어가 필요한 동사 — 일등급샘",
+       "id": "u12950626",
+       "name": "Unit 03 목적격 보어가 필요한 동사",
        "n": 3,
        "lv": 2
-      },
+      }
+     ]
+    },
+    {
+     "key": "chapter06",
+     "name": "Chapter 06 명사와 관사",
+     "units": [
       {
-       "id": "u346a4c68",
-       "name": "Ch06-01 셀 수 있는 명사 vs. 셀 수 없는 명사 — 일등급샘",
+       "id": "u12903aa6",
+       "name": "Unit 01 셀 수 있는 명사 vs. 셀 수 없는 명사",
        "n": 2,
        "lv": 1.5
       },
       {
-       "id": "u62da4c4f",
-       "name": "Ch06-02 관사 — 일등급샘",
+       "id": "u30ef6e8d",
+       "name": "Unit 02 관사",
+       "n": 2,
+       "lv": 1.5
+      }
+     ]
+    },
+    {
+     "key": "chapter07",
+     "name": "Chapter 07 대명사",
+     "units": [
+      {
+       "id": "u03c734f2",
+       "name": "Unit 01 인칭대명사, 재귀대명사",
        "n": 2,
        "lv": 1.5
       },
       {
-       "id": "ufd94cc9d",
-       "name": "Ch07-01 인칭대명사, 재귀대명사 — 일등급샘",
-       "n": 2,
-       "lv": 1.5
-      },
-      {
-       "id": "u2504d0f2",
-       "name": "Ch07-02 this, that, it — 일등급샘",
+       "id": "uc8548d64",
+       "name": "Unit 02 this, that, it",
        "n": 1,
        "lv": 2
       },
       {
-       "id": "u5fccf367",
-       "name": "Ch07-03 one, some, any — 일등급샘",
+       "id": "ucb881a09",
+       "name": "Unit 03 one, some, any",
        "n": 2,
        "lv": 1.5
-      },
+      }
+     ]
+    },
+    {
+     "key": "chapter08",
+     "name": "Chapter 08 형용사와 부사",
+     "units": [
       {
-       "id": "u4f857bb3",
-       "name": "Ch08-01 형용사 — 일등급샘",
+       "id": "ue78deb7a",
+       "name": "Unit 01 형용사",
        "n": 3,
        "lv": 1.7
       },
       {
-       "id": "ub9d58a84",
-       "name": "Ch08-02 부사 — 일등급샘",
+       "id": "u138240f9",
+       "name": "Unit 02 부사",
        "n": 3,
        "lv": 1.7
       },
       {
-       "id": "u4f3ff854",
-       "name": "Ch08-03 원급, 비교급, 최상급 — 일등급샘",
+       "id": "u60ca614c",
+       "name": "Unit 03 원급, 비교급, 최상급",
        "n": 2,
        "lv": 1.5
-      },
+      }
+     ]
+    },
+    {
+     "key": "chapter09",
+     "name": "Chapter 09 to부정사와 동명사",
+     "units": [
       {
-       "id": "u713eeddd",
-       "name": "Ch09-01 to부정사의 명사적 용법 — 일등급샘",
+       "id": "u504ba0af",
+       "name": "Unit 01 to부정사의 명사적 용법",
        "n": 2,
        "lv": 2
       },
       {
-       "id": "ubcdaec54",
-       "name": "Ch09-02 to부정사의 형용사적, 부사적 용법 — 일등급샘",
+       "id": "u3b502e4b",
+       "name": "Unit 02 to부정사의 형용사적, 부사적 용법",
        "n": 3,
        "lv": 2
       },
       {
-       "id": "u55ec282b",
-       "name": "Ch09-03 동명사의 역할 — 일등급샘",
+       "id": "u6c3d7267",
+       "name": "Unit 03 동명사의 역할",
        "n": 2,
        "lv": 1.5
-      },
+      }
+     ]
+    },
+    {
+     "key": "chapter10",
+     "name": "Chapter 10 전치사",
+     "units": [
       {
-       "id": "u809b1ec1",
-       "name": "Ch10-01 장소를 나타내는 전치사 — 일등급샘",
+       "id": "u34ad8901",
+       "name": "Unit 01 장소를 나타내는 전치사",
        "n": 3,
        "lv": 2.3
       },
       {
-       "id": "u81b99739",
-       "name": "Ch10-02 시간을 나타내는 전치사 — 일등급샘",
+       "id": "u47be8e5a",
+       "name": "Unit 02 시간을 나타내는 전치사",
        "n": 2,
        "lv": 2
       },
       {
-       "id": "uc218009e",
-       "name": "Ch10-03 기타 전치사 — 일등급샘",
+       "id": "u8b50326c",
+       "name": "Unit 03 기타 전치사",
        "n": 2,
        "lv": 1.5
-      },
+      }
+     ]
+    },
+    {
+     "key": "chapter11",
+     "name": "Chapter 11 접속사",
+     "units": [
       {
-       "id": "u0fcd080b",
-       "name": "Ch11-01 and, but, or, so — 일등급샘",
+       "id": "u958a0904",
+       "name": "Unit 01 and, but, or, so",
        "n": 2,
        "lv": 2
       },
       {
-       "id": "u6e5f5b68",
-       "name": "Ch11-02 when, before, after, until — 일등급샘",
+       "id": "ud45fc663",
+       "name": "Unit 02 when, before, after, until",
        "n": 2,
        "lv": 1.5
       },
       {
-       "id": "uab48793f",
-       "name": "Ch11-03 because, if, that — 일등급샘",
+       "id": "u17a74950",
+       "name": "Unit 03 because, if, that",
        "n": 2,
        "lv": 2
-      },
+      }
+     ]
+    },
+    {
+     "key": "chapter12",
+     "name": "Chapter 12 의문문, 명령문, 감탄문",
+     "units": [
       {
-       "id": "u8e95b078",
-       "name": "Ch12-01 의문사 who, what, which — 일등급샘",
+       "id": "u4daf91be",
+       "name": "Unit 01 의문사 who, what, which",
        "n": 2,
        "lv": 1.5
       },
       {
-       "id": "u83c1589c",
-       "name": "Ch12-02 의문사 when, where, why, how — 일등급샘",
+       "id": "u64794820",
+       "name": "Unit 02 의문사 when, where, why, how",
        "n": 3,
        "lv": 2
       },
       {
-       "id": "u4a340d65",
-       "name": "Ch12-03 부가의문문 — 일등급샘",
+       "id": "u7ebc7db8",
+       "name": "Unit 03 부가의문문",
        "n": 2,
        "lv": 2
       },
       {
-       "id": "ude010e99",
-       "name": "Ch12-04 부정의문문, 선택의문문 — 일등급샘",
+       "id": "u74350e0e",
+       "name": "Unit 04 부정의문문, 선택의문문",
        "n": 2,
        "lv": 1.5
       },
       {
-       "id": "u1f7cddd5",
-       "name": "Ch12-05 명령문, 감탄문 — 일등급샘",
+       "id": "u8e9ba6f9",
+       "name": "Unit 05 명령문, 감탄문",
        "n": 2,
        "lv": 2
       }
