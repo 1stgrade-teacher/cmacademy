@@ -1507,7 +1507,8 @@ module.exports = async function handler(req, res) {
   }
   if (act === "s_list") { // 반의 시험 목록 (시기별)
     const cls = clip(b.cls, 40); if (!cls) return send(400, { error: "input" });
-    const rows = await queryAll(PAPER_DB(), { filter: { and: [{ or: [{ property: "반", select: { equals: cls } }, { property: "반", select: { equals: COMMON_CLS } }] }, { or: [{ property: "상태", select: { equals: "응시중" } }, { property: "상태", select: { equals: "마감" } }] }] }, sorts: [{ timestamp: "created_time", direction: "descending" }] }, 2);
+    // 반 이름으로 노션에 묻지 않아요: 시험지 DB에 아직 그 반 선택지가 없으면(그 반 전용 시험을 한 번도 안 만든 반) 노션이 오류를 내서 공통 시험까지 안 보였어요
+    const rows = await queryAll(PAPER_DB(), { filter: { or: [{ property: "상태", select: { equals: "응시중" } }, { property: "상태", select: { equals: "마감" } }] }, sorts: [{ timestamp: "created_time", direction: "descending" }] }, 4);
     if (!rows) return send(502, { error: "notion", msg: "시험 목록을 불러오지 못했어요." });
     const grade = T_GRADES.includes(b.grade) ? b.grade : "";
     return send(200, { ok: true, papers: rows.map(readPaper).filter((pp) => canTake(pp, cls, grade)).map((pp) => Object.assign(pub(pp), { closed: openNow(pp) })) });
