@@ -1,5 +1,5 @@
 {
- "built": "2026-11-17T10:49:10.410Z",
+ "built": "2026-11-19T04:53:28.764Z",
  "books": [
   {
    "id": "bb391852c",
@@ -5162,38 +5162,38 @@
    ]
   },
   {
-   "id": "bf24cf120",
+   "id": "ba4244bb2",
    "area": "독해",
    "grade": "중등",
-   "name": "What’s Reading 왓츠 리딩 70A",
-   "path": "독해/whatsreading-70a",
+   "name": "What’s Reading 왓츠 리딩 70B",
+   "path": "독해/whatsreading-70b",
    "n": 0,
    "chapters": [
     {
      "key": "chapter01",
-     "name": "Chapter 1 Panda",
+     "name": "Chapter 1 Pizza",
      "units": [
       {
-       "id": "uee93901f",
-       "name": "01 Cute Bears",
+       "id": "u490ebffa",
+       "name": "01 Pizza for Dinner",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u2d4605e7",
-       "name": "02 Panda and Polar Bear",
+       "id": "u04263c7a",
+       "name": "02 Rossi’s Pizza",
        "n": 0,
        "lv": null
       },
       {
-       "id": "uc59396be",
-       "name": "03 Pandas in the World",
+       "id": "u19c6bf6a",
+       "name": "03 The First Pizza",
        "n": 0,
        "lv": null
       },
       {
-       "id": "uf2d31992",
-       "name": "04 Sad Pandas",
+       "id": "u11f9f378",
+       "name": "04 The Hen’s Pizza",
        "n": 0,
        "lv": null
       }
@@ -5201,29 +5201,29 @@
     },
     {
      "key": "chapter02",
-     "name": "Chapter 2 Red Food",
+     "name": "Chapter 2 Rights",
      "units": [
       {
-       "id": "u2bb26e53",
-       "name": "01 I Like the Sun!",
+       "id": "u6a1620af",
+       "name": "01 Pants for Change!",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u650e7039",
-       "name": "02 Poison Apple",
+       "id": "ub6a170dc",
+       "name": "02 Margaret the Painter",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u0ab34cd6",
-       "name": "03 A Ball in the Garden",
+       "id": "ud478e189",
+       "name": "03 Letter to the School",
        "n": 0,
        "lv": null
       },
       {
-       "id": "uffead4a6",
-       "name": "04 Delicious Sauce!",
+       "id": "u122636a2",
+       "name": "04 Games for Everyone",
        "n": 0,
        "lv": null
       }
@@ -5231,29 +5231,29 @@
     },
     {
      "key": "chapter03",
-     "name": "Chapter 3 Cow",
+     "name": "Chapter 3 Sports",
      "units": [
       {
-       "id": "ub9211ce5",
-       "name": "01 Granfather’s Farm",
+       "id": "u4f435ee5",
+       "name": "01 Sports Day",
        "n": 0,
        "lv": null
       },
       {
-       "id": "uf20126c5",
-       "name": "02 Charging Bull",
+       "id": "u93655627",
+       "name": "02 Who is the Winner?",
        "n": 0,
        "lv": null
       },
       {
-       "id": "uc5e79802",
-       "name": "03 Raju and the Farmer",
+       "id": "u3d1c091d",
+       "name": "03 The Olympic Games",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u2d64d331",
-       "name": "04 Cows: Giving Animals",
+       "id": "u4d36ab60",
+       "name": "04 The Olympic Flag",
        "n": 0,
        "lv": null
       }
@@ -5261,29 +5261,29 @@
     },
     {
      "key": "chapter04",
-     "name": "Chapter 4 The Sun",
+     "name": "Chapter 4 Violin",
      "units": [
       {
-       "id": "ue330d163",
-       "name": "01 Maui vs. the Sun God",
+       "id": "u51c2f4de",
+       "name": "01 Beautiful Music",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u21891a02",
-       "name": "02 Teotihuacan",
+       "id": "ubefe1562",
+       "name": "02 Niccolo Paganini",
        "n": 0,
        "lv": null
       },
       {
-       "id": "uc75dc88f",
-       "name": "03 Fox Fire",
+       "id": "u7455e501",
+       "name": "03 The Mouse Violinist",
        "n": 0,
        "lv": null
       },
       {
-       "id": "ub312439f",
-       "name": "04 How’s the Weather?",
+       "id": "uc4923d2f",
+       "name": "04 Antonio Stradivari",
        "n": 0,
        "lv": null
       }
@@ -5291,29 +5291,349 @@
     },
     {
      "key": "chapter05",
-     "name": "Chapter 5 Slowness",
+     "name": "Chapter 5 Places",
      "units": [
       {
-       "id": "u8b9518fe",
-       "name": "01 My Special Pet",
+       "id": "u307d7b8a",
+       "name": "01 The Rainbow Village",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u0f880e64",
-       "name": "02 Slow Sloth",
+       "id": "uc2f06c3b",
+       "name": "02 Amazing Pamukkale",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u25adfe04",
-       "name": "03 A Young Man and Apples",
+       "id": "uddef8a5c",
+       "name": "03 Welcome to Manarola!",
        "n": 0,
        "lv": null
       },
       {
-       "id": "uf60297e0",
-       "name": "04 A Slow Life",
+       "id": "u1cf85573",
+       "name": "04 A Special Market",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bf656ce51",
+   "area": "독해",
+   "grade": "중등",
+   "name": "What’s Reading 왓츠 리딩 80A",
+   "path": "독해/whatsreading-80a",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "chapter01",
+     "name": "Chapter 1 Friends",
+     "units": [
+      {
+       "id": "u8e93fb8f",
+       "name": "01 Friends Help",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u746439b0",
+       "name": "02 Becoming Good Friends",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u824f1545",
+       "name": "03 Happy Together",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u60ca09d9",
+       "name": "04 Ford and Edison",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter02",
+     "name": "Chapter 2 Fashion",
+     "units": [
+      {
+       "id": "u85f66ea0",
+       "name": "01 Olivia’s Fashion",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u46135ee7",
+       "name": "02 Special Clothing",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ucd46f698",
+       "name": "03 Kate’s Ao Dai",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4346bf52",
+       "name": "04 Coco Chanel",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter03",
+     "name": "Chapter 3 Lightning",
+     "units": [
+      {
+       "id": "u7b41fd46",
+       "name": "01 Weather Change",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u9de8ea75",
+       "name": "02 Powerful Lightning",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uee4089b3",
+       "name": "03 Dangerous Lightning",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud9b7c5ab",
+       "name": "04 Airplanes and Lightning",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter04",
+     "name": "Chapter 4 Dessert",
+     "units": [
+      {
+       "id": "u326fae25",
+       "name": "01 Grandmother’s Secret",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1e684ee7",
+       "name": "02 Sweet Foods",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u70d60aba",
+       "name": "03 A Delicious Dessert!",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ufa2ef3f0",
+       "name": "04 Sweet Almond Cookies",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter05",
+     "name": "Chapter 5 Poison",
+     "units": [
+      {
+       "id": "ue23d2ecf",
+       "name": "01 Dangerous Poison",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue7b155ff",
+       "name": "02 The Hydra",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1ad3e375",
+       "name": "03 The Power of Poison",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8ac74009",
+       "name": "04 Everybody Likes Foxgloves",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b80d47539",
+   "area": "독해",
+   "grade": "중등",
+   "name": "What’s Reading 왓츠 리딩 90B",
+   "path": "독해/whatsreading-90b",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "chapter01",
+     "name": "Chapter 1 Literature",
+     "units": [
+      {
+       "id": "u2ee8a05b",
+       "name": "01 Making a New Book",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4ea9aa99",
+       "name": "02 What Is Fiction?",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u76630021",
+       "name": "03 An Interview with Marley",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue53ffa40",
+       "name": "04 See New Worlds",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter02",
+     "name": "Chapter 2 Plants",
+     "units": [
+      {
+       "id": "ua8b334c9",
+       "name": "01 A Garden in the Classroom",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u9736cd8c",
+       "name": "02 Food for Plants",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u3e7740f1",
+       "name": "03 God and a Baobab Tree",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4c46d7ea",
+       "name": "04 A Strange Tree",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter03",
+     "name": "Chapter 3 Energy",
+     "units": [
+      {
+       "id": "u948eecea",
+       "name": "01 Energy around Us",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ua140e6cb",
+       "name": "02 A Small Change",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uac564586",
+       "name": "03 The Power to Be Warm",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc0358c25",
+       "name": "04 Muffins in the Oven",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter04",
+     "name": "Chapter 4 Tour",
+     "units": [
+      {
+       "id": "ue7c59f45",
+       "name": "01 Niagara Falls",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u28a366b4",
+       "name": "02 Travel to Dark Places",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub53d0e6a",
+       "name": "03 Family Trip to Guam",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u636a251a",
+       "name": "04 The Sea of Stars",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter05",
+     "name": "Chapter 5 Unique",
+     "units": [
+      {
+       "id": "u82ba149a",
+       "name": "01 Two Becomes One",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u805ca9c2",
+       "name": "02 A Colorful Festival",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4117ccad",
+       "name": "03 Wild Places",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u3c3882f6",
+       "name": "04 A Sheep in the Garden",
        "n": 0,
        "lv": null
       }
