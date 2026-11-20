@@ -101,6 +101,7 @@
 <div class="wrap" id="app"><div class="box"><p class="sub">불러오는 중…</p></div></div>
 </div>
 <script src="../letterbox.js"></script>
+<script src="../keypad.js"></script>
 <script>
 (function () {
   var API = "/api/monthly", app = document.getElementById("app");
@@ -297,6 +298,10 @@
       var host = q.type === "short" && q.box && window.LetterBox ? app.querySelector('.sabox[data-i="' + i + '"]') : null; if (!host) return;
       LB[i] = LetterBox.create(host, q.box, { value: run.answers[i], onChange: function (v) { if (LB[i].typed()) run.answers[i] = v; else delete run.answers[i]; save(); document.getElementById("q" + i).classList.toggle("done", answered(i)); status(); } });
     });
+    // ⌨️ 자체 키보드: 휴대폰 키보드의 자동완성·단어 추천을 막아요 (선생님이 시험지에서 켠 경우, 터치 화면에서만)
+    if (run.paper && run.paper.kbd && window.KeyPad) setTimeout(function () {
+      KeyPad.attach(app, { langOf: function (el) { var q = Q[+el.getAttribute("data-i")] || {}; return q.vt === "mwrite" || (/뜻|우리말|한국어/.test(q.q || "") && !/영어|철자|스펠링|영단어/.test(q.q || "")) ? "ko" : "en"; } });
+    }, 0);
     Array.prototype.forEach.call(app.querySelectorAll(".sa"), function (inp) {
       inp.oninput = function () { var i = +inp.getAttribute("data-i"); if (inp.value.trim()) run.answers[i] = inp.value; else delete run.answers[i]; save(); document.getElementById("q" + i).classList.toggle("done", !!inp.value.trim()); status(); };
     });
@@ -346,6 +351,7 @@
       submit(false);
     };
     function submit(auto) {
+      if (window.KeyPad) KeyPad.hide();
       if (sending) return; sending = true;
       var btn = document.getElementById("submit"); btn.disabled = true; btn.textContent = auto ? "시간 종료 · 제출하는 중…" : "채점하는 중…";
       var answers = Q.map(function (q, i) { var a = run.answers[i]; if (a == null) return null; return q.type === "arrange" ? a.map(function (k) { return q.words[k]; }) : a; });

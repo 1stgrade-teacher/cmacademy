@@ -211,6 +211,10 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       </div>
       <div class="hint" id="modeHint"></div>
       </div>
+      <div style="margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px">
+        <label style="margin:0;font-weight:800"><input type="checkbox" id="eKbd"> ⌨️ 학생 화면에 자체 키보드 (자동완성 막기)</label>
+        <span class="hint" style="margin:0">휴대폰·태블릿에서 쓰기 문제(철자·뜻 쓰기·서술형)를 누르면 휴대폰 키보드 대신 시험용 키보드가 떠요. 단어 추천·자동완성이 없어요. 한글·영어·숫자 모두 돼요. (만든 학생: 김태호)</span>
+      </div>
       <div id="omrBox" style="margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px">
         <label style="margin:0;font-weight:800"><input type="checkbox" id="eOmrOn"> 📝 종이 시험지 + OMR 답만 입력</label>
         <span class="hint" style="margin:0">문제는 종이로 풀고, 학생은 휴대폰·태블릿에서 번호마다 답만 눌러요. 제출하면 바로 채점·영역별 점수·추천 반이 나와요.</span>
@@ -1839,7 +1843,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     setRadio("mode", "fixed"); setRadio("lv", "2"); $("eCount").value = 20; $("eMin").value = 30; $("eStatus").value = "준비중"; $("eShow").checked = true;
     $("eKind").value = "월간평가"; $("eStart").value = kst(); $("eEnd").value = kst(Date.now() + 6 * 864e5);
     $("aiVar").value = "0"; $("aiExtra").value = "0"; $("aiFill").checked = true;
-    $("ePlace").value = ""; PG = []; passLoad(null); omrLoad(null); tgtLoad(null); secUi(null, null); buildPeriods(); autoTitle(); modeUi(); buildBookFilters(); renderBooks(); vtUi(); placeUi(); $("pv").innerHTML = ""; $("pvInfo").textContent = ""; $("fillBtn").style.display = "none"; $("saveMsg").textContent = "";
+    $("ePlace").value = ""; PG = []; passLoad(null); omrLoad(null); $("eKbd").checked = true; tgtLoad(null); secUi(null, null); buildPeriods(); autoTitle(); modeUi(); buildBookFilters(); renderBooks(); vtUi(); placeUi(); $("pv").innerHTML = ""; $("pvInfo").textContent = ""; $("fillBtn").style.display = "none"; $("saveMsg").textContent = "";
   }
   function editPaper(p) {
     if (!mayEdit(p)) { alert((p.teacher || "다른 선생님") + "이(가) 만든 시험지예요. 📄 복제해서 써 주세요."); return; }
@@ -1852,7 +1856,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     $("eStart").value = p.start || ""; $("eEnd").value = p.end || ""; $("eStatus").value = p.status; $("eShow").checked = !!p.show;
     (p.cfg.units || []).forEach(function (u) { SEL[u] = 1; }); (p.cfg.books || []).forEach(function (b) { SELB[b] = 1; }); EXCL = (p.cfg.exclude || []).slice();
     var ai = (p.cfg && p.cfg.ai) || {}; $("aiVar").value = String(ai.variant || 0); $("aiExtra").value = String(ai.extra || 0); $("aiFill").checked = ai.fill !== false;
-    passLoad(p.cfg && p.cfg.pass); omrLoad(p.cfg && p.cfg.omr); $("ePlace").value = (p.cfg && p.cfg.place) || ""; PG = (p.cfg && p.cfg.grades) || []; secUi(p.cfg && p.cfg.sections, p.cfg); modeUi(); renderBooks(); vtUi(); placeUi(); tab("edit");
+    passLoad(p.cfg && p.cfg.pass); omrLoad(p.cfg && p.cfg.omr); $("eKbd").checked = !!(p.cfg && p.cfg.kbd); $("ePlace").value = (p.cfg && p.cfg.place) || ""; PG = (p.cfg && p.cfg.grades) || []; secUi(p.cfg && p.cfg.sections, p.cfg); modeUi(); renderBooks(); vtUi(); placeUi(); tab("edit");
     if (p.takers) $("saveMsg").innerHTML = '<span class="er">⚠ 이미 ' + p.takers + "명이 응시했어요. 범위·문항을 바꾸면 학생마다 시험지가 달라질 수 있어요.</span>";
   }
   function actbarH() { var a = document.querySelector(".actbar"); if (a) document.documentElement.style.setProperty("--abh", a.offsetHeight + "px"); }
@@ -1869,7 +1873,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     setRadio("mode", p.mode); setRadio("lv", String(["기본", "표준", "심화"].indexOf(p.level) + 1)); $("eCount").value = p.count; $("eMin").value = p.minutes; $("eShow").checked = !!p.show;
     (c.units || []).forEach(function (u) { SEL[u] = 1; }); (c.books || []).forEach(function (b) { SELB[b] = 1; }); EXCL = (c.exclude || []).slice();
     var ai = c.ai || {}; $("aiVar").value = String(ai.variant || 0); $("aiExtra").value = String(ai.extra || 0); $("aiFill").checked = ai.fill !== false;
-    passLoad(c.pass); omrLoad(c.omr); $("ePlace").value = c.place || ""; PG = (c.grades || []).slice(); secUi(c.sections, c);
+    passLoad(c.pass); omrLoad(c.omr); $("eKbd").checked = c.kbd !== false; $("ePlace").value = c.place || ""; PG = (c.grades || []).slice(); secUi(c.sections, c);
     PV_SEED = String(c.seed || p.id).replace(/[^\w-]/g, ""); // 원본과 같은 문제
     $("eTitle").value = p.title + " (복제)"; titleTouched = true;
     $("editTitle").textContent = "새 시험지 · 📄 " + p.title + " 복제";
@@ -2022,7 +2026,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     var paper = { id: EDIT && EDIT.id, title: $("eTitle").value.trim(), cls: tgtSend() ? COMMON_CLS : $("eCls").value, target: tgtSend(), kind: $("eKind").value, period: $("ePeriod").value, status: $("eStatus").value, mode: m, level: level(),
       count: +$("eCount").value, minutes: +$("eMin").value, start: $("eStart").value, end: $("eEnd").value, show: $("eShow").checked, units: units, books: books, exclude: EXCL, reseed: RESEED, vtypes: vtSend(), ai: aiSend(), place: $("ePlace").value.trim(), sections: $("eKind").value === "반배정시험" ? secGet() : [], listen: $("eListen").value, audioDir: $("eAudio").value.trim(), grades: $("eKind").value === "반배정시험" ? PG.slice() : [], pass: passSend() };
     if (!paper.title) { autoTitle(); paper.title = $("eTitle").value; }
-    paper.omr = OM ? { text: $("eOmr").value } : null; if (OM) { paper.sections = []; paper.units = []; paper.mode = "fixed"; }
+    paper.kbd = $("eKbd").checked; paper.omr = OM ? { text: $("eOmr").value } : null; if (OM) { paper.sections = []; paper.units = []; paper.mode = "fixed"; }
     if (paper.target && !tgtOk()) { $("saveMsg").innerHTML = '<span class="er">공통 시험을 볼 ' + ($("eTgt").value === "grade" ? "학년을" : "반을") + " 골라 주세요.</span>"; return; }
     if (!paper.target) lsSet("cm-teacher-cls", paper.cls);
     $("saveBtn").disabled = true; $("saveMsg").textContent = "저장하는 중…";
