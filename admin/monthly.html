@@ -210,6 +210,11 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         <div><label class="l">제한시간(분, 0=없음)</label><input id="eMin" type="number" min="0" max="180" value="30"></div>
       </div>
       <div class="hint" id="modeHint"></div>
+      <div id="selfBox" style="display:none;margin-top:10px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px;background:#F7FBFB">
+        <label style="margin:0;font-weight:800"><input type="checkbox" id="eSelf"> 📝 자율 단어시험 (학생이 언제든 여러 번 · 볼 때마다 새 문제)</label>
+        <div class="row" style="margin-top:6px;gap:8px;align-items:center"><span class="hint" style="margin:0">하루에</span><input id="ePerDay" type="number" min="0" max="50" value="3" style="width:70px"><span class="hint" style="margin:0">번까지 (0 = 무제한)</span></div>
+        <div class="hint" style="margin:6px 0 0;line-height:1.7">학생 시험 목록에 이 시험이 항상 떠 있고, 학생이 아래에서 고른 단어장 안에서 <b>그날 볼 Day를 직접 골라</b> 시험을 봐요. 문항 수·유형·제한시간·통과 기준은 이 시험지 설정대로, 문제는 매번 새로 뽑아요. 기록은 모두 남아서 📊 응시 결과에서 날짜·범위별로 볼 수 있어요. 응시 기간 끝 날짜를 넉넉히(예: 학기 끝) 잡아 두세요.</div>
+      </div>
       </div>
       <div style="margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px">
         <label style="margin:0;font-weight:800"><input type="checkbox" id="eKbd"> ⌨️ 학생 화면에 자체 키보드 (자동완성 막기)</label>
@@ -1778,6 +1783,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       : "🎯 <b>선생님 지정</b>: 고른 과에서 반 전체가 <b>같은 문제</b>를 봐요 (문제·보기 순서만 학생마다 섞여요). 미리보기에서 문제를 빼거나 다시 뽑을 수 있어요.";
     $("rangeTitle").textContent = ch ? "학생이 고를 수 있는 교재 (교재 전체 체크 또는 일부 과만)" : "출제 범위 (교재 → 챕터 → 과)";
     $("reseed").style.display = ch ? "none" : "";
+    $("selfBox").style.display = ch ? "" : "none";
   }
   function buildBookFilters() {
     var areas = ["", "문법", "구문", "독해", "교과서", "어휘", "듣기"].filter(function (a) { return !a || DATA.catalog.some(function (b) { return b.area === a; }); }), grades = [""].concat(DATA.catalog.map(function (b) { return b.grade; }).filter(function (g, i, a) { return g && a.indexOf(g) === i; }));
@@ -1843,7 +1849,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     setRadio("mode", "fixed"); setRadio("lv", "2"); $("eCount").value = 20; $("eMin").value = 30; $("eStatus").value = "준비중"; $("eShow").checked = true;
     $("eKind").value = "월간평가"; $("eStart").value = kst(); $("eEnd").value = kst(Date.now() + 6 * 864e5);
     $("aiVar").value = "0"; $("aiExtra").value = "0"; $("aiFill").checked = true;
-    $("ePlace").value = ""; PG = []; passLoad(null); omrLoad(null); $("eKbd").checked = true; tgtLoad(null); secUi(null, null); buildPeriods(); autoTitle(); modeUi(); buildBookFilters(); renderBooks(); vtUi(); placeUi(); $("pv").innerHTML = ""; $("pvInfo").textContent = ""; $("fillBtn").style.display = "none"; $("saveMsg").textContent = "";
+    $("ePlace").value = ""; PG = []; passLoad(null); omrLoad(null); $("eKbd").checked = true; $("eSelf").checked = false; $("ePerDay").value = 3; tgtLoad(null); secUi(null, null); buildPeriods(); autoTitle(); modeUi(); buildBookFilters(); renderBooks(); vtUi(); placeUi(); $("pv").innerHTML = ""; $("pvInfo").textContent = ""; $("fillBtn").style.display = "none"; $("saveMsg").textContent = "";
   }
   function editPaper(p) {
     if (!mayEdit(p)) { alert((p.teacher || "다른 선생님") + "이(가) 만든 시험지예요. 📄 복제해서 써 주세요."); return; }
@@ -1856,7 +1862,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     $("eStart").value = p.start || ""; $("eEnd").value = p.end || ""; $("eStatus").value = p.status; $("eShow").checked = !!p.show;
     (p.cfg.units || []).forEach(function (u) { SEL[u] = 1; }); (p.cfg.books || []).forEach(function (b) { SELB[b] = 1; }); EXCL = (p.cfg.exclude || []).slice();
     var ai = (p.cfg && p.cfg.ai) || {}; $("aiVar").value = String(ai.variant || 0); $("aiExtra").value = String(ai.extra || 0); $("aiFill").checked = ai.fill !== false;
-    passLoad(p.cfg && p.cfg.pass); omrLoad(p.cfg && p.cfg.omr); $("eKbd").checked = !!(p.cfg && p.cfg.kbd); $("ePlace").value = (p.cfg && p.cfg.place) || ""; PG = (p.cfg && p.cfg.grades) || []; secUi(p.cfg && p.cfg.sections, p.cfg); modeUi(); renderBooks(); vtUi(); placeUi(); tab("edit");
+    passLoad(p.cfg && p.cfg.pass); omrLoad(p.cfg && p.cfg.omr); $("eKbd").checked = !!(p.cfg && p.cfg.kbd); $("eSelf").checked = !!(p.cfg && p.cfg.self); $("ePerDay").value = p.cfg && p.cfg.self ? p.cfg.self.perDay : 3; $("ePlace").value = (p.cfg && p.cfg.place) || ""; PG = (p.cfg && p.cfg.grades) || []; secUi(p.cfg && p.cfg.sections, p.cfg); modeUi(); renderBooks(); vtUi(); placeUi(); tab("edit");
     if (p.takers) $("saveMsg").innerHTML = '<span class="er">⚠ 이미 ' + p.takers + "명이 응시했어요. 범위·문항을 바꾸면 학생마다 시험지가 달라질 수 있어요.</span>";
   }
   function actbarH() { var a = document.querySelector(".actbar"); if (a) document.documentElement.style.setProperty("--abh", a.offsetHeight + "px"); }
@@ -1873,7 +1879,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     setRadio("mode", p.mode); setRadio("lv", String(["기본", "표준", "심화"].indexOf(p.level) + 1)); $("eCount").value = p.count; $("eMin").value = p.minutes; $("eShow").checked = !!p.show;
     (c.units || []).forEach(function (u) { SEL[u] = 1; }); (c.books || []).forEach(function (b) { SELB[b] = 1; }); EXCL = (c.exclude || []).slice();
     var ai = c.ai || {}; $("aiVar").value = String(ai.variant || 0); $("aiExtra").value = String(ai.extra || 0); $("aiFill").checked = ai.fill !== false;
-    passLoad(c.pass); omrLoad(c.omr); $("eKbd").checked = c.kbd !== false; $("ePlace").value = c.place || ""; PG = (c.grades || []).slice(); secUi(c.sections, c);
+    passLoad(c.pass); omrLoad(c.omr); $("eKbd").checked = c.kbd !== false; $("eSelf").checked = !!c.self; $("ePerDay").value = c.self ? c.self.perDay : 3; $("ePlace").value = c.place || ""; PG = (c.grades || []).slice(); secUi(c.sections, c);
     PV_SEED = String(c.seed || p.id).replace(/[^\w-]/g, ""); // 원본과 같은 문제
     $("eTitle").value = p.title + " (복제)"; titleTouched = true;
     $("editTitle").textContent = "새 시험지 · 📄 " + p.title + " 복제";
@@ -2026,6 +2032,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     var paper = { id: EDIT && EDIT.id, title: $("eTitle").value.trim(), cls: tgtSend() ? COMMON_CLS : $("eCls").value, target: tgtSend(), kind: $("eKind").value, period: $("ePeriod").value, status: $("eStatus").value, mode: m, level: level(),
       count: +$("eCount").value, minutes: +$("eMin").value, start: $("eStart").value, end: $("eEnd").value, show: $("eShow").checked, units: units, books: books, exclude: EXCL, reseed: RESEED, vtypes: vtSend(), ai: aiSend(), place: $("ePlace").value.trim(), sections: $("eKind").value === "반배정시험" ? secGet() : [], listen: $("eListen").value, audioDir: $("eAudio").value.trim(), grades: $("eKind").value === "반배정시험" ? PG.slice() : [], pass: passSend() };
     if (!paper.title) { autoTitle(); paper.title = $("eTitle").value; }
+    paper.self = mode() === "choice" && $("eSelf").checked ? { perDay: +$("ePerDay").value || 0 } : null;
     paper.kbd = $("eKbd").checked; paper.omr = OM ? { text: $("eOmr").value } : null; if (OM) { paper.sections = []; paper.units = []; paper.mode = "fixed"; }
     if (paper.target && !tgtOk()) { $("saveMsg").innerHTML = '<span class="er">공통 시험을 볼 ' + ($("eTgt").value === "grade" ? "학년을" : "반을") + " 골라 주세요.</span>"; return; }
     if (!paper.target) lsSet("cm-teacher-cls", paper.cls);
@@ -2879,7 +2886,8 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       var PL = j.paper.kind === "반배정시험";
       var PS = j.paper.pass || null, SKIP = {}; (j.paper.skip || []).forEach(function (x) { SKIP[x] = 1; });
       var skipN = function () { return j.rows.filter(function (r) { return r.missing && SKIP[r.sid]; }).length; };
-      var DUPS = j.rows.filter(function (r) { return r.dup; }); j.rows = j.rows.filter(function (r) { return !r.dup; });
+      var SELFP = !!j.paper.self; // 📝 자율 단어시험: 모든 응시 기록을 한 줄씩 (겹침이 아니에요)
+      var DUPS = SELFP ? [] : j.rows.filter(function (r) { return r.dup; }); j.rows = SELFP ? j.rows.map(function (r) { return Object.assign({}, r, { dup: false, comment: (r.range ? "[" + r.range + "] " : "") + (r.comment || "") }); }) : j.rows.filter(function (r) { return !r.dup; });
       // 👥 공통 시험: 전체 학생으로 순위·평균, 반별 평균 비교, 반 하나로 걸러 보기
       var CT = !!j.paper.target, ALLR = j.rows, RF = CT ? R_CF : "";
       if (RF && !ALLR.some(function (r) { return r.cls === RF; })) RF = R_CF = "";
@@ -2901,12 +2909,12 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       LAST_RES = j; $("rRep").style.display = j.rows.some(function (r) { return !r.missing; }) ? "" : "none"; $("rProg").innerHTML = ""; $("contactCard").style.display = "";
       var done = j.rows.filter(function (r) { return !r.missing; }), ps = done.map(function (r) { return r.pct || 0; });
       var avg = ps.length ? ps.reduce(function (a, b) { return a + b; }, 0) / ps.length : null;
-      var sorted = done.slice().sort(function (a, b) { return (b.pct || 0) - (a.pct || 0); });
+      var sorted = done.slice().sort(SELFP ? function (a, b) { return String(b.made || "").localeCompare(String(a.made || "")); } : function (a, b) { return (b.pct || 0) - (a.pct || 0); });
       // 반 전체 단원별 정답률
       var um = {}; done.forEach(function (r) { (r.units || []).forEach(function (u) { var k = u.c && u.c !== "단원" ? u.c : u.u; var e = um[k] || (um[k] = { k: k, r: 0, t: 0 }); e.r += u.r; e.t += u.t; }); });
       var ul = Object.keys(um).map(function (k) { return um[k]; }).sort(function (a, b) { return a.r / a.t - b.r / b.t; });
       $("rBox").innerHTML = '<h3>' + esc(j.paper.title) + (CT ? ' <span class="pill go" style="font-size:12px">👥 공통 시험 · ' + esc(j.paper.targetText || "") + "</span>" : "") + (RF ? ' <span class="pill" style="font-size:12px">' + esc(RF) + "만</span>" : "") + "</h3>" +
-        '<div class="stat"><div><b>응시</b><span>' + done.length + " / " + (j.rows.length - skipN()) + (skipN() ? '<small style="font-size:12px;color:#8A99A6;font-weight:600"> (다른 시험 ' + skipN() + ")</small>" : "") + '</span></div><div><b>' + (CT && !RF ? "전체 평균" : "반 평균") + '</b><span>' + round1(avg) + '</span></div><div><b>최고</b><span>' + (ps.length ? Math.max.apply(null, ps) : "-") + '</span></div><div><b>최저</b><span>' + (ps.length ? Math.min.apply(null, ps) : "-") + "</span></div>" +
+        '<div class="stat">' + (SELFP ? '<div><b>자율 기록</b><span>' + done.length + "건 · " + Object.keys(done.reduce(function (o, r) { o[r.sid] = 1; return o; }, {})).length + "명</span></div>" : "") + '<div' + (SELFP ? ' style="display:none"' : "") + '><b>응시</b><span>' + done.length + " / " + (j.rows.length - skipN()) + (skipN() ? '<small style="font-size:12px;color:#8A99A6;font-weight:600"> (다른 시험 ' + skipN() + ")</small>" : "") + '</span></div><div><b>' + (CT && !RF ? "전체 평균" : "반 평균") + '</b><span>' + round1(avg) + '</span></div><div><b>최고</b><span>' + (ps.length ? Math.max.apply(null, ps) : "-") + '</span></div><div><b>최저</b><span>' + (ps.length ? Math.min.apply(null, ps) : "-") + "</span></div>" +
         (PS ? '<div><b>통과</b><span>' + done.filter(function (r) { return passOk(PS, r); }).length + " / " + done.length + "</span></div>" : "") + "</div>" +
         cmpHtml + '<div class="row passrow"><b style="font-size:13.5px">✅ 통과 기준</b><select id="rPassBy" style="width:auto;padding:5px 8px;font-size:13px"><option value="">정하지 않음</option><option value="cnt">맞힌 개수가</option><option value="pct">100점 환산 점수가</option></select><input id="rPassV" type="number" min="1" step="1" style="width:80px;padding:5px 8px;font-size:13px"><span id="rPassU" class="hint" style="margin:0"></span><button class="sm sub" id="rPassSave">저장</button>' +
         (PS ? '<span class="hint" style="margin:0">지금: ' + esc(passText(PS)) + " · 재시험 " + done.filter(function (r) { return !passOk(PS, r); }).map(function (r) { return esc(r.name); }).join(", ") + "</span>" : '<span class="hint" style="margin:0">정하면 표에 통과 / 재시험이 바로 표시돼요.</span>') + "</div>" +
