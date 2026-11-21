@@ -1,5 +1,5 @@
 {
- "built": "2026-11-20T15:51:11.431Z",
+ "built": "2026-11-21T07:05:25.961Z",
  "books": [
   {
    "id": "bb391852c",
@@ -2412,6 +2412,286 @@
       {
        "id": "u629de7a1",
        "name": "접속사와 대등한 연결: 병렬 구조의 이해 — AI강의",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b242e3f8d",
+   "area": "구문",
+   "grade": "고등",
+   "name": "룩(Look) 구문독해",
+   "path": "구문/룩(Look) 구문독해",
+   "n": 0,
+   "chapters": [
+    {
+     "key": "part01",
+     "name": "Part 01",
+     "units": [
+      {
+       "id": "u4b1cfaf5",
+       "name": "01 구 vs. 절 형태의 주어",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2e7226c2",
+       "name": "02 구의 수식을 받아 길어진 주어",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u3ba830e2",
+       "name": "03 절의 수식을 받아 길어진 주어",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf16039fa",
+       "name": "04 가주어와 진주어",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u68239803",
+       "name": "04 가주어와 진주어 (2)",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "part02",
+     "name": "Part 02",
+     "units": [
+      {
+       "id": "ua2a3af48",
+       "name": "연습 Read & Practice",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uaa293773",
+       "name": "연습 Read & Practice (2)",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u568716db",
+       "name": "05 감각동사, 수여동사",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1143804e",
+       "name": "05 감각동사, 수여동사 (2)",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u9b68dfd2",
+       "name": "06 지각동사, 사역동사",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6dd1ac04",
+       "name": "07 조동사가 쓰인 여러 가지 구문",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue2af0460",
+       "name": "08 조동사 have p.p.",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6861b707",
+       "name": "08 조동사 have p.p. (2)",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "part03",
+     "name": "Part 03",
+     "units": [
+      {
+       "id": "u8ebccf9f",
+       "name": "연습 Read & Practice",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud5251e3d",
+       "name": "연습 Read & Practice (2)",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u090166de",
+       "name": "09 현재완료",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ufaa20a35",
+       "name": "09 현재완료 (2)",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2fb0602c",
+       "name": "10 과거완료와 미래완료",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0daf9562",
+       "name": "11 다양한 형태의 수동태",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uba1bbb49",
+       "name": "11 다양한 형태의 수동태 (2)",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5b3d2ef7",
+       "name": "12 4형식 · 5형식 문장의 수동태",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "part04",
+     "name": "Part 04",
+     "units": [
+      {
+       "id": "u222b280b",
+       "name": "연습 Read & Practice",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2c4a3492",
+       "name": "13 구 vs. 절 형태의 목적어",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ubb3ee8b8",
+       "name": "13 구 vs. 절 형태의 목적어 (2)",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u34c4272f",
+       "name": "15 절의 수식을 받아 길어진 목적어",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2de8e178",
+       "name": "15 절의 수식을 받아 길어진 목적어 (2)",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6099ddc5",
+       "name": "16 가목적어와 진목적어",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "part05",
+     "name": "Part 05",
+     "units": [
+      {
+       "id": "ue4710a83",
+       "name": "연습 Read & Practice",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0ccf7a6d",
+       "name": "17 구 vs. 절 형태의 주격보어",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ubccdc57f",
+       "name": "18 형용사, 명사 형태의 목적격보어",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5ab50024",
+       "name": "19 분사, to부정사 형태의 목적격보어",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "part06",
+     "name": "Part 06",
+     "units": [
+      {
+       "id": "u95803b5a",
+       "name": "연습 Read & Practice",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4152c26e",
+       "name": "21 부사적 수식어",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u343d3e76",
+       "name": "22 관계대명사절의 수식",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ubc2c2382",
+       "name": "23 관계부사절의 수식",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "part07",
+     "name": "Part 07",
+     "units": [
+      {
+       "id": "u9eb1a962",
+       "name": "24 가정법 과거 · 과거완료",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u47dad880",
+       "name": "25 I wish/as if 가정법",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u774b40dd",
+       "name": "26 주의해야 할 가정법",
        "n": 0,
        "lv": null
       }
