@@ -2831,8 +2831,9 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   function ktBuild(j) {
     var exams = [], byKey = {};
     j.records.forEach(function (r) {
-      var key = r.paper || (r.date + "|" + r.title), e = byKey[key];
-      if (!e) { e = byKey[key] = { key: key, title: r.title, date: r.date, range: r.range || "", totals: {}, cells: {} }; exams.push(e); }
+      // 📝 자율 단어시험은 시험지 하나에 여러 범위가 쌓여요 → 학생이 고른 범위(예: Day 43~44)마다 한 칸
+      var key = r.how === "자율" ? "self|" + r.paper + "|" + (r.range || "") : r.paper || (r.date + "|" + r.title), e = byKey[key];
+      if (!e) { e = byKey[key] = { key: key, title: r.how === "자율" ? "📝 " + (r.range || "자율") : r.title, date: r.date, range: r.range || "", totals: {}, cells: {} }; exams.push(e); }
       if (r.date < e.date) e.date = r.date; if (!e.range && r.range) e.range = r.range;
       if (r.total) e.totals[r.total] = (e.totals[r.total] || 0) + 1;
       var old = e.cells[r.sid]; if (!old || r.date >= old.date) e.cells[r.sid] = r; // 다시 본 경우 마지막 기록
