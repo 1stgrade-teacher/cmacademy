@@ -1,0 +1,114 @@
+01. 구 vs. 절 형태의 주어_AI강의.html -> part01\lecture\unit01-a.html
+01._구_vs._절_형태의_주어_audio/ -> part01\lecture/unit01-a_audio/
+01. 구 vs. 절 형태의 주어_녹음대본.txt -> _scripts\part01-unit01-a.txt
+02. 구의 수식을 받아 길어진 주어_AI강의.html -> part01\lecture\unit02-a.html
+02._구의_수식을_받아_길어진_주어_audio/ -> part01\lecture/unit02-a_audio/
+02. 구의 수식을 받아 길어진 주어_녹음대본.txt -> _scripts\part01-unit02-a.txt
+03. 절의 수식을 받아 길어진 주어_AI강의.html -> part01\lecture\unit03-a.html
+03._절의_수식을_받아_길어진_주어_audio/ -> part01\lecture/unit03-a_audio/
+03. 절의 수식을 받아 길어진 주어_녹음대본.txt -> _scripts\part01-unit03-a.txt
+04. 가주어와 진주어_2_AI강의.html -> part01\lecture\unit04-b.html
+04._가주어와_진주어_2_audio/ -> part01\lecture/unit04-b_audio/
+04. 가주어와 진주어_2_녹음대본.txt -> _scripts\part01-unit04-b.txt
+04. 가주어와 진주어_AI강의.html -> part01\lecture\unit04-a.html
+04._가주어와_진주어_audio/ -> part01\lecture/unit04-a_audio/
+04. 가주어와 진주어_녹음대본.txt -> _scripts\part01-unit04-a.txt
+05. 감각동사, 수여동사_2_AI강의.html -> part02\lecture\unit05-b.html
+05._감각동사,_수여동사_2_audio/ -> part02\lecture/unit05-b_audio/
+05. 감각동사, 수여동사_2_녹음대본.txt -> _scripts\part02-unit05-b.txt
+05. 감각동사, 수여동사_AI강의.html -> part02\lecture\unit05-a.html
+05._감각동사,_수여동사_audio/ -> part02\lecture/unit05-a_audio/
+05. 감각동사, 수여동사_녹음대본.txt -> _scripts\part02-unit05-a.txt
+06. 지각동사, 사역동사_AI강의.html -> part02\lecture\unit06-a.html
+06._지각동사,_사역동사_audio/ -> part02\lecture/unit06-a_audio/
+06. 지각동사, 사역동사_녹음대본.txt -> _scripts\part02-unit06-a.txt
+07. 조동사가 쓰인 여러 가지 구문_AI강의.html -> part02\lecture\unit07-a.html
+07._조동사가_쓰인_여러_가지_구문_audio/ -> part02\lecture/unit07-a_audio/
+07. 조동사가 쓰인 여러 가지 구문_녹음대본.txt -> _scripts\part02-unit07-a.txt
+08. 조동사 have p.p_2_AI강의.html -> part02\lecture\unit08-b.html
+08._조동사_have_p.p_2_audio/ -> part02\lecture/unit08-b_audio/
+08. 조동사 have p.p_2_녹음대본.txt -> _scripts\part02-unit08-b.txt
+08. 조동사 have p.p_AI강의.html -> part02\lecture\unit08-a.html
+08._조동사_have_p.p_audio/ -> part02\lecture/unit08-a_audio/
+08. 조동사 have p.p_녹음대본.txt -> _scripts\part02-unit08-a.txt
+09. 현재완료_2_AI강의.html -> part03\lecture\unit09-b.html
+09._현재완료_2_audio/ -> part03\lecture/unit09-b_audio/
+09. 현재완료_2_녹음대본.txt -> _scripts\part03-unit09-b.txt
+09. 현재완료_AI강의.html -> part03\lecture\unit09-a.html
+09._현재완료_audio/ -> part03\lecture/unit09-a_audio/
+09. 현재완료_녹음대본.txt -> _scripts\part03-unit09-a.txt
+10. 과거완료와 미래완료_AI강의.html -> part03\lecture\unit10-a.html
+10._과거완료와_미래완료_audio/ -> part03\lecture/unit10-a_audio/
+10. 과거완료와 미래완료_녹음대본.txt -> _scripts\part03-unit10-a.txt
+11. 다양한 형태의 수동태_2_AI강의.html -> part03\lecture\unit11-b.html
+11._다양한_형태의_수동태_2_audio/ -> part03\lecture/unit11-b_audio/
+11. 다양한 형태의 수동태_2_녹음대본.txt -> _scripts\part03-unit11-b.txt
+11. 다양한 형태의 수동태_AI강의.html -> part03\lecture\unit11-a.html
+11._다양한_형태의_수동태_audio/ -> part03\lecture/unit11-a_audio/
+11. 다양한 형태의 수동태_녹음대본.txt -> _scripts\part03-unit11-a.txt
+12. 4형식·5형식 문장의 수동태_AI강의.html -> part03\lecture\unit12-a.html
+12._4형식·5형식_문장의_수동태_audio/ -> part03\lecture/unit12-a_audio/
+12. 4형식·5형식 문장의 수동태_녹음대본.txt -> _scripts\part03-unit12-a.txt
+13. 구 vs. 절 형태의 목적어_2_AI강의.html -> part04\lecture\unit13-b.html
+13._구_vs._절_형태의_목적어_2_audio/ -> part04\lecture/unit13-b_audio/
+13. 구 vs. 절 형태의 목적어_2_녹음대본.txt -> _scripts\part04-unit13-b.txt
+13. 구 vs. 절 형태의 목적어_AI강의.html -> part04\lecture\unit13-a.html
+13._구_vs._절_형태의_목적어_audio/ -> part04\lecture/unit13-a_audio/
+13. 구 vs. 절 형태의 목적어_녹음대본.txt -> _scripts\part04-unit13-a.txt
+15. 절의 수식을 받아 길어진 목적어_2_AI강의.html -> part04\lecture\unit15-b.html
+15._절의_수식을_받아_길어진_목적어_2_audio/ -> part04\lecture/unit15-b_audio/
+15. 절의 수식을 받아 길어진 목적어_2_녹음대본.txt -> _scripts\part04-unit15-b.txt
+15. 절의 수식을 받아 길어진 목적어_AI강의.html -> part04\lecture\unit15-a.html
+15._절의_수식을_받아_길어진_목적어_audio/ -> part04\lecture/unit15-a_audio/
+15. 절의 수식을 받아 길어진 목적어_녹음대본.txt -> _scripts\part04-unit15-a.txt
+16. 가목적어와 진목적어_AI강의.html -> part04\lecture\unit16-a.html
+16._가목적어와_진목적어_audio/ -> part04\lecture/unit16-a_audio/
+16. 가목적어와 진목적어_녹음대본.txt -> _scripts\part04-unit16-a.txt
+17. 구 vs. 절 형태의 주격보어_AI강의.html -> part05\lecture\unit17-a.html
+17._구_vs._절_형태의_주격보어_audio/ -> part05\lecture/unit17-a_audio/
+17. 구 vs. 절 형태의 주격보어_녹음대본.txt -> _scripts\part05-unit17-a.txt
+18. 형용사, 명사 형태의 목적격보어_AI강의.html -> part05\lecture\unit18-a.html
+18._형용사,_명사_형태의_목적격보어_audio/ -> part05\lecture/unit18-a_audio/
+18. 형용사, 명사 형태의 목적격보어_녹음대본.txt -> _scripts\part05-unit18-a.txt
+19. 분사, to부정사 형태의 목적격보어_AI강의.html -> part05\lecture\unit19-a.html
+19._분사,_to부정사_형태의_목적격보어_audio/ -> part05\lecture/unit19-a_audio/
+19. 분사, to부정사 형태의 목적격보어_녹음대본.txt -> _scripts\part05-unit19-a.txt
+21. 부사적 수식어_AI강의.html -> part06\lecture\unit21-a.html
+21._부사적_수식어_audio/ -> part06\lecture/unit21-a_audio/
+21. 부사적 수식어_녹음대본.txt -> _scripts\part06-unit21-a.txt
+22. 관계대명사절의 수식_AI강의.html -> part06\lecture\unit22-a.html
+22._관계대명사절의_수식_audio/ -> part06\lecture/unit22-a_audio/
+22. 관계대명사절의 수식_녹음대본.txt -> _scripts\part06-unit22-a.txt
+23. 관계부사절의 수식_AI강의.html -> part06\lecture\unit23-a.html
+23._관계부사절의_수식_audio/ -> part06\lecture/unit23-a_audio/
+23. 관계부사절의 수식_녹음대본.txt -> _scripts\part06-unit23-a.txt
+24. 가정법 과거·과거완료_AI강의.html -> part07\lecture\unit24-a.html
+24._가정법_과거·과거완료_audio/ -> part07\lecture/unit24-a_audio/
+24. 가정법 과거·과거완료_녹음대본.txt -> _scripts\part07-unit24-a.txt
+25. I wish as if 가정법_AI강의.html -> part07\lecture\unit25-a.html
+25._I_wish_as_if_가정법_audio/ -> part07\lecture/unit25-a_audio/
+25. I wish as if 가정법_녹음대본.txt -> _scripts\part07-unit25-a.txt
+26. 주의해야 할 가정법_AI강의.html -> part07\lecture\unit26-a.html
+26._주의해야_할_가정법_audio/ -> part07\lecture/unit26-a_audio/
+26. 주의해야 할 가정법_녹음대본.txt -> _scripts\part07-unit26-a.txt
+Chapter II Read & Practice_2_AI강의.html -> part02\lecture\practice-b.html
+Chapter_II_Read_&_Practice_2_audio/ -> part02\lecture/practice-b_audio/
+Chapter II Read & Practice_2_녹음대본.txt -> _scripts\part02-practice-b.txt
+Chapter II Read & Practice_AI강의.html -> part02\lecture\practice-a.html
+Chapter_II_Read_&_Practice_audio/ -> part02\lecture/practice-a_audio/
+Chapter II Read & Practice_녹음대본.txt -> _scripts\part02-practice-a.txt
+Chapter III Read & Practice_2_AI강의.html -> part03\lecture\practice-b.html
+Chapter_III_Read_&_Practice_2_audio/ -> part03\lecture/practice-b_audio/
+Chapter III Read & Practice_2_녹음대본.txt -> _scripts\part03-practice-b.txt
+Chapter III Read & Practice_AI강의.html -> part03\lecture\practice-a.html
+Chapter_III_Read_&_Practice_audio/ -> part03\lecture/practice-a_audio/
+Chapter III Read & Practice_녹음대본.txt -> _scripts\part03-practice-a.txt
+Chapter IV Read & Practice_AI강의.html -> part04\lecture\practice-a.html
+Chapter_IV_Read_&_Practice_audio/ -> part04\lecture/practice-a_audio/
+Chapter IV Read & Practice_녹음대본.txt -> _scripts\part04-practice-a.txt
+Chapter V Read & Practice_AI강의.html -> part05\lecture\practice-a.html
+Chapter_V_Read_&_Practice_audio/ -> part05\lecture/practice-a_audio/
+Chapter V Read & Practice_녹음대본.txt -> _scripts\part05-practice-a.txt
+Chapter VI Read & Practice_AI강의.html -> part06\lecture\practice-a.html
+Chapter_VI_Read_&_Practice_audio/ -> part06\lecture/practice-a_audio/
+Chapter VI Read & Practice_녹음대본.txt -> _scripts\part06-practice-a.txt
