@@ -595,6 +595,27 @@ function openNow(pp) {
 // 📝 자율 단어시험: 설정.self = { perDay: 하루 횟수(0 = 무제한) } · 학생이 단어장·과를 골라 언제든 여러 번, 볼 때마다 새 문제
 const selfOf = (pp) => (pp && pp.cfg && pp.cfg.self && pp.mode === "choice" ? { perDay: Math.max(0, Math.min(50, +pp.cfg.self.perDay || 0)) } : null);
 // 이 학생의 이 시험 기록 (최신순)
+// 📲 시험이 끝나면 학부모님께 결과 바로 보내기 · 설정.notify = "each"(볼 때마다) | "first"(하루 첫 응시만)
+// 알림톡 템플릿 ID: Vercel 환경 변수 KAKAO_TPL_TEST — 없으면 문자로, 솔라피가 없으면 보내지 않고 '발송 설정 전'만 기록
+const TEST_TPL = { tplEnv: "KAKAO_TPL_TEST", template: "[#{학원}] 시험 결과 안내\n\n#{학생} 학생이 시험을 마쳤습니다.\n\n■ 시험: #{시험}\n■ 범위: #{범위}\n■ 점수: #{점수}\n■ 결과: #{결과}\n■ 응시: #{일시}\n\n가정에서 격려 부탁드립니다. 문의는 학원으로 연락 주세요." };
+const notifyOf = (pp) => { const n = pp && pp.cfg && pp.cfg.notify; return n === "each" || n === "first" ? n : ""; };
+function kstWhen() { const d = new Date(Date.now() + 9 * 3600e3); return (d.getUTCMonth() + 1) + "/" + d.getUTCDate() + "(" + "일월화수목금토"[d.getUTCDay()] + ") " + String(d.getUTCHours()).padStart(2, "0") + ":" + String(d.getUTCMinutes()).padStart(2, "0"); }
+async function notifyParent(pp, who, recId, r) { // r: { right, total, pct, nRight, nTot, range, weighted } → 기록에 남길 짧은 글
+  const how = notifyOf(pp); if (!how) return "";
+  try {
+    const st = await notion("pages/" + id32(who.sid), "GET"); if (!st) return "📲 알림 못 보냄 (학생 정보 읽기 실패)";
+    if (P.chk(st, "알림 끄기")) return "📲 알림 꺼진 학생";
+    const ph = N_().phone((st.properties["학부모 연락처"] || {}).phone_number || ""); if (!ph) return "📲 학부모 연락처 없음";
+    if (how === "first") { const a = (await attemptsOf(pp.id, who.sid, true)) || []; if (a.some((x) => normId(x.id) !== normId(recId))) return "📲 오늘 이미 보냄 (하루 첫 응시만)"; }
+    const ps = passCfg(pp.cfg && pp.cfg.pass);
+    const passOk = ps ? (ps.by === "cnt" ? r.nRight >= ps.v : r.pct >= ps.v) : null;
+    const vars = { 학생: who.name, 시험: clip(String(pp.title).replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\uFE0F]/gu, "").replace(/\s+/g, " ").trim(), 40), 범위: clip(r.range, 60) || "-", 점수: r.weighted ? r.right + " / " + r.total + "점" : r.right + " / " + r.total + "문항 (" + r.pct + "점)",
+      결과: ps ? (passOk ? "통과" : "재시험 필요 (통과 기준 " + (ps.by === "cnt" ? ps.v + "개" : ps.v + "점") + ")") : gradeOf(r.pct), 일시: kstWhen() };
+    const out = (await N_().sendMany([{ to: ph, vars }], TEST_TPL))[0] || {};
+    return "📲 " + (out.ok ? out.msg : out.how === "off" ? "알림 발송 설정 전" : out.msg || "알림 실패");
+  } catch (e) { return "📲 알림 실패"; }
+}
+const N_ = () => require("./_notify.js");
 async function attemptsOf(pid, sid, onlyToday) {
   const and = [{ property: "시험지", relation: { contains: uuid(pid) } }, { property: "학생", relation: { contains: uuid(sid) } }];
   if (onlyToday) and.push({ property: "시험일", date: { equals: today() } });
@@ -1036,6 +1057,7 @@ module.exports = async function handler(req, res) {
         pass: f.pass !== undefined ? passCfg(f.pass) || undefined : (old && passCfg(old.cfg.pass)) || undefined,
         omr: omr ? { text: clip(f.omr.text, 6000), items: omr.items } : undefined,
         kbd: f.kbd !== undefined ? !!f.kbd : old ? old.cfg.kbd : undefined,
+        notify: f.notify !== undefined ? (f.notify === "each" || f.notify === "first" ? f.notify : undefined) : (old && old.cfg.notify) || undefined, // 📲 학부모님께 결과 바로 보내기
         loc: f.loc !== undefined ? (f.loc && (f.loc.wifi || f.loc.code) ? { wifi: !!f.loc.wifi, code: String(f.loc.code || "").replace(/\D/g, "").slice(0, 6) } : undefined) : (old && old.cfg.loc) || undefined, // 🏫 응시 장소 제한
         self: f.self !== undefined ? (f.self && typeof f.self === "object" ? { perDay: num(f.self.perDay, 0, 50, 3) } : undefined) : (old && old.cfg.self) || undefined, // 📝 자율 단어시험 // ⌨️ 학생 화면 자체 키보드 (자동완성 막기)
         skip: old && Array.isArray(old.cfg.skip) && old.cfg.skip.length ? old.cfg.skip : undefined, // 「다른 시험으로 봄」 학생은 고쳐 저장해도 그대로
@@ -1222,6 +1244,7 @@ module.exports = async function handler(req, res) {
     if (act === "t_hw_bulk") { const r = await HW().teacherBulk(me, b.items); return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg }); }
     if (act === "t_hw_detail") { const r = await HW().teacherDetail(clip(b.id, 60)); return r ? send(200, Object.assign({ ok: true }, r)) : send(404, { error: "nf", msg: "과제를 찾지 못했어요." }); }
     if (act === "t_hw_check") { const r = await HW().cron({ only: clip(b.id, 60) || undefined }); return send(200, r); }
+    if (act === "t_test_tpl") { const N2 = N_(); return send(200, { ok: true, template: TEST_TPL.template, env: TEST_TPL.tplEnv, mode: N2.mode(TEST_TPL), sample: N2.fill({ 학원: N2.ACADEMY(), 학생: "김민준", 시험: "자율 단어시험 · 중2 사관반", 범위: "워드마스터 Day 43~44", 점수: "18 / 20문항 (90점)", 결과: "통과", 일시: "12/1(화) 17:40" }, TEST_TPL.template) }); }
     if (act === "t_hw_template") { const N2 = require("./_notify.js"); return send(200, { ok: true, template: N2.TEMPLATE, sample: N2.fill({ 학원: N2.ACADEMY(), 학생: "김민준", 과제: "Day 3 단어 쓰기", 마감: "11/5(목) 21:00" }), mode: N2.mode() }); }
     if (act === "t_assign") { // 반배정: 학생의 반을 바꿔요 (노션 학생 DB의 '반')
       const cls = clip(b.cls, 40), sid = clip(b.sid, 60), list = await classList();
@@ -1729,7 +1752,9 @@ module.exports = async function handler(req, res) {
     if (wrongs.length) { children.push(H("틀린 문제 해설")); wrongs.slice(0, 40).forEach((w) => children.push({ object: "block", type: "bulleted_list_item", bulleted_list_item: { rich_text: rt((w.i + 1) + "번 · 정답 " + w.k.answer + (w.k.exp ? " — " + w.k.exp : "")) } })); }
     const pg = await notion("pages", "POST", { parent: { database_id: EXAM_DB() }, properties: props, children });
     if (!pg) return send(502, { error: "notion", msg: "결과를 저장하지 못했어요. 다시 제출해 주세요. (답은 그대로 남아 있어요)", debug: lastErr });
-    const out = { ok: true, show: pp.show, saved: true, areas: pp.show ? areaSum : undefined };
+    const sentNote = await notifyParent(pp, who, pg.id, { right, total, pct, nRight, nTot, range, weighted });
+    if (sentNote) await notion("pages/" + id32(pg.id), "PATCH", { properties: { "코멘트": { rich_text: rt(clip((comment ? comment + " · " : "") + sentNote, 1900)) } } });
+    const out = { ok: true, show: pp.show, saved: true, areas: pp.show ? areaSum : undefined, sent: /보냄$/.test(sentNote) };
     if (pp.show) Object.assign(out, { result: { score: right, total, pct, grade: gradeOf(pct), comment, mins }, units, items: key.items.map((k, i) => ({ n: i + 1, q: k.q, sub: k.sub, given: res1[i].given, answer: k.answer, ok: res1[i].ok, exp: k.exp, unit: k.ch || k.unit, ai: res1[i].ai || "" })) });
     return send(200, out);
   }
