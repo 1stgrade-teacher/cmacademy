@@ -1,5 +1,5 @@
 {
- "built": "2026-11-21T07:05:25.961Z",
+ "built": "2026-11-22T05:19:42.540Z",
  "books": [
   {
    "id": "bb391852c",
@@ -1895,311 +1895,305 @@
    "grade": "고등",
    "name": "솔리드 어법 실력",
    "path": "문법/solid-advanced",
-   "n": 43,
+   "n": 79,
    "chapters": [
     {
-     "key": "_",
-     "name": "Chapter 1 동사",
+     "key": "chapter4",
+     "name": "Chapter 04",
      "units": [
       {
-       "id": "ua6c2d1f5",
-       "name": "P1 동사 자리",
+       "id": "ue6f20ce6",
+       "name": "point19 · Chapter 4 포인트19 조동사 + 동사원형 vs. 조동사 + have p.p. - 확인 문제 — Check Up",
        "n": 0,
        "lv": null
       },
       {
-       "id": "ue626e30d",
-       "name": "P2 대동사",
-       "n": 1,
-       "lv": 1
+       "id": "u53afb4a9",
+       "name": "point19 · Chapter 4 포인트19 조동사 + 동사원형 vs. 조동사 + have p.p. - 문법 — 접속사 that",
+       "n": 5,
+       "lv": 1.6
       },
       {
-       "id": "udce05283",
-       "name": "P3 자동사 vs. 타동사",
-       "n": 1,
+       "id": "u788aa5ad",
+       "name": "point19 · Chapter 4 포인트19 조동사 + 동사원형 vs. 조동사 + have p.p. - 구문 연습",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub25df1d5",
+       "name": "point20 · Chapter 4 포인트20 used를 이용한 표현 - 확인 문제 — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u002e483b",
+       "name": "point20 · Chapter 4 포인트20 used를 이용한 표현 - 문법 — 접속사 that",
+       "n": 2,
        "lv": 2
       },
       {
-       "id": "u74caaa9b",
-       "name": "P4 주어-동사의 수 일치",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "u48e95e87",
-       "name": "P5 시제",
-       "n": 1,
-       "lv": 3
-      },
-      {
-       "id": "ufef75386",
-       "name": "P6 태",
+       "id": "u9584402b",
+       "name": "point20 · Chapter 4 포인트20 used를 이용한 표현 - 구문 연습",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u88badbe6",
-       "name": "P7 주어 자리 / 보어 자리",
-       "n": 1,
+       "id": "u971dce52",
+       "name": "point21 · Chapter 4 포인트21 조동사 관용 표현 - 확인 문제 — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0610de47",
+       "name": "point21 · Chapter 4 포인트21 조동사 관용 표현 - 문법 — 접속사 that",
+       "n": 6,
+       "lv": 1.3
+      },
+      {
+       "id": "u5cc5fe14",
+       "name": "point21 · Chapter 4 포인트21 조동사 관용 표현 - 구문 연습",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ucca8a68f",
+       "name": "point22 · Chapter 4 포인트22 가정법 과거 vs. 가정법 과거완료 vs. 혼합 가정법 - 확인 문제 — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5d099de1",
+       "name": "point22 · Chapter 4 포인트22 가정법 과거 vs. 가정법 과거완료 vs. 혼합 가정법 - 문법 — 접속사 that",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "u8b8d0d55",
+       "name": "point22 · Chapter 4 포인트22 가정법 과거 vs. 가정법 과거완료 vs. 혼합 가정법 - 구문 연습",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u9a925cea",
+       "name": "point23 · Chapter 4 포인트23 that절의 should 생략 - 확인 문제 — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "udd9438d1",
+       "name": "point23 · Chapter 4 포인트23 that절의 should 생략 - 문법 — 접속사 that",
+       "n": 5,
+       "lv": 1.8
+      },
+      {
+       "id": "u6a9b9a2e",
+       "name": "point23 · Chapter 4 포인트23 that절의 should 생략 - 구문 연습",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u558e9692",
+       "name": "point24 · Chapter 4 포인트24 as if + 가정법 I wish + 가정법 - 확인 문제 — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0f9d6645",
+       "name": "point24 · Chapter 4 포인트24 as if + 가정법 I wish + 가정법 - 문법 — 접속사 that",
+       "n": 6,
+       "lv": 1.3
+      },
+      {
+       "id": "u4be7ead3",
+       "name": "point24 · Chapter 4 포인트24 as if + 가정법 I wish + 가정법 - 구문 연습",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter5",
+     "name": "Chapter 05",
+     "units": [
+      {
+       "id": "u4f5b72a9",
+       "name": "point25 · Chapter 5 포인트25 접속사 vs. 전치사 - 확인 문제 — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uab177788",
+       "name": "point25 · Chapter 5 포인트25 접속사 vs. 전치사 - 문법 — 접속사 that",
+       "n": 4,
        "lv": 1
       },
       {
-       "id": "u76d80896",
-       "name": "P8 목적어 자리",
-       "n": 1,
-       "lv": 1
+       "id": "u33f0e4c8",
+       "name": "point25 · Chapter 5 포인트25 접속사 vs. 전치사 - 구문 연습",
+       "n": 0,
+       "lv": null
       },
       {
-       "id": "u8c451ce8",
-       "name": "P9 목적격보어 자리 1 (to부정사)",
-       "n": 1,
+       "id": "u2f0dba9e",
+       "name": "point26 · Chapter 5 포인트26 등위접속사 상관접속사 - 확인 문제 — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u95256cf0",
+       "name": "point26 · Chapter 5 포인트26 등위접속사 상관접속사 - 문법 — 접속사 that",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "u3c2b9b3c",
+       "name": "point26 · Chapter 5 포인트26 등위접속사 상관접속사 - 구문 연습",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf30014f3",
+       "name": "point27 · Chapter 5 포인트27 접속사 whether if vs. 접속사 that - 확인 문제 — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc5f3d6b7",
+       "name": "point27 · Chapter 5 포인트27 접속사 whether if vs. 접속사 that - 문법 — 접속사 that",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "uc6f542f2",
+       "name": "point27 · Chapter 5 포인트27 접속사 whether if vs. 접속사 that - 구문 연습",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5bc0eb54",
+       "name": "point28 · Chapter 5 포인트28 to부정사의 to vs. 전치사 to - 문법 — 접속사 that",
+       "n": 6,
+       "lv": 1.7
+      },
+      {
+       "id": "ub00effdd",
+       "name": "point28 · Chapter 5 포인트28 to부정사의 to vs. 전치사 to - 구문 연습",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter6",
+     "name": "Chapter 06",
+     "units": [
+      {
+       "id": "u6694cff8",
+       "name": "point29 · Chapter 6 포인트29 관계대명사의 역할 및 쓰임 - 확인 문제 — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4b4b8729",
+       "name": "point29 · Chapter 6 포인트29 관계대명사의 역할 및 쓰임 - 문법 — 접속사 that",
+       "n": 6,
+       "lv": 1.8
+      },
+      {
+       "id": "u12058721",
+       "name": "point29 · Chapter 6 포인트29 관계대명사의 역할 및 쓰임 - 구문 연습",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5f85a053",
+       "name": "point30 · Chapter 6 포인트30 전치사 + 관계대명사 계속적 용법 - 확인 문제 — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud3bc94f8",
+       "name": "point30 · Chapter 6 포인트30 전치사 + 관계대명사 계속적 용법 - 문법 — 접속사 that",
+       "n": 5,
        "lv": 2
       },
       {
-       "id": "u146795ed",
-       "name": "P10 목적격보어 자리 2 (원형부정사)",
-       "n": 1,
-       "lv": 1
+       "id": "u54646855",
+       "name": "point30 · Chapter 6 포인트30 전치사 + 관계대명사 계속적 용법 - 구문 연습",
+       "n": 0,
+       "lv": null
       },
       {
-       "id": "u606150a7",
-       "name": "P11 의미상 주어",
-       "n": 1,
+       "id": "ucc5932c2",
+       "name": "point31 · Chapter 6 포인트31 관계부사의 역할 및 쓰임 - 확인 문제 — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u4611d92d",
+       "name": "point31 · Chapter 6 포인트31 관계부사의 역할 및 쓰임 - 문법 — 접속사 that",
+       "n": 5,
+       "lv": 1.4
+      },
+      {
+       "id": "u018f9c33",
+       "name": "point31 · Chapter 6 포인트31 관계부사의 역할 및 쓰임 - 구문 연습",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uf7157a0e",
+       "name": "point32 · Chapter 6 포인트32 관계대명사 vs. 관계부사 생략 - 확인 문제 — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u8c51f8ab",
+       "name": "point32 · Chapter 6 포인트32 관계대명사 vs. 관계부사 생략 - 문법 — 접속사 that",
+       "n": 6,
+       "lv": 1.3
+      },
+      {
+       "id": "u992adced",
+       "name": "point32 · Chapter 6 포인트32 관계대명사 vs. 관계부사 생략 - 구문 연습",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0d8ffb23",
+       "name": "point33 · Chapter 6 포인트33 복합관계대명사 vs. 복합관계부사 - 확인 문제 — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue6cf983a",
+       "name": "point33 · Chapter 6 포인트33 복합관계대명사 vs. 복합관계부사 - 문법 — 접속사 that",
+       "n": 5,
        "lv": 2
       },
       {
-       "id": "u1bace4a3",
-       "name": "P12 태 / 시제",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "ue783ec57",
-       "name": "P13 분사의 의미, 기능",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "u6a670b86",
-       "name": "P14 목적격보어 자리 (지각동사·사역동사)",
+       "id": "u3c0ea949",
+       "name": "point33 · Chapter 6 포인트33 복합관계대명사 vs. 복합관계부사 - 구문 연습",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u6f57fab0",
-       "name": "P15 감정을 나타내는 분사",
+       "id": "u3a47911e",
+       "name": "point34 · Chapter 6 포인트34 관계대명사 what vs. 관계대명사 which[that] - 확인 문제 — Check Up",
        "n": 0,
        "lv": null
       },
       {
-       "id": "u2556e328",
-       "name": "P16 분사구",
-       "n": 1,
-       "lv": 3
-      },
-      {
-       "id": "u9794d514",
-       "name": "P17 분사구문",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "ud6edcd77",
-       "name": "P18 독립분사구문",
-       "n": 0,
-       "lv": null
-      },
-      {
-       "id": "ubf8b36f9",
-       "name": "P19 조동사+동사원형 vs. 조동사+have p.p.",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "ua180a3b1",
-       "name": "P20 used를 이용한 표현",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "uba85656a",
-       "name": "P21 조동사 관용 표현",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "ucfe7e3b6",
-       "name": "P22 가정법 과거 vs. 가정법 과거완료 vs. 혼합 가정법",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "ude78b3bf",
-       "name": "P23 that절의 should 생략",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "ue4e3c284",
-       "name": "P24 as if + 가정법 / I wish + 가정법",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "u4f831382",
-       "name": "P25 접속사 vs. 전치사",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "u570ffd72",
-       "name": "P26 등위접속사 / 상관접속사",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "uf1ce8184",
-       "name": "P27 접속사 whether/if vs. 접속사 that",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "ua8b74f02",
-       "name": "P28 to부정사의 to vs. 전치사 to",
-       "n": 0,
-       "lv": null
-      },
-      {
-       "id": "u64af7616",
-       "name": "P29 관계대명사의 역할 및 쓰임",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "ud6bbd50e",
-       "name": "P30 전치사+관계대명사 / 계속적 용법",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "u2137a4b7",
-       "name": "P31 관계부사의 역할 및 쓰임",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "u09ec1af0",
-       "name": "P32 관계대명사 vs. 관계부사 / 생략",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "u34b547e3",
-       "name": "P33 복합관계대명사 vs. 복합관계부사",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "u2c4c0a41",
-       "name": "P34 관계대명사 what vs. 관계대명사 which[that]",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "u276662a8",
-       "name": "P35 대명사의 일치",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "u36a4e879",
-       "name": "P36 대명사 it",
-       "n": 1,
+       "id": "u2a77d799",
+       "name": "point34 · Chapter 6 포인트34 관계대명사 what vs. 관계대명사 which[that] - 문법 — 접속사 that",
+       "n": 4,
        "lv": 2
       },
       {
-       "id": "u3327db5c",
-       "name": "P37 that vs. those / it vs. one",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "ue14b6a98",
-       "name": "P38 인칭대명사 vs. 재귀대명사",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "u12ed8334",
-       "name": "P39 부정대명사",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "ub4fa6107",
-       "name": "P40 셀 수 있는 명사 vs. 셀 수 없는 명사",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "u8fef7db9",
-       "name": "P41 형용사 자리 vs. 부사 자리",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "ua38b5774",
-       "name": "P42 한정 용법 형용사 vs. 서술 용법 형용사",
+       "id": "u3ba3b8db",
+       "name": "point34 · Chapter 6 포인트34 관계대명사 what vs. 관계대명사 which[that] - 구문 연습",
        "n": 0,
        "lv": null
-      },
-      {
-       "id": "u3503e044",
-       "name": "P43 혼동하기 쉬운 형용사/부사",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "u1564274e",
-       "name": "P44 원급 vs. 비교급 vs. 최상급",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "uef043573",
-       "name": "P45 비교급/최상급 강조",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "u169c62e5",
-       "name": "P46 비교 구문을 이용한 관용 표현",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "u5ba52a3a",
-       "name": "P47 병렬 구조",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "u2e6b5957",
-       "name": "P48 도치",
-       "n": 1,
-       "lv": 1
-      },
-      {
-       "id": "u1d39a35a",
-       "name": "P49 강조 구문",
-       "n": 1,
-       "lv": 2
-      },
-      {
-       "id": "u97a6d5d9",
-       "name": "P50 어순",
-       "n": 1,
-       "lv": 3
       }
      ]
     }
