@@ -579,7 +579,7 @@ async function canTakeWho(pp, who) {
   const st = await notion("pages/" + id32(who.sid), "GET", null, 1);
   return !!st && canTake(pp, who.cls, P.sel(st, "학년"));
 }
-const pub = (pp) => ({ kbd: !!(pp.cfg && pp.cfg.kbd), omr: !!omrOf(pp), skip: Array.isArray(pp.cfg && pp.cfg.skip) ? pp.cfg.skip : [], sections: (hasSections(pp) ? pp.cfg.sections : []), speaker: listenMode(pp.cfg) === "speaker", listen: listenMode(pp.cfg), target: targetOf(pp), targetText: targetText(targetOf(pp)), pass: passCfg(pp.cfg && pp.cfg.pass), grades: (pp.cfg && Array.isArray(pp.cfg.grades) ? pp.cfg.grades : []), id: pp.id, title: pp.title, cls: pp.cls, kind: pp.kind, period: pp.period, status: pp.status, mode: pp.mode, level: LEVELS[pp.level - 1], count: pp.count, minutes: pp.minutes, start: pp.start, end: pp.end, range: pp.mode === "fixed" ? pp.range : "", teacher: pp.teacher || "" });
+const pub = (pp) => ({ loc: locOf(pp) ? { wifi: locOf(pp).wifi, code: !!locOf(pp).code } : null, self: selfOf(pp), kbd: !!(pp.cfg && pp.cfg.kbd), omr: !!omrOf(pp), skip: Array.isArray(pp.cfg && pp.cfg.skip) ? pp.cfg.skip : [], sections: (hasSections(pp) ? pp.cfg.sections : []), speaker: listenMode(pp.cfg) === "speaker", listen: listenMode(pp.cfg), target: targetOf(pp), targetText: targetText(targetOf(pp)), pass: passCfg(pp.cfg && pp.cfg.pass), grades: (pp.cfg && Array.isArray(pp.cfg.grades) ? pp.cfg.grades : []), id: pp.id, title: pp.title, cls: pp.cls, kind: pp.kind, period: pp.period, status: pp.status, mode: pp.mode, level: LEVELS[pp.level - 1], count: pp.count, minutes: pp.minutes, start: pp.start, end: pp.end, range: pp.mode === "fixed" ? pp.range : "", teacher: pp.teacher || "" });
 async function getPaper(id) {
   const p = await notion("pages/" + id32(id), "GET");
   if (!p || p.archived || normId(p.parent && p.parent.database_id) !== normId(PAPER_DB())) return null;
@@ -591,6 +591,36 @@ function openNow(pp) {
   if (pp.start && t < pp.start) return pp.start + "부터 볼 수 있어요.";
   if (pp.end && t > pp.end) return "시험 기간(" + pp.end + "까지)이 지났어요.";
   return "";
+}
+// 📝 자율 단어시험: 설정.self = { perDay: 하루 횟수(0 = 무제한) } · 학생이 단어장·과를 골라 언제든 여러 번, 볼 때마다 새 문제
+const selfOf = (pp) => (pp && pp.cfg && pp.cfg.self && pp.mode === "choice" ? { perDay: Math.max(0, Math.min(50, +pp.cfg.self.perDay || 0)) } : null);
+// 이 학생의 이 시험 기록 (최신순)
+// 📲 시험이 끝나면 학부모님께 결과 바로 보내기 · 설정.notify = "each"(볼 때마다) | "first"(하루 첫 응시만)
+// 알림톡 템플릿 ID: Vercel 환경 변수 KAKAO_TPL_TEST — 없으면 문자로, 솔라피가 없으면 보내지 않고 '발송 설정 전'만 기록
+const TEST_TPL = { tplEnv: "KAKAO_TPL_TEST", template: "[#{학원}] 시험 결과 안내\n\n#{학생} 학생이 시험을 마쳤습니다.\n\n■ 시험: #{시험}\n■ 범위: #{범위}\n■ 점수: #{점수}\n■ 결과: #{결과}\n■ 응시: #{일시}\n\n가정에서 격려 부탁드립니다. 문의는 학원으로 연락 주세요." };
+const notifyOf = (pp) => { const n = pp && pp.cfg && pp.cfg.notify; return n === "each" || n === "first" ? n : ""; };
+function kstWhen() { const d = new Date(Date.now() + 9 * 3600e3); return (d.getUTCMonth() + 1) + "/" + d.getUTCDate() + "(" + "일월화수목금토"[d.getUTCDay()] + ") " + String(d.getUTCHours()).padStart(2, "0") + ":" + String(d.getUTCMinutes()).padStart(2, "0"); }
+async function notifyParent(pp, who, recId, r) { // r: { right, total, pct, nRight, nTot, range, weighted } → 기록에 남길 짧은 글
+  const how = notifyOf(pp); if (!how) return "";
+  try {
+    const st = await notion("pages/" + id32(who.sid), "GET"); if (!st) return "📲 알림 못 보냄 (학생 정보 읽기 실패)";
+    if (P.chk(st, "알림 끄기")) return "📲 알림 꺼진 학생";
+    const ph = N_().phone((st.properties["학부모 연락처"] || {}).phone_number || ""); if (!ph) return "📲 학부모 연락처 없음";
+    if (how === "first") { const a = (await attemptsOf(pp.id, who.sid, true)) || []; if (a.some((x) => normId(x.id) !== normId(recId))) return "📲 오늘 이미 보냄 (하루 첫 응시만)"; }
+    const ps = passCfg(pp.cfg && pp.cfg.pass);
+    const passOk = ps ? (ps.by === "cnt" ? r.nRight >= ps.v : r.pct >= ps.v) : null;
+    const vars = { 학생: who.name, 시험: clip(String(pp.title).replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\uFE0F]/gu, "").replace(/\s+/g, " ").trim(), 40), 범위: clip(r.range, 60) || "-", 점수: r.weighted ? r.right + " / " + r.total + "점" : r.right + " / " + r.total + "문항 (" + r.pct + "점)",
+      결과: ps ? (passOk ? "통과" : "재시험 필요 (통과 기준 " + (ps.by === "cnt" ? ps.v + "개" : ps.v + "점") + ")") : gradeOf(r.pct), 일시: kstWhen() };
+    const out = (await N_().sendMany([{ to: ph, vars }], TEST_TPL))[0] || {};
+    return "📲 " + (out.ok ? out.msg : out.how === "off" ? "알림 발송 설정 전" : out.msg || "알림 실패");
+  } catch (e) { return "📲 알림 실패"; }
+}
+const N_ = () => require("./_notify.js");
+async function attemptsOf(pid, sid, onlyToday) {
+  const and = [{ property: "시험지", relation: { contains: uuid(pid) } }, { property: "학생", relation: { contains: uuid(sid) } }];
+  if (onlyToday) and.push({ property: "시험일", date: { equals: today() } });
+  const q = await notion("databases/" + EXAM_DB() + "/query", "POST", { page_size: 100, filter: { and }, sorts: [{ timestamp: "created_time", direction: "descending" }] });
+  return q ? q.results || [] : undefined;
 }
 async function findAttempt(pid, sid) {
   const q = await notion("databases/" + EXAM_DB() + "/query", "POST", { page_size: 5, filter: { and: [{ property: "시험지", relation: { contains: uuid(pid) } }, { property: "학생", relation: { contains: uuid(sid) } }] } });
@@ -758,9 +788,40 @@ let tCache = null;
 async function teacherRows(fresh) {
   if (!fresh && tCache && Date.now() - tCache.t < 30000) return tCache.rows;
   const rows = await queryAll(TEACHER_DB(), {}, 2);
-  const out = (rows || []).map((p) => ({ id: normId(p.id), name: P.title(p, "이름"), active: P.chk(p, "사용"), hash: P.text(p, "코드"), contact: P.text(p, "상담 안내"), reportUrl: (p.properties["리포트 위치"] || {}).url || "" })).filter((r) => r.name);
+  const out = (rows || []).map((p) => ({ id: normId(p.id), name: P.title(p, "이름"), active: P.chk(p, "사용"), hash: P.text(p, "코드"), contact: P.text(p, "상담 안내"), reportUrl: (p.properties["리포트 위치"] || {}).url || "" })).filter((r) => r.name && r.name !== NET_NAME);
   if (rows) tCache = { t: Date.now(), rows: out };
   return out;
+}
+// 🏫 학원 인터넷(공인 IP) 목록: 선생님 DB의 특별한 줄 「🏫 학원 인터넷」(코드 없음 → 로그인 불가)의 「상담 안내」 칸에 JSON으로
+const NET_NAME = "🏫 학원 인터넷";
+let netCache = null;
+const clientIp = (req) => String((req.headers["x-forwarded-for"] || req.headers["x-real-ip"] || "").split(",")[0]).trim();
+async function netRow(fresh) {
+  if (!fresh && netCache && Date.now() - netCache.t < 30000) return netCache.v;
+  const q = await notion("databases/" + TEACHER_DB() + "/query", "POST", { page_size: 5, filter: { property: "이름", title: { equals: NET_NAME } } });
+  if (!q) return netCache ? netCache.v : null;
+  const p = (q.results || [])[0]; let list = [];
+  if (p) { try { list = JSON.parse(P.text(p, "상담 안내") || "[]"); } catch (e) { list = []; } }
+  const v = { id: p ? normId(p.id) : "", list: Array.isArray(list) ? list.filter((x) => x && x.ip) : [] };
+  netCache = { t: Date.now(), v }; return v;
+}
+async function netSave(list) {
+  const cur = await netRow(true); if (!cur) return false;
+  const props = { "상담 안내": { rich_text: rt(JSON.stringify(list.slice(-20))) } };
+  const pg = cur.id ? await notion("pages/" + id32(cur.id), "PATCH", { properties: props }) : await notion("pages", "POST", { parent: { database_id: TEACHER_DB() }, properties: Object.assign({ "이름": { title: rt(NET_NAME) }, "사용": { checkbox: false } }, props) });
+  netCache = null; return !!pg;
+}
+// IPv6는 같은 와이파이 안에서도 기기마다 끝자리가 달라서 앞 4칸(/64)이 같으면 같은 인터넷으로 봐요
+const netKey = (ip) => { ip = String(ip || "").toLowerCase().replace(/^::ffff:/, ""); if (ip.indexOf(":") < 0) return ip; const [a, b] = ip.split("::"); const A = a ? a.split(":") : [], B = b !== undefined && b ? b.split(":") : []; const g = b !== undefined ? A.concat(Array(Math.max(0, 8 - A.length - B.length)).fill("0"), B) : A; return g.slice(0, 4).map((x) => x.replace(/^0+(?=.)/, "")).join(":") + "::/64"; };
+const sameNet = (a, b) => !!a && !!b && netKey(a) === netKey(b);
+async function atAcademy(req) { const ip = clientIp(req), n = await netRow(); return !!(ip && n && n.list.some((x) => sameNet(x.ip, ip))); }
+// 시험지의 응시 장소 제한: 설정.loc = { wifi: 학원 인터넷에서만, code: 시작 코드(4~6자리) }
+const locOf = (pp) => { const l = pp && pp.cfg && pp.cfg.loc; return l && (l.wifi || l.code) ? { wifi: !!l.wifi, code: l.code ? String(l.code) : "" } : null; };
+async function locCheck(pp, req, code, onlyWifi) {
+  const L = locOf(pp); if (!L) return null;
+  if (L.wifi && !(await atAcademy(req))) return { status: 403, error: "place", msg: "이 시험은 학원 와이파이에서만 볼 수 있어요. 휴대폰을 학원 와이파이에 연결한 뒤(데이터는 끄고) 다시 눌러 주세요." };
+  if (!onlyWifi && L.code && String(code || "").trim() !== L.code) return { status: 403, error: "code", msg: code ? "시작 코드가 맞지 않아요. 선생님께 다시 확인해 주세요." : "선생님이 알려 주는 시작 코드를 넣어 주세요." };
+  return null;
 }
 async function teacherFor(name) { return (await teacherRows()).find((r) => r.name === name) || null; }
 const tFails = new Map();
@@ -904,6 +965,13 @@ module.exports = async function handler(req, res) {
     if (!me) { tFail(ip); return send(401, { error: "code", msg: "선생님 코드가 맞지 않아요." }); }
 
     if (act === "t_hello") return send(200, { ok: true, me: { name: me.name, master: !!me.master } }); // 메인 화면 선생님 로그인 확인
+    if (act === "t_net") { // 🏫 학원 인터넷 목록 보기 · 지금 인터넷 등록 · 지우기
+      const ip = clientIp(req), cur = await netRow(true); if (!cur) return send(502, { error: "notion", msg: "학원 인터넷 목록을 읽지 못했어요.", debug: lastErr });
+      let list = cur.list.slice();
+      if (b.op === "add") { if (!ip) return send(400, { error: "ip", msg: "지금 인터넷 주소를 알 수 없어요." }); list = list.filter((x) => !sameNet(x.ip, ip)).concat([{ ip, label: clip(b.label, 30) || "학원 와이파이", by: me.name, at: today() }]); if (!(await netSave(list))) return send(502, { error: "notion", msg: "저장하지 못했어요.", debug: lastErr }); }
+      if (b.op === "del") { list = list.filter((x) => x.ip !== clip(b.ip, 60)); if (!(await netSave(list))) return send(502, { error: "notion", msg: "저장하지 못했어요.", debug: lastErr }); }
+      return send(200, { ok: true, myIp: ip, here: list.some((x) => sameNet(x.ip, ip)), list: list.map((x) => Object.assign({}, x, { mine: sameNet(x.ip, ip) })) });
+    }
     if (act === "t_me") { // 내 상담 안내 문구 · 리포트 위치 저장
       const props = { "상담 안내": { rich_text: rt(clip(b.contact, 1500)) }, "리포트 위치": { url: /^https?:\/\//.test(b.reportUrl || "") ? clip(b.reportUrl, 500) : null } };
       const pg = me.id ? await notion("pages/" + me.id, "PATCH", { properties: props })
@@ -988,7 +1056,10 @@ module.exports = async function handler(req, res) {
       const cfg = { units, books, seed: (old && old.cfg.seed) || clip(f.seed, 40).replace(/[^\w-]/g, "") || hash(Date.now() + title, 12), exclude: (Array.isArray(f.exclude) ? f.exclude : (old && old.cfg.exclude) || []).slice(0, 500), vtypes: (Array.isArray(f.vtypes) ? f.vtypes : (old && old.cfg.vtypes) || []).filter((t) => V.VT_IDS.includes(t)), place: clip(f.place != null ? f.place : (old && old.cfg.place) || "", 1500), sections: f.sections !== undefined ? cleanSections(f.sections) : (old && old.cfg.sections) || [], speaker: f.listen !== undefined ? f.listen === "speaker" : f.speaker !== undefined ? !!f.speaker : !!(old && old.cfg.speaker), listen: f.listen !== undefined ? listenMode({ listen: f.listen }) : (old && old.cfg.listen) || undefined, audioDir: f.audioDir !== undefined ? cleanAudioDir(f.audioDir) : (old && old.cfg.audioDir) || "", grades: (Array.isArray(f.grades) ? f.grades : (old && old.cfg.grades) || []).filter((g) => GRADES.includes(g)),
         pass: f.pass !== undefined ? passCfg(f.pass) || undefined : (old && passCfg(old.cfg.pass)) || undefined,
         omr: omr ? { text: clip(f.omr.text, 6000), items: omr.items } : undefined,
-        kbd: f.kbd !== undefined ? !!f.kbd : old ? old.cfg.kbd : undefined, // ⌨️ 학생 화면 자체 키보드 (자동완성 막기)
+        kbd: f.kbd !== undefined ? !!f.kbd : old ? old.cfg.kbd : undefined,
+        notify: f.notify !== undefined ? (f.notify === "each" || f.notify === "first" ? f.notify : undefined) : (old && old.cfg.notify) || undefined, // 📲 학부모님께 결과 바로 보내기
+        loc: f.loc !== undefined ? (f.loc && (f.loc.wifi || f.loc.code) ? { wifi: !!f.loc.wifi, code: String(f.loc.code || "").replace(/\D/g, "").slice(0, 6) } : undefined) : (old && old.cfg.loc) || undefined, // 🏫 응시 장소 제한
+        self: f.self !== undefined ? (f.self && typeof f.self === "object" ? { perDay: num(f.self.perDay, 0, 50, 3) } : undefined) : (old && old.cfg.self) || undefined, // 📝 자율 단어시험 // ⌨️ 학생 화면 자체 키보드 (자동완성 막기)
         skip: old && Array.isArray(old.cfg.skip) && old.cfg.skip.length ? old.cfg.skip : undefined, // 「다른 시험으로 봄」 학생은 고쳐 저장해도 그대로
         target: f.target !== undefined ? targetOf({ cfg: { target: f.target } }) || undefined : (old && targetOf(old)) || undefined,
         ai: f.ai && typeof f.ai === "object" ? { fill: f.ai.fill !== false, variant: num(f.ai.variant, 0, 100, 0), extra: num(f.ai.extra, 0, 60, 0) } : (old && old.cfg.ai) || undefined };
@@ -1173,6 +1244,7 @@ module.exports = async function handler(req, res) {
     if (act === "t_hw_bulk") { const r = await HW().teacherBulk(me, b.items); return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg }); }
     if (act === "t_hw_detail") { const r = await HW().teacherDetail(clip(b.id, 60)); return r ? send(200, Object.assign({ ok: true }, r)) : send(404, { error: "nf", msg: "과제를 찾지 못했어요." }); }
     if (act === "t_hw_check") { const r = await HW().cron({ only: clip(b.id, 60) || undefined }); return send(200, r); }
+    if (act === "t_test_tpl") { const N2 = N_(); return send(200, { ok: true, template: TEST_TPL.template, env: TEST_TPL.tplEnv, mode: N2.mode(TEST_TPL), sample: N2.fill({ 학원: N2.ACADEMY(), 학생: "김민준", 시험: "자율 단어시험 · 중2 사관반", 범위: "워드마스터 Day 43~44", 점수: "18 / 20문항 (90점)", 결과: "통과", 일시: "12/1(화) 17:40" }, TEST_TPL.template) }); }
     if (act === "t_hw_template") { const N2 = require("./_notify.js"); return send(200, { ok: true, template: N2.TEMPLATE, sample: N2.fill({ 학원: N2.ACADEMY(), 학생: "김민준", 과제: "Day 3 단어 쓰기", 마감: "11/5(목) 21:00" }), mode: N2.mode() }); }
     if (act === "t_assign") { // 반배정: 학생의 반을 바꿔요 (노션 학생 DB의 '반')
       const cls = clip(b.cls, 40), sid = clip(b.sid, 60), list = await classList();
@@ -1194,7 +1266,7 @@ module.exports = async function handler(req, res) {
       let nm = new Map(); if (extraIds.length) { const a = await STU().all().catch(() => null); nm = new Map(((a && a.students) || []).map((x) => [x.id, x])); }
       const list = (ros || []).map((s) => ({ name: s.name, sid: s.id })).concat(extraIds.map((k) => ({ name: nm.get(k) ? nm.get(k).name : "(다른 반 학생)", sid: k })));
       const info = new Map((ros || []).map((s) => [s.id, s]).concat(extraIds.filter((k) => nm.get(k)).map((k) => [k, { cls: nm.get(k).cls, grade: nm.get(k).grade || "" }])));
-      const recRow = (s, st, p) => Object.assign({ name: s.name, sid: s.sid, cls: st.cls || P.sel(p, "반") || "", sgrade: st.grade || "", school: st.school || "", rec2: P.text(p, "추천 반"), url: p.url, rec: normId(p.id), made: String(p.created_time || "").slice(0, 16), how: P.sel(p, "응시 방식"), report: (p.properties["분석 리포트"] || {}).url || "", mins: P.num(p, "소요시간(분)"), away: P.num(p, "자리비움"), units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }, attemptSummary(p));
+      const recRow = (s, st, p) => Object.assign({ name: s.name, sid: s.sid, cls: st.cls || P.sel(p, "반") || "", sgrade: st.grade || "", school: st.school || "", rec2: P.text(p, "추천 반"), url: p.url, rec: normId(p.id), made: String(p.created_time || "").slice(0, 16), how: P.sel(p, "응시 방식"), range: P.text(p, "시험 범위"), report: (p.properties["분석 리포트"] || {}).url || "", mins: P.num(p, "소요시간(분)"), away: P.num(p, "자리비움"), units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }, attemptSummary(p));
       const out = list.map((s) => { const p = done.get(s.sid), st = info.get(s.sid) || {}; return p ? recRow(s, st, p) : { name: s.name, sid: s.sid, cls: st.cls || "", sgrade: st.grade || "", school: st.school || "", missing: true }; });
       list.forEach((s) => (byS.get(s.sid) || []).slice(1).forEach((p) => out.push(Object.assign(recRow(s, info.get(s.sid) || {}, p), { dup: true }))));
       return send(200, { ok: true, paper: pub(pp), rows: out });
@@ -1215,7 +1287,7 @@ module.exports = async function handler(req, res) {
       if (!cls || !kind || !isD(b.from) || !isD(b.to)) return send(400, { error: "input", msg: "반·종류·기간을 골라 주세요." });
       const [rows, ros] = await Promise.all([queryAll(EXAM_DB(), { filter: { and: [{ property: "반", select: { equals: cls } }, { property: "종류", select: { equals: kind } }, { property: "시험일", date: { on_or_after: b.from } }, { property: "시험일", date: { on_or_before: b.to } }] }, sorts: [{ property: "시험일", direction: "ascending" }] }, 15), roster(cls)]);
       if (!rows) return send(502, { error: "notion", msg: "시험 기록을 불러오지 못했어요.", debug: lastErr });
-      const recs = rows.map((p) => { const score = P.num(p, "점수"), total = P.num(p, "만점"), f = P.formula(p, "환산점수"); return { sid: P.rel(p, "학생")[0] || "", title: P.title(p, "시험명"), date: ((P.date(p, "시험일") || {}).start || "").slice(0, 10), score, total, pct: typeof f === "number" ? f : (total ? Math.round(score / total * 1000) / 10 : null), paper: normId(P.rel(p, "시험지")[0] || ""), range: P.text(p, "시험 범위"), url: p.url }; }).filter((r) => r.sid && r.date);
+      const recs = rows.map((p) => { const score = P.num(p, "점수"), total = P.num(p, "만점"), f = P.formula(p, "환산점수"); return { sid: P.rel(p, "학생")[0] || "", title: P.title(p, "시험명"), date: ((P.date(p, "시험일") || {}).start || "").slice(0, 10), score, total, pct: typeof f === "number" ? f : (total ? Math.round(score / total * 1000) / 10 : null), paper: normId(P.rel(p, "시험지")[0] || ""), range: P.text(p, "시험 범위"), how: P.sel(p, "응시 방식"), url: p.url }; }).filter((r) => r.sid && r.date);
       // 지금은 이 반이 아닌 학생(반 이동·휴원·퇴원)의 기록도 이름을 찾아 보여 줘요
       const students = (ros || []).map((x) => ({ sid: x.id, name: x.name })), have = new Set(students.map((x) => x.sid)), extra = [...new Set(recs.map((r) => r.sid))].filter((x) => !have.has(x));
       if (extra.length) { const a = await STU().all(), nm = new Map(((a && a.students) || []).map((x) => [x.id, x])); extra.forEach((sid) => { const x = nm.get(sid); students.push({ sid, name: x ? x.name : "(이름 없음)", gone: x ? (x.cls !== cls ? x.cls : x.status) || "다른 반" : "기록만 있음" }); }); }
@@ -1564,10 +1636,17 @@ module.exports = async function handler(req, res) {
   if (act === "s_open") {
     const pp = await getPaper(b.id); if (!pp) return send(404, { error: "nf", msg: "시험을 찾지 못했어요." });
     if (!(await canTakeWho(pp, who))) return send(403, { error: "cls", msg: targetOf(pp) ? "이 공통 시험(" + targetText(targetOf(pp)) + ") 대상이 아니에요." : "우리 반 시험이 아니에요." });
-    const att = await findAttempt(pp.id, who.sid);
+    const SELF = selfOf(pp); let selfInfo = null;
+    if (SELF) { // 자율: 오늘 본 횟수와 지난 기록 몇 개
+      const all = await attemptsOf(pp.id, who.sid, false); if (all === undefined) return send(502, { error: "notion", msg: "응시 기록을 확인하지 못했어요. 잠시 뒤 다시 해 주세요.", debug: lastErr });
+      const td = all.filter((p) => ((P.date(p, "시험일") || {}).start || "") === today()).length;
+      selfInfo = { perDay: SELF.perDay, today: td, left: SELF.perDay ? Math.max(0, SELF.perDay - td) : null, recent: all.slice(0, 5).map((p) => Object.assign(attemptSummary(p), { range: P.text(p, "시험 범위") })) };
+    }
+    const att = SELF ? null : await findAttempt(pp.id, who.sid);
     if (att === undefined) return send(502, { error: "notion", msg: "응시 기록을 확인하지 못했어요. 잠시 뒤 다시 해 주세요.", debug: lastErr });
     if (att) return send(200, { ok: true, paper: pub(pp), taken: true, result: pp.show ? Object.assign(attemptSummary(att), { url: undefined }) : null });
-    const closed = openNow(pp);
+    let closed = openNow(pp);
+    const lc = await locCheck(pp, req, "", true); if (!closed && lc) closed = lc.msg; // 🏫 학원 와이파이가 아니면 시작 화면에서 바로 알려 줘요
     let choose = null;
     if (pp.mode === "choice") { // 학생이 고를 수 있는 교재·과
       const allowU = new Set(pp.cfg.units || []), allowB = new Set(pp.cfg.books || []);
@@ -1576,15 +1655,21 @@ module.exports = async function handler(req, res) {
         chapters: bk.chapters.map((c) => ({ name: c.name, units: c.units.filter((u) => allowB.has(bk.id) || allowU.has(u.id)).map((u) => ({ id: u.id, name: u.name })) })).filter((c) => c.units.length),
       }));
     }
-    return send(200, { ok: true, paper: pub(pp), closed, choose, name: who.name });
+    return send(200, { ok: true, paper: pub(pp), closed, choose, name: who.name, selfInfo });
   }
 
   if (act === "s_start") {
     const pp = await getPaper(b.id); if (!pp) return send(404, { error: "nf", msg: "시험을 찾지 못했어요." });
     if (!(await canTakeWho(pp, who))) return send(403, { error: "cls", msg: targetOf(pp) ? "이 공통 시험(" + targetText(targetOf(pp)) + ") 대상이 아니에요." : "우리 반 시험이 아니에요." });
     const closed = openNow(pp); if (closed) return send(403, { error: "closed", msg: closed });
-    const att = await findAttempt(pp.id, who.sid);
-    if (att) return send(409, { error: "taken", msg: "이미 응시한 시험이에요." });
+    const lc = await locCheck(pp, req, b.code); if (lc) return send(lc.status, { error: lc.error, msg: lc.msg });
+    const SELF = selfOf(pp);
+    if (SELF) { // 자율: 하루 횟수만 확인 (여러 번 볼 수 있어요)
+      if (SELF.perDay) { const td = await attemptsOf(pp.id, who.sid, true); if (td === undefined) return send(502, { error: "notion", msg: "응시 기록을 확인하지 못했어요. 잠시 뒤 다시 해 주세요." }); if (td.length >= SELF.perDay) return send(409, { error: "limit", msg: "오늘은 " + SELF.perDay + "번 다 봤어요. 내일 다시 도전해요!" }); }
+    } else {
+      const att = await findAttempt(pp.id, who.sid);
+      if (att) return send(409, { error: "taken", msg: "이미 응시한 시험이에요." });
+    }
     let uids = pp.cfg.units || [];
     if (pp.mode === "choice") {
       const allowU = new Set(pp.cfg.units || []), allowB = new Set(pp.cfg.books || []);
@@ -1596,7 +1681,8 @@ module.exports = async function handler(req, res) {
       const key = seal({ sid: who.sid, pid: pp.id, t0, dl, units: [], items: sheet.key });
       return send(200, { ok: true, paper: Object.assign(pub(pp), { sections: omrSections(omrOf(pp)) }), questions: sheet.view, key, t0, deadline: dl, range: "종이 시험지" });
     }
-    const { picked, keep, lack } = await makeSheet(pp, uids, who.sid);
+    // 자율: 볼 때마다 새 문제 (뽑는 씨앗을 매번 바꿔요)
+    const { picked, keep, lack } = await makeSheet(SELF ? Object.assign({}, pp, { cfg: Object.assign({}, pp.cfg, { seed: crypto.randomBytes(6).toString("hex") }) }) : pp, uids, who.sid);
     if (lack && lack.length) return send(409, { error: "few", msg: "시험 문제가 아직 다 준비되지 않았어요. 선생님께 알려 주세요. (" + lack.join(", ") + ")" });
     if (picked.length < Math.min(keep ? 1 : 5, pp.count)) return send(409, { error: "few", msg: "고른 범위에 문제가 부족해요. 과를 더 골라 주세요." });
     const sheet = buildSheet(picked, rngOf((pp.cfg.seed || pp.id) + "|" + who.sid + "|" + Date.now()), keep);
@@ -1607,7 +1693,7 @@ module.exports = async function handler(req, res) {
       if (dir) sheet.view.forEach((v) => { if (v.area === "듣기") { ln++; if (!v.audio) v.audio = encodeURI(dir + ln + ".mp3"); } });
     }
     const t0 = Date.now(), dl = pp.minutes ? t0 + pp.minutes * 60000 : 0;
-    const key = seal({ sid: who.sid, pid: pp.id, t0, dl, units: uids, items: sheet.key });
+    const key = seal({ sid: who.sid, pid: pp.id, t0, dl, units: uids, items: sheet.key, self: SELF ? 1 : 0 });
     return send(200, { ok: true, paper: pub(pp), questions: sheet.view, key, t0, deadline: dl, range: pp.mode === "choice" ? rangeText(uids) : pp.range });
   }
 
@@ -1615,8 +1701,9 @@ module.exports = async function handler(req, res) {
     const key = unseal(b.key);
     if (!key || key.sid !== who.sid) return send(400, { error: "key", msg: "시험지 정보가 맞지 않아요. 선생님께 알려 주세요." });
     const pp = await getPaper(key.pid); if (!pp) return send(404, { error: "nf", msg: "시험을 찾지 못했어요." });
-    const att = await findAttempt(pp.id, who.sid);
-    if (att) return send(200, { ok: true, dup: true, result: pp.show ? attemptSummary(att) : null, show: pp.show });
+    const att = key.self ? ((await attemptsOf(pp.id, who.sid, false)) || [])[0] || null : await findAttempt(pp.id, who.sid);
+    // 자율 시험은 여러 번 볼 수 있어요: 이 시험지(시작 시각)보다 나중에 저장된 기록이 있을 때만 「이미 제출」
+    if (att && (!key.self || Date.parse(att.created_time) >= key.t0 - 1000)) return send(200, { ok: true, dup: true, result: pp.show ? attemptSummary(att) : null, show: pp.show });
     const answers = Array.isArray(b.answers) ? b.answers.slice(0, key.items.length) : [];
     const res1 = grade(key, answers);
     await judgeMeanings(key, res1); // 📒 뜻 쓰기: 비슷한 뜻은 AI가 확인해서 정답 처리
@@ -1645,7 +1732,7 @@ module.exports = async function handler(req, res) {
     const props = {
       "시험명": { title: rt(pp.title) }, "학생": { relation: [{ id: uuid(who.sid) }] }, "시험지": { relation: [{ id: uuid(pp.id) }] }, "반": sel(targetOf(pp) ? who.cls || pp.cls : pp.cls), "종류": sel(pp.kind || "월간평가"),
       "시험일": { date: { start: today() } }, "시험 범위": { rich_text: rt(range) }, "점수": { number: right }, "만점": { number: total }, "오답 수": { number: nTot - nRight },
-      "종합 평가": sel(gradeOf(pct)), "코멘트": { rich_text: rt(comment) }, "응시 방식": sel("온라인"), "소요시간(분)": { number: mins }, "자리비움": { number: away },
+      "종합 평가": sel(gradeOf(pct)), "코멘트": { rich_text: rt(comment) }, "응시 방식": sel(key.self ? "자율" : "온라인"), "소요시간(분)": { number: mins }, "자리비움": { number: away },
       "단원 분석": { rich_text: rtLong(JSON.stringify(units)) },
       ...(rec2 ? { "추천 반": { rich_text: rt(rec2) } } : {}),
       // 분석 리포트용: 문항마다 영역·단원·학생 답·정답 (짧게)
@@ -1665,7 +1752,9 @@ module.exports = async function handler(req, res) {
     if (wrongs.length) { children.push(H("틀린 문제 해설")); wrongs.slice(0, 40).forEach((w) => children.push({ object: "block", type: "bulleted_list_item", bulleted_list_item: { rich_text: rt((w.i + 1) + "번 · 정답 " + w.k.answer + (w.k.exp ? " — " + w.k.exp : "")) } })); }
     const pg = await notion("pages", "POST", { parent: { database_id: EXAM_DB() }, properties: props, children });
     if (!pg) return send(502, { error: "notion", msg: "결과를 저장하지 못했어요. 다시 제출해 주세요. (답은 그대로 남아 있어요)", debug: lastErr });
-    const out = { ok: true, show: pp.show, saved: true, areas: pp.show ? areaSum : undefined };
+    const sentNote = await notifyParent(pp, who, pg.id, { right, total, pct, nRight, nTot, range, weighted });
+    if (sentNote) await notion("pages/" + id32(pg.id), "PATCH", { properties: { "코멘트": { rich_text: rt(clip((comment ? comment + " · " : "") + sentNote, 1900)) } } });
+    const out = { ok: true, show: pp.show, saved: true, areas: pp.show ? areaSum : undefined, sent: /보냄$/.test(sentNote) };
     if (pp.show) Object.assign(out, { result: { score: right, total, pct, grade: gradeOf(pct), comment, mins }, units, items: key.items.map((k, i) => ({ n: i + 1, q: k.q, sub: k.sub, given: res1[i].given, answer: k.answer, ok: res1[i].ok, exp: k.exp, unit: k.ch || k.unit, ai: res1[i].ai || "" })) });
     return send(200, out);
   }

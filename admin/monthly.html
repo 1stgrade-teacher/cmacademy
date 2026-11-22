@@ -210,10 +210,33 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         <div><label class="l">제한시간(분, 0=없음)</label><input id="eMin" type="number" min="0" max="180" value="30"></div>
       </div>
       <div class="hint" id="modeHint"></div>
+      <div id="selfBox" style="display:none;margin-top:10px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px;background:#F7FBFB">
+        <label style="margin:0;font-weight:800"><input type="checkbox" id="eSelf"> 📝 자율 단어시험 (학생이 언제든 여러 번 · 볼 때마다 새 문제)</label>
+        <div class="row" style="margin-top:6px;gap:8px;align-items:center"><span class="hint" style="margin:0">하루에</span><input id="ePerDay" type="number" min="0" max="50" value="3" style="width:70px"><span class="hint" style="margin:0">번까지 (0 = 무제한)</span></div>
+        <div class="hint" style="margin:6px 0 0;line-height:1.7">학생 시험 목록에 이 시험이 항상 떠 있고, 학생이 아래에서 고른 단어장 안에서 <b>그날 볼 Day를 직접 골라</b> 시험을 봐요. 문항 수·유형·제한시간·통과 기준은 이 시험지 설정대로, 문제는 매번 새로 뽑아요. 기록은 모두 남아서 📊 응시 결과에서 날짜·범위별로 볼 수 있어요. 응시 기간 끝 날짜를 넉넉히(예: 학기 끝) 잡아 두세요.</div>
+      </div>
       </div>
       <div style="margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px">
         <label style="margin:0;font-weight:800"><input type="checkbox" id="eKbd"> ⌨️ 학생 화면에 자체 키보드 (자동완성 막기)</label>
         <span class="hint" style="margin:0">휴대폰·태블릿에서 쓰기 문제(철자·뜻 쓰기·서술형)를 누르면 휴대폰 키보드 대신 시험용 키보드가 떠요. 단어 추천·자동완성이 없어요. 한글·영어·숫자 모두 돼요. (만든 학생: 김태호)</span>
+      </div>
+      <div id="ntBox" style="margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px">
+        <label style="margin:0;font-weight:800"><input type="checkbox" id="eNt"> 📲 시험이 끝나면 학부모님께 결과 바로 보내기 (카카오 알림톡)</label>
+        <div id="ntIn" style="display:none;margin:6px 0 0 22px">
+          <div class="seg" style="display:inline-flex"><label><input type="radio" name="ntHow" value="each" checked>볼 때마다</label><label><input type="radio" name="ntHow" value="first">하루 첫 응시만</label></div>
+          <div id="ntInfo" class="hint" style="margin:6px 0 0;line-height:1.7">불러오는 중…</div>
+        </div>
+      </div>
+      <div id="locBox" style="margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px">
+        <div style="font-weight:800">🏫 응시 장소 제한 <span class="hint" style="margin:0;font-weight:400">(선생님이 시험지마다 정해요 · 학생은 바꿀 수 없어요 · 안 고르면 어디서든 볼 수 있어요)</span></div>
+        <label style="margin:8px 0 0;font-weight:700"><input type="checkbox" id="eLocWifi"> 📶 학원 인터넷(와이파이)에서만 볼 수 있게</label>
+        <div id="locNet" style="display:none;margin:6px 0 0 22px;padding:8px 10px;background:#F7FBFB;border-radius:8px">
+          <div id="netList" class="hint" style="margin:0">불러오는 중…</div>
+          <div class="row" style="margin-top:6px;gap:6px;align-items:center"><input id="netLabel" placeholder="이름 (예: 2층 강의실 와이파이)" style="max-width:240px"><button type="button" class="sm" id="netAdd">📍 지금 이 인터넷을 학원으로 등록</button></div>
+          <div class="hint" style="margin:6px 0 0;line-height:1.7">학원 와이파이에 연결된 이 기기에서 한 번만 누르면 돼요(학원 전체에 한 번 · 모든 시험지에 같이 쓰여요). 와이파이 공유기가 여러 개거나 층마다 인터넷이 다르면 각각 연결해서 등록하세요. 학생은 <b>휴대폰 데이터를 끄고 학원 와이파이에 연결</b>해야 시험이 열려요. 학원 와이파이에 연결했는데도 학생이 「학원에서만」 안내를 보면(인터넷 회사가 주소를 바꾼 경우 등), 그 학생 휴대폰으로 선생님 화면에 들어가 이 버튼을 한 번 더 누르거나 선생님 기기로 다시 등록하세요.</div>
+        </div>
+        <label style="margin:8px 0 0;font-weight:700"><input type="checkbox" id="eLocCode"> 🔑 시작 코드를 넣어야 시작할 수 있게</label>
+        <div id="locCodeIn" style="display:none;margin:6px 0 0 22px" class="row"><input id="eCode" inputmode="numeric" maxlength="6" placeholder="4자리 숫자" style="width:110px;font-size:18px;letter-spacing:3px;font-weight:800"><button type="button" class="sm sub" id="codeRnd">🎲 새 코드</button><span class="hint" style="margin:0">시험 시작할 때 칠판에 적거나 말로 알려 주세요. 매번 바꾸려면 여기서 고치고 저장하면 돼요.</span></div>
       </div>
       <div id="omrBox" style="margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px">
         <label style="margin:0;font-weight:800"><input type="checkbox" id="eOmrOn"> 📝 종이 시험지 + OMR 답만 입력</label>
@@ -1557,7 +1580,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     var groups = {}; list.forEach(function (p) { var k = p.cls + " · " + (p.period || "시기 없음"); (groups[k] = groups[k] || []).push(p); });
     $("paperList").innerHTML = Object.keys(groups).sort(function (a, b) { return a.localeCompare(b, "ko", { numeric: true }); }).map(function (k) {
       return '<div class="grp"><div class="gh">' + esc(k) + "</div>" + groups[k].map(function (p) {
-        return '<div class="paper"><div class="b"><div class="t">' + esc(p.title) + " " + stPill(p.status) + ' <span class="pill ' + (p.kind === "분기평가" ? "q" : p.kind === "단어시험" ? "v" : p.kind === "주간평가" ? "w" : p.kind === "반배정시험" ? "p" : "m") + '">' + esc(p.kind) + "</span>" + (p.target ? ' <span class="pill go" title="공통 시험">👥 ' + esc(p.targetText || "공통") + "</span>" : "") + "</div>" +
+        return '<div class="paper"><div class="b"><div class="t">' + esc(p.title) + " " + stPill(p.status) + ' <span class="pill ' + (p.kind === "분기평가" ? "q" : p.kind === "단어시험" ? "v" : p.kind === "주간평가" ? "w" : p.kind === "반배정시험" ? "p" : "m") + '">' + esc(p.kind) + "</span>" + (p.target ? ' <span class="pill go" title="공통 시험">👥 ' + esc(p.targetText || "공통") + "</span>" : "") + (p.cfg && p.cfg.notify ? ' <span class="pill" title="시험이 끝나면 학부모님께 결과를 바로 보내요">📲 학부모 알림</span>' : "") + (p.cfg && p.cfg.loc && p.cfg.loc.wifi ? ' <span class="pill" title="학원 인터넷에서만 응시">🏫 학원에서만</span>' : "") + (p.cfg && p.cfg.loc && p.cfg.loc.code ? ' <span class="pill" title="학생이 넣을 시작 코드">🔑 코드 ' + esc(p.cfg.loc.code) + "</span>" : "") + "</div>" +
           '<div class="m">' + (p.teacher ? "출제 <b>" + esc(p.teacher) + "</b> · " : "") + esc(p.mode === "choice" ? "학생 선택형" : "선생님 지정") + " · " + esc(p.level) + " · " + p.count + "문항 · " + (p.minutes ? p.minutes + "분" : "시간 제한 없음") + (p.start ? " · " + esc(p.start) + "~" + esc(p.end || "") : "") + "<br>" + esc(p.range || (p.cfg && p.cfg.books ? "" : "")) +
           '<br>응시 <b>' + (p.takers || 0) + "명</b>" + (p.avg != null ? " · 평균 <b>" + round1(p.avg) + "점</b>" : "") + "</div>" +
           '<div class="copy">학생 링크: ' + esc(studentLink(p)) + "</div></div>" +
@@ -1659,6 +1682,49 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   }
   document.addEventListener("input", function (e) { if (e.target && e.target.closest && e.target.closest("#secTbl")) secSum(); });
   $("eAudioTry").onclick = function () { var d = $("eAudio").value.trim(); if (!d) { alert("음원 폴더를 먼저 써 주세요."); return; } if (d.slice(-1) !== "/") d += "/"; var a = $("eAudioPv"); a.style.display = ""; a.src = encodeURI(d + "1.mp3"); a.onerror = function () { alert("1.mp3를 찾지 못했어요. 폴더 주소를 확인해 주세요."); }; a.play().catch(function () {}); };
+  // ---------- 📲 시험 끝나면 학부모님께 결과 알림 ----------
+  var NT_INFO = null;
+  function ntLoad(v) { $("eNt").checked = !!v; var r = document.querySelector('input[name=ntHow][value="' + (v === "first" ? "first" : "each") + '"]'); if (r) r.checked = true; ntUi(); }
+  function ntUi() {
+    $("ntIn").style.display = $("eNt").checked ? "" : "none"; if (!$("eNt").checked) return;
+    if (NT_INFO) return ntShow(NT_INFO);
+    post({ action: "t_test_tpl" }).then(function (j) { if (j.ok) NT_INFO = j; ntShow(j); });
+  }
+  function ntShow(j) {
+    if (!j || !j.ok) { $("ntInfo").innerHTML = '<span class="er">' + esc((j && j.msg) || "알림 설정을 불러오지 못했어요.") + "</span>"; return; }
+    var M = { kakao: '<span class="ok">✅ 카카오 알림톡으로 보내요</span> (안 되면 문자)', sms: '<span style="color:#9A5B00">📱 지금은 <b>문자(LMS)</b>로 보내요</span> — 알림톡 템플릿을 등록해 Vercel에 <b>' + esc(j.env) + "</b>을 넣으면 알림톡으로 바뀌어요(더 싸요).", off: '<span class="er">⚠️ 문자 발송 설정 전</span> — 지금은 보내지 않고 기록 코멘트에 「알림 발송 설정 전」만 남아요.' };
+    $("ntInfo").innerHTML = M[j.mode] + "<br>학생 기록의 <b>학부모 연락처</b>로 보내요(📋 학생 명단에서 「알림 끄기」한 학생은 빼요). 보냈는지는 📊 응시 결과의 코멘트에 「📲 알림톡 보냄」으로 남아요." +
+      '<details style="margin-top:4px"><summary style="cursor:pointer">학부모님이 받는 문구 보기 · 알림톡 템플릿 등록용</summary><pre style="white-space:pre-wrap;background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px;margin:6px 0;font-size:13px">' + esc(j.sample) + '</pre><div class="hint" style="margin:0">솔라피 → 카카오 알림톡 → 템플릿 등록에 아래 문구를 그대로 붙여 넣고, 심사 통과 후 나온 템플릿 ID(KA01TP…)를 Vercel 환경 변수 <b>' + esc(j.env) + '</b>에 넣고 Redeploy 하세요.</div><pre style="white-space:pre-wrap;background:#F7FBFB;border:1px solid var(--line);border-radius:8px;padding:8px;margin:6px 0;font-size:13px" id="ntTpl">' + esc(j.template) + '</pre><button type="button" class="sm sub" id="ntCopy">📋 템플릿 문구 복사</button></details>' +
+      ($("eSelf").checked ? "" : '<div style="margin-top:4px">💡 「하루 첫 응시만」은 📝 자율 단어시험처럼 여러 번 보는 시험에 쓰면 좋아요.</div>');
+    var c = $("ntCopy"); if (c) c.onclick = function () { (navigator.clipboard ? navigator.clipboard.writeText(j.template) : Promise.reject()).then(function () { c.textContent = "복사했어요 ✓"; }, function () { c.textContent = "복사 안 됨 — 위 글을 직접 복사하세요"; }); };
+  }
+  $("eNt").addEventListener("change", ntUi);
+
+  // ---------- 🏫 응시 장소 제한 (학원 인터넷 · 시작 코드) ----------
+  function locUi() { $("locNet").style.display = $("eLocWifi").checked ? "" : "none"; $("locCodeIn").style.display = $("eLocCode").checked ? "" : "none"; if ($("eLocWifi").checked) netLoad(); if ($("eLocCode").checked && !$("eCode").value) $("eCode").value = rndCode(); }
+  function rndCode() { return String(1000 + Math.floor(Math.random() * 9000)); }
+  function locLoad(l) { $("eLocWifi").checked = !!(l && l.wifi); $("eLocCode").checked = !!(l && l.code); $("eCode").value = (l && l.code) || ""; locUi(); }
+  function locGet() { return { wifi: $("eLocWifi").checked, code: $("eLocCode").checked ? $("eCode").value.replace(/\D/g, "") : "" }; }
+  function netShow(j) {
+    if (!j || !j.ok) { $("netList").innerHTML = '<span class="er">' + esc((j && j.msg) || "학원 인터넷 목록을 불러오지 못했어요.") + "</span>"; return; }
+    var L = j.list || [];
+    $("netList").innerHTML = (L.length ? "<b>등록된 학원 인터넷</b> " + L.map(function (x) { return '<span class="pill" style="margin:2px">' + esc(x.label || "학원") + ' <span style="opacity:.6">' + esc(x.ip) + "</span>" + (x.mine ? " ✅ 지금 여기" : "") + ' <a href="#" data-netdel="' + esc(x.ip) + '" title="지우기" style="color:#B3261E;text-decoration:none">✕</a></span>'; }).join("") : '<span class="er">아직 등록된 학원 인터넷이 없어요.</span> 이대로 저장하면 학생 누구도 시험을 열 수 없으니 먼저 아래 버튼으로 등록하세요.') +
+      '<div style="margin-top:4px">지금 이 기기의 인터넷: <b>' + esc(j.myIp || "알 수 없음") + "</b> " + (j.here ? '<span class="ok">✅ 학원으로 등록됨</span>' : '<span style="color:#9A5B00">— 등록 안 됨 (학원에 있다면 아래 버튼을 누르세요)</span>') + "</div>";
+    $("netAdd").disabled = !!j.here;
+  }
+  function netLoad() { $("netList").textContent = "불러오는 중…"; post({ action: "t_net" }).then(netShow); }
+  $("eLocWifi").addEventListener("change", locUi); $("eLocCode").addEventListener("change", locUi);
+  $("codeRnd").onclick = function () { $("eCode").value = rndCode(); };
+  $("netAdd").onclick = function () {
+    if (!confirm("지금 이 기기가 연결된 인터넷을 「학원 인터넷」으로 등록할까요?\n(학원 와이파이에 연결된 상태여야 해요. 휴대폰이면 데이터를 끄고 와이파이로 연결하세요.)")) return;
+    $("netAdd").disabled = true; post({ action: "t_net", op: "add", label: $("netLabel").value.trim() }).then(function (j) { $("netLabel").value = ""; netShow(j); });
+  };
+  $("netList").addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest("[data-netdel]"); if (!a) return; e.preventDefault();
+    if (!confirm(a.getAttribute("data-netdel") + " 를 학원 인터넷 목록에서 지울까요?\n(이 인터넷으로는 「학원에서만」 시험을 볼 수 없게 돼요)")) return;
+    post({ action: "t_net", op: "del", ip: a.getAttribute("data-netdel") }).then(netShow);
+  });
+
   // ---------- 👥 공통 시험 대상 ----------
   var COMMON_CLS = "공통 시험", TG = { type: "", grades: [], classes: [] };
   var GR_ALL = ["초1", "초2", "초3", "초4", "초5", "초6", "중1", "중2", "중3", "고1", "고2", "고3"];
@@ -1778,6 +1844,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       : "🎯 <b>선생님 지정</b>: 고른 과에서 반 전체가 <b>같은 문제</b>를 봐요 (문제·보기 순서만 학생마다 섞여요). 미리보기에서 문제를 빼거나 다시 뽑을 수 있어요.";
     $("rangeTitle").textContent = ch ? "학생이 고를 수 있는 교재 (교재 전체 체크 또는 일부 과만)" : "출제 범위 (교재 → 챕터 → 과)";
     $("reseed").style.display = ch ? "none" : "";
+    $("selfBox").style.display = ch ? "" : "none";
   }
   function buildBookFilters() {
     var areas = ["", "문법", "구문", "독해", "교과서", "어휘", "듣기"].filter(function (a) { return !a || DATA.catalog.some(function (b) { return b.area === a; }); }), grades = [""].concat(DATA.catalog.map(function (b) { return b.grade; }).filter(function (g, i, a) { return g && a.indexOf(g) === i; }));
@@ -1843,7 +1910,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     setRadio("mode", "fixed"); setRadio("lv", "2"); $("eCount").value = 20; $("eMin").value = 30; $("eStatus").value = "준비중"; $("eShow").checked = true;
     $("eKind").value = "월간평가"; $("eStart").value = kst(); $("eEnd").value = kst(Date.now() + 6 * 864e5);
     $("aiVar").value = "0"; $("aiExtra").value = "0"; $("aiFill").checked = true;
-    $("ePlace").value = ""; PG = []; passLoad(null); omrLoad(null); $("eKbd").checked = true; tgtLoad(null); secUi(null, null); buildPeriods(); autoTitle(); modeUi(); buildBookFilters(); renderBooks(); vtUi(); placeUi(); $("pv").innerHTML = ""; $("pvInfo").textContent = ""; $("fillBtn").style.display = "none"; $("saveMsg").textContent = "";
+    $("ePlace").value = ""; PG = []; passLoad(null); omrLoad(null); $("eKbd").checked = true; locLoad(null); ntLoad(""); $("eSelf").checked = false; $("ePerDay").value = 3; tgtLoad(null); secUi(null, null); buildPeriods(); autoTitle(); modeUi(); buildBookFilters(); renderBooks(); vtUi(); placeUi(); $("pv").innerHTML = ""; $("pvInfo").textContent = ""; $("fillBtn").style.display = "none"; $("saveMsg").textContent = "";
   }
   function editPaper(p) {
     if (!mayEdit(p)) { alert((p.teacher || "다른 선생님") + "이(가) 만든 시험지예요. 📄 복제해서 써 주세요."); return; }
@@ -1856,7 +1923,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     $("eStart").value = p.start || ""; $("eEnd").value = p.end || ""; $("eStatus").value = p.status; $("eShow").checked = !!p.show;
     (p.cfg.units || []).forEach(function (u) { SEL[u] = 1; }); (p.cfg.books || []).forEach(function (b) { SELB[b] = 1; }); EXCL = (p.cfg.exclude || []).slice();
     var ai = (p.cfg && p.cfg.ai) || {}; $("aiVar").value = String(ai.variant || 0); $("aiExtra").value = String(ai.extra || 0); $("aiFill").checked = ai.fill !== false;
-    passLoad(p.cfg && p.cfg.pass); omrLoad(p.cfg && p.cfg.omr); $("eKbd").checked = !!(p.cfg && p.cfg.kbd); $("ePlace").value = (p.cfg && p.cfg.place) || ""; PG = (p.cfg && p.cfg.grades) || []; secUi(p.cfg && p.cfg.sections, p.cfg); modeUi(); renderBooks(); vtUi(); placeUi(); tab("edit");
+    passLoad(p.cfg && p.cfg.pass); omrLoad(p.cfg && p.cfg.omr); $("eKbd").checked = !!(p.cfg && p.cfg.kbd); locLoad(p.cfg && p.cfg.loc); ntLoad(p.cfg && p.cfg.notify); $("eSelf").checked = !!(p.cfg && p.cfg.self); $("ePerDay").value = p.cfg && p.cfg.self ? p.cfg.self.perDay : 3; $("ePlace").value = (p.cfg && p.cfg.place) || ""; PG = (p.cfg && p.cfg.grades) || []; secUi(p.cfg && p.cfg.sections, p.cfg); modeUi(); renderBooks(); vtUi(); placeUi(); tab("edit");
     if (p.takers) $("saveMsg").innerHTML = '<span class="er">⚠ 이미 ' + p.takers + "명이 응시했어요. 범위·문항을 바꾸면 학생마다 시험지가 달라질 수 있어요.</span>";
   }
   function actbarH() { var a = document.querySelector(".actbar"); if (a) document.documentElement.style.setProperty("--abh", a.offsetHeight + "px"); }
@@ -1873,7 +1940,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     setRadio("mode", p.mode); setRadio("lv", String(["기본", "표준", "심화"].indexOf(p.level) + 1)); $("eCount").value = p.count; $("eMin").value = p.minutes; $("eShow").checked = !!p.show;
     (c.units || []).forEach(function (u) { SEL[u] = 1; }); (c.books || []).forEach(function (b) { SELB[b] = 1; }); EXCL = (c.exclude || []).slice();
     var ai = c.ai || {}; $("aiVar").value = String(ai.variant || 0); $("aiExtra").value = String(ai.extra || 0); $("aiFill").checked = ai.fill !== false;
-    passLoad(c.pass); omrLoad(c.omr); $("eKbd").checked = c.kbd !== false; $("ePlace").value = c.place || ""; PG = (c.grades || []).slice(); secUi(c.sections, c);
+    passLoad(c.pass); omrLoad(c.omr); $("eKbd").checked = c.kbd !== false; locLoad(c.loc); ntLoad(c.notify); $("eSelf").checked = !!c.self; $("ePerDay").value = c.self ? c.self.perDay : 3; $("ePlace").value = c.place || ""; PG = (c.grades || []).slice(); secUi(c.sections, c);
     PV_SEED = String(c.seed || p.id).replace(/[^\w-]/g, ""); // 원본과 같은 문제
     $("eTitle").value = p.title + " (복제)"; titleTouched = true;
     $("editTitle").textContent = "새 시험지 · 📄 " + p.title + " 복제";
@@ -2026,7 +2093,10 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     var paper = { id: EDIT && EDIT.id, title: $("eTitle").value.trim(), cls: tgtSend() ? COMMON_CLS : $("eCls").value, target: tgtSend(), kind: $("eKind").value, period: $("ePeriod").value, status: $("eStatus").value, mode: m, level: level(),
       count: +$("eCount").value, minutes: +$("eMin").value, start: $("eStart").value, end: $("eEnd").value, show: $("eShow").checked, units: units, books: books, exclude: EXCL, reseed: RESEED, vtypes: vtSend(), ai: aiSend(), place: $("ePlace").value.trim(), sections: $("eKind").value === "반배정시험" ? secGet() : [], listen: $("eListen").value, audioDir: $("eAudio").value.trim(), grades: $("eKind").value === "반배정시험" ? PG.slice() : [], pass: passSend() };
     if (!paper.title) { autoTitle(); paper.title = $("eTitle").value; }
-    paper.kbd = $("eKbd").checked; paper.omr = OM ? { text: $("eOmr").value } : null; if (OM) { paper.sections = []; paper.units = []; paper.mode = "fixed"; }
+    paper.self = mode() === "choice" && $("eSelf").checked ? { perDay: +$("ePerDay").value || 0 } : null;
+    paper.kbd = $("eKbd").checked; paper.loc = locGet(); paper.notify = $("eNt").checked ? ((document.querySelector("input[name=ntHow]:checked") || {}).value || "each") : "";
+    if ($("eLocCode").checked && !/^\d{4,6}$/.test(paper.loc.code)) { $("saveMsg").innerHTML = '<span class="er">시작 코드는 숫자 4~6자리로 넣어 주세요.</span>'; return; }
+    paper.omr = OM ? { text: $("eOmr").value } : null; if (OM) { paper.sections = []; paper.units = []; paper.mode = "fixed"; }
     if (paper.target && !tgtOk()) { $("saveMsg").innerHTML = '<span class="er">공통 시험을 볼 ' + ($("eTgt").value === "grade" ? "학년을" : "반을") + " 골라 주세요.</span>"; return; }
     if (!paper.target) lsSet("cm-teacher-cls", paper.cls);
     $("saveBtn").disabled = true; $("saveMsg").textContent = "저장하는 중…";
@@ -2079,9 +2149,21 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       IMP = units; renderImport();
       var nq = units.reduce(function (a, u) { return a + u.questions.length; }, 0);
       var nw = units.reduce(function (a, u) { return a + (u.vocab ? u.words.length : 0); }, 0);
-      $("impMsg").innerHTML = '<span class="ok">읽었어요: ' + units.length + "개 자료" + (nq ? " · 문항 " + nq + "개" : "") + (nw ? " · 📒 단어 " + nw + "개" : "") + "</span> — 아래에서 확인하고 저장해 주세요.";
+      $("impMsg").innerHTML = '<span class="ok">읽었어요: ' + units.length + "개 자료" + (nq ? " · 문항 " + nq + "개" : "") + (nw ? " · 📒 단어 " + nw + "개" : "") + "</span>" + impQuick();
     } catch (err) { $("impMsg").innerHTML = '<span class="er">파일을 읽지 못했어요: ' + esc(err.message) + "</span><br>한글(.hwp)이 안 읽히면 한글에서 <b>다른 이름으로 저장 → .hwpx 또는 PDF</b>로 저장해서 올려 주세요."; }
   }
+  // 읽은 뒤 바로 옆에: 👀 확인하러 가기 · 💾 바로 저장 (아래 카드의 저장 버튼을 대신 눌러요)
+  function impQuick() {
+    return ' <span class="row" style="display:inline-flex;gap:6px;margin:4px 0 0 6px;vertical-align:middle"><button type="button" class="sm sub" onclick="cmImpGo(0)">👀 확인하러 가기 ↓</button><button type="button" class="sm" onclick="cmImpGo(1)">💾 바로 저장' + (IMP.length > 1 ? " (" + IMP.length + "개 모두)" : "") + "</button></span>";
+  }
+  window.cmImpGo = function (save) {
+    var box = $("impUnits"), first = box.querySelector(".card");
+    if (!save) { if (first) first.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+    var b = $("bulkSave") || box.querySelector('.card[data-u] [data-act="save"]');
+    if (!b) { if (first) first.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+    b.scrollIntoView({ behavior: "smooth", block: "center" }); // 저장 결과 글씨가 저장 버튼 바로 옆에 나와요
+    setTimeout(function () { b.click(); }, 350);
+  };
   var TYPES = { mc: "객관식", multi: "모두 고르기", short: "서술형(직접 쓰기)", arrange: "배열" };
   // ---------- 🎧 듣기 문제 만들기 ----------
   var LS = { uid: "", qs: [] };
@@ -2715,7 +2797,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     }
     btn.disabled = false;
     IMP = units; renderImport();
-    $("drvInfo").innerHTML = '<span class="ok">' + units.length + "개 가져왔어요.</span> 아래에서 확인하고 저장해 주세요." + (fails.length ? '<br><span class="er">못 가져온 파일: ' + esc(fails.join(", ")) + "</span>" : "");
+    $("drvInfo").innerHTML = '<span class="ok">' + units.length + "개 가져왔어요.</span>" + impQuick() + (fails.length ? '<br><span class="er">못 가져온 파일: ' + esc(fails.join(", ")) + "</span>" : "");
     $("impUnits").scrollIntoView({ behavior: "smooth" });
   }
 
@@ -2824,8 +2906,9 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   function ktBuild(j) {
     var exams = [], byKey = {};
     j.records.forEach(function (r) {
-      var key = r.paper || (r.date + "|" + r.title), e = byKey[key];
-      if (!e) { e = byKey[key] = { key: key, title: r.title, date: r.date, range: r.range || "", totals: {}, cells: {} }; exams.push(e); }
+      // 📝 자율 단어시험은 시험지 하나에 여러 범위가 쌓여요 → 학생이 고른 범위(예: Day 43~44)마다 한 칸
+      var key = r.how === "자율" ? "self|" + r.paper + "|" + (r.range || "") : r.paper || (r.date + "|" + r.title), e = byKey[key];
+      if (!e) { e = byKey[key] = { key: key, title: r.how === "자율" ? "📝 " + (r.range || "자율") : r.title, date: r.date, range: r.range || "", totals: {}, cells: {} }; exams.push(e); }
       if (r.date < e.date) e.date = r.date; if (!e.range && r.range) e.range = r.range;
       if (r.total) e.totals[r.total] = (e.totals[r.total] || 0) + 1;
       var old = e.cells[r.sid]; if (!old || r.date >= old.date) e.cells[r.sid] = r; // 다시 본 경우 마지막 기록
@@ -2879,7 +2962,8 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       var PL = j.paper.kind === "반배정시험";
       var PS = j.paper.pass || null, SKIP = {}; (j.paper.skip || []).forEach(function (x) { SKIP[x] = 1; });
       var skipN = function () { return j.rows.filter(function (r) { return r.missing && SKIP[r.sid]; }).length; };
-      var DUPS = j.rows.filter(function (r) { return r.dup; }); j.rows = j.rows.filter(function (r) { return !r.dup; });
+      var SELFP = !!j.paper.self; // 📝 자율 단어시험: 모든 응시 기록을 한 줄씩 (겹침이 아니에요)
+      var DUPS = SELFP ? [] : j.rows.filter(function (r) { return r.dup; }); j.rows = SELFP ? j.rows.map(function (r) { return Object.assign({}, r, { dup: false, comment: (r.range ? "[" + r.range + "] " : "") + (r.comment || "") }); }) : j.rows.filter(function (r) { return !r.dup; });
       // 👥 공통 시험: 전체 학생으로 순위·평균, 반별 평균 비교, 반 하나로 걸러 보기
       var CT = !!j.paper.target, ALLR = j.rows, RF = CT ? R_CF : "";
       if (RF && !ALLR.some(function (r) { return r.cls === RF; })) RF = R_CF = "";
@@ -2901,12 +2985,12 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       LAST_RES = j; $("rRep").style.display = j.rows.some(function (r) { return !r.missing; }) ? "" : "none"; $("rProg").innerHTML = ""; $("contactCard").style.display = "";
       var done = j.rows.filter(function (r) { return !r.missing; }), ps = done.map(function (r) { return r.pct || 0; });
       var avg = ps.length ? ps.reduce(function (a, b) { return a + b; }, 0) / ps.length : null;
-      var sorted = done.slice().sort(function (a, b) { return (b.pct || 0) - (a.pct || 0); });
+      var sorted = done.slice().sort(SELFP ? function (a, b) { return String(b.made || "").localeCompare(String(a.made || "")); } : function (a, b) { return (b.pct || 0) - (a.pct || 0); });
       // 반 전체 단원별 정답률
       var um = {}; done.forEach(function (r) { (r.units || []).forEach(function (u) { var k = u.c && u.c !== "단원" ? u.c : u.u; var e = um[k] || (um[k] = { k: k, r: 0, t: 0 }); e.r += u.r; e.t += u.t; }); });
       var ul = Object.keys(um).map(function (k) { return um[k]; }).sort(function (a, b) { return a.r / a.t - b.r / b.t; });
       $("rBox").innerHTML = '<h3>' + esc(j.paper.title) + (CT ? ' <span class="pill go" style="font-size:12px">👥 공통 시험 · ' + esc(j.paper.targetText || "") + "</span>" : "") + (RF ? ' <span class="pill" style="font-size:12px">' + esc(RF) + "만</span>" : "") + "</h3>" +
-        '<div class="stat"><div><b>응시</b><span>' + done.length + " / " + (j.rows.length - skipN()) + (skipN() ? '<small style="font-size:12px;color:#8A99A6;font-weight:600"> (다른 시험 ' + skipN() + ")</small>" : "") + '</span></div><div><b>' + (CT && !RF ? "전체 평균" : "반 평균") + '</b><span>' + round1(avg) + '</span></div><div><b>최고</b><span>' + (ps.length ? Math.max.apply(null, ps) : "-") + '</span></div><div><b>최저</b><span>' + (ps.length ? Math.min.apply(null, ps) : "-") + "</span></div>" +
+        '<div class="stat">' + (SELFP ? '<div><b>자율 기록</b><span>' + done.length + "건 · " + Object.keys(done.reduce(function (o, r) { o[r.sid] = 1; return o; }, {})).length + "명</span></div>" : "") + '<div' + (SELFP ? ' style="display:none"' : "") + '><b>응시</b><span>' + done.length + " / " + (j.rows.length - skipN()) + (skipN() ? '<small style="font-size:12px;color:#8A99A6;font-weight:600"> (다른 시험 ' + skipN() + ")</small>" : "") + '</span></div><div><b>' + (CT && !RF ? "전체 평균" : "반 평균") + '</b><span>' + round1(avg) + '</span></div><div><b>최고</b><span>' + (ps.length ? Math.max.apply(null, ps) : "-") + '</span></div><div><b>최저</b><span>' + (ps.length ? Math.min.apply(null, ps) : "-") + "</span></div>" +
         (PS ? '<div><b>통과</b><span>' + done.filter(function (r) { return passOk(PS, r); }).length + " / " + done.length + "</span></div>" : "") + "</div>" +
         cmpHtml + '<div class="row passrow"><b style="font-size:13.5px">✅ 통과 기준</b><select id="rPassBy" style="width:auto;padding:5px 8px;font-size:13px"><option value="">정하지 않음</option><option value="cnt">맞힌 개수가</option><option value="pct">100점 환산 점수가</option></select><input id="rPassV" type="number" min="1" step="1" style="width:80px;padding:5px 8px;font-size:13px"><span id="rPassU" class="hint" style="margin:0"></span><button class="sm sub" id="rPassSave">저장</button>' +
         (PS ? '<span class="hint" style="margin:0">지금: ' + esc(passText(PS)) + " · 재시험 " + done.filter(function (r) { return !passOk(PS, r); }).map(function (r) { return esc(r.name); }).join(", ") + "</span>" : '<span class="hint" style="margin:0">정하면 표에 통과 / 재시험이 바로 표시돼요.</span>') + "</div>" +
