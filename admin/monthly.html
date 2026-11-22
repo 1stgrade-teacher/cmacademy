@@ -2124,9 +2124,21 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       IMP = units; renderImport();
       var nq = units.reduce(function (a, u) { return a + u.questions.length; }, 0);
       var nw = units.reduce(function (a, u) { return a + (u.vocab ? u.words.length : 0); }, 0);
-      $("impMsg").innerHTML = '<span class="ok">읽었어요: ' + units.length + "개 자료" + (nq ? " · 문항 " + nq + "개" : "") + (nw ? " · 📒 단어 " + nw + "개" : "") + "</span> — 아래에서 확인하고 저장해 주세요.";
+      $("impMsg").innerHTML = '<span class="ok">읽었어요: ' + units.length + "개 자료" + (nq ? " · 문항 " + nq + "개" : "") + (nw ? " · 📒 단어 " + nw + "개" : "") + "</span>" + impQuick();
     } catch (err) { $("impMsg").innerHTML = '<span class="er">파일을 읽지 못했어요: ' + esc(err.message) + "</span><br>한글(.hwp)이 안 읽히면 한글에서 <b>다른 이름으로 저장 → .hwpx 또는 PDF</b>로 저장해서 올려 주세요."; }
   }
+  // 읽은 뒤 바로 옆에: 👀 확인하러 가기 · 💾 바로 저장 (아래 카드의 저장 버튼을 대신 눌러요)
+  function impQuick() {
+    return ' <span class="row" style="display:inline-flex;gap:6px;margin:4px 0 0 6px;vertical-align:middle"><button type="button" class="sm sub" onclick="cmImpGo(0)">👀 확인하러 가기 ↓</button><button type="button" class="sm" onclick="cmImpGo(1)">💾 바로 저장' + (IMP.length > 1 ? " (" + IMP.length + "개 모두)" : "") + "</button></span>";
+  }
+  window.cmImpGo = function (save) {
+    var box = $("impUnits"), first = box.querySelector(".card");
+    if (!save) { if (first) first.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+    var b = $("bulkSave") || box.querySelector('.card[data-u] [data-act="save"]');
+    if (!b) { if (first) first.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+    b.scrollIntoView({ behavior: "smooth", block: "center" }); // 저장 결과 글씨가 저장 버튼 바로 옆에 나와요
+    setTimeout(function () { b.click(); }, 350);
+  };
   var TYPES = { mc: "객관식", multi: "모두 고르기", short: "서술형(직접 쓰기)", arrange: "배열" };
   // ---------- 🎧 듣기 문제 만들기 ----------
   var LS = { uid: "", qs: [] };
@@ -2760,7 +2772,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     }
     btn.disabled = false;
     IMP = units; renderImport();
-    $("drvInfo").innerHTML = '<span class="ok">' + units.length + "개 가져왔어요.</span> 아래에서 확인하고 저장해 주세요." + (fails.length ? '<br><span class="er">못 가져온 파일: ' + esc(fails.join(", ")) + "</span>" : "");
+    $("drvInfo").innerHTML = '<span class="ok">' + units.length + "개 가져왔어요.</span>" + impQuick() + (fails.length ? '<br><span class="er">못 가져온 파일: ' + esc(fails.join(", ")) + "</span>" : "");
     $("impUnits").scrollIntoView({ behavior: "smooth" });
   }
 
