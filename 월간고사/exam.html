@@ -195,18 +195,21 @@
         (j.selfInfo ? selfBox(j.selfInfo) : "") +
         '<ul class="rules">' + (j.selfInfo ? "<li>📝 <b>자율 단어시험</b>: 공부한 단어장과 Day를 골라 언제든 볼 수 있어요. 볼 때마다 <b>새 문제</b>가 나와요.</li>" : "<li>한 번만 볼 수 있어요. 제출하면 다시 볼 수 없어요.</li>") + '<li>시험 중 다른 앱·탭으로 나가면 기록돼요.</li>' + (p.minutes ? "<li>시간이 끝나면 자동으로 제출돼요.</li>" : "") + "<li>새로고침해도 푼 답은 이 기기에 남아 있어요.</li></ul>" +
         "</div>";
-      if (j.closed) { app.innerHTML = html + '<div class="box"><h2>지금은 볼 수 없어요</h2><p class="sub">' + esc(j.closed) + "</p></div>"; bindNotMe(); return; }
+      if (j.closed) { app.innerHTML = html + '<div class="box"><h2>' + (p.loc && p.loc.wifi && /와이파이/.test(j.closed) ? "🏫 학원에서만 볼 수 있어요" : "지금은 볼 수 없어요") + '</h2><p class="sub">' + esc(j.closed) + "</p>" + (p.loc && p.loc.wifi ? '<div class="row"><button class="btn" onclick="location.reload()">🔄 와이파이 연결했어요 · 다시 확인</button></div>' : "") + "</div>"; bindNotMe(); return; }
       if (j.selfInfo && j.selfInfo.left === 0) { app.innerHTML = html + '<div class="box" style="text-align:center"><h2>오늘은 다 봤어요 👏</h2><p class="sub">하루 ' + j.selfInfo.perDay + "번까지 볼 수 있어요. 내일 다시 도전해요!</p>" + backRow() + "</div>"; bindNotMe(); bindBack(); return; }
       if (j.choose) html += chooseHtml(j.choose, !!j.selfInfo);
+      if (p.loc && p.loc.code) html += '<div class="box" style="margin-top:12px;text-align:center"><p class="sub" style="margin:0 0 8px">🔑 선생님이 알려 주는 <b>시작 코드</b>를 넣어요</p><input id="scode" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="● ● ● ●" style="width:160px;font-size:26px;text-align:center;letter-spacing:6px;font-weight:800;padding:8px;border:2px solid #B9D9D7;border-radius:12px"></div>';
       html += '<div class="err" id="er"></div><div class="row"><button class="btn" id="start"' + (j.choose ? " disabled" : "") + ">시험 시작하기</button></div>";
       app.innerHTML = html; bindNotMe();
       var start = document.getElementById("start");
       if (j.choose) bindChoose(start);
       start.onclick = function () {
         var units = j.choose ? Array.prototype.map.call(app.querySelectorAll("input[data-u]:checked"), function (x) { return x.getAttribute("data-u"); }) : undefined;
+        var sc = document.getElementById("scode"), code = sc ? sc.value.replace(/\D/g, "") : undefined;
+        if (sc && !code) { document.getElementById("er").textContent = "시작 코드를 넣어 주세요."; sc.focus(); return; }
         if (!confirm("시험을 시작할까요? 시작하면 시간이 흘러요.")) return;
         start.disabled = true; start.textContent = j.choose ? "시험지를 만드는 중… (최대 1분)" : "시험지를 만드는 중…";
-        post({ action: "s_start", token: ME.token, id: PID, units: units }).then(function (r) {
+        post({ action: "s_start", token: ME.token, id: PID, units: units, code: code }).then(function (r) {
           if (r.relogin) { logout(); loginFlow(r.msg); return; }
           if (!r.ok) { start.disabled = false; start.textContent = "시험 시작하기"; document.getElementById("er").textContent = r.msg || "시험지를 만들지 못했어요."; return; }
           var run = { sid: sidOf(ME.token), key: r.key, questions: r.questions, t0: r.t0, deadline: r.deadline, paper: r.paper, range: r.range, answers: {}, away: 0 };

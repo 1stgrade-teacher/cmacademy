@@ -579,7 +579,7 @@ async function canTakeWho(pp, who) {
   const st = await notion("pages/" + id32(who.sid), "GET", null, 1);
   return !!st && canTake(pp, who.cls, P.sel(st, "학년"));
 }
-const pub = (pp) => ({ self: selfOf(pp), kbd: !!(pp.cfg && pp.cfg.kbd), omr: !!omrOf(pp), skip: Array.isArray(pp.cfg && pp.cfg.skip) ? pp.cfg.skip : [], sections: (hasSections(pp) ? pp.cfg.sections : []), speaker: listenMode(pp.cfg) === "speaker", listen: listenMode(pp.cfg), target: targetOf(pp), targetText: targetText(targetOf(pp)), pass: passCfg(pp.cfg && pp.cfg.pass), grades: (pp.cfg && Array.isArray(pp.cfg.grades) ? pp.cfg.grades : []), id: pp.id, title: pp.title, cls: pp.cls, kind: pp.kind, period: pp.period, status: pp.status, mode: pp.mode, level: LEVELS[pp.level - 1], count: pp.count, minutes: pp.minutes, start: pp.start, end: pp.end, range: pp.mode === "fixed" ? pp.range : "", teacher: pp.teacher || "" });
+const pub = (pp) => ({ loc: locOf(pp) ? { wifi: locOf(pp).wifi, code: !!locOf(pp).code } : null, self: selfOf(pp), kbd: !!(pp.cfg && pp.cfg.kbd), omr: !!omrOf(pp), skip: Array.isArray(pp.cfg && pp.cfg.skip) ? pp.cfg.skip : [], sections: (hasSections(pp) ? pp.cfg.sections : []), speaker: listenMode(pp.cfg) === "speaker", listen: listenMode(pp.cfg), target: targetOf(pp), targetText: targetText(targetOf(pp)), pass: passCfg(pp.cfg && pp.cfg.pass), grades: (pp.cfg && Array.isArray(pp.cfg.grades) ? pp.cfg.grades : []), id: pp.id, title: pp.title, cls: pp.cls, kind: pp.kind, period: pp.period, status: pp.status, mode: pp.mode, level: LEVELS[pp.level - 1], count: pp.count, minutes: pp.minutes, start: pp.start, end: pp.end, range: pp.mode === "fixed" ? pp.range : "", teacher: pp.teacher || "" });
 async function getPaper(id) {
   const p = await notion("pages/" + id32(id), "GET");
   if (!p || p.archived || normId(p.parent && p.parent.database_id) !== normId(PAPER_DB())) return null;
@@ -767,9 +767,40 @@ let tCache = null;
 async function teacherRows(fresh) {
   if (!fresh && tCache && Date.now() - tCache.t < 30000) return tCache.rows;
   const rows = await queryAll(TEACHER_DB(), {}, 2);
-  const out = (rows || []).map((p) => ({ id: normId(p.id), name: P.title(p, "이름"), active: P.chk(p, "사용"), hash: P.text(p, "코드"), contact: P.text(p, "상담 안내"), reportUrl: (p.properties["리포트 위치"] || {}).url || "" })).filter((r) => r.name);
+  const out = (rows || []).map((p) => ({ id: normId(p.id), name: P.title(p, "이름"), active: P.chk(p, "사용"), hash: P.text(p, "코드"), contact: P.text(p, "상담 안내"), reportUrl: (p.properties["리포트 위치"] || {}).url || "" })).filter((r) => r.name && r.name !== NET_NAME);
   if (rows) tCache = { t: Date.now(), rows: out };
   return out;
+}
+// 🏫 학원 인터넷(공인 IP) 목록: 선생님 DB의 특별한 줄 「🏫 학원 인터넷」(코드 없음 → 로그인 불가)의 「상담 안내」 칸에 JSON으로
+const NET_NAME = "🏫 학원 인터넷";
+let netCache = null;
+const clientIp = (req) => String((req.headers["x-forwarded-for"] || req.headers["x-real-ip"] || "").split(",")[0]).trim();
+async function netRow(fresh) {
+  if (!fresh && netCache && Date.now() - netCache.t < 30000) return netCache.v;
+  const q = await notion("databases/" + TEACHER_DB() + "/query", "POST", { page_size: 5, filter: { property: "이름", title: { equals: NET_NAME } } });
+  if (!q) return netCache ? netCache.v : null;
+  const p = (q.results || [])[0]; let list = [];
+  if (p) { try { list = JSON.parse(P.text(p, "상담 안내") || "[]"); } catch (e) { list = []; } }
+  const v = { id: p ? normId(p.id) : "", list: Array.isArray(list) ? list.filter((x) => x && x.ip) : [] };
+  netCache = { t: Date.now(), v }; return v;
+}
+async function netSave(list) {
+  const cur = await netRow(true); if (!cur) return false;
+  const props = { "상담 안내": { rich_text: rt(JSON.stringify(list.slice(-20))) } };
+  const pg = cur.id ? await notion("pages/" + id32(cur.id), "PATCH", { properties: props }) : await notion("pages", "POST", { parent: { database_id: TEACHER_DB() }, properties: Object.assign({ "이름": { title: rt(NET_NAME) }, "사용": { checkbox: false } }, props) });
+  netCache = null; return !!pg;
+}
+// IPv6는 같은 와이파이 안에서도 기기마다 끝자리가 달라서 앞 4칸(/64)이 같으면 같은 인터넷으로 봐요
+const netKey = (ip) => { ip = String(ip || "").toLowerCase().replace(/^::ffff:/, ""); if (ip.indexOf(":") < 0) return ip; const [a, b] = ip.split("::"); const A = a ? a.split(":") : [], B = b !== undefined && b ? b.split(":") : []; const g = b !== undefined ? A.concat(Array(Math.max(0, 8 - A.length - B.length)).fill("0"), B) : A; return g.slice(0, 4).map((x) => x.replace(/^0+(?=.)/, "")).join(":") + "::/64"; };
+const sameNet = (a, b) => !!a && !!b && netKey(a) === netKey(b);
+async function atAcademy(req) { const ip = clientIp(req), n = await netRow(); return !!(ip && n && n.list.some((x) => sameNet(x.ip, ip))); }
+// 시험지의 응시 장소 제한: 설정.loc = { wifi: 학원 인터넷에서만, code: 시작 코드(4~6자리) }
+const locOf = (pp) => { const l = pp && pp.cfg && pp.cfg.loc; return l && (l.wifi || l.code) ? { wifi: !!l.wifi, code: l.code ? String(l.code) : "" } : null; };
+async function locCheck(pp, req, code, onlyWifi) {
+  const L = locOf(pp); if (!L) return null;
+  if (L.wifi && !(await atAcademy(req))) return { status: 403, error: "place", msg: "이 시험은 학원 와이파이에서만 볼 수 있어요. 휴대폰을 학원 와이파이에 연결한 뒤(데이터는 끄고) 다시 눌러 주세요." };
+  if (!onlyWifi && L.code && String(code || "").trim() !== L.code) return { status: 403, error: "code", msg: code ? "시작 코드가 맞지 않아요. 선생님께 다시 확인해 주세요." : "선생님이 알려 주는 시작 코드를 넣어 주세요." };
+  return null;
 }
 async function teacherFor(name) { return (await teacherRows()).find((r) => r.name === name) || null; }
 const tFails = new Map();
@@ -913,6 +944,13 @@ module.exports = async function handler(req, res) {
     if (!me) { tFail(ip); return send(401, { error: "code", msg: "선생님 코드가 맞지 않아요." }); }
 
     if (act === "t_hello") return send(200, { ok: true, me: { name: me.name, master: !!me.master } }); // 메인 화면 선생님 로그인 확인
+    if (act === "t_net") { // 🏫 학원 인터넷 목록 보기 · 지금 인터넷 등록 · 지우기
+      const ip = clientIp(req), cur = await netRow(true); if (!cur) return send(502, { error: "notion", msg: "학원 인터넷 목록을 읽지 못했어요.", debug: lastErr });
+      let list = cur.list.slice();
+      if (b.op === "add") { if (!ip) return send(400, { error: "ip", msg: "지금 인터넷 주소를 알 수 없어요." }); list = list.filter((x) => !sameNet(x.ip, ip)).concat([{ ip, label: clip(b.label, 30) || "학원 와이파이", by: me.name, at: today() }]); if (!(await netSave(list))) return send(502, { error: "notion", msg: "저장하지 못했어요.", debug: lastErr }); }
+      if (b.op === "del") { list = list.filter((x) => x.ip !== clip(b.ip, 60)); if (!(await netSave(list))) return send(502, { error: "notion", msg: "저장하지 못했어요.", debug: lastErr }); }
+      return send(200, { ok: true, myIp: ip, here: list.some((x) => sameNet(x.ip, ip)), list: list.map((x) => Object.assign({}, x, { mine: sameNet(x.ip, ip) })) });
+    }
     if (act === "t_me") { // 내 상담 안내 문구 · 리포트 위치 저장
       const props = { "상담 안내": { rich_text: rt(clip(b.contact, 1500)) }, "리포트 위치": { url: /^https?:\/\//.test(b.reportUrl || "") ? clip(b.reportUrl, 500) : null } };
       const pg = me.id ? await notion("pages/" + me.id, "PATCH", { properties: props })
@@ -998,6 +1036,7 @@ module.exports = async function handler(req, res) {
         pass: f.pass !== undefined ? passCfg(f.pass) || undefined : (old && passCfg(old.cfg.pass)) || undefined,
         omr: omr ? { text: clip(f.omr.text, 6000), items: omr.items } : undefined,
         kbd: f.kbd !== undefined ? !!f.kbd : old ? old.cfg.kbd : undefined,
+        loc: f.loc !== undefined ? (f.loc && (f.loc.wifi || f.loc.code) ? { wifi: !!f.loc.wifi, code: String(f.loc.code || "").replace(/\D/g, "").slice(0, 6) } : undefined) : (old && old.cfg.loc) || undefined, // 🏫 응시 장소 제한
         self: f.self !== undefined ? (f.self && typeof f.self === "object" ? { perDay: num(f.self.perDay, 0, 50, 3) } : undefined) : (old && old.cfg.self) || undefined, // 📝 자율 단어시험 // ⌨️ 학생 화면 자체 키보드 (자동완성 막기)
         skip: old && Array.isArray(old.cfg.skip) && old.cfg.skip.length ? old.cfg.skip : undefined, // 「다른 시험으로 봄」 학생은 고쳐 저장해도 그대로
         target: f.target !== undefined ? targetOf({ cfg: { target: f.target } }) || undefined : (old && targetOf(old)) || undefined,
@@ -1583,7 +1622,8 @@ module.exports = async function handler(req, res) {
     const att = SELF ? null : await findAttempt(pp.id, who.sid);
     if (att === undefined) return send(502, { error: "notion", msg: "응시 기록을 확인하지 못했어요. 잠시 뒤 다시 해 주세요.", debug: lastErr });
     if (att) return send(200, { ok: true, paper: pub(pp), taken: true, result: pp.show ? Object.assign(attemptSummary(att), { url: undefined }) : null });
-    const closed = openNow(pp);
+    let closed = openNow(pp);
+    const lc = await locCheck(pp, req, "", true); if (!closed && lc) closed = lc.msg; // 🏫 학원 와이파이가 아니면 시작 화면에서 바로 알려 줘요
     let choose = null;
     if (pp.mode === "choice") { // 학생이 고를 수 있는 교재·과
       const allowU = new Set(pp.cfg.units || []), allowB = new Set(pp.cfg.books || []);
@@ -1599,6 +1639,7 @@ module.exports = async function handler(req, res) {
     const pp = await getPaper(b.id); if (!pp) return send(404, { error: "nf", msg: "시험을 찾지 못했어요." });
     if (!(await canTakeWho(pp, who))) return send(403, { error: "cls", msg: targetOf(pp) ? "이 공통 시험(" + targetText(targetOf(pp)) + ") 대상이 아니에요." : "우리 반 시험이 아니에요." });
     const closed = openNow(pp); if (closed) return send(403, { error: "closed", msg: closed });
+    const lc = await locCheck(pp, req, b.code); if (lc) return send(lc.status, { error: lc.error, msg: lc.msg });
     const SELF = selfOf(pp);
     if (SELF) { // 자율: 하루 횟수만 확인 (여러 번 볼 수 있어요)
       if (SELF.perDay) { const td = await attemptsOf(pp.id, who.sid, true); if (td === undefined) return send(502, { error: "notion", msg: "응시 기록을 확인하지 못했어요. 잠시 뒤 다시 해 주세요." }); if (td.length >= SELF.perDay) return send(409, { error: "limit", msg: "오늘은 " + SELF.perDay + "번 다 봤어요. 내일 다시 도전해요!" }); }
