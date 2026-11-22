@@ -1,0 +1,141 @@
+Chapter 4 포인트19 조동사 + 동사원형 vs. 조동사 + have p.p. - 구문 연습_AI강의.html -> chapter4\point19\syntax.html
+Chapter_4_포인트19_조동사_+_동사원형_vs._조동사_+_have_p.p._-_구문_연습_audio/ -> chapter4\point19\syntax_audio\
+Chapter 4 포인트19 조동사 + 동사원형 vs. 조동사 + have p.p. - 구문 연습_녹음대본.txt -> _scripts\ch4-p19-syntax.txt
+Chapter 4 포인트19 조동사 + 동사원형 vs. 조동사 + have p.p. - 문법_AI강의.html -> chapter4\point19\grammar.html
+Chapter_4_포인트19_조동사_+_동사원형_vs._조동사_+_have_p.p._-_문법_audio/ -> chapter4\point19\grammar_audio\
+Chapter 4 포인트19 조동사 + 동사원형 vs. 조동사 + have p.p. - 문법_녹음대본.txt -> _scripts\ch4-p19-grammar.txt
+Chapter 4 포인트19 조동사 + 동사원형 vs. 조동사 + have p.p. - 확인 문제_AI강의.html -> chapter4\point19\check.html
+Chapter_4_포인트19_조동사_+_동사원형_vs._조동사_+_have_p.p._-_확인_문제_audio/ -> chapter4\point19\check_audio\
+Chapter 4 포인트19 조동사 + 동사원형 vs. 조동사 + have p.p. - 확인 문제_녹음대본.txt -> _scripts\ch4-p19-check.txt
+Chapter 4 포인트20 used를 이용한 표현 - 구문 연습_AI강의.html -> chapter4\point20\syntax.html
+Chapter_4_포인트20_used를_이용한_표현_-_구문_연습_audio/ -> chapter4\point20\syntax_audio\
+Chapter 4 포인트20 used를 이용한 표현 - 구문 연습_녹음대본.txt -> _scripts\ch4-p20-syntax.txt
+Chapter 4 포인트20 used를 이용한 표현 - 문법_AI강의.html -> chapter4\point20\grammar.html
+Chapter_4_포인트20_used를_이용한_표현_-_문법_audio/ -> chapter4\point20\grammar_audio\
+Chapter 4 포인트20 used를 이용한 표현 - 문법_녹음대본.txt -> _scripts\ch4-p20-grammar.txt
+Chapter 4 포인트20 used를 이용한 표현 - 확인 문제_AI강의.html -> chapter4\point20\check.html
+Chapter_4_포인트20_used를_이용한_표현_-_확인_문제_audio/ -> chapter4\point20\check_audio\
+Chapter 4 포인트20 used를 이용한 표현 - 확인 문제_녹음대본.txt -> _scripts\ch4-p20-check.txt
+Chapter 4 포인트21 조동사 관용 표현 - 구문 연습_AI강의.html -> chapter4\point21\syntax.html
+Chapter_4_포인트21_조동사_관용_표현_-_구문_연습_audio/ -> chapter4\point21\syntax_audio\
+Chapter 4 포인트21 조동사 관용 표현 - 구문 연습_녹음대본.txt -> _scripts\ch4-p21-syntax.txt
+Chapter 4 포인트21 조동사 관용 표현 - 문법_AI강의.html -> chapter4\point21\grammar.html
+Chapter_4_포인트21_조동사_관용_표현_-_문법_audio/ -> chapter4\point21\grammar_audio\
+Chapter 4 포인트21 조동사 관용 표현 - 문법_녹음대본.txt -> _scripts\ch4-p21-grammar.txt
+Chapter 4 포인트21 조동사 관용 표현 - 확인 문제_AI강의.html -> chapter4\point21\check.html
+Chapter_4_포인트21_조동사_관용_표현_-_확인_문제_audio/ -> chapter4\point21\check_audio\
+Chapter 4 포인트21 조동사 관용 표현 - 확인 문제_녹음대본.txt -> _scripts\ch4-p21-check.txt
+Chapter 4 포인트22 가정법 과거 vs. 가정법 과거완료 vs. 혼합 가정법 - 구문 연습_AI강의.html -> chapter4\point22\syntax.html
+Chapter_4_포인트22_가정법_과거_vs._가정법_과거완료_vs._혼합_가정법_-_구문_연습_audio/ -> chapter4\point22\syntax_audio\
+Chapter 4 포인트22 가정법 과거 vs. 가정법 과거완료 vs. 혼합 가정법 - 구문 연습_녹음대본.txt -> _scripts\ch4-p22-syntax.txt
+Chapter 4 포인트22 가정법 과거 vs. 가정법 과거완료 vs. 혼합 가정법 - 문법_AI강의.html -> chapter4\point22\grammar.html
+Chapter_4_포인트22_가정법_과거_vs._가정법_과거완료_vs._혼합_가정법_-_문법_audio/ -> chapter4\point22\grammar_audio\
+Chapter 4 포인트22 가정법 과거 vs. 가정법 과거완료 vs. 혼합 가정법 - 문법_녹음대본.txt -> _scripts\ch4-p22-grammar.txt
+Chapter 4 포인트22 가정법 과거 vs. 가정법 과거완료 vs. 혼합 가정법 - 확인 문제_AI강의.html -> chapter4\point22\check.html
+Chapter_4_포인트22_가정법_과거_vs._가정법_과거완료_vs._혼합_가정법_-_확인_문제_audio/ -> chapter4\point22\check_audio\
+Chapter 4 포인트22 가정법 과거 vs. 가정법 과거완료 vs. 혼합 가정법 - 확인 문제_녹음대본.txt -> _scripts\ch4-p22-check.txt
+Chapter 4 포인트23 that절의 should 생략 - 구문 연습_AI강의.html -> chapter4\point23\syntax.html
+Chapter_4_포인트23_that절의_should_생략_-_구문_연습_audio/ -> chapter4\point23\syntax_audio\
+Chapter 4 포인트23 that절의 should 생략 - 구문 연습_녹음대본.txt -> _scripts\ch4-p23-syntax.txt
+Chapter 4 포인트23 that절의 should 생략 - 문법_AI강의.html -> chapter4\point23\grammar.html
+Chapter_4_포인트23_that절의_should_생략_-_문법_audio/ -> chapter4\point23\grammar_audio\
+Chapter 4 포인트23 that절의 should 생략 - 문법_녹음대본.txt -> _scripts\ch4-p23-grammar.txt
+Chapter 4 포인트23 that절의 should 생략 - 확인 문제_AI강의.html -> chapter4\point23\check.html
+Chapter_4_포인트23_that절의_should_생략_-_확인_문제_audio/ -> chapter4\point23\check_audio\
+Chapter 4 포인트23 that절의 should 생략 - 확인 문제_녹음대본.txt -> _scripts\ch4-p23-check.txt
+Chapter 4 포인트24 as if + 가정법 I wish + 가정법 - 구문 연습_AI강의.html -> chapter4\point24\syntax.html
+Chapter_4_포인트24_as_if_+_가정법_I_wish_+_가정법_-_구문_연습_audio/ -> chapter4\point24\syntax_audio\
+Chapter 4 포인트24 as if + 가정법 I wish + 가정법 - 구문 연습_녹음대본.txt -> _scripts\ch4-p24-syntax.txt
+Chapter 4 포인트24 as if + 가정법 I wish + 가정법 - 문법_AI강의.html -> chapter4\point24\grammar.html
+Chapter_4_포인트24_as_if_+_가정법_I_wish_+_가정법_-_문법_audio/ -> chapter4\point24\grammar_audio\
+Chapter 4 포인트24 as if + 가정법 I wish + 가정법 - 문법_녹음대본.txt -> _scripts\ch4-p24-grammar.txt
+Chapter 4 포인트24 as if + 가정법 I wish + 가정법 - 확인 문제_AI강의.html -> chapter4\point24\check.html
+Chapter_4_포인트24_as_if_+_가정법_I_wish_+_가정법_-_확인_문제_audio/ -> chapter4\point24\check_audio\
+Chapter 4 포인트24 as if + 가정법 I wish + 가정법 - 확인 문제_녹음대본.txt -> _scripts\ch4-p24-check.txt
+Chapter 5 포인트25 접속사 vs. 전치사 - 구문 연습_AI강의.html -> chapter5\point25\syntax.html
+Chapter_5_포인트25_접속사_vs._전치사_-_구문_연습_audio/ -> chapter5\point25\syntax_audio\
+Chapter 5 포인트25 접속사 vs. 전치사 - 구문 연습_녹음대본.txt -> _scripts\ch5-p25-syntax.txt
+Chapter 5 포인트25 접속사 vs. 전치사 - 문법_AI강의.html -> chapter5\point25\grammar.html
+Chapter_5_포인트25_접속사_vs._전치사_-_문법_audio/ -> chapter5\point25\grammar_audio\
+Chapter 5 포인트25 접속사 vs. 전치사 - 문법_녹음대본.txt -> _scripts\ch5-p25-grammar.txt
+Chapter 5 포인트25 접속사 vs. 전치사 - 확인 문제_AI강의.html -> chapter5\point25\check.html
+Chapter_5_포인트25_접속사_vs._전치사_-_확인_문제_audio/ -> chapter5\point25\check_audio\
+Chapter 5 포인트25 접속사 vs. 전치사 - 확인 문제_녹음대본.txt -> _scripts\ch5-p25-check.txt
+Chapter 5 포인트26 등위접속사 상관접속사 - 구문 연습_AI강의.html -> chapter5\point26\syntax.html
+Chapter_5_포인트26_등위접속사_상관접속사_-_구문_연습_audio/ -> chapter5\point26\syntax_audio\
+Chapter 5 포인트26 등위접속사 상관접속사 - 구문 연습_녹음대본.txt -> _scripts\ch5-p26-syntax.txt
+Chapter 5 포인트26 등위접속사 상관접속사 - 문법_AI강의.html -> chapter5\point26\grammar.html
+Chapter_5_포인트26_등위접속사_상관접속사_-_문법_audio/ -> chapter5\point26\grammar_audio\
+Chapter 5 포인트26 등위접속사 상관접속사 - 문법_녹음대본.txt -> _scripts\ch5-p26-grammar.txt
+Chapter 5 포인트26 등위접속사 상관접속사 - 확인 문제_AI강의.html -> chapter5\point26\check.html
+Chapter_5_포인트26_등위접속사_상관접속사_-_확인_문제_audio/ -> chapter5\point26\check_audio\
+Chapter 5 포인트26 등위접속사 상관접속사 - 확인 문제_녹음대본.txt -> _scripts\ch5-p26-check.txt
+Chapter 5 포인트27 접속사 whether if vs. 접속사 that - 구문 연습_AI강의.html -> chapter5\point27\syntax.html
+Chapter_5_포인트27_접속사_whether_if_vs._접속사_that_-_구문_연습_audio/ -> chapter5\point27\syntax_audio\
+Chapter 5 포인트27 접속사 whether if vs. 접속사 that - 구문 연습_녹음대본.txt -> _scripts\ch5-p27-syntax.txt
+Chapter 5 포인트27 접속사 whether if vs. 접속사 that - 문법_AI강의.html -> chapter5\point27\grammar.html
+Chapter_5_포인트27_접속사_whether_if_vs._접속사_that_-_문법_audio/ -> chapter5\point27\grammar_audio\
+Chapter 5 포인트27 접속사 whether if vs. 접속사 that - 문법_녹음대본.txt -> _scripts\ch5-p27-grammar.txt
+Chapter 5 포인트27 접속사 whether if vs. 접속사 that - 확인 문제_AI강의.html -> chapter5\point27\check.html
+Chapter_5_포인트27_접속사_whether_if_vs._접속사_that_-_확인_문제_audio/ -> chapter5\point27\check_audio\
+Chapter 5 포인트27 접속사 whether if vs. 접속사 that - 확인 문제_녹음대본.txt -> _scripts\ch5-p27-check.txt
+Chapter 5 포인트28 to부정사의 to vs. 전치사 to - 구문 연습_AI강의.html -> chapter5\point28\syntax.html
+Chapter_5_포인트28_to부정사의_to_vs._전치사_to_-_구문_연습_audio/ -> chapter5\point28\syntax_audio\
+Chapter 5 포인트28 to부정사의 to vs. 전치사 to - 구문 연습_녹음대본.txt -> _scripts\ch5-p28-syntax.txt
+Chapter 5 포인트28 to부정사의 to vs. 전치사 to - 문법_AI강의.html -> chapter5\point28\grammar.html
+Chapter_5_포인트28_to부정사의_to_vs._전치사_to_-_문법_audio/ -> chapter5\point28\grammar_audio\
+Chapter 5 포인트28 to부정사의 to vs. 전치사 to - 문법_녹음대본.txt -> _scripts\ch5-p28-grammar.txt
+Chapter 6 포인트29 관계대명사의 역할 및 쓰임 - 구문 연습_AI강의.html -> chapter6\point29\syntax.html
+Chapter_6_포인트29_관계대명사의_역할_및_쓰임_-_구문_연습_audio/ -> chapter6\point29\syntax_audio\
+Chapter 6 포인트29 관계대명사의 역할 및 쓰임 - 구문 연습_녹음대본.txt -> _scripts\ch6-p29-syntax.txt
+Chapter 6 포인트29 관계대명사의 역할 및 쓰임 - 문법_AI강의.html -> chapter6\point29\grammar.html
+Chapter_6_포인트29_관계대명사의_역할_및_쓰임_-_문법_audio/ -> chapter6\point29\grammar_audio\
+Chapter 6 포인트29 관계대명사의 역할 및 쓰임 - 문법_녹음대본.txt -> _scripts\ch6-p29-grammar.txt
+Chapter 6 포인트29 관계대명사의 역할 및 쓰임 - 확인 문제_AI강의.html -> chapter6\point29\check.html
+Chapter_6_포인트29_관계대명사의_역할_및_쓰임_-_확인_문제_audio/ -> chapter6\point29\check_audio\
+Chapter 6 포인트29 관계대명사의 역할 및 쓰임 - 확인 문제_녹음대본.txt -> _scripts\ch6-p29-check.txt
+Chapter 6 포인트30 전치사 + 관계대명사 계속적 용법 - 구문 연습_AI강의.html -> chapter6\point30\syntax.html
+Chapter_6_포인트30_전치사_+_관계대명사_계속적_용법_-_구문_연습_audio/ -> chapter6\point30\syntax_audio\
+Chapter 6 포인트30 전치사 + 관계대명사 계속적 용법 - 구문 연습_녹음대본.txt -> _scripts\ch6-p30-syntax.txt
+Chapter 6 포인트30 전치사 + 관계대명사 계속적 용법 - 문법_AI강의.html -> chapter6\point30\grammar.html
+Chapter_6_포인트30_전치사_+_관계대명사_계속적_용법_-_문법_audio/ -> chapter6\point30\grammar_audio\
+Chapter 6 포인트30 전치사 + 관계대명사 계속적 용법 - 문법_녹음대본.txt -> _scripts\ch6-p30-grammar.txt
+Chapter 6 포인트30 전치사 + 관계대명사 계속적 용법 - 확인 문제_AI강의.html -> chapter6\point30\check.html
+Chapter_6_포인트30_전치사_+_관계대명사_계속적_용법_-_확인_문제_audio/ -> chapter6\point30\check_audio\
+Chapter 6 포인트30 전치사 + 관계대명사 계속적 용법 - 확인 문제_녹음대본.txt -> _scripts\ch6-p30-check.txt
+Chapter 6 포인트31 관계부사의 역할 및 쓰임 - 구문 연습_AI강의.html -> chapter6\point31\syntax.html
+Chapter_6_포인트31_관계부사의_역할_및_쓰임_-_구문_연습_audio/ -> chapter6\point31\syntax_audio\
+Chapter 6 포인트31 관계부사의 역할 및 쓰임 - 구문 연습_녹음대본.txt -> _scripts\ch6-p31-syntax.txt
+Chapter 6 포인트31 관계부사의 역할 및 쓰임 - 문법_AI강의.html -> chapter6\point31\grammar.html
+Chapter_6_포인트31_관계부사의_역할_및_쓰임_-_문법_audio/ -> chapter6\point31\grammar_audio\
+Chapter 6 포인트31 관계부사의 역할 및 쓰임 - 문법_녹음대본.txt -> _scripts\ch6-p31-grammar.txt
+Chapter 6 포인트31 관계부사의 역할 및 쓰임 - 확인 문제_AI강의.html -> chapter6\point31\check.html
+Chapter_6_포인트31_관계부사의_역할_및_쓰임_-_확인_문제_audio/ -> chapter6\point31\check_audio\
+Chapter 6 포인트31 관계부사의 역할 및 쓰임 - 확인 문제_녹음대본.txt -> _scripts\ch6-p31-check.txt
+Chapter 6 포인트32 관계대명사 vs. 관계부사 생략 - 구문 연습_AI강의.html -> chapter6\point32\syntax.html
+Chapter_6_포인트32_관계대명사_vs._관계부사_생략_-_구문_연습_audio/ -> chapter6\point32\syntax_audio\
+Chapter 6 포인트32 관계대명사 vs. 관계부사 생략 - 구문 연습_녹음대본.txt -> _scripts\ch6-p32-syntax.txt
+Chapter 6 포인트32 관계대명사 vs. 관계부사 생략 - 문법_AI강의.html -> chapter6\point32\grammar.html
+Chapter_6_포인트32_관계대명사_vs._관계부사_생략_-_문법_audio/ -> chapter6\point32\grammar_audio\
+Chapter 6 포인트32 관계대명사 vs. 관계부사 생략 - 문법_녹음대본.txt -> _scripts\ch6-p32-grammar.txt
+Chapter 6 포인트32 관계대명사 vs. 관계부사 생략 - 확인 문제_AI강의.html -> chapter6\point32\check.html
+Chapter_6_포인트32_관계대명사_vs._관계부사_생략_-_확인_문제_audio/ -> chapter6\point32\check_audio\
+Chapter 6 포인트32 관계대명사 vs. 관계부사 생략 - 확인 문제_녹음대본.txt -> _scripts\ch6-p32-check.txt
+Chapter 6 포인트33 복합관계대명사 vs. 복합관계부사 - 구문 연습_AI강의.html -> chapter6\point33\syntax.html
+Chapter_6_포인트33_복합관계대명사_vs._복합관계부사_-_구문_연습_audio/ -> chapter6\point33\syntax_audio\
+Chapter 6 포인트33 복합관계대명사 vs. 복합관계부사 - 구문 연습_녹음대본.txt -> _scripts\ch6-p33-syntax.txt
+Chapter 6 포인트33 복합관계대명사 vs. 복합관계부사 - 문법_AI강의.html -> chapter6\point33\grammar.html
+Chapter_6_포인트33_복합관계대명사_vs._복합관계부사_-_문법_audio/ -> chapter6\point33\grammar_audio\
+Chapter 6 포인트33 복합관계대명사 vs. 복합관계부사 - 문법_녹음대본.txt -> _scripts\ch6-p33-grammar.txt
+Chapter 6 포인트33 복합관계대명사 vs. 복합관계부사 - 확인 문제_AI강의.html -> chapter6\point33\check.html
+Chapter_6_포인트33_복합관계대명사_vs._복합관계부사_-_확인_문제_audio/ -> chapter6\point33\check_audio\
+Chapter 6 포인트33 복합관계대명사 vs. 복합관계부사 - 확인 문제_녹음대본.txt -> _scripts\ch6-p33-check.txt
+Chapter 6 포인트34 관계대명사 what vs. 관계대명사 which[that] - 구문 연습_AI강의.html -> chapter6\point34\syntax.html
+Chapter_6_포인트34_관계대명사_what_vs._관계대명사_which[that]_-_구문_연습_audio/ -> chapter6\point34\syntax_audio\
+Chapter 6 포인트34 관계대명사 what vs. 관계대명사 which[that] - 구문 연습_녹음대본.txt -> _scripts\ch6-p34-syntax.txt
+Chapter 6 포인트34 관계대명사 what vs. 관계대명사 which[that] - 문법_AI강의.html -> chapter6\point34\grammar.html
+Chapter_6_포인트34_관계대명사_what_vs._관계대명사_which[that]_-_문법_audio/ -> chapter6\point34\grammar_audio\
+Chapter 6 포인트34 관계대명사 what vs. 관계대명사 which[that] - 문법_녹음대본.txt -> _scripts\ch6-p34-grammar.txt
+Chapter 6 포인트34 관계대명사 what vs. 관계대명사 which[that] - 확인 문제_AI강의.html -> chapter6\point34\check.html
+Chapter_6_포인트34_관계대명사_what_vs._관계대명사_which[that]_-_확인_문제_audio/ -> chapter6\point34\check_audio\
+Chapter 6 포인트34 관계대명사 what vs. 관계대명사 which[that] - 확인 문제_녹음대본.txt -> _scripts\ch6-p34-check.txt
