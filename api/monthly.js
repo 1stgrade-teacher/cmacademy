@@ -708,7 +708,8 @@ async function saveStudent(x, classes, me) {
   if (!classes.includes(cls)) return { ok: false, msg: "반을 골라 주세요. (노션에 없는 반은 추가할 수 없어요)" };
   if (phone === null) return { ok: false, msg: "학부모 연락처는 010으로 시작하는 휴대폰 번호로 써 주세요." };
   const props = { "이름": { title: rt(name) }, "반": sel(cls), "학년": grade ? sel(grade) : { select: null }, "학교": { rich_text: rt(school) }, "학부모 연락처": { phone_number: phone || null }, "알림 끄기": { checkbox: !!x.mute } };
-  if (["재원", "휴원", "퇴원"].includes(x.status)) props["상태"] = sel(x.status);
+  if (["재원", "신입", "휴원", "퇴원"].includes(x.status)) props["상태"] = sel(x.status);
+  else if (!x.id && cls === PLACE_CLS()) props["상태"] = sel("신입"); // 신입 반배정 반으로 새로 넣으면 「신입」
   if (typeof x.memo === "string" && x.id) props["메모"] = { rich_text: rt(clip(x.memo, 1900)) };
   if (x.id) {
     const pg = await notion("pages/" + id32(clip(x.id, 60)), "GET");
@@ -1252,7 +1253,8 @@ module.exports = async function handler(req, res) {
       const st = await notion("pages/" + id32(sid), "GET");
       if (!st || normId(st.parent && st.parent.database_id) !== normId(STUDENT_DB())) return send(404, { error: "nf", msg: "학생을 찾지 못했어요." });
       const memo = P.text(st, "메모"), line = today() + " " + me.name + ": " + (P.sel(st, "반") || "-") + " → " + cls;
-      const up = await notion("pages/" + id32(sid), "PATCH", { properties: { "반": sel(cls), "메모": { rich_text: rt(clip((memo ? memo + "\n" : "") + line, 1900)) } } });
+      const toReg = P.sel(st, "상태") === "신입" && cls !== PLACE_CLS(); // 반이 정해지면 신입 → 재원
+      const up = await notion("pages/" + id32(sid), "PATCH", { properties: { "반": sel(cls), ...(toReg ? { "상태": sel("재원") } : {}), "메모": { rich_text: rt(clip((memo ? memo + "\n" : "") + line, 1900)) } } });
       return up ? send(200, { ok: true, cls }) : send(502, { error: "notion", msg: "반을 바꾸지 못했어요.", debug: lastErr });
     }
     if (act === "t_results") { // 한 시험지의 응시 현황 (안 본 학생 포함)

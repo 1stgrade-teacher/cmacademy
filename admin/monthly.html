@@ -439,7 +439,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       <div class="row" id="stBulk" style="display:none;background:#F0F8F8;border-radius:10px;padding:8px 10px;margin-top:10px">
         <b id="stSelN"></b>
         <select id="stMoveCls" style="width:auto"></select><button class="sm" id="stMove">반 이동</button>
-        <select id="stSetStat" style="width:auto"><option>재원</option><option>휴원</option><option>퇴원</option></select><button class="sm sub" id="stStat">상태 바꾸기</button>
+        <select id="stSetStat" style="width:auto"><option>재원</option><option>신입</option><option>휴원</option><option>퇴원</option></select><button class="sm sub" id="stStat">상태 바꾸기</button>
         <button class="sm sub" id="stGradeUp">학년 +1</button><span class="msg" id="stBulkMsg" style="margin:0"></span>
       </div>
       <div class="hint">학생이 4자리 번호를 잊으면 「🔑」, 기록을 보려면 「📋 카드」를 누르세요. 휴원·퇴원 학생은 학생 화면 명단과 과제 알림에서 빠지고 기록은 남아요.</div>
@@ -453,7 +453,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         <div><label class="l">학년</label><select id="sfGrade"><option value="">선택 안 함</option></select></div>
         <div><label class="l">학교</label><input id="sfSchool" placeholder="예: 청명중"></div>
         <div><label class="l">학부모 연락처 (알림용)</label><input id="sfPhone" inputmode="tel" placeholder="010-1234-5678"></div>
-        <div><label class="l">상태</label><select id="sfStatus"><option>재원</option><option>휴원</option><option>퇴원</option></select></div>
+        <div><label class="l">상태</label><select id="sfStatus"><option>재원</option><option>신입</option><option>휴원</option><option>퇴원</option></select></div>
       </div>
       <label class="l" style="margin-top:10px">메모 (상담 내용 등, 선생님만 봐요)</label><textarea id="sfMemo" rows="2" placeholder="예: 11/2 학부모 상담 — 단어 암기 꾸준히 확인 요청"></textarea>
       <div class="row" style="margin-top:10px"><label><input type="checkbox" id="sfMute"> 이 학생은 학부모 알림을 보내지 않기</label></div>
@@ -1315,7 +1315,8 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   function renderClasses() {
     var act = STU.students.filter(isActive);
     var noPhone = act.filter(function (x) { return !x.phone && !x.mute && x.cls !== PLACE; }).length, noPin = act.filter(function (x) { return !x.hasPin; }).length;
-    $("stWarn").innerHTML = "재원생 <b>" + act.length + "명</b> · 휴원·퇴원 " + (STU.students.length - act.length) + "명" + (noPhone ? ' · <span class="er" style="font-size:inherit">학부모 연락처 없는 재원생 ' + noPhone + "명</span> (과제 미제출 알림을 못 받아요)" : "") + (noPin ? " · 번호 아직 안 정한 학생 " + noPin + "명" : "");
+    var nNew = act.filter(function (x) { return x.status === "신입"; }).length;
+    $("stWarn").innerHTML = "재원생 <b>" + (act.length - nNew) + "명</b>" + (nNew ? " · 🌱 신입(반배정 전) <b>" + nNew + "명</b>" : "") + " · 휴원·퇴원 " + (STU.students.length - act.length) + "명" + (noPhone ? ' · <span class="er" style="font-size:inherit">학부모 연락처 없는 재원생 ' + noPhone + "명</span> (과제 미제출 알림을 못 받아요)" : "") + (noPin ? " · 번호 아직 안 정한 학생 " + noPin + "명" : "");
     $("stClasses").innerHTML = '<div class="tw"><table><thead><tr><th>반</th><th>재원</th><th>휴원·퇴원</th><th>연락처 없음</th><th>번호 미설정</th><th></th></tr></thead><tbody>' + DATA.classes.map(function (c, i) {
       var all = STU.students.filter(function (x) { return x.cls === c; }), a = all.filter(isActive);
       return '<tr><td><a href="#" data-cv="' + i + '"><b>' + esc(c) + "</b></a></td><td class=num>" + a.length + "</td><td class=num>" + (all.length - a.length || "") + "</td><td class=num>" + (a.filter(function (x) { return !x.phone && !x.mute; }).length || "") + "</td><td class=num>" + (a.filter(function (x) { return !x.hasPin; }).length || "") + "</td><td>" +
@@ -1350,7 +1351,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     $("stListTitle").textContent = q ? "🔍 「" + q + "」 찾은 학생 " + list.length + "명" : "📋 " + (ST_VIEW.cls === "__none" ? "반 없음·기타" : ST_VIEW.cls) + " 명단 " + list.length + "명" + (!showAll && hidden ? " (휴원·퇴원 " + hidden + "명 숨김)" : "");
     Object.keys(ST_SEL).forEach(function (id) { if (!list.some(function (x) { return x.id === id; })) delete ST_SEL[id]; });
     if (!list.length) { $("stList").innerHTML = '<p class="hint">' + (q ? "찾는 학생이 없어요." : "이 반에 학생이 없어요. 위 「학생 추가」로 넣어 주세요.") + "</p>"; bulkBar(); return; }
-    var stPillOf = function (s) { return s === "재원" ? "" : '<span class="pill ' + (s === "휴원" ? "m" : "end") + '">' + s + "</span>"; };
+    var stPillOf = function (s) { return s === "재원" ? "" : '<span class="pill ' + (s === "신입" ? "go" : s === "휴원" ? "m" : "end") + '">' + (s === "신입" ? "🌱 신입" : s) + "</span>"; };
     $("stList").innerHTML = '<div class="tw"><table><thead><tr><th><input type="checkbox" id="stChkAll"></th><th>이름</th>' + (q ? "<th>반</th>" : "") + "<th>학년</th><th>학교</th><th>학부모 연락처</th><th>번호</th><th></th></tr></thead><tbody>" + list.map(function (x) {
       return '<tr style="' + (isActive(x) ? "" : "opacity:.6") + '"><td><input type="checkbox" data-sel="' + x.id + '"' + (ST_SEL[x.id] ? " checked" : "") + "></td><td><b>" + esc(x.name) + "</b> " + stPillOf(x.status) + "</td>" + (q ? "<td>" + esc(x.cls) + "</td>" : "") + "<td>" + esc(x.grade) + "</td><td>" + esc(x.school) + "</td><td>" +
         (x.phone ? "📞 있음" + (x.mute ? " (알림 끔)" : "") : '<span class="hint" style="margin:0">없음</span>') + "</td><td>" + (x.hasPin ? "✅" : '<span class="hint" style="margin:0">미설정</span>') + '</td><td style="white-space:nowrap"><button class="sm sub" data-card="' + x.id + '">📋 카드</button> <button class="sm sub" data-pe="' + x.id + '">✏️</button>' + (x.hasPin ? ' <button class="sm sub" data-pr="' + x.id + '" title="번호 초기화">🔑</button>' : "") + "</td></tr>";
@@ -1382,8 +1383,10 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     };
     return step(0).then(function () { var html = '<span class="ok">' + label + " " + done + "명 완료 ✓</span>" + (fail ? ' <span class="er">못 한 학생 ' + fail + "명 — 다시 눌러 주세요</span>" : ""); ST_SEL = {}; return stLoad().then(function () { M.innerHTML = html; return html; }); });
   }
-  $("stMove").onclick = function () { var c = $("stMoveCls").value, ids = Object.keys(ST_SEL); if (!confirm(ids.length + "명을 「" + c + "」 반으로 옮길까요?")) return; runPatch(ids.map(function (id) { return { id: id, cls: c }; }), "반 이동"); };
-  $("stStat").onclick = function () { var s = $("stSetStat").value, ids = Object.keys(ST_SEL); if (!confirm(ids.length + "명을 「" + s + "」 상태로 바꿀까요?" + (s !== "재원" ? "\n(학생 화면 명단과 과제 알림에서 빠지고 기록은 남아요)" : ""))) return; runPatch(ids.map(function (id) { return { id: id, status: s }; }), "상태 바꾸기"); };
+  $("stMove").onclick = function () { var c = $("stMoveCls").value, ids = Object.keys(ST_SEL); if (!confirm(ids.length + "명을 「" + c + "」 반으로 옮길까요?")) return; runPatch(ids.map(function (id) { var x = STU.students.find(function (s) { return s.id === id; }) || {}; var o = { id: id, cls: c }; if (x.status === "신입" && c !== PLACE) o.status = "재원"; else if (c === PLACE && (x.status || "재원") === "재원") o.status = "신입"; return o; }), "반 이동"); };
+  // 반을 「신입 반배정」으로 고르면 상태도 신입, 다른 반으로 바꾸면 신입 → 재원
+  $("sfCls").addEventListener("change", function () { var v = $("sfCls").value, st = $("sfStatus"); if (v === PLACE && st.value === "재원") st.value = "신입"; else if (v !== PLACE && st.value === "신입") st.value = "재원"; });
+  $("stStat").onclick = function () { var s = $("stSetStat").value, ids = Object.keys(ST_SEL); if (!confirm(ids.length + "명을 「" + s + "」 상태로 바꿀까요?" + (s === "휴원" || s === "퇴원" ? "\n(학생 화면 명단과 과제 알림에서 빠지고 기록은 남아요)" : ""))) return; runPatch(ids.map(function (id) { return { id: id, status: s }; }), "상태 바꾸기"); };
   $("stGradeUp").onclick = function () {
     var ch = Object.keys(ST_SEL).map(stById).filter(function (x) { return x && nextGrade(x.grade); }).map(function (x) { return { id: x.id, grade: nextGrade(x.grade) }; });
     if (!confirm(ch.length + "명의 학년을 한 칸 올릴까요? (학년이 비었거나 고3인 학생은 빼요)")) return; runPatch(ch, "학년 올리기");
@@ -1467,7 +1470,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   // ---------- ➕ 학생 추가·수정 ----------
   function sfFill(x) {
     SF_ID = x ? x.id : null; $("sfName").value = x ? x.name : ""; if (x && x.cls) $("sfCls").value = x.cls; $("sfGrade").value = x ? x.grade || "" : ""; $("sfSchool").value = x ? x.school || "" : ""; $("sfPhone").value = x ? x.phone || "" : ""; $("sfMute").checked = !!(x && x.mute);
-    $("sfStatus").value = x ? x.status || "재원" : "재원"; $("sfMemo").value = x ? x.memo || "" : "";
+    $("sfStatus").value = x ? x.status || "재원" : $("sfCls").value === PLACE ? "신입" : "재원"; $("sfMemo").value = x ? x.memo || "" : "";
     $("sfTitle").textContent = x ? "✏️ 학생 정보 수정 · " + x.name : "➕ 학생 추가"; $("sfSave").textContent = x ? "💾 수정 저장" : "➕ 추가"; $("sfNew").style.display = x ? "" : "none"; $("sfMsg").textContent = "";
   }
   function sfEdit(x) { if (!x) return; sfFill(x); $("sfTitle").scrollIntoView({ behavior: "smooth", block: "start" }); $("sfName").focus(); }
