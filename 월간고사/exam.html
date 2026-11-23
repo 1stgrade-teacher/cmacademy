@@ -278,6 +278,7 @@
         if ((SPK || AO) && q.area === "듣기" && q.type === "mc" && !SPK && q.audio) pre += '<div class="au" style="margin-top:12px">🎧 <b style="flex:0 0 auto">' + q.n + '번</b> <audio controls preload="none" controlsList="nodownload" src="' + esc(q.audio) + '" aria-label="' + q.n + '번 듣기"></audio></div>' + (/^듣기 \d+번$/.test(q.q || "") ? "" : '<div class="qs" style="margin:6px 2px 0">' + fmt(q.q) + (q.sub ? "<br>" + fmt(q.sub) : "") + "</div>");
         else if (AO && !SPK && q.area === "듣기" && SECS.length) pre += '<div class="spk" style="margin-top:12px">⚠ ' + q.n + '번 음원이 아직 없어요. 선생님께 알려 주세요.</div>';
         if (q.img) pre += '<div class="qimg" style="margin-top:12px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:8px"><div style="font:700 14px var(--font);color:var(--accent-ink);margin:0 0 4px">' + q.n + '번 그림</div><img src="' + esc(q.img) + '" alt="' + q.n + '번 그림 보기" style="display:block;max-width:100%;height:auto;margin:0 auto"></div>';
+        if (OMR && q.man) return pre + '<div class="q lrow" id="q' + i + '" style="background:#F6F8FA"><span class="qn">' + q.n + '</span><span style="flex:1;color:var(--muted);font-weight:700">✍️ 서술형 · 종이에 쓴 답을 선생님이 채점해요 (입력 안 해도 돼요)</span></div>';
         if (OMR && q.type === "short") return pre + '<div class="q lrow" id="q' + i + '"><span class="qn">' + q.n + '</span><input class="sa" data-i="' + i + '" style="flex:1;margin:0" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="' + q.n + '번 서술형 답"></div>';
         if (((SPK || AO) && q.area === "듣기" || OMR) && q.type === "mc") return pre + '<div class="q lrow" id="q' + i + '"><span class="qn">' + q.n + '</span><div class="lopts">' + q.opts.map(function (o, k) { return '<button class="opt" data-i="' + i + '" data-k="' + k + '" aria-label="' + q.n + "번 " + NUM[k] + '"><b>' + NUM[k] + "</b></button>"; }).join("") + "</div></div>";
         var h = '<div class="q" id="q' + i + '"><div class="qh"><span class="qn">' + q.n + '</span><div><div class="qt">' + fmt(q.q) + (q.type === "multi" ? ' <span style="color:#A2342A">(정답 모두 고르기)</span>' : "") + "</div>" + (q.unit && q.unit !== "단원" ? '<div class="qu">' + esc(q.unit) + "</div>" : "") + "</div></div>";
@@ -330,7 +331,7 @@
       Array.prototype.forEach.call(built.querySelectorAll(".chip"), function (b) { b.onclick = function () { picked.splice(+b.getAttribute("data-k"), 1); if (picked.length) run.answers[i] = picked; else delete run.answers[i]; save(); paintArrange(i); status(); }; });
       document.getElementById("q" + i).classList.toggle("done", picked.length === q.words.length);
     }
-    function answered(i) { var a = run.answers[i], t = Q[i].type; return t === "mc" ? a != null : t === "multi" ? !!a && a.length > 0 : t === "short" ? (Q[i].box && window.LetterBox ? !!a && !/_/.test(a) : !!a && !!String(a).trim()) : !!a && a.length === Q[i].words.length; }
+    function answered(i) { var a = run.answers[i], t = Q[i].type; if (Q[i].man) return true; return t === "mc" ? a != null : t === "multi" ? !!a && a.length > 0 : t === "short" ? (Q[i].box && window.LetterBox ? !!a && !/_/.test(a) : !!a && !!String(a).trim()) : !!a && a.length === Q[i].words.length; }
     function status() {
       var n = Q.filter(function (_, i) { return answered(i); }).length;
       document.getElementById("pg").style.width = (n / total * 100) + "%";
@@ -390,15 +391,16 @@
     }
     var r = j.result, items = j.items || [], ps = run.paper && run.paper.pass, SELF = !!(run.paper && run.paper.self);
     var html = '<div class="box"><p class="sub">' + esc(run.paper.title) + '</p><div class="score" style="margin-top:10px"><div class="ring" style="--p:' + r.pct + '"><span>' + Math.round(r.pct) + "<small>점</small></span></div>" +
-      '<div><h2 style="margin:0">' + r.score + " / " + r.total + " 문항 · " + esc(r.grade) + "</h2>" + passBadge(ps, r) + '<p class="sub">소요 ' + r.mins + "분" + (r.comment ? "<br>" + esc(r.comment) : "") + "</p>" + (j.sent ? '<p class="sub" style="margin-top:6px;color:#0A7A55;font-weight:700">📲 부모님께 결과를 보냈어요</p>' : "") + "</div></div></div>";
+      '<div><h2 style="margin:0">' + r.score + " / " + r.total + (j.areas && j.areas.length ? "점" : " 문항") + " · " + esc(r.grade) + "</h2>" + passBadge(ps, r) + '<p class="sub">소요 ' + r.mins + "분" + (r.comment ? "<br>" + esc(r.comment) : "") + "</p>" + (j.sent ? '<p class="sub" style="margin-top:6px;color:#0A7A55;font-weight:700">📲 부모님께 결과를 보냈어요</p>' : "") + "</div></div></div>";
     if (j.units && j.units.length) {
       html += '<div class="box"><h2>📊 단원별 정답률</h2>' + j.units.map(function (u) {
         var p = Math.round(u.r / u.t * 100);
         return '<div class="ubar"><span>' + esc(u.u) + '</span><span class="tr"><i class="' + (p < 60 ? "low" : "") + '" style="width:' + p + '%"></i></span><b>' + u.r + "/" + u.t + "</b></div>";
       }).join("") + "</div>";
     }
-    var wrong = items.filter(function (x) { return !x.ok; });
-    html += '<div class="box"><h2>' + (wrong.length ? "📝 틀린 문제 다시 보기 (" + wrong.length + ")" : "💯 모두 맞혔어요!") + "</h2>" + wrong.map(function (x) {
+    var wrong = items.filter(function (x) { return !x.ok && !x.pend; });
+    if (j.pend) html += '<div class="box" style="background:#FFF8E6;border-color:#F3D9A6"><b>✍️ 서술형 ' + j.pend + "문항은 선생님이 종이 답안을 보고 채점해요.</b><br><span class=\"sub\">지금 점수는 서술형을 빼고 계산한 점수예요. 채점이 끝나면 점수가 올라갈 수 있어요.</span></div>";
+    html += '<div class="box"><h2>' + (wrong.length ? "📝 틀린 문제 다시 보기 (" + wrong.length + ")" : j.pend ? "💯 서술형을 빼고 모두 맞혔어요!" : "💯 모두 맞혔어요!") + "</h2>" + wrong.map(function (x) {
       return '<div class="rv"><div class="h">' + x.n + ". " + fmt(x.q) + "</div>" + (x.sub ? '<div class="qs" style="font-size:15px">' + fmt(x.sub) + "</div>" : "") +
         '<div class="a"><span class="no">내 답: ' + fmt(x.given) + '</span><br><span class="ok">정답: ' + fmt(x.answer) + "</span>" + (x.ai ? '<br><span style="color:var(--muted);font-size:14px">🤖 ' + esc(x.ai) + "</span>" : "") + "</div>" + (x.exp ? '<div class="x">💡 ' + esc(x.exp) + "</div>" : "") + "</div>";
     }).join("") + (function () { // 단어장 뜻과 달라도 AI가 맞다고 본 답
