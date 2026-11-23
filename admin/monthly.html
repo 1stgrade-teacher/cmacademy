@@ -610,7 +610,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   </section>
 
   <section id="v-results" style="display:none">
-    <div class="card"><div class="row"><select id="rCls" style="width:auto;max-width:180px" title="반별로 걸러 보기"></select><select id="rKind" style="width:auto;max-width:150px" title="종류별로 걸러 보기"></select><select id="rPaper" style="max-width:520px;flex:1;min-width:200px"></select><button class="sub" id="rLoad">불러오기</button><button class="sub" id="rPrint" style="display:none">🖨 간단 성적표 인쇄</button></div>
+    <div class="card"><div class="row"><select id="rCls" style="width:auto;max-width:180px" title="반별로 걸러 보기"></select><select id="rKind" style="width:auto;max-width:150px" title="종류별로 걸러 보기"></select><select id="rPaper" style="max-width:520px;flex:1;min-width:200px"></select><button class="sub" id="rLoad">불러오기</button><button class="sub" id="rPrint" style="display:none">🖨 간단 성적표 인쇄</button><button class="sub" id="rXls" style="display:none" title="이 시험지의 응시 결과를 엑셀에서 열 수 있는 파일로 받아요">⬇ 엑셀로 받기</button></div>
       <div class="repbox" id="rRep" style="display:none">
         <div class="row"><button id="rMake">📄 학생별 분석 리포트 만들기 (노션)</button><label><input type="checkbox" id="rForce"> 이미 만든 학생도 다시 만들기</label></div>
         <div class="hint">선생님의 「○월 월례고사 분석레포트」 양식 그대로, 학생마다 <b>평가 개요 → 총평 → 영역별 성적 → 문항별 오답 원인 → 학습 대책 → 복습 강의 링크 → 성적 추이</b>를 AI가 써서 노션 <b>📔 학습리포트 › 학생 학습레포트</b> 아래에 만들어요. 학생 1명에 20~40초 걸려요. 보내기 전에 노션에서 한 번 읽고 고쳐 주세요.</div>
@@ -2960,7 +2960,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   $("rLoad").onclick = function () { R_CF = ""; loadResults(); };
   function loadResults(after) {
     var id = $("rPaper").value; if (!id) return;
-    $("rBox").innerHTML = '<p class="hint">불러오는 중…</p>'; $("rPrint").style.display = "none";
+    $("rBox").innerHTML = '<p class="hint">불러오는 중…</p>'; $("rPrint").style.display = "none"; $("rXls").style.display = "none";
     post({ action: "t_results", id: id }).then(function (j) {
       if (!j.ok) { $("rBox").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; }
       var PL = j.paper.kind === "반배정시험";
@@ -3020,7 +3020,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
               : '미응시 <button class="sm sub" data-radd="' + esc(r.sid) + '" data-name="' + esc(r.name) + '" style="margin-left:8px" title="나중에 종이로 본 점수 넣기">📄 종이 점수 넣기</button> <button class="sm sub" data-rskip="' + esc(r.sid) + '" data-on="1" title="다른 단어장·다른 시험지로 본 학생: 미응시 수에서 빠져요">↪ 다른 시험으로 봄</button>') + (PL ? " · " + assignCell(r) : "") + "</td></tr>"; }).join("") +
         "</tbody></table></div>" +
         (ul.length ? "<h3>" + (CT && !RF ? "전체" : "반 전체") + " 단원별 정답률 (낮은 순)</h3>" + ul.map(function (u) { var p = pct(u.r, u.t); return '<div class="ub"><span>' + esc(u.k) + '</span><span class="bar"><i class="' + (p < 60 ? "low" : "") + '" style="width:' + p + '%"></i></span><b class="num">' + p + "%</b></div>"; }).join("") : "");
-      $("rPrint").style.display = done.length ? "" : "none";
+      $("rPrint").style.display = done.length ? "" : "none"; $("rXls").style.display = j.rows.length ? "" : "none";
       Array.prototype.forEach.call($("rBox").querySelectorAll("[data-rskip]"), function (bt) {
         bt.onclick = function () {
           bt.disabled = true; var on = !!bt.getAttribute("data-on");
@@ -3173,6 +3173,27 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     runReports(jobs, $("rProg"), function () { $("rMake").disabled = false; loadResultsKeep(); });
   };
   function loadResultsKeep() { var prog = $("rProg").innerHTML; loadResults(function () { $("rProg").innerHTML = prog; }); }
+  // ⬇ 응시 결과 엑셀로 받기 (엑셀에서 바로 열리는 CSV · 한글 깨짐 없음)
+  $("rXls").onclick = function () {
+    var j = LAST_RES; if (!j) return;
+    var cell = function (v) { v = String(v == null ? "" : v); return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    var PS = j.paper.pass || null, PL = j.paper.kind === "반배정시험", SELFP = !!j.paper.self, SK = {}; (j.paper.skip || []).forEach(function (x) { SK[x] = 1; });
+    var done = j.rows.filter(function (r) { return !r.missing; }).concat(j.dups || []);
+    // 단원(영역)별 정답 칸: 모든 기록에 나온 단원을 순서대로
+    var UK = []; done.forEach(function (r) { (r.units || []).forEach(function (u) { var k = u.c && u.c !== "단원" ? u.c : u.u; if (k && UK.indexOf(k) < 0) UK.push(k); }); });
+    var uOf = function (r, k) { var e = { r: 0, t: 0 }; (r.units || []).forEach(function (u) { if ((u.c && u.c !== "단원" ? u.c : u.u) === k) { e.r += u.r; e.t += u.t; } }); return e.t ? e.r + "/" + e.t : ""; };
+    var sorted = done.slice().sort(SELFP ? function (a, b) { return String(a.made || "").localeCompare(String(b.made || "")); } : function (a, b) { return (b.pct || 0) - (a.pct || 0); });
+    var head = ["순위", "이름", "반", "학년", "학교", "점수", "만점", "환산점수", "평가"].concat(PS ? ["통과"] : [], PL ? ["추천 반"] : [], SELFP ? ["범위"] : [], UK.map(function (k) { return k + " (맞은/문항)"; }), ["시험일", "응시 방식", "소요(분)", "자리비움", "코멘트"]);
+    var rank = 0, prev = null;
+    var rows = [head].concat(sorted.map(function (r, i) {
+      if (!SELFP && !r.dup && r.pct !== prev) { rank = i + 1; prev = r.pct; }
+      return [SELFP ? i + 1 : r.dup ? "겹침" : rank, r.name, r.cls || j.paper.cls, r.sgrade, r.school, r.score, r.total, r.pct, r.grade].concat(PS ? [passOk(PS, r) ? "통과" : "재시험"] : [], PL ? [r.rec2 || ""] : [], SELFP ? [r.range || ""] : [], UK.map(function (k) { return uOf(r, k); }), [r.date, r.how, r.mins, r.away, r.comment]);
+    }), j.rows.filter(function (r) { return r.missing; }).map(function (r) {
+      return ["", r.name, r.cls || j.paper.cls, r.sgrade, r.school, "", "", "", SK[r.sid] ? "다른 시험으로 봄" : "미응시"].concat(PS ? [""] : [], PL ? [""] : [], SELFP ? [""] : [], UK.map(function () { return ""; }), ["", "", "", "", ""]);
+    }));
+    var blob = new Blob(["\ufeff" + rows.map(function (r) { return r.map(cell).join(","); }).join("\r\n")], { type: "text/csv;charset=utf-8" });
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = ("응시결과_" + j.paper.title + "_" + new Date().toISOString().slice(0, 10)).replace(/[\\/:*?"<>|]/g, "_") + ".csv"; document.body.appendChild(a); a.click(); a.remove();
+  };
   $("rPrint").onclick = function () {
     if (!LAST_RES) return;
     var j = LAST_RES, done = j.rows.filter(function (r) { return !r.missing; }), avg = done.reduce(function (a, r) { return a + (r.pct || 0); }, 0) / (done.length || 1);
