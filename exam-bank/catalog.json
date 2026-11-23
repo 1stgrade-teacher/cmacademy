@@ -1,5 +1,5 @@
 {
- "built": "2026-11-22T15:26:48.470Z",
+ "built": "2026-11-22T22:00:00.435Z",
  "books": [
   {
    "id": "bb391852c",
@@ -1884,6 +1884,598 @@
        "name": "P3 독립분사구문, 비인칭분사구문",
        "n": 4,
        "lv": 2.3
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b7b671ca1",
+   "area": "문법",
+   "grade": "고등",
+   "name": "솔리드 어법 실력",
+   "path": "문법/solid-advanced",
+   "n": 194,
+   "chapters": [
+    {
+     "key": "_",
+     "name": "누적 TEST Chapters 1-3",
+     "units": [
+      {
+       "id": "ubccfd146",
+       "name": "TEST 누적 TEST · Chapters 1-3",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u86af5d3e",
+       "name": "TEST 누적 TEST · Chapters 4-6",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uaf7ca8ef",
+       "name": "TEST 누적 TEST · Chapters 7-9",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter1",
+     "name": "Chapter 1 동사",
+     "units": [
+      {
+       "id": "u1195ad17",
+       "name": "P1 동사 자리",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "ub43ab4b9",
+       "name": "P2 대동사",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "ua16271b3",
+       "name": "P3 자동사 vs. 타동사",
+       "n": 4,
+       "lv": 2.5
+      },
+      {
+       "id": "u15e3be7d",
+       "name": "P4 주어-동사의 수 일치",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "u186a3871",
+       "name": "P5 시제",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "u11f54072",
+       "name": "P6 태",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "uaefa194e",
+       "name": "Chapter 1 Basic Practice (포인트 1-2) — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u35fbc383",
+       "name": "Chapter 1 Basic Practice (포인트 3-4) — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u77fc010c",
+       "name": "Chapter 1 Basic Practice (포인트 5-6) — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2b5b2c7d",
+       "name": "TEST Chapter 1 Chapter Test",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter2",
+     "name": "Chapter 2 to부정사 / 동명사",
+     "units": [
+      {
+       "id": "uf47bc617",
+       "name": "P7 주어 자리 / 보어 자리",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "u97214b58",
+       "name": "P8 목적어 자리",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u5e769948",
+       "name": "P9 목적격보어 자리 1 (to부정사)",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "u5b4c0100",
+       "name": "P10 목적격보어 자리 2 (원형부정사)",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "ubc83fc63",
+       "name": "P11 의미상 주어",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u9b1f22de",
+       "name": "P12 태 / 시제",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "uc9fd6b7c",
+       "name": "Chapter 2 Basic Practice (포인트 7-8) — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc7af6edd",
+       "name": "Chapter 2 Basic Practice (포인트 9-10) — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u0bdc6c8a",
+       "name": "Chapter 2 Basic Practice (포인트 11-12) — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc9fe9034",
+       "name": "TEST Chapter 2 Chapter Test",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter3",
+     "name": "Chapter 3 분사",
+     "units": [
+      {
+       "id": "u12a05722",
+       "name": "P13 분사의 의미, 기능",
+       "n": 4,
+       "lv": 2.5
+      },
+      {
+       "id": "u4526aff1",
+       "name": "P14 목적격보어 자리 (지각동사·사역동사)",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "u37d244d7",
+       "name": "P15 감정을 나타내는 분사",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "u95c1ff10",
+       "name": "P16 분사구",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u3761b4ca",
+       "name": "P17 분사구문",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "uf8da9b8d",
+       "name": "P18 독립분사구문",
+       "n": 4,
+       "lv": 2.5
+      },
+      {
+       "id": "ue66b0985",
+       "name": "Chapter 3 Basic Practice (포인트 13-14) — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u6f31cbb7",
+       "name": "Chapter 3 Basic Practice (포인트 15-16) — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub7219f1d",
+       "name": "Chapter 3 Basic Practice (포인트 17-18) — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u32541aed",
+       "name": "TEST Chapter 3 Chapter Test",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter4",
+     "name": "Chapter 4 조동사 / 가정법",
+     "units": [
+      {
+       "id": "u58a8e73e",
+       "name": "P19 조동사+동사원형 vs. 조동사+have p.p.",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "u22ddcc29",
+       "name": "P20 used를 이용한 표현",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "ub445b6e7",
+       "name": "P21 조동사 관용 표현",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "ua8d7668e",
+       "name": "P22 가정법 과거 vs. 가정법 과거완료 vs. 혼합 가정법",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "ued78a811",
+       "name": "P23 that절의 should 생략",
+       "n": 4,
+       "lv": 2.5
+      },
+      {
+       "id": "u543fcf05",
+       "name": "P24 as if + 가정법 / I wish + 가정법",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u9f517231",
+       "name": "Practice Basic Practice · 포인트 19-20",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u68f0502d",
+       "name": "Practice Basic Practice · 포인트 21-22",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u786e1314",
+       "name": "Practice Basic Practice · 포인트 23-24",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u96bcc1ef",
+       "name": "TEST Chapter 4 Chapter Test",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter5",
+     "name": "Chapter 5 접속사 / 전치사",
+     "units": [
+      {
+       "id": "u3e97539c",
+       "name": "P25 접속사 vs. 전치사",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "ud94e06a8",
+       "name": "P26 등위접속사 / 상관접속사",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "u4602636c",
+       "name": "P27 접속사 whether/if vs. 접속사 that",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "udf89d3ff",
+       "name": "P28 to부정사의 to vs. 전치사 to",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "uc7489939",
+       "name": "Practice Basic Practice · 포인트 25-26",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1a55697f",
+       "name": "Practice Basic Practice · 포인트 27-28",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u122a683b",
+       "name": "TEST Chapter 5 Chapter Test",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter6",
+     "name": "Chapter 6 관계사",
+     "units": [
+      {
+       "id": "u9363bcfa",
+       "name": "P29 관계대명사의 역할 및 쓰임",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u603e74ea",
+       "name": "P30 전치사+관계대명사 / 계속적 용법",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u35034738",
+       "name": "P31 관계부사의 역할 및 쓰임",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "ub743bdab",
+       "name": "P32 관계대명사 vs. 관계부사 / 생략",
+       "n": 4,
+       "lv": 2.8
+      },
+      {
+       "id": "u5d969a1f",
+       "name": "P33 복합관계대명사 vs. 복합관계부사",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "ua0d836d6",
+       "name": "P34 관계대명사 what vs. 관계대명사 which[that]",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "uaf7f479f",
+       "name": "Practice Basic Practice · 포인트 29-30",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue9719e8c",
+       "name": "Practice Basic Practice · 포인트 31-32",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u66acd5ae",
+       "name": "Practice Basic Practice · 포인트 33-34",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u24bffac3",
+       "name": "TEST Chapter 6 Chapter Test",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter7",
+     "name": "Chapter 7 명사 / 대명사",
+     "units": [
+      {
+       "id": "u5468ff95",
+       "name": "P35 대명사의 일치",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "ubd91c5d4",
+       "name": "P36 대명사 it",
+       "n": 4,
+       "lv": 2.8
+      },
+      {
+       "id": "u576f0730",
+       "name": "P37 that vs. those / it vs. one",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "ue4407a33",
+       "name": "P38 인칭대명사 vs. 재귀대명사",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u3b06c3b2",
+       "name": "P39 부정대명사",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "u0fd2dc4d",
+       "name": "P40 셀 수 있는 명사 vs. 셀 수 없는 명사",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "ud46204a2",
+       "name": "Chapter 7 Basic Practice (포인트 35-36) — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud7d46f4e",
+       "name": "Chapter 7 Basic Practice (포인트 37-38) — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc462e2f2",
+       "name": "Chapter 7 Basic Practice (포인트 39-40) — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ua25fa952",
+       "name": "TEST Chapter 7 Chapter Test",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter8",
+     "name": "Chapter 8 형용사 / 부사 / 비교",
+     "units": [
+      {
+       "id": "u9eb6986d",
+       "name": "P41 형용사 자리 vs. 부사 자리",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "uf0624f48",
+       "name": "P42 한정 용법 형용사 vs. 서술 용법 형용사",
+       "n": 3,
+       "lv": 2
+      },
+      {
+       "id": "uc3897931",
+       "name": "P43 혼동하기 쉬운 형용사/부사",
+       "n": 4,
+       "lv": 1.3
+      },
+      {
+       "id": "u1e9ad8d7",
+       "name": "P44 원급 vs. 비교급 vs. 최상급",
+       "n": 4,
+       "lv": 2.5
+      },
+      {
+       "id": "u2c4fc209",
+       "name": "P45 비교급/최상급 강조",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "ud55b9e83",
+       "name": "P46 비교 구문을 이용한 관용 표현",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u8a3eb237",
+       "name": "Chapter 8 Basic Practice (포인트 41-42) — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uabcf298c",
+       "name": "Chapter 8 Basic Practice (포인트 43-44) — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u45547362",
+       "name": "Chapter 8 Basic Practice (포인트 45-46) — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5434d167",
+       "name": "TEST Chapter 8 Chapter Test",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "chapter9",
+     "name": "Chapter 9 특수 구문",
+     "units": [
+      {
+       "id": "udcbf6811",
+       "name": "P47 병렬 구조",
+       "n": 4,
+       "lv": 2.5
+      },
+      {
+       "id": "uae7473e1",
+       "name": "P48 도치",
+       "n": 4,
+       "lv": 2.5
+      },
+      {
+       "id": "ucb97f626",
+       "name": "P49 강조 구문",
+       "n": 4,
+       "lv": 2.8
+      },
+      {
+       "id": "u1e7dc924",
+       "name": "P50 어순",
+       "n": 4,
+       "lv": 2.3
+      },
+      {
+       "id": "ub3fe1400",
+       "name": "Chapter 9 Basic Practice (포인트 47-48) — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ue48076e5",
+       "name": "Chapter 9 Basic Practice (포인트 49-50) — Check Up",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u982d0d2f",
+       "name": "TEST Chapter 9 Chapter Test",
+       "n": 0,
+       "lv": null
       }
      ]
     }
