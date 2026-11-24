@@ -441,6 +441,7 @@ const cleanAudioDir = (s) => { s = String(s || "").trim().slice(0, 200); if (!s)
 // 📝 OMR(종이 시험지 + 휴대폰으로 답만 입력): 설정.omr = { items: [{ ar: 영역, a: 0~4(객관식 정답 칸) | answer: 서술형 정답, accept: [], pt: 배점, n: 보기 수 }] }
 //   선생님이 적는 정답표(한 줄 = 영역 하나):  「문법 2: 3 1 4 2 5」  「독해 3점: 2 4 [have gone / has gone]」
 //   영역 이름 다음 숫자 = 한 문제 배점(없으면 1점). 숫자 1~5·①~⑤ = 객관식 정답, [ ] 안 = 서술형 정답(여러 개는 / 로)
+//   ? (또는 [?]) = ✍️ 선생님 채점 문항: 학생은 입력하지 않고, 선생님이 📊 응시 결과에서 O/X로 채점
 const OMR_NUM = { "①": 1, "②": 2, "③": 3, "④": 4, "⑤": 5 };
 function parseOmr(text) {
   const items = [], errs = [];
@@ -449,8 +450,9 @@ function parseOmr(text) {
     const m = line.match(/^([^:：]+?)\s*(?:\(?\s*(?:각\s*)?(\d+(?:\.\d+)?)\s*점?\s*\)?)?\s*[:：]\s*(.*)$/);
     if (!m) { errs.push((li + 1) + "번째 줄: 「영역: 정답」 모양이 아니에요"); return; }
     const ar = m[1].trim().slice(0, 20) || "문제", pt = m[2] ? Math.min(100, Number(m[2])) : 1;
-    const toks = m[3].match(/\[[^\]]*\]|[①②③④⑤]|\d+/g) || [];
+    const toks = m[3].match(/\[[^\]]*\]|[①②③④⑤]|\d+|[?？]/g) || [];
     toks.forEach((t) => {
+      if (t === "?" || t === "？" || /^\[\s*(\?|？|선생님|채점|OX|ox)\s*\]$/.test(t)) { items.push({ ar, pt, man: 1 }); return; } // ✍️ 선생님이 종이를 보고 O/X 채점
       if (t[0] === "[") { const acc = t.slice(1, -1).split("/").map((x) => x.trim()).filter(Boolean).slice(0, 8); if (acc.length) items.push({ ar, pt, answer: acc[0].slice(0, 200), accept: acc.map((x) => x.slice(0, 200)) }); return; }
       if (OMR_NUM[t]) { items.push({ ar, pt, a: OMR_NUM[t] - 1 }); return; }
       // 숫자: 「31425」처럼 붙여 써도 한 글자씩 (1~5)
@@ -462,11 +464,11 @@ function parseOmr(text) {
 const omrOf = (pp) => (pp && pp.cfg && pp.cfg.omr && Array.isArray(pp.cfg.omr.items) && pp.cfg.omr.items.length ? pp.cfg.omr : null);
 function omrSections(o) { const m = new Map(); o.items.forEach((x) => { const e = m.get(x.ar) || { area: x.ar, n: 0, pts: 0 }; e.n++; e.pts = Math.round((e.pts + (x.pt || 0)) * 100) / 100; m.set(x.ar, e); }); return [...m.values()]; }
 function omrSheet(o) {
-  const picked = o.items.map((x, i) => x.answer != null ? { id: "omr" + i, u: "", type: "short", q: (i + 1) + "번", sub: "", answer: x.answer, accept: x.accept && x.accept.length ? x.accept : [x.answer] }
+  const picked = o.items.map((x, i) => x.man ? { id: "omr" + i, u: "", type: "short", q: (i + 1) + "번", sub: "", answer: "(선생님 채점)", accept: [] } : x.answer != null ? { id: "omr" + i, u: "", type: "short", q: (i + 1) + "번", sub: "", answer: x.answer, accept: x.accept && x.accept.length ? x.accept : [x.answer] }
     : { id: "omr" + i, u: "", type: "mc", q: (i + 1) + "번", sub: "", opts: ["①", "②", "③", "④", "⑤"], ans: x.a });
   const sheet = buildSheet(picked, () => 0.5, true);
-  sheet.key.forEach((k, i) => { const x = o.items[i]; Object.assign(k, { ar: x.ar, pt: x.pt || 1, unit: x.ar, ch: x.ar, book: "종이 시험지" }); });
-  sheet.view.forEach((v, i) => { v.area = o.items[i].ar; v.unit = ""; });
+  sheet.key.forEach((k, i) => { const x = o.items[i]; Object.assign(k, { ar: x.ar, pt: x.pt || 1, unit: x.ar, ch: x.ar, book: "종이 시험지" }, x.man ? { man: 1 } : {}); });
+  sheet.view.forEach((v, i) => { v.area = o.items[i].ar; v.unit = ""; if (o.items[i].man) v.man = 1; });
   return sheet;
 }
 const hasSections = (pp) => !!(pp && pp.cfg && Array.isArray(pp.cfg.sections) && pp.cfg.sections.length);
@@ -627,6 +629,8 @@ async function findAttempt(pid, sid) {
   if (!q) return undefined;
   return (q.results || [])[0] || null;
 }
+// ✍️ 기록의 선생님 채점 문항: [{ n, ar, p, ok, pd }]
+function manOf(p) { try { return JSON.parse(P.text(p, "문항 기록") || "[]").filter((x) => x && x.m).map((x) => ({ n: x.n, ar: x.c || "", p: x.p || 1, ok: !!x.ok, pd: x.pd ? 1 : 0 })); } catch (e) { return null; } }
 function attemptSummary(p) {
   return { score: P.num(p, "점수"), total: P.num(p, "만점"), pct: P.formula(p, "환산점수"), grade: P.sel(p, "종합 평가"), date: (P.date(p, "시험일") || {}).start || "", comment: P.text(p, "코멘트") };
 }
@@ -708,7 +712,8 @@ async function saveStudent(x, classes, me) {
   if (!classes.includes(cls)) return { ok: false, msg: "반을 골라 주세요. (노션에 없는 반은 추가할 수 없어요)" };
   if (phone === null) return { ok: false, msg: "학부모 연락처는 010으로 시작하는 휴대폰 번호로 써 주세요." };
   const props = { "이름": { title: rt(name) }, "반": sel(cls), "학년": grade ? sel(grade) : { select: null }, "학교": { rich_text: rt(school) }, "학부모 연락처": { phone_number: phone || null }, "알림 끄기": { checkbox: !!x.mute } };
-  if (["재원", "휴원", "퇴원"].includes(x.status)) props["상태"] = sel(x.status);
+  if (["재원", "신입", "휴원", "퇴원"].includes(x.status)) props["상태"] = sel(x.status);
+  else if (!x.id && cls === PLACE_CLS()) props["상태"] = sel("신입"); // 신입 반배정 반으로 새로 넣으면 「신입」
   if (typeof x.memo === "string" && x.id) props["메모"] = { rich_text: rt(clip(x.memo, 1900)) };
   if (x.id) {
     const pg = await notion("pages/" + id32(clip(x.id, 60)), "GET");
@@ -1131,6 +1136,43 @@ module.exports = async function handler(req, res) {
       const pg = await notion("pages", "POST", { parent: { database_id: EXAM_DB() }, properties: props }, 2);
       return pg ? send(200, { ok: true, rec: normId(pg.id) }) : send(502, { error: "notion", msg: "기록을 넣지 못했어요. 노션 연결을 확인해 주세요.", debug: lastErr });
     }
+    if (act === "t_rec_manual") { // ✍️ 서술형(선생님 채점) O/X 저장 → 점수·영역별·추천 반 다시 계산
+      const rid = clip(b.id, 60), marks = b.marks && typeof b.marks === "object" ? b.marks : {};
+      const pg = await notion("pages/" + id32(rid), "GET");
+      if (!pg || pg.archived || normId(pg.parent && pg.parent.database_id) !== normId(EXAM_DB())) return send(404, { error: "nf", msg: "기록을 찾지 못했어요." });
+      let items; try { items = JSON.parse(P.text(pg, "문항 기록") || "[]"); } catch (e) { items = null; }
+      if (!Array.isArray(items) || !items.length) return send(400, { error: "items", msg: "문항 기록이 없어서 채점할 수 없어요." });
+      let ch = 0;
+      items.forEach((x) => { if (!x || !x.m) return; const v = marks[x.n]; if (v === true || v === false) { if (x.ok !== v || x.pd) ch++; x.ok = v; delete x.pd; x.g = v ? "⭕ 선생님 채점" : "❌ 선생님 채점"; } });
+      const weighted = items.some((x) => x.p > 0), total = P.num(pg, "만점") || (weighted ? items.reduce((t, x) => t + (x.p || 0), 0) : items.length);
+      const right = weighted ? Math.round(items.reduce((t, x) => t + (x.ok ? x.p || 0 : 0), 0) * 10) / 10 : items.filter((x) => x.ok).length;
+      const pct = Math.round((right / total) * 1000) / 10, nPend = items.filter((x) => x.m && x.pd).length;
+      const am = new Map(); items.forEach((x) => { const a = x.c || "기타", e = am.get(a) || { a, r: 0, t: 0, g: 0, p: 0 }; e.t++; e.p += x.p || 0; if (x.ok) { e.r++; e.g += x.p || 0; } am.set(a, e); });
+      const areaText = weighted ? [...am.values()].map((e) => e.a + " " + Math.round(e.g * 10) / 10 + "/" + Math.round(e.p * 10) / 10 + "점(" + e.r + "/" + e.t + ")").join(" · ") : "";
+      let cm = P.text(pg, "코멘트").replace(/^영역별: .*?(?= · (?:✍️|보충 필요|모든 단원|강점|⏰|자리비움|📲)|$)/, "").replace(/ ?·? ?✍️ 서술형 채점 (대기 \d+문항|완료)/g, "").replace(/^ · /, "");
+      const um = new Map(); let oldU = []; try { oldU = JSON.parse(P.text(pg, "단원 분석") || "[]"); } catch (e) {}
+      items.forEach((x) => { const id = x.un || x.c, e = um.get(id) || { u: x.un, c: x.c, b: ((oldU.find((o) => o.u === x.un) || {}).b) || "종이 시험지", r: 0, t: 0 }; e.t++; if (x.ok) e.r++; um.set(id, e); });
+      const chs = new Map(); um.forEach((u) => { const k = (u.c && u.c !== "단원" ? u.c : u.u); const e = chs.get(k) || { k, r: 0, t: 0 }; e.r += u.r; e.t += u.t; chs.set(k, e); });
+      const weak = [...chs.values()].filter((u) => u.r / u.t < 0.6).sort((a, c) => a.r / a.t - c.r / c.t).slice(0, 4).map((u) => u.k + "(" + u.r + "/" + u.t + ")");
+      const strong = [...chs.values()].filter((u) => u.t >= 2 && u.r === u.t).slice(0, 3).map((u) => u.k);
+      cm = cm.replace(/(^|(?: · )?)(보충 필요: [^·]*|모든 단원 60% 이상|강점: [^·]*?)(?= · |$)/g, "").replace(/^ · /, "").trim();
+      cm = [areaText ? "영역별: " + areaText : "", nPend ? "✍️ 서술형 채점 대기 " + nPend + "문항" : "✍️ 서술형 채점 완료", weak.length ? "보충 필요: " + weak.join(", ") : "모든 단원 60% 이상", strong.length ? "강점: " + strong.join(", ") : "", cm].filter(Boolean).join(" · ");
+      const props = { "점수": { number: right }, "오답 수": { number: items.filter((x) => !x.ok).length }, "종합 평가": sel(gradeOf(pct)), "코멘트": { rich_text: rt(clip(cm, 1900)) }, "문항 기록": { rich_text: rtLong(JSON.stringify(items)) }, "단원 분석": { rich_text: rtLong(JSON.stringify([...um.values()])) } };
+      const pid = P.rel(pg, "시험지")[0], sid = P.rel(pg, "학생")[0], pp = pid ? await getPaper(pid) : null;
+      if (pp && (pp.kind === "반배정시험" || (pp.cfg && pp.cfg.place)) && sid) {
+        const st = await notion("pages/" + id32(sid), "GET"), grade = st ? P.sel(st, "학년") : "";
+        props["추천 반"] = { rich_text: rt((placeRec(pp.cfg.place, grade, pct) || (pp.cfg.place ? "기준에 맞는 반 없음" : "기준 미설정")) + " (" + (grade || "학년 ?") + " · " + pct + "점" + (nPend ? " · 서술형 채점 전" : "") + ")") };
+      }
+      const up = await notion("pages/" + id32(rid), "PATCH", { properties: props });
+      if (!up) return send(502, { error: "notion", msg: "채점을 저장하지 못했어요.", debug: lastErr });
+      // 📲 학부모 알림: 서술형 채점이 끝났을 때 한 번
+      if (!nPend && pp && sid && notifyOf(pp) && /서술형 채점 뒤 보내요/.test(cm)) {
+        const sname = (await notion("pages/" + id32(sid), "GET")) || null;
+        const note = await notifyParent(pp, { sid, name: sname ? P.title(sname, "이름") : "" }, rid, { right, total, pct, nRight: items.filter((x) => x.ok).length, nTot: items.length, range: P.text(pg, "시험 범위"), weighted });
+        if (note) await notion("pages/" + id32(rid), "PATCH", { properties: { "코멘트": { rich_text: rt(clip(cm.replace("📲 서술형 채점 뒤 보내요", note), 1900)) } } });
+      }
+      return send(200, { ok: true, score: right, total, pct, pend: nPend, changed: ch });
+    }
     if (act === "t_rec_edit") { // 📊 응시 결과에서 점수·만점·평가·코멘트 직접 고치기 (여러 기록 만점 한꺼번에도)
       const pp = await getPaper(b.paper); if (!pp) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." });
       if (!me.master && pp.teacher && pp.teacher !== me.name) return send(403, { error: "owner", msg: pp.teacher + "이(가) 만든 시험지의 기록은 " + pp.teacher + "이나 관리자만 고칠 수 있어요." });
@@ -1252,7 +1294,8 @@ module.exports = async function handler(req, res) {
       const st = await notion("pages/" + id32(sid), "GET");
       if (!st || normId(st.parent && st.parent.database_id) !== normId(STUDENT_DB())) return send(404, { error: "nf", msg: "학생을 찾지 못했어요." });
       const memo = P.text(st, "메모"), line = today() + " " + me.name + ": " + (P.sel(st, "반") || "-") + " → " + cls;
-      const up = await notion("pages/" + id32(sid), "PATCH", { properties: { "반": sel(cls), "메모": { rich_text: rt(clip((memo ? memo + "\n" : "") + line, 1900)) } } });
+      const toReg = P.sel(st, "상태") === "신입" && cls !== PLACE_CLS(); // 반이 정해지면 신입 → 재원
+      const up = await notion("pages/" + id32(sid), "PATCH", { properties: { "반": sel(cls), ...(toReg ? { "상태": sel("재원") } : {}), "메모": { rich_text: rt(clip((memo ? memo + "\n" : "") + line, 1900)) } } });
       return up ? send(200, { ok: true, cls }) : send(502, { error: "notion", msg: "반을 바꾸지 못했어요.", debug: lastErr });
     }
     if (act === "t_results") { // 한 시험지의 응시 현황 (안 본 학생 포함)
@@ -1266,7 +1309,8 @@ module.exports = async function handler(req, res) {
       let nm = new Map(); if (extraIds.length) { const a = await STU().all().catch(() => null); nm = new Map(((a && a.students) || []).map((x) => [x.id, x])); }
       const list = (ros || []).map((s) => ({ name: s.name, sid: s.id })).concat(extraIds.map((k) => ({ name: nm.get(k) ? nm.get(k).name : "(다른 반 학생)", sid: k })));
       const info = new Map((ros || []).map((s) => [s.id, s]).concat(extraIds.filter((k) => nm.get(k)).map((k) => [k, { cls: nm.get(k).cls, grade: nm.get(k).grade || "" }])));
-      const recRow = (s, st, p) => Object.assign({ name: s.name, sid: s.sid, cls: st.cls || P.sel(p, "반") || "", sgrade: st.grade || "", school: st.school || "", rec2: P.text(p, "추천 반"), url: p.url, rec: normId(p.id), made: String(p.created_time || "").slice(0, 16), how: P.sel(p, "응시 방식"), range: P.text(p, "시험 범위"), report: (p.properties["분석 리포트"] || {}).url || "", mins: P.num(p, "소요시간(분)"), away: P.num(p, "자리비움"), units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }, attemptSummary(p));
+      const MAN = !!(omrOf(pp) && omrOf(pp).items.some((x) => x.man)); // ✍️ 선생님 채점 문항이 있는 OMR 시험
+      const recRow = (s, st, p) => Object.assign({ name: s.name, sid: s.sid, cls: st.cls || P.sel(p, "반") || "", sgrade: st.grade || "", school: st.school || "", rec2: P.text(p, "추천 반"), url: p.url, rec: normId(p.id), made: String(p.created_time || "").slice(0, 16), how: P.sel(p, "응시 방식"), range: P.text(p, "시험 범위"), report: (p.properties["분석 리포트"] || {}).url || "", mins: P.num(p, "소요시간(분)"), away: P.num(p, "자리비움"), units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }, MAN ? { man: manOf(p) } : {}, attemptSummary(p));
       const out = list.map((s) => { const p = done.get(s.sid), st = info.get(s.sid) || {}; return p ? recRow(s, st, p) : { name: s.name, sid: s.sid, cls: st.cls || "", sgrade: st.grade || "", school: st.school || "", missing: true }; });
       list.forEach((s) => (byS.get(s.sid) || []).slice(1).forEach((p) => out.push(Object.assign(recRow(s, info.get(s.sid) || {}, p), { dup: true }))));
       return send(200, { ok: true, paper: pub(pp), rows: out });
@@ -1707,6 +1751,8 @@ module.exports = async function handler(req, res) {
     const answers = Array.isArray(b.answers) ? b.answers.slice(0, key.items.length) : [];
     const res1 = grade(key, answers);
     await judgeMeanings(key, res1); // 📒 뜻 쓰기: 비슷한 뜻은 AI가 확인해서 정답 처리
+    key.items.forEach((k, i) => { if (k.man) res1[i] = { ok: false, given: "(종이 답안)", pend: 1 }; }); // ✍️ 선생님 채점 문항: 채점 전에는 0점
+    const nPend = key.items.filter((k) => k.man).length;
     const nRight = res1.filter((x) => x.ok).length, nTot = key.items.length;
     const weighted = key.items.some((k) => k.pt > 0); // 🆕 배점이 있는 시험(반배정): 점수 = 맞힌 문제의 배점 합
     const secPts = weighted ? key.items.reduce((t, k) => t + (k.pt || 0), 0) : 0, gotPts = weighted ? key.items.reduce((t, k, i) => t + (res1[i].ok ? (k.pt || 0) : 0), 0) : 0;
@@ -1714,19 +1760,19 @@ module.exports = async function handler(req, res) {
     const areaSum = []; // 영역별 점수
     if (weighted) { const m = new Map(); key.items.forEach((k, i) => { const e = m.get(k.ar) || { a: k.ar || "기타", r: 0, t: 0, p: 0, g: 0 }; e.t++; e.p += k.pt || 0; if (res1[i].ok) { e.r++; e.g += k.pt || 0; } m.set(k.ar, e); }); m.forEach((e) => areaSum.push({ a: e.a, r: e.r, t: e.t, g: Math.round(e.g * 10) / 10, p: Math.round(e.p * 10) / 10 })); }
     const areaText = areaSum.map((e) => e.a + " " + e.g + "/" + e.p + "점(" + e.r + "/" + e.t + ")").join(" · ");
-    const units = unitStats(key, res1);
+    const units = nPend ? unitStats({ items: key.items.filter((k) => !k.man) }, res1.filter((x) => !x.pend)) : unitStats(key, res1); // ✍️ 채점 전 문항은 단원 분석에서 빼요
     const mins = Math.max(1, Math.round((Date.now() - key.t0) / 60000)), late = key.dl && Date.now() > key.dl + 120000;
     const away = num(b.away, 0, 999, 0);
     const chs = new Map(); // 코멘트는 단원(챕터) 단위로 묶어서
     units.forEach((u) => { const k = (u.c && u.c !== "단원" ? u.c : u.u); const e = chs.get(k) || { k, r: 0, t: 0 }; e.r += u.r; e.t += u.t; chs.set(k, e); });
     const weak = [...chs.values()].filter((u) => u.r / u.t < 0.6).sort((a, c) => a.r / a.t - c.r / c.t).slice(0, 4).map((u) => u.k + "(" + u.r + "/" + u.t + ")");
     const strong = [...chs.values()].filter((u) => u.t >= 2 && u.r === u.t).slice(0, 3).map((u) => u.k);
-    const comment = [areaText ? "영역별: " + areaText : "", weak.length ? "보충 필요: " + weak.join(", ") : "모든 단원 60% 이상", strong.length ? "강점: " + strong.join(", ") : "", late ? "⏰ 제한시간 초과 제출" : "", away ? "자리비움 " + away + "회" : ""].filter(Boolean).join(" · ");
+    const comment = [areaText ? "영역별: " + areaText : "", nPend ? "✍️ 서술형 채점 대기 " + nPend + "문항" : "", weak.length ? "보충 필요: " + weak.join(", ") : "모든 단원 60% 이상", strong.length ? "강점: " + strong.join(", ") : "", late ? "⏰ 제한시간 초과 제출" : "", away ? "자리비움 " + away + "회" : ""].filter(Boolean).join(" · ");
     const range = rangeText(key.units);
     let rec2 = "";
     if (pp.kind === "반배정시험" || (pp.cfg && pp.cfg.place)) {
       const st = await notion("pages/" + id32(who.sid), "GET"), grade = st ? P.sel(st, "학년") : "";
-      rec2 = (placeRec(pp.cfg.place, grade, pct) || (pp.cfg.place ? "기준에 맞는 반 없음" : "기준 미설정")) + " (" + (grade || "학년 ?") + " · " + pct + "점)";
+      rec2 = (placeRec(pp.cfg.place, grade, pct) || (pp.cfg.place ? "기준에 맞는 반 없음" : "기준 미설정")) + " (" + (grade || "학년 ?") + " · " + pct + "점" + (nPend ? " · 서술형 채점 전" : "") + ")";
       if (st) { const memo = P.text(st, "메모"); await notion("pages/" + id32(who.sid), "PATCH", { properties: { "메모": { rich_text: rt(clip((memo ? memo + "\n" : "") + today() + " " + pp.title + " " + right + "/" + total + (weighted ? "점" : "") + " → 추천 " + rec2, 1900)) } } }); }
     }
     const props = {
@@ -1738,7 +1784,7 @@ module.exports = async function handler(req, res) {
       // 분석 리포트용: 문항마다 영역·단원·학생 답·정답 (짧게)
       "문항 기록": { rich_text: rtLong(JSON.stringify(key.items.map((k, i) => {
         const ui = unitIndex.get(k.u) || {};
-        return { n: i + 1, u: k.u, a: ui.area || "", c: k.ch, un: k.unit, t: k.t, q: clip(k.q, 160), s: clip(k.sub, 160), o: k.opts ? k.opts.map((o) => clip(o, 60)) : undefined, g: clip(res1[i].given, 100), r: clip(k.answer, 120), ok: res1[i].ok, x: clip(k.exp, 160), ai: res1[i].ai || undefined, p: k.pt || undefined };
+        return { n: i + 1, u: k.u, a: ui.area || "", c: k.ch, un: k.unit, t: k.t, q: clip(k.q, 160), s: clip(k.sub, 160), o: k.opts ? k.opts.map((o) => clip(o, 60)) : undefined, g: clip(res1[i].given, 100), r: clip(k.answer, 120), ok: res1[i].ok, x: clip(k.exp, 160), ai: res1[i].ai || undefined, p: k.pt || undefined, m: k.man ? 1 : undefined, pd: res1[i].pend ? 1 : undefined };
       }))) },
     };
     const wrongs = key.items.map((k, i) => ({ k, r: res1[i], i })).filter((x) => !x.r.ok);
@@ -1752,10 +1798,10 @@ module.exports = async function handler(req, res) {
     if (wrongs.length) { children.push(H("틀린 문제 해설")); wrongs.slice(0, 40).forEach((w) => children.push({ object: "block", type: "bulleted_list_item", bulleted_list_item: { rich_text: rt((w.i + 1) + "번 · 정답 " + w.k.answer + (w.k.exp ? " — " + w.k.exp : "")) } })); }
     const pg = await notion("pages", "POST", { parent: { database_id: EXAM_DB() }, properties: props, children });
     if (!pg) return send(502, { error: "notion", msg: "결과를 저장하지 못했어요. 다시 제출해 주세요. (답은 그대로 남아 있어요)", debug: lastErr });
-    const sentNote = await notifyParent(pp, who, pg.id, { right, total, pct, nRight, nTot, range, weighted });
+    const sentNote = nPend ? (notifyOf(pp) ? "📲 서술형 채점 뒤 보내요" : "") : await notifyParent(pp, who, pg.id, { right, total, pct, nRight, nTot, range, weighted });
     if (sentNote) await notion("pages/" + id32(pg.id), "PATCH", { properties: { "코멘트": { rich_text: rt(clip((comment ? comment + " · " : "") + sentNote, 1900)) } } });
-    const out = { ok: true, show: pp.show, saved: true, areas: pp.show ? areaSum : undefined, sent: /보냄$/.test(sentNote) };
-    if (pp.show) Object.assign(out, { result: { score: right, total, pct, grade: gradeOf(pct), comment, mins }, units, items: key.items.map((k, i) => ({ n: i + 1, q: k.q, sub: k.sub, given: res1[i].given, answer: k.answer, ok: res1[i].ok, exp: k.exp, unit: k.ch || k.unit, ai: res1[i].ai || "" })) });
+    const out = { ok: true, show: pp.show, saved: true, areas: pp.show ? areaSum : undefined, sent: /보냄$/.test(sentNote), pend: nPend };
+    if (pp.show) Object.assign(out, { result: { score: right, total, pct, grade: gradeOf(pct), comment, mins }, units, items: key.items.map((k, i) => ({ n: i + 1, q: k.q, sub: k.sub, given: res1[i].given, answer: k.answer, ok: res1[i].ok, exp: k.exp, unit: k.ch || k.unit, ai: res1[i].ai || "", pend: res1[i].pend ? 1 : undefined })) });
     return send(200, out);
   }
   return send(400, { error: "action" });

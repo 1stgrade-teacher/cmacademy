@@ -37,7 +37,7 @@ module.exports = function (ctx) {
     return { from, to: to || "", cls, records: recs.slice(0, 400), total: recs.length, summary };
   }
   async function certCheck(id, on) { return !!(await notion("pages/" + id32(id), "PATCH", { properties: { "선생님 확인": { checkbox: !!on } } })); }
-  const STATUSES = ["재원", "휴원", "퇴원"];
+  const STATUSES = ["재원", "신입", "휴원", "퇴원"]; // 신입 = 아직 반배정 전 (재원생처럼 로그인·시험 가능)
   const GRADES = ["초1", "초2", "초3", "초4", "초5", "초6", "중1", "중2", "중3", "고1", "고2", "고3"];
   const rollup = (p, k) => { const r = p.properties[k] && p.properties[k].rollup; if (!r) return null; return r.type === "date" ? (r.date && r.date.start) || null : r.number != null ? r.number : null; };
   const num1 = (v) => (typeof v === "number" && isFinite(v) ? Math.round(v * 10) / 10 : null);
