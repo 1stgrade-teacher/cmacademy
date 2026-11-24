@@ -8,7 +8,7 @@
     },
     "api/monthly.js": {
       "maxDuration": 60,
-      "includeFiles": "exam-bank/**"
+      "includeFiles": "{exam-bank/**,parent.html}"
     }
   },
   "redirects": [
@@ -26,6 +26,12 @@
       "source": "/teacher",
       "destination": "/admin/monthly.html",
       "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/parent",
+      "destination": "/api/monthly?pp=1"
     }
   ]
 }

@@ -96,7 +96,7 @@
   var KIDS = ls.get("cm-parent-kids", []), K = keyFrom(location.search) || ls.get("cm-parent-cur", "") || (KIDS[0] && KIDS[0].k) || "";
   if (K && !KIDS.some(function (x) { return x.k === K; })) KIDS.push({ k: K, name: "" });
   function saveKid(name, cls) { KIDS.forEach(function (x) { if (x.k === K) { x.name = name; x.cls = cls; } }); ls.set("cm-parent-kids", KIDS); ls.set("cm-parent-cur", K); }
-  if (K && location.search.indexOf("k=") >= 0) { try { history.replaceState(null, "", "/parent.html?k=" + K); } catch (e) {} }
+  if (K && location.search.indexOf("k=") >= 0) { try { history.replaceState(null, "", "/parent?k=" + K); } catch (e) {} }
   function setManifest() { var l = document.querySelector('link[rel="manifest"]'); if (!l) { l = document.createElement("link"); l.rel = "manifest"; document.head.appendChild(l); } l.href = "/api/monthly?pm=" + encodeURIComponent(K); }
   function post(b) {
     return fetch("/api/monthly", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b) })

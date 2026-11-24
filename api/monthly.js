@@ -905,6 +905,17 @@ module.exports = async function handler(req, res) {
     res.statusCode = 200; res.setHeader("Content-Type", "application/manifest+json; charset=utf-8"); res.setHeader("Cache-Control", "private, max-age=3600");
     return res.end(JSON.stringify(PAR().manifest(k)));
   }
+  if (req.method === "GET" && /[?&]pp=1\b/.test(req.url || "")) { // 👪 학부모 링크(/parent?k=…): 카톡 미리보기에 「○○ 학부모님」이 보이게 제목을 넣어서 보내요
+    let html = ""; try { const pa = require("path"); html = [pa.join(__dirname, "..", "parent.html"), pa.join(process.cwd(), "parent.html")].map((f) => { try { return fs.readFileSync(f, "utf8"); } catch (e) { return ""; } }).find(Boolean); if (!html) throw new Error("no file"); } catch (e) { res.statusCode = 302; res.setHeader("Location", "/parent.html" + (req.url.split("?")[1] ? "?" + req.url.split("?")[1].replace(/(^|&)pp=1/, "") : "")); return res.end(); }
+    const k = new URL(req.url, "http://x").searchParams.get("k") || "";
+    let name = ""; try { const a = await PAR().auth(k); if (a.status === 200) name = a.name; } catch (e) {}
+    const h = (v) => String(v).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+    const title = name ? name + " 학부모님 · 청명학원" : "청명 학부모", desc = name ? name + " 학생의 과제·시험·학습 기록을 확인하세요." : "우리 아이 과제·시험·학습 기록을 확인하세요.";
+    const og = '<meta property="og:type" content="website"><meta property="og:site_name" content="청명학원"><meta property="og:title" content="' + h(title) + '"><meta property="og:description" content="' + h(desc) + '"><meta property="og:image" content="https://' + h(req.headers.host || "cmacademy.vercel.app") + '/icon-512.png">';
+    html = html.replace("<title>청명 학부모</title>", "<title>" + h(title) + "</title>" + og);
+    res.statusCode = 200; res.setHeader("Content-Type", "text/html; charset=utf-8"); res.setHeader("Cache-Control", "private, no-store");
+    return res.end(html);
+  }
   if (req.method === "GET" && /[?&]plus_cron=1\b/.test(req.url || "")) { // ⏰ 🏫 플러스 수업 미참여 확인 (Vercel 크론, 1분마다)
     const cs = String(process.env.CRON_SECRET || "").trim(), au = String(req.headers.authorization || "");
     if (cs ? au !== "Bearer " + cs : !/vercel-cron/i.test(String(req.headers["user-agent"] || ""))) return send(401, { error: "cron" });

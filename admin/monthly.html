@@ -847,7 +847,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
 
   // ---------- 👪 부모님 사진 보기 링크 ----------
   var PL = [];
-  function plUrl(k) { return location.origin + "/parent.html?k=" + k; }
+  function plUrl(k) { return location.origin + "/parent?k=" + k; } // /parent = 카톡 미리보기에 「○○ 학부모님」
   function plCopy(t, b, label) { (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { b.textContent = "✓ 복사됨"; setTimeout(function () { b.textContent = label; }, 1500); }, function () { prompt("복사해서 부모님께 보내세요", t); }); }
   function plDraw() {
     if (!PL.length) { $("plOut").innerHTML = '<p class="hint">이 반에 학생이 없어요.</p>'; return; }
