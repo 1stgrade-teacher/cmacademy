@@ -1184,6 +1184,35 @@ module.exports = async function handler(req, res) {
       }
       return send(200, { ok: true, score: right, total, pct, pend: nPend, changed: ch });
     }
+    // 🧑‍🎓 학생 한 명의 시험 기록 모아 보기 · 고치기 · 지우기 (시험지가 달라도 한 화면에서)
+    if (act === "t_stu_recs") {
+      const sid = normId(clip(b.id, 60)); if (!sid) return send(400, { error: "input", msg: "학생을 골라 주세요." });
+      const f = [{ property: "학생", relation: { contains: uuid(sid) } }]; if (b.kind) f.push({ property: "종류", select: { equals: clip(b.kind, 30) } });
+      const rows = await queryAll(EXAM_DB(), { filter: f.length > 1 ? { and: f } : f[0], sorts: [{ property: "시험일", direction: "descending" }] }, 6);
+      if (!rows) return send(502, { error: "notion", msg: "기록을 불러오지 못했어요.", debug: lastErr });
+      return send(200, { ok: true, recs: rows.map((p) => ({ rec: normId(p.id), url: p.url, paper: normId(P.rel(p, "시험지")[0] || ""), title: P.title(p, "시험명"), kind: P.sel(p, "종류"), cls: P.sel(p, "반"), date: (P.date(p, "시험일") || {}).start || "", range: P.text(p, "시험 범위"), score: P.num(p, "점수"), total: P.num(p, "만점"), grade: P.sel(p, "종합 평가"), how: P.sel(p, "응시 방식"), comment: P.text(p, "코멘트") })) });
+    }
+    if (act === "t_stu_rec_save" || act === "t_stu_rec_del") {
+      const list = (Array.isArray(b.edits) ? b.edits : Array.isArray(b.ids) ? b.ids.map((x) => ({ rec: x })) : []).slice(0, 100), GR = ["우수", "양호", "보통", "노력 필요"], out = [], pcache = {};
+      if (!list.length) return send(400, { error: "input", msg: act === "t_stu_rec_del" ? "지울 기록을 골라 주세요." : "바뀐 기록이 없어요." });
+      for (const e of list) {
+        const id = normId(clip(e && e.rec, 60)); const p = id && await notion("pages/" + id32(id), "GET", null, 2);
+        if (!p || p.archived || !p.parent || normId(p.parent.database_id) !== normId(EXAM_DB())) { out.push({ rec: id, ok: false, msg: "기록을 찾지 못했어요" }); continue; }
+        const pid = P.rel(p, "시험지")[0];
+        if (pid && !me.master) { const pp = pcache[pid] !== undefined ? pcache[pid] : (pcache[pid] = await getPaper(pid)); if (pp && pp.teacher && pp.teacher !== me.name) { out.push({ rec: id, ok: false, msg: pp.teacher + "이(가) 만든 시험지의 기록이에요" }); continue; } }
+        if (act === "t_stu_rec_del") { out.push({ rec: id, ok: !!(await notion("pages/" + id32(id), "PATCH", { archived: true }, 2)) }); continue; }
+        const total = e.total == null || e.total === "" ? P.num(p, "만점") : Number(e.total), score = e.score == null || e.score === "" ? P.num(p, "점수") : Number(e.score);
+        if (!(total > 0 && total <= 1000) || !(score >= 0 && score <= total) || Math.round(score * 2) !== score * 2) { out.push({ rec: id, ok: false, msg: "점수는 0~만점 사이로 써 주세요" }); continue; }
+        const pct = Math.round(score / total * 1000) / 10, props = { "점수": { number: score }, "만점": { number: total }, "종합 평가": sel(GR.includes(e.grade) ? e.grade : gradeOf(pct)) };
+        if (Number.isInteger(score) && Number.isInteger(total) && (score !== P.num(p, "점수") || total !== P.num(p, "만점"))) props["오답 수"] = { number: total - score };
+        if (typeof e.comment === "string") props["코멘트"] = { rich_text: rt(clip(e.comment, 1900)) };
+        if (typeof e.range === "string") props["시험 범위"] = { rich_text: rt(clip(e.range, 200)) };
+        if (/^\d{4}-\d{2}-\d{2}$/.test(String(e.date || ""))) props["시험일"] = { date: { start: e.date } };
+        out.push({ rec: id, ok: !!(await notion("pages/" + id32(id), "PATCH", { properties: props }, 2)) });
+      }
+      const n = out.filter((x) => x.ok).length;
+      return send(200, { ok: true, saved: n, failed: out.length - n, results: out });
+    }
     if (act === "t_rec_edit") { // 📊 응시 결과에서 점수·만점·평가·코멘트 직접 고치기 (여러 기록 만점 한꺼번에도)
       const pp = await getPaper(b.paper); if (!pp) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." });
       if (!me.master && pp.teacher && pp.teacher !== me.name) return send(403, { error: "owner", msg: pp.teacher + "이(가) 만든 시험지의 기록은 " + pp.teacher + "이나 관리자만 고칠 수 있어요." });
