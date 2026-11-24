@@ -1192,6 +1192,19 @@ module.exports = async function handler(req, res) {
       if (!rows) return send(502, { error: "notion", msg: "기록을 불러오지 못했어요.", debug: lastErr });
       return send(200, { ok: true, recs: rows.map((p) => ({ rec: normId(p.id), url: p.url, paper: normId(P.rel(p, "시험지")[0] || ""), title: P.title(p, "시험명"), kind: P.sel(p, "종류"), cls: P.sel(p, "반"), date: (P.date(p, "시험일") || {}).start || "", range: P.text(p, "시험 범위"), score: P.num(p, "점수"), total: P.num(p, "만점"), grade: P.sel(p, "종합 평가"), how: P.sel(p, "응시 방식"), comment: P.text(p, "코멘트") })) });
     }
+    if (act === "t_paper_rename") { // ✏️ 시험지 이름 바꾸기 (그 시험지로 본 기록의 시험명도 같이)
+      const pp = await getPaper(b.id); if (!pp) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." });
+      if (!me.master && pp.teacher && pp.teacher !== me.name) return send(403, { error: "owner", msg: pp.teacher + "이(가) 만든 시험지는 " + pp.teacher + "이나 관리자만 바꿀 수 있어요." });
+      const title = clip(String(b.title || "").replace(/\s+/g, " ").trim(), 120); if (!title) return send(400, { error: "input", msg: "새 이름을 써 주세요." });
+      const up = await notion("pages/" + id32(pp.id), "PATCH", { properties: { "시험명": { title: rt(title) } } });
+      if (!up) return send(502, { error: "notion", msg: "이름을 바꾸지 못했어요.", debug: lastErr });
+      let n = 0, fail = 0;
+      if (b.recs !== false) {
+        const rows = (await queryAll(EXAM_DB(), { filter: { property: "시험지", relation: { contains: uuid(pp.id) } } }, 6)) || [];
+        for (let i = 0; i < rows.length; i += 5) await Promise.all(rows.slice(i, i + 5).map(async (r) => { if (P.title(r, "시험명") === title) return; if (await notion("pages/" + id32(r.id), "PATCH", { properties: { "시험명": { title: rt(title) } } }, 2)) n++; else fail++; }));
+      }
+      return send(200, { ok: true, title, recs: n, failed: fail });
+    }
     if (act === "t_stu_rec_save" || act === "t_stu_rec_del") {
       const list = (Array.isArray(b.edits) ? b.edits : Array.isArray(b.ids) ? b.ids.map((x) => ({ rec: x })) : []).slice(0, 100), GR = ["우수", "양호", "보통", "노력 필요"], out = [], pcache = {};
       if (!list.length) return send(400, { error: "input", msg: act === "t_stu_rec_del" ? "지울 기록을 골라 주세요." : "바뀐 기록이 없어요." });

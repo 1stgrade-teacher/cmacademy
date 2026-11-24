@@ -616,7 +616,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         <span class="hint" style="margin:0">시험지가 달라도 이 학생 기록을 한 표에 모아 보고 바로 고칠 수 있어요</span></div>
       <div id="srBox"></div>
     </div>
-    <div class="card"><div class="row"><select id="rCls" style="width:auto;max-width:180px" title="반별로 걸러 보기"></select><select id="rKind" style="width:auto;max-width:150px" title="종류별로 걸러 보기"></select><select id="rPaper" style="max-width:520px;flex:1;min-width:200px"></select><button class="sub" id="rLoad">불러오기</button><button class="sub" id="rPrint" style="display:none">🖨 간단 성적표 인쇄</button><button class="sub" id="rXls" style="display:none" title="이 시험지의 응시 결과를 엑셀에서 열 수 있는 파일로 받아요">⬇ 엑셀로 받기</button></div>
+    <div class="card"><div class="row"><select id="rCls" style="width:auto;max-width:180px" title="반별로 걸러 보기"></select><select id="rKind" style="width:auto;max-width:150px" title="종류별로 걸러 보기"></select><select id="rPaper" style="max-width:520px;flex:1;min-width:200px"></select><button class="sub" id="rLoad">불러오기</button><button class="sub" id="rRename" title="고른 시험지의 이름을 바꿔요">✏️ 이름 바꾸기</button><span id="rRnMsg" style="flex-basis:100%"></span><button class="sub" id="rPrint" style="display:none">🖨 간단 성적표 인쇄</button><button class="sub" id="rXls" style="display:none" title="이 시험지의 응시 결과를 엑셀에서 열 수 있는 파일로 받아요">⬇ 엑셀로 받기</button></div>
       <div class="repbox" id="rRep" style="display:none">
         <div class="row"><button id="rMake">📄 학생별 분석 리포트 만들기 (노션)</button><label><input type="checkbox" id="rForce"> 이미 만든 학생도 다시 만들기</label></div>
         <div class="hint">선생님의 「○월 월례고사 분석레포트」 양식 그대로, 학생마다 <b>평가 개요 → 총평 → 영역별 성적 → 문항별 오답 원인 → 학습 대책 → 복습 강의 링크 → 성적 추이</b>를 AI가 써서 노션 <b>📔 학습리포트 › 학생 학습레포트</b> 아래에 만들어요. 학생 1명에 20~40초 걸려요. 보내기 전에 노션에서 한 번 읽고 고쳐 주세요.</div>
@@ -2888,6 +2888,20 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     if (cur && list.some(function (p) { return p.id === cur; })) $("rPaper").value = cur;
   }
   $("rCls").onchange = function () { lsSet("cm-res-cls", $("rCls").value); fillResultSelect(); };
+  // ✏️ 고른 시험지 이름 바꾸기 (그 시험지로 본 학생 기록의 시험명도 같이 바꿔요)
+  $("rRename").onclick = function () {
+    var id = $("rPaper").value, p = DATA.papers.filter(function (x) { return x.id === id; })[0]; if (!p) { alert("먼저 시험지를 골라 주세요."); return; }
+    var t = prompt("새 시험지 이름을 써 주세요.\n(이 시험지로 본 학생 기록의 시험 이름도 같이 바뀌어요)", p.title); if (t == null) return; t = t.replace(/\s+/g, " ").trim();
+    if (!t || t === p.title) return;
+    var b = this; b.disabled = true; b.textContent = "바꾸는 중…";
+    post({ action: "t_paper_rename", id: id, title: t }).then(function (j) {
+      b.disabled = false; b.textContent = "✏️ 이름 바꾸기";
+      if (!j.ok) { alert(j.msg || "이름을 바꾸지 못했어요."); return; }
+      p.title = j.title; fillResultSelect(id); $("rPaper").value = id;
+      if (typeof renderList === "function") try { renderList(); } catch (e) {}
+      $("rRnMsg").innerHTML = '<p class="ok" style="margin:6px 0 0">✏️ 이름을 「' + esc(j.title) + "」(으)로 바꿨어요" + (j.recs ? " · 학생 기록 " + j.recs + "건도 같이 바꿨어요" : "") + " ✓" + (j.failed ? ' <span class="er">기록 ' + j.failed + "건은 못 바꿨어요</span>" : "") + "</p>";
+    });
+  };
   // ---------- 🗂 종류별 모아 보기 ----------
   var KT = null;
   function ktInit() {
