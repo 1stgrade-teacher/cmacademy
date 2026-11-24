@@ -1,5 +1,5 @@
 {
- "built": "2026-11-23T05:46:21.640Z",
+ "built": "2026-11-24T04:32:24.113Z",
  "books": [
   {
    "id": "bb391852c",
@@ -8449,7 +8449,7 @@
    "grade": "중2",
    "name": "중2 동아윤 교과서",
    "path": "교과서/중2/동아윤",
-   "n": 74,
+   "n": 101,
    "chapters": [
     {
      "key": "5과",
@@ -8605,6 +8605,42 @@
      "key": "8과",
      "name": "Lesson 8",
      "units": [
+      {
+       "id": "u7b1df981",
+       "name": "듣기 · 중2 동아(윤) 8과 A. Listen and Match (1) — 8과 대화문 A",
+       "n": 5,
+       "lv": 1.8
+      },
+      {
+       "id": "uaf24d92d",
+       "name": "듣기 · 중2 동아(윤) 8과 A. Listen and Match (2) — 8과 대화문 A",
+       "n": 4,
+       "lv": 1.8
+      },
+      {
+       "id": "u9c7e7f10",
+       "name": "듣기 · 중2 동아(윤) 8과 A. Listen and Match (3) — 8과 대화문 A",
+       "n": 5,
+       "lv": 1.4
+      },
+      {
+       "id": "ud3a3a311",
+       "name": "듣기 · 중2 동아(윤) 8과 Topic 2 A — Topic 2 > A",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "u868b43e2",
+       "name": "듣기 · 중2 동아(윤) 8과 Topic 2 A — Topic 2 > A",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "ufae465b4",
+       "name": "듣기 · 중2 동아(윤) 8과 Watch and Write — Watch and Write",
+       "n": 5,
+       "lv": 1.6
+      },
       {
        "id": "ud4b5aff5",
        "name": "문법 · Lesson 8 Point A - 현재완료, 과거를 지금으로 데려오기 — 일등급샘",
@@ -8925,7 +8961,7 @@
    "grade": "중2",
    "name": "중2 비상황 교과서",
    "path": "교과서/중2/비상황",
-   "n": 32,
+   "n": 68,
    "chapters": [
     {
      "key": "5과",
@@ -9087,6 +9123,54 @@
      "key": "8과",
      "name": "Lesson 8",
      "units": [
+      {
+       "id": "u91fdadb8",
+       "name": "듣기 · 중2 비상(황) Everyday Communication 1 A Listen & Number (1) — A Listen & Number (1)",
+       "n": 5,
+       "lv": 1.4
+      },
+      {
+       "id": "u13c5279b",
+       "name": "듣기 · 중2 비상(황) Everyday Communication 1 A Listen & Number (2) — A Listen & Number (2)",
+       "n": 5,
+       "lv": 1.4
+      },
+      {
+       "id": "u5bf1c460",
+       "name": "듣기 · 중2 비상(황) Everyday Communication 1 A Listen & Number (3) — A Listen & Number (3)",
+       "n": 5,
+       "lv": 1.4
+      },
+      {
+       "id": "u784b5673",
+       "name": "듣기 · 중2 비상(황) Everyday Communication 1 C Watch & Talk — C Watch & Talk",
+       "n": 4,
+       "lv": 1.5
+      },
+      {
+       "id": "u988f77ae",
+       "name": "듣기 · 중2 비상(황) Everyday Communication 2 A Listen & Choose (1) — A Listen & Choose (1)",
+       "n": 4,
+       "lv": 1.3
+      },
+      {
+       "id": "uea5ff2d2",
+       "name": "듣기 · 중2 비상(황) Everyday Communication 2 A Listen & Choose (2) — A Listen & Choose (2)",
+       "n": 5,
+       "lv": 1.8
+      },
+      {
+       "id": "ua4e91da5",
+       "name": "듣기 · 중2 비상(황) Everyday Communication 2 A Listen & Choose (3) — A Listen & Choose (3)",
+       "n": 3,
+       "lv": 1.7
+      },
+      {
+       "id": "u49c5bafc",
+       "name": "듣기 · 중2 비상(황) Everyday Communication 2 C Watch & Present — C Watch & Present",
+       "n": 5,
+       "lv": 1.6
+      },
       {
        "id": "u8d00fad8",
        "name": "문법 · ~뿐만 아니라 …도! not only A but also B 완전 정복 — not only ~ but also...",
