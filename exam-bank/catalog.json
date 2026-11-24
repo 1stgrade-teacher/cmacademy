@@ -1,5 +1,5 @@
 {
- "built": "2026-11-24T04:32:24.113Z",
+ "built": "2026-11-24T05:12:48.362Z",
  "books": [
   {
    "id": "bb391852c",
@@ -7159,7 +7159,7 @@
    "grade": "중1",
    "name": "중1 동아윤 교과서",
    "path": "교과서/중1/동아윤",
-   "n": 79,
+   "n": 85,
    "chapters": [
     {
      "key": "5과",
@@ -7241,31 +7241,31 @@
        "id": "ud294cee6",
        "name": "1 Watch and Talk A-1",
        "n": 5,
-       "lv": 1.4
+       "lv": 1.8
       },
       {
        "id": "u0e8d9451",
        "name": "2 Watch and Talk A-2",
-       "n": 4,
-       "lv": 1.5
+       "n": 5,
+       "lv": 1.6
       },
       {
        "id": "ua9a73f27",
        "name": "3 Watch and Talk A-3",
-       "n": 3,
-       "lv": 1
+       "n": 4,
+       "lv": 1.5
       },
       {
        "id": "u2edd902d",
        "name": "4 Watch and Talk A-4",
-       "n": 2,
+       "n": 4,
        "lv": 1.5
       },
       {
        "id": "u7f37d600",
        "name": "5 Watch and Talk C",
-       "n": 3,
-       "lv": 1.3
+       "n": 5,
+       "lv": 1.4
       },
       {
        "id": "u7ed011e7",
@@ -9443,7 +9443,7 @@
    "grade": "중2",
    "name": "중2 천재이 교과서",
    "path": "교과서/중2/천재이",
-   "n": 36,
+   "n": 56,
    "chapters": [
     {
      "key": "_",
@@ -9725,6 +9725,30 @@
      "key": "8과",
      "name": "Lesson 8",
      "units": [
+      {
+       "id": "u8449a236",
+       "name": "듣기 · 중2 천재 이상기 8과 대화문 A Listen and Choose (1) — A Listen and Choose (1)",
+       "n": 5,
+       "lv": 1.2
+      },
+      {
+       "id": "u7e9ea740",
+       "name": "듣기 · 중2 천재 이상기 8과 대화문 A Listen and Choose (2) — A Listen and Choose (2)",
+       "n": 5,
+       "lv": 1.4
+      },
+      {
+       "id": "u1ec6640c",
+       "name": "듣기 · 중2 천재 이상기 8과 대화문 A Listen and Choose (3) — A Listen and Choose (3)",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "u879400f2",
+       "name": "듣기 · 중2 천재 이상기 8과 대화문 C Watch and Do — C Watch and Do",
+       "n": 5,
+       "lv": 1.6
+      },
       {
        "id": "u1dd9e894",
        "name": "문법 · 조건의 접속사 if 완전 정복 — 일등급샘",
