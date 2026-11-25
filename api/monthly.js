@@ -658,6 +658,57 @@ async function makeSheet(pp, uids, sid) {
 }
 
 // ---------- 학생 본인 확인 (학습 인증과 같은 번호를 씀) ----------
+// 🔗 노션 분석 리포트를 우리 사이트(/r?k=…)에서 공유 없이 보여 주는 서명 링크
+const repSig = (id) => crypto.createHmac("sha256", secret()).update("rep|" + id).digest("hex").slice(0, 20);
+function webRep(host, url) { const m = String(url || "").replace(/-/g, "").match(/([0-9a-f]{32})(?:[?#]|$)/i); if (!m) return ""; const id = m[1].toLowerCase(); return "https://" + (host || "cmacademy.vercel.app") + "/r?k=" + id + "." + repSig(id); }
+async function blockKids(id, depth) {
+  const out = []; let cur = "";
+  for (let i = 0; i < 10; i++) {
+    const j = await notion("blocks/" + id32(id) + "/children?page_size=100" + (cur ? "&start_cursor=" + cur : ""), "GET"); if (!j) break;
+    out.push(...(j.results || [])); if (!j.has_more) break; cur = j.next_cursor;
+  }
+  if (depth < 3) await Promise.all(out.filter((b) => b.has_children && b.type !== "child_page" && b.type !== "child_database").map(async (b) => { b._kids = await blockKids(b.id, depth + 1); }));
+  return out;
+}
+function renderBlocks(list) {
+  const h = (v) => String(v == null ? "" : v).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  const COL = { gray: "#6B7280", brown: "#8B5E3C", orange: "#C2410C", yellow: "#A16207", green: "#15803D", blue: "#1D4ED8", purple: "#7E22CE", pink: "#BE185D", red: "#B91C1C" };
+  const rtx = (arr) => (arr || []).map((t) => {
+    let x = h(t.plain_text != null ? t.plain_text : (t.text || {}).content || "").replace(/\n/g, "<br>"); const a = t.annotations || {};
+    if (a.code) x = "<code>" + x + "</code>"; if (a.bold) x = "<b>" + x + "</b>"; if (a.italic) x = "<i>" + x + "</i>"; if (a.underline) x = "<u>" + x + "</u>"; if (a.strikethrough) x = "<s>" + x + "</s>";
+    const c = a.color && a.color !== "default" ? a.color.replace("_background", "") : ""; if (c && COL[c]) x = '<span style="' + (/_background$/.test(a.color) ? "background:" + COL[c] + "22" : "color:" + COL[c]) + '">' + x + "</span>";
+    const href = t.href || (t.text && t.text.link && t.text.link.url); if (href && /^https?:/.test(href)) x = '<a href="' + h(href) + '" target="_blank" rel="noopener">' + x + "</a>";
+    return x;
+  }).join("");
+  let out = "", i = 0;
+  while (i < list.length) {
+    const b = list[i], d = b[b.type] || {}, kids = b._kids ? renderBlocks(b._kids) : "";
+    if (b.type === "bulleted_list_item" || b.type === "numbered_list_item") {
+      const tag = b.type === "bulleted_list_item" ? "ul" : "ol"; let li = "";
+      while (i < list.length && list[i].type === b.type) { const x = list[i], xd = x[x.type]; li += "<li>" + rtx(xd.rich_text) + (x._kids ? renderBlocks(x._kids) : "") + "</li>"; i++; }
+      out += "<" + tag + ">" + li + "</" + tag + ">"; continue;
+    }
+    i++;
+    switch (b.type) {
+      case "paragraph": out += d.rich_text && d.rich_text.length ? "<p>" + rtx(d.rich_text) + "</p>" + kids : '<div class="sp"></div>'; break;
+      case "heading_1": out += "<h1>" + rtx(d.rich_text) + "</h1>" + kids; break;
+      case "heading_2": out += "<h2>" + rtx(d.rich_text) + "</h2>" + kids; break;
+      case "heading_3": out += "<h3>" + rtx(d.rich_text) + "</h3>" + kids; break;
+      case "quote": out += "<blockquote>" + rtx(d.rich_text) + kids + "</blockquote>"; break;
+      case "callout": out += '<div class="callout"><span class="ci">' + h((d.icon && d.icon.emoji) || "💡") + "</span><div>" + rtx(d.rich_text) + kids + "</div></div>"; break;
+      case "toggle": out += "<details><summary>" + rtx(d.rich_text) + "</summary>" + kids + "</details>"; break;
+      case "to_do": out += '<p>' + (d.checked ? "☑️ " : "⬜ ") + rtx(d.rich_text) + "</p>" + kids; break;
+      case "divider": out += "<hr>"; break;
+      case "code": out += "<pre>" + rtx(d.rich_text) + "</pre>"; break;
+      case "image": { const u = d.type === "external" ? d.external.url : d.file && d.file.url; if (u) out += '<figure><img src="' + h(u) + '" alt="">' + (d.caption && d.caption.length ? "<figcaption>" + rtx(d.caption) + "</figcaption>" : "") + "</figure>"; break; }
+      case "bookmark": case "link_preview": case "embed": case "video": { const u = d.url || (d.external && d.external.url) || ""; if (u) out += '<p><a class="bm" href="' + h(u) + '" target="_blank" rel="noopener">🔗 ' + (d.caption && d.caption.length ? rtx(d.caption) : h(u)) + "</a></p>"; break; }
+      case "table": { const rows = (b._kids || []).filter((r) => r.type === "table_row"); out += '<div class="tw"><table>' + rows.map((r, ri) => "<tr>" + r.table_row.cells.map((c) => (ri === 0 && d.has_column_header ? "<th>" : "<td>") + rtx(c) + (ri === 0 && d.has_column_header ? "</th>" : "</td>")).join("") + "</tr>").join("") + "</table></div>"; break; }
+      case "column_list": out += '<div class="cols">' + (b._kids || []).map((c) => "<div>" + (c._kids ? renderBlocks(c._kids) : "") + "</div>").join("") + "</div>"; break;
+      default: if (d.rich_text) out += "<p>" + rtx(d.rich_text) + "</p>"; out += kids;
+    }
+  }
+  return out;
+}
 function secret() { return process.env.REPORT_SECRET || process.env.NOTION_TOKEN || "cm"; }
 function signToken(obj) { const body = b64u(JSON.stringify(obj)); return body + "." + b64u(crypto.createHmac("sha256", secret()).update(body).digest()); }
 function readToken(t, game) { // game: 🏆 단어 게임용 긴 토큰(sc:"g")도 받기
@@ -904,6 +955,28 @@ module.exports = async function handler(req, res) {
     const k = new URL(req.url, "http://x").searchParams.get("pm") || "";
     res.statusCode = 200; res.setHeader("Content-Type", "application/manifest+json; charset=utf-8"); res.setHeader("Cache-Control", "private, max-age=3600");
     return res.end(JSON.stringify(PAR().manifest(k)));
+  }
+  if (req.method === "GET" && /[?&]rv=1\b/.test(req.url || "")) { // 🔗 /r?k=… 분석 리포트 웹 보기 (노션 공유 없이)
+    const k = new URL(req.url, "http://x").searchParams.get("k") || "", m = k.match(/^([0-9a-f]{32})\.([0-9a-f]{20})$/);
+    const page = (code, title, body, desc) => { res.statusCode = code; res.setHeader("Content-Type", "text/html; charset=utf-8"); res.setHeader("Cache-Control", code === 200 ? "private, max-age=120" : "no-store");
+      const hh = (v) => String(v).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+      return res.end('<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>' + hh(title) + '</title><meta property="og:title" content="' + hh(title) + '"><meta property="og:description" content="' + hh(desc || "청명학원 학습 분석 리포트") + '"><meta property="og:site_name" content="청명학원">' +
+        '<style>:root{--ink:#1F2933;--muted:#5F6E7C;--line:#E3EAEA;--brand:#145A5C;--bg:#F4F8F8}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 "Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;-webkit-text-size-adjust:100%}' +
+        '.wrap{max-width:760px;margin:0 auto;padding:18px 16px 40px}.paper{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 20px;box-shadow:0 4px 18px rgba(10,60,62,.06)}.top{display:flex;align-items:center;gap:8px;color:var(--brand);font-weight:800;margin:0 0 10px;font-size:14px}' +
+        'h1.t{font-size:23px;line-height:1.4;margin:0 0 14px}h2{font-size:20px;margin:28px 0 8px;padding-top:8px;border-top:2px solid #E6F2F1}h3{font-size:17px;margin:22px 0 6px;color:var(--brand)}p{margin:6px 0}.sp{height:8px}ul,ol{margin:4px 0;padding-left:22px}li{margin:2px 0}' +
+        'blockquote{margin:10px 0;padding:10px 14px;border-left:4px solid var(--brand);background:#F2F8F8;border-radius:0 10px 10px 0}.callout{display:flex;gap:10px;margin:10px 0;padding:12px 14px;background:#F7F7F5;border-radius:12px}.ci{font-size:20px;line-height:1.4}' +
+        '.tw{overflow-x:auto;margin:8px 0}table{border-collapse:collapse;width:100%;font-size:14.5px}th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}th,tr:first-child td{background:#F2F8F8}code{background:#FFF4E5;color:#9A3412;padding:1px 5px;border-radius:5px;font-size:.92em}' +
+        'hr{border:0;border-top:1px solid var(--line);margin:18px 0}img{max-width:100%;border-radius:10px}figure{margin:10px 0}figcaption{color:var(--muted);font-size:13px}a{color:#0F6E70}a.bm{display:inline-block;padding:6px 10px;border:1px solid var(--line);border-radius:10px;text-decoration:none;background:#FAFCFC}.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}' +
+        '.foot{color:var(--muted);font-size:12.5px;text-align:center;margin-top:16px}@media print{body{background:#fff}.paper{border:0;box-shadow:none;padding:0}.foot{display:none}}</style></head><body><div class="wrap"><div class="paper">' + body + '</div><div class="foot">청명학원 · 이 링크는 학부모님께만 보내 드린 주소예요</div></div></body></html>');
+    };
+    if (!m || m[2] !== repSig(m[1])) return page(404, "리포트를 찾을 수 없어요", '<h1 class="t">리포트를 찾을 수 없어요</h1><p>주소가 잘못되었거나 바뀌었어요. 선생님께 새 링크를 받아 주세요.</p>');
+    const pg = await notion("pages/" + id32(m[1]), "GET");
+    if (!pg || pg.archived || pg.in_trash) return page(404, "리포트를 찾을 수 없어요", '<h1 class="t">리포트를 찾을 수 없어요</h1><p>이 리포트는 지워졌거나 아직 준비 중이에요. 선생님께 문의해 주세요.</p>');
+    const tp = Object.values(pg.properties || {}).find((x) => x.type === "title"), title = tp ? tp.title.map((t) => t.plain_text).join("") : "학습 리포트";
+    const icon = pg.icon && pg.icon.type === "emoji" ? pg.icon.emoji + " " : "";
+    const blocks = await blockKids(m[1], 0);
+    const hh = (v) => String(v).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+    return page(200, title + " · 청명학원", '<div class="top">📘 청명학원 학습 리포트</div><h1 class="t">' + icon + hh(title) + "</h1>" + renderBlocks(blocks), "청명학원에서 보내 드리는 " + title + "입니다.");
   }
   if (req.method === "GET" && /[?&]pp=1\b/.test(req.url || "")) { // 👪 학부모 링크(/parent?k=…): 카톡 미리보기에 「○○ 학부모님」이 보이게 제목을 넣어서 보내요
     let html = ""; try { const pa = require("path"); html = [pa.join(__dirname, "..", "parent.html"), pa.join(process.cwd(), "parent.html")].map((f) => { try { return fs.readFileSync(f, "utf8"); } catch (e) { return ""; } }).find(Boolean); if (!html) throw new Error("no file"); } catch (e) { res.statusCode = 302; res.setHeader("Location", "/parent.html" + (req.url.split("?")[1] ? "?" + req.url.split("?")[1].replace(/(^|&)pp=1/, "") : "")); return res.end(); }
@@ -1363,7 +1436,7 @@ module.exports = async function handler(req, res) {
       const list = (ros || []).map((s) => ({ name: s.name, sid: s.id })).concat(extraIds.map((k) => ({ name: nm.get(k) ? nm.get(k).name : "(다른 반 학생)", sid: k })));
       const info = new Map((ros || []).map((s) => [s.id, s]).concat(extraIds.filter((k) => nm.get(k)).map((k) => [k, { cls: nm.get(k).cls, grade: nm.get(k).grade || "" }])));
       const MAN = !!(omrOf(pp) && omrOf(pp).items.some((x) => x.man)); // ✍️ 선생님 채점 문항이 있는 OMR 시험
-      const recRow = (s, st, p) => Object.assign({ name: s.name, sid: s.sid, cls: st.cls || P.sel(p, "반") || "", sgrade: st.grade || "", school: st.school || "", rec2: P.text(p, "추천 반"), url: p.url, rec: normId(p.id), made: String(p.created_time || "").slice(0, 16), how: P.sel(p, "응시 방식"), range: P.text(p, "시험 범위"), report: (p.properties["분석 리포트"] || {}).url || "", mins: P.num(p, "소요시간(분)"), away: P.num(p, "자리비움"), units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }, MAN ? { man: manOf(p) } : {}, attemptSummary(p));
+      const recRow = (s, st, p) => Object.assign({ rweb: webRep(req.headers.host, (p.properties["분석 리포트"] || {}).url || ""), name: s.name, sid: s.sid, cls: st.cls || P.sel(p, "반") || "", sgrade: st.grade || "", school: st.school || "", rec2: P.text(p, "추천 반"), url: p.url, rec: normId(p.id), made: String(p.created_time || "").slice(0, 16), how: P.sel(p, "응시 방식"), range: P.text(p, "시험 범위"), report: (p.properties["분석 리포트"] || {}).url || "", mins: P.num(p, "소요시간(분)"), away: P.num(p, "자리비움"), units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }, MAN ? { man: manOf(p) } : {}, attemptSummary(p));
       const out = list.map((s) => { const p = done.get(s.sid), st = info.get(s.sid) || {}; return p ? recRow(s, st, p) : { name: s.name, sid: s.sid, cls: st.cls || "", sgrade: st.grade || "", school: st.school || "", missing: true }; });
       list.forEach((s) => (byS.get(s.sid) || []).slice(1).forEach((p) => out.push(Object.assign(recRow(s, info.get(s.sid) || {}, p), { dup: true }))));
       return send(200, { ok: true, paper: pub(pp), rows: out });
@@ -1641,13 +1714,13 @@ module.exports = async function handler(req, res) {
     }
     if (act === "t_rep") { // 학생 1명 · 시험 1회 분석 리포트를 노션에 작성
       const r = await reporter().buildTestReport({ recId: clip(b.rec, 60), contact: clip(b.contact, 600), host, force: !!b.force, me });
-      return r.error ? send(200, { ok: false, msg: r.error, debug: lastErr }) : send(200, Object.assign({ ok: true }, r));
+      return r.error ? send(200, { ok: false, msg: r.error, debug: lastErr }) : send(200, Object.assign({ ok: true, web: webRep(req.headers.host, r.url) }, r));
     }
     if (act === "t_qrep") { // 학생 1명 · 분기 종합 리포트
       const from = /^\d{4}-\d{2}-\d{2}$/.test(b.from || "") ? b.from : null, to = /^\d{4}-\d{2}-\d{2}$/.test(b.to || "") ? b.to : null;
       if (!from || !to) return send(400, { error: "input", msg: "기간을 골라 주세요." });
       const r = await reporter().buildQuarterReport({ sid: clip(b.sid, 60), from, to, label: clip(b.label, 40) || from + "~" + to, contact: clip(b.contact, 600), host, me });
-      return r.error ? send(200, { ok: false, msg: r.error, debug: lastErr }) : send(200, Object.assign({ ok: true }, r));
+      return r.error ? send(200, { ok: false, msg: r.error, debug: lastErr }) : send(200, Object.assign({ ok: true, web: webRep(req.headers.host, r.url) }, r));
     }
     return send(400, { error: "action" });
   }
@@ -1860,4 +1933,4 @@ module.exports = async function handler(req, res) {
   return send(400, { error: "action" });
 };
 // 시험용 내부 함수 (로컬 점검에서 씀)
-module.exports._t = { parseOmr, omrSheet, sectionPick, get unitIndex() { return unitIndex; }, custom, audioPath, AUDIO_TYPES, canTake, targetOf, targetText, cleanAudioDir, listenMode, cleanSections, assignPoints, hasSections, placeRec, expandAccept, shortOk, pick, buildSheet, seal, unseal, grade, unitStats, rangeText, loadCatalog, unitData, poolFor, rngOf };
+module.exports._t = { renderBlocks, webRep, repSig, parseOmr, omrSheet, sectionPick, get unitIndex() { return unitIndex; }, custom, audioPath, AUDIO_TYPES, canTake, targetOf, targetText, cleanAudioDir, listenMode, cleanSections, assignPoints, hasSections, placeRec, expandAccept, shortOk, pick, buildSheet, seal, unseal, grade, unitStats, rangeText, loadCatalog, unitData, poolFor, rngOf };

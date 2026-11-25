@@ -618,7 +618,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     </div>
     <div class="card"><div class="row"><select id="rCls" style="width:auto;max-width:180px" title="반별로 걸러 보기"></select><select id="rKind" style="width:auto;max-width:150px" title="종류별로 걸러 보기"></select><select id="rPaper" style="max-width:520px;flex:1;min-width:200px"></select><button class="sub" id="rLoad">불러오기</button><button class="sub" id="rRename" title="고른 시험지의 이름을 바꿔요">✏️ 이름 바꾸기</button><span id="rRnMsg" style="flex-basis:100%"></span><button class="sub" id="rPrint" style="display:none">🖨 간단 성적표 인쇄</button><button class="sub" id="rXls" style="display:none" title="이 시험지의 응시 결과를 엑셀에서 열 수 있는 파일로 받아요">⬇ 엑셀로 받기</button></div>
       <div class="repbox" id="rRep" style="display:none">
-        <div class="row"><button id="rMake">📄 학생별 분석 리포트 만들기 (노션)</button><label><input type="checkbox" id="rForce"> 이미 만든 학생도 다시 만들기</label></div>
+        <div class="row"><button id="rMake">📄 학생별 분석 리포트 만들기 (노션)</button><label><input type="checkbox" id="rForce"> 이미 만든 학생도 다시 만들기</label><button class="sub" id="rLinks" title="리포트가 있는 학생들의 학부모용 웹 링크를 「이름: 주소」로 한꺼번에 복사해요">🔗 학부모용 링크 모두 복사</button></div>
         <div class="hint">선생님의 「○월 월례고사 분석레포트」 양식 그대로, 학생마다 <b>평가 개요 → 총평 → 영역별 성적 → 문항별 오답 원인 → 학습 대책 → 복습 강의 링크 → 성적 추이</b>를 AI가 써서 노션 <b>📔 학습리포트 › 학생 학습레포트</b> 아래에 만들어요. 학생 1명에 20~40초 걸려요. 보내기 전에 노션에서 한 번 읽고 고쳐 주세요.</div>
         <div id="rProg"></div>
       </div>
@@ -2852,6 +2852,13 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     });
   };
   // 학생 여러 명 리포트를 차례로 만들기 (한 번에 한 명씩 → 시간 초과 없음)
+  // 🔗 링크 복사 버튼 (리포트 웹 링크 등): data-cpy
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest("[data-cpy]"); if (!b) return; e.preventDefault();
+    var v = b.getAttribute("data-cpy"), old = b.textContent, ok = function () { b.textContent = "복사됨 ✓"; setTimeout(function () { b.textContent = old; }, 1500); };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(v).then(ok, function () { prompt("아래 주소를 복사하세요", v); });
+    else prompt("아래 주소를 복사하세요", v);
+  });
   function runReports(jobs, box, done) {
     var total = jobs.length, ok = 0, fail = 0, lines = [];
     if (!total) { box.innerHTML = '<p class="hint">만들 리포트가 없어요.</p>'; return; }
@@ -2861,7 +2868,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       if (!j) { lines.push("<b>끝! 완료 " + ok + "명" + (fail ? " · 실패 " + fail + "명" : "") + "</b>"); paint(); if (done) done(); return; }
       paint(j.name);
       post(Object.assign({ contact: $("contact").value.trim() }, j.body)).then(function (r) {
-        if (r.ok && r.url) { ok++; lines.push((r.skipped ? "⏭ " : "✅ ") + esc(j.name) + ' — <a href="' + esc(r.url) + '" target="_blank">' + (r.skipped ? "이미 있음" : "노션에서 보기") + "</a>" + (r.found === false ? ' <span class="er">(학생 학습레포트 페이지를 못 찾아 🤖 자동 분석 리포트에 저장)</span>' : "") + (r.ai === false && !r.skipped ? ' <span class="hint">(AI 없이 기본 문장)</span>' : "")); }
+        if (r.ok && r.url) { ok++; lines.push((r.skipped ? "⏭ " : "✅ ") + esc(j.name) + ' — <a href="' + esc(r.url) + '" target="_blank">' + (r.skipped ? "이미 있음" : "노션에서 보기") + "</a>" + (r.web ? ' · <a href="' + esc(r.web) + '" target="_blank">🌐 학부모용 웹 보기</a> <button type="button" class="sm sub" data-cpy="' + esc(r.web) + '">🔗 링크 복사</button>' : "") + (r.found === false ? ' <span class="er">(학생 학습레포트 페이지를 못 찾아 🤖 자동 분석 리포트에 저장)</span>' : "") + (r.ai === false && !r.skipped ? ' <span class="hint">(AI 없이 기본 문장)</span>' : "")); }
         else { fail++; lines.push("❌ " + esc(j.name) + " — " + esc(r.msg || "실패")); }
         next();
       });
@@ -3036,7 +3043,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         '<div class="row recdel"><label style="margin:0;font-size:13.5px"><input type="checkbox" id="rAll"> 기록 모두 고르기</label><select id="rDate" style="width:auto;padding:5px 8px;font-size:13px" title="그날 본 기록을 모두 골라요"></select><button class="sm sub" id="rDel" disabled>🗑 고른 기록 지우기</button><button class="sm sub" id="rTot" disabled>✏️ 고른 기록 만점 바꾸기</button><span class="hint" style="margin:0">잘못 만든 기록만 골라 지워요. 노션 휴지통으로 가서 30일 안에 되살릴 수 있어요.</span></div>' +
         (DUPS.length ? '<p class="hint" style="margin:6px 0"><span class="pill p">기록 겹침</span> 같은 학생의 기록이 둘 이상인 경우가 ' + DUPS.length + "개 있어요. 아래 표 맨 끝(노란 줄)에 따로 보여 줘요. 위 표의 점수는 가장 최근 기록이에요.</p>" : "") +
         '<div class="tw"><table><thead><tr><th></th><th>순위</th><th>이름</th><th>점수</th><th>환산</th>' + (PL ? "<th>추천 반</th><th>반 배정</th>" : "") + '<th>시험일</th>' + (PS ? "<th>통과</th>" : "") + '<th>평가</th><th>소요</th><th>자리비움</th><th>코멘트</th><th>분석 리포트</th><th></th></tr></thead><tbody>' +
-        sorted.concat(DUPS).map(function (r, i) { return "<tr" + (r.dup ? ' class="dupr"' : "") + '><td><input type="checkbox" class="rck" value="' + esc(r.rec) + '" data-name="' + esc(r.name) + '" aria-label="' + esc(r.name) + ' 기록 고르기"></td><td class=num>' + (r.dup ? '<span class="pill p" title="' + esc(r.made) + ' 기록">겹침</span>' : i + 1) + "</td><td><b>" + esc(r.name) + "</b>" + clsTag(r) + (r.sgrade || r.school ? '<div class="hint" style="margin:0">' + esc([r.sgrade, r.school].filter(Boolean).join(" · ")) + "</div>" : "") + (r.how === "종이" ? ' <span class="pill" title="종이 시험으로 넣은 기록" style="font-size:11px">📄 종이</span>' : "") + "</td><td class=num>" + r.score + "/" + r.total + "</td><td class=num>" + round1(r.pct) + "</td>" + (PL ? "<td><b>" + esc(r.rec2 || "-") + "</b></td><td>" + assignCell(r) + "</td>" : "") + "<td class=num style=\"white-space:nowrap\">" + esc(String(r.date || "").slice(5, 10).replace("-", "/")) + "</td>" + (PS ? "<td>" + (passOk(PS, r) ? '<span class="pill go">✅ 통과</span>' : '<span class="pill p">🔁 재시험</span>') + "</td>" : "") + "<td>" + esc(r.grade) + "</td><td class=num>" + (r.mins ? r.mins + "분" : "-") + "</td><td class=num>" + (r.away || 0) + "</td><td>" + esc(r.comment) + "</td><td>" + (r.report ? '<a href="' + esc(r.report) + '" target="_blank">📄 보기</a>' : '<span class="hint">-</span>') + '</td><td style="white-space:nowrap"><button class="sm sub" data-redit="' + esc(r.rec) + '" title="점수·평가·코멘트 고치기">✏️ 고치기</button> <a href="' + esc(r.url) + '" target="_blank">기록</a></td></tr>'; }).join("") +
+        sorted.concat(DUPS).map(function (r, i) { return "<tr" + (r.dup ? ' class="dupr"' : "") + '><td><input type="checkbox" class="rck" value="' + esc(r.rec) + '" data-name="' + esc(r.name) + '" aria-label="' + esc(r.name) + ' 기록 고르기"></td><td class=num>' + (r.dup ? '<span class="pill p" title="' + esc(r.made) + ' 기록">겹침</span>' : i + 1) + "</td><td><b>" + esc(r.name) + "</b>" + clsTag(r) + (r.sgrade || r.school ? '<div class="hint" style="margin:0">' + esc([r.sgrade, r.school].filter(Boolean).join(" · ")) + "</div>" : "") + (r.how === "종이" ? ' <span class="pill" title="종이 시험으로 넣은 기록" style="font-size:11px">📄 종이</span>' : "") + "</td><td class=num>" + r.score + "/" + r.total + "</td><td class=num>" + round1(r.pct) + "</td>" + (PL ? "<td><b>" + esc(r.rec2 || "-") + "</b></td><td>" + assignCell(r) + "</td>" : "") + "<td class=num style=\"white-space:nowrap\">" + esc(String(r.date || "").slice(5, 10).replace("-", "/")) + "</td>" + (PS ? "<td>" + (passOk(PS, r) ? '<span class="pill go">✅ 통과</span>' : '<span class="pill p">🔁 재시험</span>') + "</td>" : "") + "<td>" + esc(r.grade) + "</td><td class=num>" + (r.mins ? r.mins + "분" : "-") + "</td><td class=num>" + (r.away || 0) + "</td><td>" + esc(r.comment) + "</td><td>" + (r.report ? (r.rweb ? '<a href="' + esc(r.rweb) + '" target="_blank" title="학부모님이 보시는 화면 (노션 공유 필요 없음)">🌐 보기</a> <button type="button" class="sm sub" data-cpy="' + esc(r.rweb) + '" title="학부모님께 보낼 링크 복사">🔗 복사</button> <a href="' + esc(r.report) + '" target="_blank" class="hint" style="margin:0" title="노션에서 고치기">노션</a>' : '<a href="' + esc(r.report) + '" target="_blank">📄 보기</a>') : '<span class="hint">-</span>') + '</td><td style="white-space:nowrap"><button class="sm sub" data-redit="' + esc(r.rec) + '" title="점수·평가·코멘트 고치기">✏️ 고치기</button> <a href="' + esc(r.url) + '" target="_blank">기록</a></td></tr>'; }).join("") +
         j.rows.filter(function (r) { return r.missing; }).sort(function (a, b) { return (SKIP[a.sid] ? 1 : 0) - (SKIP[b.sid] ? 1 : 0); }).map(function (r) { var sk = !!SKIP[r.sid]; return '<tr class="miss' + (sk ? " skipr" : "") + '"><td></td><td>-</td><td>' + esc(r.name) + clsTag(r) + (r.sgrade || r.school ? '<div class="hint" style="margin:0">' + esc([r.sgrade, r.school].filter(Boolean).join(" · ")) + "</div>" : "") + '</td><td colspan="' + ((PL ? 11 : 9) + (PS ? 1 : 0)) + '">' +
           (sk ? '↪ 다른 시험으로 봄 <button class="sm sub" data-rskip="' + esc(r.sid) + '" data-on="" style="margin-left:8px">되돌리기</button>'
               : '미응시 <button class="sm sub" data-radd="' + esc(r.sid) + '" data-name="' + esc(r.name) + '" style="margin-left:8px" title="나중에 종이로 본 점수 넣기">📄 종이 점수 넣기</button> <button class="sm sub" data-rskip="' + esc(r.sid) + '" data-on="1" title="다른 단어장·다른 시험지로 본 학생: 미응시 수에서 빠져요">↪ 다른 시험으로 봄</button>') + (PL ? " · " + assignCell(r) : "") + "</td></tr>"; }).join("") +
@@ -3193,6 +3200,14 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     if (!confirm(jobs.length + "명의 분석 리포트를 노션에 만들까요? (약 " + Math.ceil(jobs.length * 0.5) + "분)")) return;
     $("rMake").disabled = true;
     runReports(jobs, $("rProg"), function () { $("rMake").disabled = false; loadResultsKeep(); });
+  };
+  $("rLinks").onclick = function () {
+    if (!LAST_RES) return; var L = LAST_RES.rows.filter(function (r) { return !r.missing && r.rweb; });
+    if (!L.length) { $("rProg").innerHTML = '<p class="hint">아직 만든 리포트가 없어요. 먼저 📄 분석 리포트를 만들어 주세요.</p>'; return; }
+    var txt = L.map(function (r) { return r.name + " 학부모님: " + r.rweb; }).join("\n"), b = this;
+    var done = function () { $("rProg").innerHTML = '<p class="ok">🔗 ' + L.length + "명의 학부모용 리포트 링크를 복사했어요. 카톡·문자에 붙여 넣으세요 ✓</p>"; };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(done, function () { $("rProg").innerHTML = '<textarea rows="8" style="width:100%">' + esc(txt) + "</textarea>"; });
+    else $("rProg").innerHTML = '<textarea rows="8" style="width:100%">' + esc(txt) + "</textarea>";
   };
   function loadResultsKeep() { var prog = $("rProg").innerHTML; loadResults(function () { $("rProg").innerHTML = prog; }); }
   // ⬇ 응시 결과 엑셀로 받기 (엑셀에서 바로 열리는 CSV · 한글 깨짐 없음)

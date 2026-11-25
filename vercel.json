@@ -32,6 +32,10 @@
     {
       "source": "/parent",
       "destination": "/api/monthly?pp=1"
+    },
+    {
+      "source": "/r",
+      "destination": "/api/monthly?rv=1"
     }
   ]
 }
