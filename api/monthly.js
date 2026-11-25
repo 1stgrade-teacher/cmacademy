@@ -709,6 +709,27 @@ function renderBlocks(list) {
   }
   return out;
 }
+// ✏️ 리포트 고치기: 노션 글 ↔ 간단 표시(**굵게**, `코드`, ⟪밑줄⟫)
+const EDIT_T = ["paragraph", "heading_1", "heading_2", "heading_3", "bulleted_list_item", "numbered_list_item", "quote", "callout", "toggle", "to_do"];
+function rtToMark(arr) { return (arr || []).map((t) => { const x = t.plain_text != null ? t.plain_text : (t.text || {}).content || "", a = t.annotations || {}; return a.code ? "`" + x + "`" : a.bold ? "**" + x + "**" : a.underline ? "⟪" + x + "⟫" : x; }).join("").replace(/\*\*\*\*/g, ""); }
+function markToRt(s, keep) { // keep: 원래 rich_text (링크·색은 글이 안 바뀌었으면 그대로)
+  s = String(s == null ? "" : s); const out = [], re = /(\*\*[^*]+\*\*|`[^`]+`|⟪[^⟫]+⟫)/g; let last = 0, m;
+  const push = (t, ann) => { for (let i = 0; i < t.length; i += 1900) out.push({ type: "text", text: { content: t.slice(i, i + 1900) }, annotations: Object.assign({ bold: false, italic: false, strikethrough: false, underline: false, code: false, color: "default" }, ann || {}) }); };
+  while ((m = re.exec(s))) { if (m.index > last) push(s.slice(last, m.index)); const t = m[0]; if (t[0] === "*") push(t.slice(2, -2), { bold: true }); else if (t[0] === "⟪") push(t.slice(1, -1), { underline: true }); else push(t.slice(1, -1), { code: true }); last = m.index + t.length; }
+  if (last < s.length) push(s.slice(last));
+  return out.slice(0, 95);
+}
+function flatBlocks(list, depth, out) {
+  (list || []).forEach((b) => {
+    const d = b[b.type] || {};
+    if (b.type === "table") { out.push({ id: b.id, type: "table", depth, rows: (b._kids || []).filter((r) => r.type === "table_row").map((r) => ({ id: r.id, cells: r.table_row.cells.map(rtToMark) })) }); return; }
+    if (EDIT_T.includes(b.type)) out.push({ id: b.id, type: b.type, depth, text: rtToMark(d.rich_text), icon: b.type === "callout" && d.icon && d.icon.emoji || undefined, links: (d.rich_text || []).some((t) => t.href) || undefined });
+    else out.push({ id: b.id, type: b.type, depth, ro: 1, text: b.type === "divider" ? "──────" : b.type === "image" ? "🖼 그림" : (d.url || (d.external && d.external.url) || "") });
+    if (b._kids && b.type !== "table") flatBlocks(b._kids, depth + 1, out);
+  });
+  return out;
+}
+const repKey = (k) => { const m = String(k || "").match(/([0-9a-f]{32})\.([0-9a-f]{20})/); return m && m[2] === repSig(m[1]) ? m[1] : ""; };
 function secret() { return process.env.REPORT_SECRET || process.env.NOTION_TOKEN || "cm"; }
 function signToken(obj) { const body = b64u(JSON.stringify(obj)); return body + "." + b64u(crypto.createHmac("sha256", secret()).update(body).digest()); }
 function readToken(t, game) { // game: 🏆 단어 게임용 긴 토큰(sc:"g")도 받기
@@ -958,7 +979,7 @@ module.exports = async function handler(req, res) {
   }
   if (req.method === "GET" && /[?&]rv=1\b/.test(req.url || "")) { // 🔗 /r?k=… 분석 리포트 웹 보기 (노션 공유 없이)
     const k = new URL(req.url, "http://x").searchParams.get("k") || "", m = k.match(/^([0-9a-f]{32})\.([0-9a-f]{20})$/);
-    const page = (code, title, body, desc) => { res.statusCode = code; res.setHeader("Content-Type", "text/html; charset=utf-8"); res.setHeader("Cache-Control", code === 200 ? "private, max-age=120" : "no-store");
+    const page = (code, title, body, desc) => { res.statusCode = code; res.setHeader("Content-Type", "text/html; charset=utf-8"); res.setHeader("Cache-Control", "no-store");
       const hh = (v) => String(v).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
       return res.end('<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>' + hh(title) + '</title><meta property="og:title" content="' + hh(title) + '"><meta property="og:description" content="' + hh(desc || "청명학원 학습 분석 리포트") + '"><meta property="og:site_name" content="청명학원">' +
         '<style>:root{--ink:#1F2933;--muted:#5F6E7C;--line:#E3EAEA;--brand:#145A5C;--bg:#F4F8F8}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 "Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;-webkit-text-size-adjust:100%}' +
@@ -1264,6 +1285,26 @@ module.exports = async function handler(req, res) {
       const rows = await queryAll(EXAM_DB(), { filter: f.length > 1 ? { and: f } : f[0], sorts: [{ property: "시험일", direction: "descending" }] }, 6);
       if (!rows) return send(502, { error: "notion", msg: "기록을 불러오지 못했어요.", debug: lastErr });
       return send(200, { ok: true, recs: rows.map((p) => ({ rec: normId(p.id), url: p.url, paper: normId(P.rel(p, "시험지")[0] || ""), title: P.title(p, "시험명"), kind: P.sel(p, "종류"), cls: P.sel(p, "반"), date: (P.date(p, "시험일") || {}).start || "", range: P.text(p, "시험 범위"), score: P.num(p, "점수"), total: P.num(p, "만점"), grade: P.sel(p, "종합 평가"), how: P.sel(p, "응시 방식"), comment: P.text(p, "코멘트") })) });
+    }
+    if (act === "t_rep_blocks") { // ✏️ 리포트 내용 불러오기 (웹 링크 k로)
+      const pid = repKey(b.k); if (!pid) return send(400, { error: "k", msg: "리포트 링크가 맞지 않아요." });
+      const pg = await notion("pages/" + id32(pid), "GET"); if (!pg || pg.archived || pg.in_trash) return send(404, { error: "nf", msg: "리포트를 찾지 못했어요." });
+      const tp = Object.values(pg.properties || {}).find((x) => x.type === "title");
+      return send(200, { ok: true, title: tp ? tp.title.map((t) => t.plain_text).join("") : "", blocks: flatBlocks(await blockKids(pid, 0), 0, []) });
+    }
+    if (act === "t_rep_save") { // ✏️ 리포트 고친 것 저장: edits [{id, text}] · cells [{id, cells}] · dels [id] · adds [{after, text}]
+      const pid = repKey(b.k); if (!pid) return send(400, { error: "k", msg: "리포트 링크가 맞지 않아요." });
+      const edits = (b.edits || []).slice(0, 200), cells = (b.cells || []).slice(0, 100), dels = (b.dels || []).slice(0, 100), adds = (b.adds || []).slice(0, 30);
+      let ok = 0, bad = 0; const tick = (r) => (r ? ok++ : bad++);
+      // 블록이 정말 이 리포트 안에 있는지 확인
+      const all = flatBlocks(await blockKids(pid, 0), 0, []), ids = new Set(); all.forEach((x) => { ids.add(normId(x.id)); (x.rows || []).forEach((r) => ids.add(normId(r.id))); });
+      const own = (id) => ids.has(normId(id));
+      for (const e of edits) { const x = all.find((y) => normId(y.id) === normId(e.id)); if (!x || x.ro) { bad++; continue; } tick(await notion("blocks/" + id32(e.id), "PATCH", { [x.type]: { rich_text: markToRt(clip(e.text, 9000)) } }, 2)); }
+      for (const c of cells) { if (!own(c.id) || !Array.isArray(c.cells)) { bad++; continue; } tick(await notion("blocks/" + id32(c.id), "PATCH", { table_row: { cells: c.cells.slice(0, 20).map((t) => markToRt(clip(t, 1900))) } }, 2)); }
+      for (const a of adds) { if (a.after && !own(a.after)) { bad++; continue; } const x = all.find((y) => normId(y.id) === normId(a.after)), parentId = x && x.depth > 0 ? null : pid; if (!parentId) { bad++; continue; }
+        tick(await notion("blocks/" + id32(parentId) + "/children", "PATCH", Object.assign({ children: [{ object: "block", type: a.type === "heading_3" ? "heading_3" : a.type === "bulleted_list_item" ? "bulleted_list_item" : "paragraph", [a.type === "heading_3" ? "heading_3" : a.type === "bulleted_list_item" ? "bulleted_list_item" : "paragraph"]: { rich_text: markToRt(clip(a.text, 9000)) } }] }, a.after ? { after: uuid(normId(a.after)) } : {}), 2)); }
+      for (const id of dels) { if (!own(id)) { bad++; continue; } tick(await notion("blocks/" + id32(id), "DELETE", null, 2)); }
+      return send(200, { ok: true, saved: ok, failed: bad });
     }
     if (act === "t_paper_rename") { // ✏️ 시험지 이름 바꾸기 (그 시험지로 본 기록의 시험명도 같이)
       const pp = await getPaper(b.id); if (!pp) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." });
