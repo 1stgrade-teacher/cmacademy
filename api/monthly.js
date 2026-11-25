@@ -905,6 +905,17 @@ module.exports = async function handler(req, res) {
     res.statusCode = 200; res.setHeader("Content-Type", "application/manifest+json; charset=utf-8"); res.setHeader("Cache-Control", "private, max-age=3600");
     return res.end(JSON.stringify(PAR().manifest(k)));
   }
+  if (req.method === "GET" && /[?&]pp=1\b/.test(req.url || "")) { // 👪 학부모 링크(/parent?k=…): 카톡 미리보기에 「○○ 학부모님」이 보이게 제목을 넣어서 보내요
+    let html = ""; try { const pa = require("path"); html = [pa.join(__dirname, "..", "parent.html"), pa.join(process.cwd(), "parent.html")].map((f) => { try { return fs.readFileSync(f, "utf8"); } catch (e) { return ""; } }).find(Boolean); if (!html) throw new Error("no file"); } catch (e) { res.statusCode = 302; res.setHeader("Location", "/parent.html" + (req.url.split("?")[1] ? "?" + req.url.split("?")[1].replace(/(^|&)pp=1/, "") : "")); return res.end(); }
+    const k = new URL(req.url, "http://x").searchParams.get("k") || "";
+    let name = ""; try { const a = await PAR().auth(k); if (a.status === 200) name = a.name; } catch (e) {}
+    const h = (v) => String(v).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+    const title = name ? name + " 학부모님 · 청명학원" : "청명 학부모", desc = name ? name + " 학생의 과제·시험·학습 기록을 확인하세요." : "우리 아이 과제·시험·학습 기록을 확인하세요.";
+    const og = '<meta property="og:type" content="website"><meta property="og:site_name" content="청명학원"><meta property="og:title" content="' + h(title) + '"><meta property="og:description" content="' + h(desc) + '"><meta property="og:image" content="https://' + h(req.headers.host || "cmacademy.vercel.app") + '/icon-512.png">';
+    html = html.replace("<title>청명 학부모</title>", "<title>" + h(title) + "</title>" + og);
+    res.statusCode = 200; res.setHeader("Content-Type", "text/html; charset=utf-8"); res.setHeader("Cache-Control", "private, no-store");
+    return res.end(html);
+  }
   if (req.method === "GET" && /[?&]plus_cron=1\b/.test(req.url || "")) { // ⏰ 🏫 플러스 수업 미참여 확인 (Vercel 크론, 1분마다)
     const cs = String(process.env.CRON_SECRET || "").trim(), au = String(req.headers.authorization || "");
     if (cs ? au !== "Bearer " + cs : !/vercel-cron/i.test(String(req.headers["user-agent"] || ""))) return send(401, { error: "cron" });
@@ -1172,6 +1183,48 @@ module.exports = async function handler(req, res) {
         if (note) await notion("pages/" + id32(rid), "PATCH", { properties: { "코멘트": { rich_text: rt(clip(cm.replace("📲 서술형 채점 뒤 보내요", note), 1900)) } } });
       }
       return send(200, { ok: true, score: right, total, pct, pend: nPend, changed: ch });
+    }
+    // 🧑‍🎓 학생 한 명의 시험 기록 모아 보기 · 고치기 · 지우기 (시험지가 달라도 한 화면에서)
+    if (act === "t_stu_recs") {
+      const sid = normId(clip(b.id, 60)); if (!sid) return send(400, { error: "input", msg: "학생을 골라 주세요." });
+      const f = [{ property: "학생", relation: { contains: uuid(sid) } }]; if (b.kind) f.push({ property: "종류", select: { equals: clip(b.kind, 30) } });
+      const rows = await queryAll(EXAM_DB(), { filter: f.length > 1 ? { and: f } : f[0], sorts: [{ property: "시험일", direction: "descending" }] }, 6);
+      if (!rows) return send(502, { error: "notion", msg: "기록을 불러오지 못했어요.", debug: lastErr });
+      return send(200, { ok: true, recs: rows.map((p) => ({ rec: normId(p.id), url: p.url, paper: normId(P.rel(p, "시험지")[0] || ""), title: P.title(p, "시험명"), kind: P.sel(p, "종류"), cls: P.sel(p, "반"), date: (P.date(p, "시험일") || {}).start || "", range: P.text(p, "시험 범위"), score: P.num(p, "점수"), total: P.num(p, "만점"), grade: P.sel(p, "종합 평가"), how: P.sel(p, "응시 방식"), comment: P.text(p, "코멘트") })) });
+    }
+    if (act === "t_paper_rename") { // ✏️ 시험지 이름 바꾸기 (그 시험지로 본 기록의 시험명도 같이)
+      const pp = await getPaper(b.id); if (!pp) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." });
+      if (!me.master && pp.teacher && pp.teacher !== me.name) return send(403, { error: "owner", msg: pp.teacher + "이(가) 만든 시험지는 " + pp.teacher + "이나 관리자만 바꿀 수 있어요." });
+      const title = clip(String(b.title || "").replace(/\s+/g, " ").trim(), 120); if (!title) return send(400, { error: "input", msg: "새 이름을 써 주세요." });
+      const up = await notion("pages/" + id32(pp.id), "PATCH", { properties: { "시험명": { title: rt(title) } } });
+      if (!up) return send(502, { error: "notion", msg: "이름을 바꾸지 못했어요.", debug: lastErr });
+      let n = 0, fail = 0;
+      if (b.recs !== false) {
+        const rows = (await queryAll(EXAM_DB(), { filter: { property: "시험지", relation: { contains: uuid(pp.id) } } }, 6)) || [];
+        for (let i = 0; i < rows.length; i += 5) await Promise.all(rows.slice(i, i + 5).map(async (r) => { if (P.title(r, "시험명") === title) return; if (await notion("pages/" + id32(r.id), "PATCH", { properties: { "시험명": { title: rt(title) } } }, 2)) n++; else fail++; }));
+      }
+      return send(200, { ok: true, title, recs: n, failed: fail });
+    }
+    if (act === "t_stu_rec_save" || act === "t_stu_rec_del") {
+      const list = (Array.isArray(b.edits) ? b.edits : Array.isArray(b.ids) ? b.ids.map((x) => ({ rec: x })) : []).slice(0, 100), GR = ["우수", "양호", "보통", "노력 필요"], out = [], pcache = {};
+      if (!list.length) return send(400, { error: "input", msg: act === "t_stu_rec_del" ? "지울 기록을 골라 주세요." : "바뀐 기록이 없어요." });
+      for (const e of list) {
+        const id = normId(clip(e && e.rec, 60)); const p = id && await notion("pages/" + id32(id), "GET", null, 2);
+        if (!p || p.archived || !p.parent || normId(p.parent.database_id) !== normId(EXAM_DB())) { out.push({ rec: id, ok: false, msg: "기록을 찾지 못했어요" }); continue; }
+        const pid = P.rel(p, "시험지")[0];
+        if (pid && !me.master) { const pp = pcache[pid] !== undefined ? pcache[pid] : (pcache[pid] = await getPaper(pid)); if (pp && pp.teacher && pp.teacher !== me.name) { out.push({ rec: id, ok: false, msg: pp.teacher + "이(가) 만든 시험지의 기록이에요" }); continue; } }
+        if (act === "t_stu_rec_del") { out.push({ rec: id, ok: !!(await notion("pages/" + id32(id), "PATCH", { archived: true }, 2)) }); continue; }
+        const total = e.total == null || e.total === "" ? P.num(p, "만점") : Number(e.total), score = e.score == null || e.score === "" ? P.num(p, "점수") : Number(e.score);
+        if (!(total > 0 && total <= 1000) || !(score >= 0 && score <= total) || Math.round(score * 2) !== score * 2) { out.push({ rec: id, ok: false, msg: "점수는 0~만점 사이로 써 주세요" }); continue; }
+        const pct = Math.round(score / total * 1000) / 10, props = { "점수": { number: score }, "만점": { number: total }, "종합 평가": sel(GR.includes(e.grade) ? e.grade : gradeOf(pct)) };
+        if (Number.isInteger(score) && Number.isInteger(total) && (score !== P.num(p, "점수") || total !== P.num(p, "만점"))) props["오답 수"] = { number: total - score };
+        if (typeof e.comment === "string") props["코멘트"] = { rich_text: rt(clip(e.comment, 1900)) };
+        if (typeof e.range === "string") props["시험 범위"] = { rich_text: rt(clip(e.range, 200)) };
+        if (/^\d{4}-\d{2}-\d{2}$/.test(String(e.date || ""))) props["시험일"] = { date: { start: e.date } };
+        out.push({ rec: id, ok: !!(await notion("pages/" + id32(id), "PATCH", { properties: props }, 2)) });
+      }
+      const n = out.filter((x) => x.ok).length;
+      return send(200, { ok: true, saved: n, failed: out.length - n, results: out });
     }
     if (act === "t_rec_edit") { // 📊 응시 결과에서 점수·만점·평가·코멘트 직접 고치기 (여러 기록 만점 한꺼번에도)
       const pp = await getPaper(b.paper); if (!pp) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." });
