@@ -1,5 +1,5 @@
 {
- "built": "2026-11-24T05:12:48.362Z",
+ "built": "2026-11-25T05:48:39.565Z",
  "books": [
   {
    "id": "bb391852c",
@@ -7772,6 +7772,82 @@
    ]
   },
   {
+   "id": "b831c6d20",
+   "area": "교과서",
+   "grade": "중1",
+   "name": "중1 시사박 교과서",
+   "path": "교과서/중1/시사박",
+   "n": 17,
+   "chapters": [
+    {
+     "key": "7과",
+     "name": "Lesson 7",
+     "units": [
+      {
+       "id": "u75ff6257",
+       "name": "문법 · 7과 문법1 접속사 that — 문법",
+       "n": 9,
+       "lv": 1.4
+      },
+      {
+       "id": "u6a34d472",
+       "name": "문법 · 7과 문법2 감탄문 — 문법",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "uf2af146a",
+       "name": "본문 · 7과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u72d4b794",
+       "name": "본문 · 7과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u710cf290",
+       "name": "본문 · 7과 본문3",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    },
+    {
+     "key": "8과",
+     "name": "Lesson 8",
+     "units": [
+      {
+       "id": "u44e9a486",
+       "name": "문법 · 8과 문법1 재귀대명사 — 문법",
+       "n": 4,
+       "lv": 2
+      },
+      {
+       "id": "u9b736574",
+       "name": "본문 · 8과 본문1",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u05e194c3",
+       "name": "본문 · 8과 본문2",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ub88d5a8c",
+       "name": "본문 · 8과 본문3",
+       "n": 0,
+       "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
    "id": "b8a77008f",
    "area": "교과서",
    "grade": "중1",
@@ -9725,6 +9801,30 @@
      "key": "8과",
      "name": "Lesson 8",
      "units": [
+      {
+       "id": "uf8144d40",
+       "name": "1강 — Grammar",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u1927067a",
+       "name": "천일문 고등 GRAMMAR UNIT 02 — Grammar",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uc67f8122",
+       "name": "3강 — Grammar",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uba702ab6",
+       "name": "4강 — Grammar",
+       "n": 0,
+       "lv": null
+      },
       {
        "id": "u8449a236",
        "name": "듣기 · 중2 천재 이상기 8과 대화문 A Listen and Choose (1) — A Listen and Choose (1)",
