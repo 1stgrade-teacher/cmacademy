@@ -1,4 +1,4 @@
-// admin/nav.js — 선생님 화면 맨 위 공통 이동 줄 (🏠 관리 홈 = TEST 관리 · 점수 입력 · 플러스 · 리포트 인쇄 · 학생 화면은 새 창)
+// admin/nav.js — 선생님 화면 맨 위 공통 이동 줄 (🏠 관리 홈 = TEST 관리 · 점수 입력 · 플러스 · 상담 예약 · 리포트 인쇄 · 학생 화면은 새 창)
 // 쓰는 법: <script src="/admin/nav.js" data-here="monthly"></script> 를 화면 맨 위(.wrap/.panel 안 첫 줄)에 넣어요.
 (function () {
   var me = document.currentScript, here = (me && me.getAttribute("data-here")) || "";
@@ -12,7 +12,7 @@
     ".totop.on{display:block}";
   var st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
   var L = [["monthly", "/admin/monthly.html#list", "🏠 관리 홈 (TEST 관리)"], ["exam", "/admin/exam.html", "📝 점수 입력"],
-    ["plus", "/admin/plus.html#time", "🏫 플러스 수업"], ["print", "/admin/print.html", "🖨️ 리포트 인쇄"], ["sp"], ["student", "/월간고사/index.html", "👀 학생 시험 화면 ↗"], ["student", "/", "🎒 학생용 첫 화면 ↗"]];
+    ["plus", "/admin/plus.html#time", "🏫 플러스 수업"], ["consult", "/admin/consult.html", "📅 상담 예약"], ["print", "/admin/print.html", "🖨️ 리포트 인쇄"], ["sp"], ["student", "/월간고사/index.html", "👀 학생 시험 화면 ↗"], ["student", "/", "🎒 학생용 첫 화면 ↗"]];
   var nav = document.createElement("nav"); nav.className = "anav"; nav.setAttribute("aria-label", "선생님 화면 이동");
   nav.innerHTML = L.map(function (x) {
     if (x[0] === "sp") return '<span class="sp"></span>';

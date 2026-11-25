@@ -936,6 +936,8 @@ let _sc = null; const SC = () => _sc || (_sc = require("./_schedule.js")({ notio
 let _prt = null; const PRT = () => _prt || (_prt = require("./_print.js")({ notion, queryAll, P, uuid, normId, id32, STUDENT_DB, EXAM_DB, CERT_DB: () => id32(process.env.NOTION_DB_ID || "d6164dec4d2e461aa2f102de18814b7d"), GAME_DB: () => id32(process.env.NOTION_GAME_DB_ID || "3ef113187ca24388b1a68de4cc535144"), PLUS_DB: () => id32(process.env.NOTION_PLUS_DB_ID || "c539836a490b41ec98df5ddc0b384b6d"), HW, getLastErr: () => lastErr }));
 let _par = null; const PAR = () => _par || (_par = require("./_parent.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, EXAM_DB, CERT_DB: () => id32(process.env.NOTION_DB_ID || "d6164dec4d2e461aa2f102de18814b7d"), GAME_DB: () => id32(process.env.NOTION_GAME_DB_ID || "3ef113187ca24388b1a68de4cc535144"), HW, getLastErr: () => lastErr }));
 let _plus = null; const PLUS = () => _plus || (_plus = require("./_plus.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, SCHED_DB: () => SC().SCHED_DB(), secret, signToken, readToken, login, getLastErr: () => lastErr }));
+let _con = null; const CON = () => _con || (_con = require("./_consult.js")({ notion, queryAll, P, rt, rtLong, sel, clip, uuid, normId, id32, HW, secret, getLastErr: () => lastErr })); // 📅 신규생 상담 예약
+const baseOf = (req) => (String(req.headers["x-forwarded-proto"] || "https").split(",")[0].trim() || "https") + "://" + String(req.headers["x-forwarded-host"] || req.headers.host || "cmacademy.vercel.app").split(",")[0].trim();
 const plusOut = (send, r) => send(r.status || 200, Object.assign({ ok: (r.status || 200) === 200 && r.ok !== false }, r, { status: undefined }));
 let _rep = null;
 function reporter() {
@@ -1015,6 +1017,13 @@ module.exports = async function handler(req, res) {
     if (cs ? au !== "Bearer " + cs : !/vercel-cron/i.test(String(req.headers["user-agent"] || ""))) return send(401, { error: "cron" });
     return send(200, await PLUS().tick(true));
   }
+  if (req.method === "GET" && /[?&]consult_ics=/.test(req.url || "")) { // 📆 상담 예약 캘린더 구독 주소 (구글·네이버 캘린더에 URL로 추가)
+    const tok = new URL(req.url, "http://x").searchParams.get("consult_ics") || "";
+    const body = process.env.NOTION_TOKEN ? await CON().ics(tok, baseOf(req)) : null;
+    if (!body) { res.statusCode = 404; res.setHeader("Content-Type", "text/plain; charset=utf-8"); return res.end("not found"); }
+    res.statusCode = 200; res.setHeader("Content-Type", "text/calendar; charset=utf-8"); res.setHeader("Cache-Control", "private, no-store"); res.setHeader("Content-Disposition", 'inline; filename="consult.ics"');
+    return res.end(body);
+  }
   if (req.method === "GET" && /[?&]im=/.test(req.url || "")) { // 🖼 듣기 그림 보기 (설명 = "그림 3")
     if (!siteOk(req)) return send(401, { error: "site" });
     const sp = new URL(req.url, "http://x").searchParams, uid = clip(sp.get("im"), 20), n = num(sp.get("n"), 1, 300, 0);
@@ -1036,10 +1045,27 @@ module.exports = async function handler(req, res) {
   const origin = req.headers.origin || "", host = req.headers["x-forwarded-host"] || req.headers.host || "";
   if (origin) { let oh = ""; try { oh = new URL(origin).host; } catch (e) {} if (oh !== host) return send(403, { error: "origin" }); }
   if (!process.env.NOTION_TOKEN) return send(503, { error: "unset", msg: "아직 준비되지 않았어요. (Vercel에 NOTION_TOKEN 필요)" });
-  if (process.env.MONTHLY_OFF === "1") return send(503, { error: "off", msg: "온라인 평가가 잠시 꺼져 있어요." });
-  if (!loadCatalog()) return send(503, { error: "bank", msg: "문제은행(exam-bank)이 없어요." });
   const b = await readBody(req);
   const act = String(b.action || "");
+  // =================== 📅 신규생 상담 예약 (온라인 평가 끄기·문제은행과 상관없이 작동) ===================
+  if (act === "consult_cron") { // GitHub Actions(30분마다): 상담 리마인더
+    const sec = String(process.env.HW_CRON_SECRET || "").trim();
+    if (sec && String(b.secret || "") !== sec) return send(401, { error: "secret" });
+    try { return send(200, await CON().cron(baseOf(req))); } catch (e) { return send(500, { ok: false, msg: clip(e && e.message, 200) }); }
+  }
+  if (/^consult_(info|book|find|get|cancel|move)$/.test(act)) { // 학부모님: 입장 코드 없이
+    const ip = String((req.headers["x-forwarded-for"] || "").split(",")[0]).trim() || "x";
+    try { return plusOut(send, await CON().pub(act, b, ip, baseOf(req))); } catch (e) { return send(500, { ok: false, msg: "잠시 문제가 생겼어요. 다시 시도해 주세요.", debug: clip(e && e.message, 200) }); }
+  }
+  if (/^t_consult\w*$/.test(act)) {
+    const ip = String((req.headers["x-forwarded-for"] || "").split(",")[0]).trim() || "x";
+    if (tBlocked(ip)) return send(429, { error: "limit", msg: "코드를 여러 번 틀렸어요. 10분 뒤에 다시 해 주세요." });
+    const me = await whoTeacher(b.code);
+    if (!me) { tFail(ip); return send(401, { error: "code", msg: "선생님 코드가 맞지 않아요." }); }
+    try { return plusOut(send, Object.assign({ me: { name: me.name } }, await CON().teacher(act, b, me, baseOf(req)))); } catch (e) { return send(500, { ok: false, msg: "잠시 문제가 생겼어요. 다시 시도해 주세요.", debug: clip(e && e.message, 200) }); }
+  }
+  if (process.env.MONTHLY_OFF === "1") return send(503, { error: "off", msg: "온라인 평가가 잠시 꺼져 있어요." });
+  if (!loadCatalog()) return send(503, { error: "bank", msg: "문제은행(exam-bank)이 없어요." });
   if (act === "hw_cron") { // ⏰ 과제 마감 확인 (GitHub Actions가 30분마다). 몇 번을 불러도 과제마다 한 번만 처리돼요.
     const sec = String(process.env.HW_CRON_SECRET || "").trim();
     if (sec && String(b.secret || "") !== sec) return send(401, { error: "secret" });
