@@ -25,7 +25,7 @@ const TPL = {
 };
 
 module.exports = function (ctx) {
-  const { notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, SCHED_DB, secret, signToken, readToken, login, getLastErr } = ctx;
+  const { ALERT, notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, SCHED_DB, secret, signToken, readToken, login, getLastErr } = ctx;
   const PLUS_DB = () => id32(process.env.NOTION_PLUS_DB_ID || "c539836a490b41ec98df5ddc0b384b6d");
   const PROP = "플러스 수업";
   const MIN = 60000;
@@ -112,8 +112,9 @@ module.exports = function (ctx) {
   const keyOf = (sid, date, hm) => normId(sid) + "|" + date + "|" + hm;
   function readRec(p) {
     const k = P.text(p, "키").split("|"), at = P.date(p, "출석 시각");
+    const en = P.date(p, "마친 시각");
     return { id: normId(p.id), url: p.url, key: P.text(p, "키"), sid: P.rel(p, "학생")[0] || k[0] || "", title: P.title(p, "기록"), cls: P.text(p, "반"), date: k[1] || "", hm: k[2] || "",
-      state: P.sel(p, "상태"), at: at && at.start ? hmOf(Date.parse(at.start)) : "", how: P.sel(p, "방법"), notice: P.text(p, "알림 결과"), memo: P.text(p, "메모"), created: p.created_time };
+      state: P.sel(p, "상태"), at: at && at.start ? hmOf(Date.parse(at.start)) : "", atMs: at && at.start ? Date.parse(at.start) : 0, end: en && en.start ? hmOf(Date.parse(en.start)) : "", how: P.sel(p, "방법"), notice: P.text(p, "알림 결과"), memo: P.text(p, "메모"), created: p.created_time };
   }
   async function byKey(key) {
     const rows = await queryAll(PLUS_DB(), { filter: { property: "키", rich_text: { equals: key } }, sorts: [{ timestamp: "created_time", direction: "ascending" }] }, 1);
@@ -130,12 +131,43 @@ module.exports = function (ctx) {
     }, extra);
   }
   const stamp = () => hmOf() + " ";
+  // 🔔 앱 알림(무료) 먼저 → 설정에 따라 앱 알림을 못 받는 부모님께만 문자(마침 알림은 앱 알림만)
   async function notify(kind, st, vars) {
-    const tag = stamp() + (kind === "in" ? "참여 알림: " : "미참여 알림: ");
-    if (st.mute) return tag + "보내지 않음 (알림 끄기 학생)";
-    if (!N.phone(st.phone)) return tag + "보내지 않음 (학부모 연락처 없음)";
-    const r = (await N.sendMany([{ to: st.phone, vars }], TPL[kind]))[0] || {};
-    return tag + (r.msg || "");
+    const tag = stamp() + ({ in: "참여 알림: ", out: "미참여 알림: ", end: "마침 알림: " })[kind];
+    const M = {
+      in: { title: "🏫 플러스 수업 출석", body: st.name + " 학생이 " + vars.수업 + "에 출석했어요.\n출석 " + vars.출석 },
+      out: { title: "⚠️ 플러스 수업 미참여", body: st.name + " 학생이 " + vars.수업 + "에 아직 오지 않았어요. (확인 " + vars.확인 + ")\n가정에서 한 번 확인 부탁드려요." },
+      end: { title: "🏁 플러스 수업 마침", body: st.name + " 학생이 " + vars.수업 + "을 마쳤어요.\n" + vars.시간 },
+    }[kind];
+    const sms = kind !== "end" && !st.mute && N.phone(st.phone) ? async () => { const r = (await N.sendMany([{ to: st.phone, vars }], TPL[kind]))[0] || {}; return { ok: r.ok, msg: r.how === "off" ? "" : r.msg }; } : null;
+    try { const d = await ALERT().deliver(st.id, Object.assign({ kind: "플러스 수업", by: "자동 알림", tag: "plus-" + kind + "-" + st.id }, M), sms); return tag + d.note; }
+    catch (e) { return tag + "알림 실패"; }
+  }
+  // 🏁 수업 마치기: 오늘 출석한 기록에 「마친 시각」을 남기고 부모님께 알림
+  let endProp = false;
+  async function ensureEndProp() {
+    if (endProp) return true;
+    const d = await notion("databases/" + PLUS_DB(), "GET", null, 2); if (!d) return false;
+    if (d.properties && d.properties["마친 시각"]) return (endProp = true);
+    const u = await notion("databases/" + PLUS_DB(), "PATCH", { properties: { "마친 시각": { date: {} } } }, 2);
+    return (endProp = !!(u && u.properties && u.properties["마친 시각"]));
+  }
+  async function checkOut(sid) {
+    const now = Date.now(), date = dayOf(now);
+    const st = await student(sid); if (!st) return { status: 404, msg: "학생을 찾지 못했어요." };
+    if (!(await ensureEndProp())) return { status: 502, msg: "노션 출결 DB에 「마친 시각」 칸을 만들지 못했어요. 선생님께 알려 주세요.", debug: getLastErr() };
+    const recs = await onDay(date); if (!recs) return { status: 502, msg: "출결 기록을 읽지 못했어요.", debug: getLastErr() };
+    const mine = recs.filter((r) => normId(r.sid) === normId(st.id) && (r.state === "출석" || r.state === "지각")).sort((a, b) => (a.hm < b.hm ? 1 : -1));
+    if (!mine.length) return { status: 400, msg: "오늘 출석한 기록이 없어요. 먼저 「✅ 출석하기」를 해 주세요." };
+    const r = mine.find((x) => !x.end);
+    if (!r) return { status: 200, already: true, name: st.name, cls: st.cls, slot: label(date, mine[0].hm), at: mine[0].at, end: mine[0].end };
+    const mins = r.atMs ? Math.max(0, Math.round((now - r.atMs) / MIN)) : null;
+    if (mins != null && mins < 5 && !process.env.PLUS_TEST) return { status: 400, msg: "출석한 지 " + mins + "분밖에 안 됐어요. 플러스 수업을 다 마친 뒤에 눌러 주세요." };
+    const pg = await notion("pages/" + id32(r.id), "PATCH", { properties: { "마친 시각": { date: { start: isoKst(now) } } } });
+    if (!pg) return { status: 502, msg: "저장하지 못했어요. 다시 해 주세요.", debug: getLastErr() };
+    const note = await notify("end", st, { 학생: st.name, 수업: label(date, r.hm) + " 플러스 수업", 시간: (r.at ? r.at + " 출석 → " : "") + hmOf(now) + " 마침" + (mins != null ? " (" + (mins >= 60 ? Math.floor(mins / 60) + "시간 " : "") + (mins % 60) + "분 공부)" : "") });
+    await notion("pages/" + id32(r.id), "PATCH", { properties: { "알림 결과": { rich_text: rt(addNote(r.notice, note)) } } }, 2);
+    return { status: 200, out: true, name: st.name, cls: st.cls, slot: label(date, r.hm), at: r.at, end: hmOf(now), mins };
   }
   const addNote = (old, s) => clip((old ? old + "\n" : "") + s, 1900);
 
@@ -221,7 +253,7 @@ module.exports = function (ctx) {
     list.forEach((st) => { if (cls && st.cls !== cls) return; st.slots.forEach((x) => {
       if (x.dow !== dow) return;
       const r = by.get(keyOf(st.id, date, x.hm)), t = slotAt(date, x.hm);
-      out.push({ sid: st.id, name: st.name, cls: st.cls, hm: x.hm, state: r ? r.state : now < t + GRACE() ? "대기" : "확인 중", at: r ? r.at : "", how: r ? r.how : "", notice: r ? r.notice : "", memo: r ? r.memo : "", rec: r ? r.id : "", url: r ? r.url : "" });
+      out.push({ sid: st.id, name: st.name, cls: st.cls, hm: x.hm, state: r ? r.state : now < t + GRACE() ? "대기" : "확인 중", at: r ? r.at : "", end: r ? r.end : "", how: r ? r.how : "", notice: r ? r.notice : "", memo: r ? r.memo : "", rec: r ? r.id : "", url: r ? r.url : "" });
     }); });
     out.sort((a, b) => (a.hm < b.hm ? -1 : a.hm > b.hm ? 1 : a.name < b.name ? -1 : 1));
     return { date, label: label(date, "").trim(), list: out };
@@ -233,6 +265,12 @@ module.exports = function (ctx) {
     const pr = proof(b.proof, ip); if (pr.status !== 200) return pr;
     const list = await scheduled(); if (!list) return { status: 502, msg: "명단을 불러오지 못했어요." };
     const now = Date.now(), dow = dowOf(now), date = dayOf(now), m = new Map();
+    if (b.mode === "out") { // 🏁 수업 마치기: 오늘 출석하고 아직 안 마친 학생
+      const recs = await onDay(date); if (!recs) return { status: 502, msg: "출결 기록을 읽지 못했어요." };
+      const open = new Map(); recs.filter((r) => (r.state === "출석" || r.state === "지각") && !r.end).forEach((r) => open.set(normId(r.sid), r));
+      list.forEach((st) => { const r = open.get(normId(st.id)); if (!r) return; if (!m.has(st.cls)) m.set(st.cls, []); m.get(st.cls).push({ id: st.id, name: st.name, hasPin: st.hasPin, hm: r.at + " 출석" }); });
+      return { status: 200, how: pr.how, mode: "out", classes: Array.from(m.keys()).sort().map((c) => ({ cls: c, students: m.get(c) })) };
+    }
     list.forEach((st) => { const sl = st.slots.filter((x) => x.dow === dow && now >= slotAt(date, x.hm) - EARLY && now <= slotAt(date, x.hm) + LATE_MAX); if (!sl.length) return;
       if (!m.has(st.cls)) m.set(st.cls, []); m.get(st.cls).push({ id: st.id, name: st.name, hasPin: st.hasPin, hm: sl.map((x) => x.hm).join(", ") }); });
     return { status: 200, how: pr.how, classes: Array.from(m.keys()).sort().map((c) => ({ cls: c, students: m.get(c) })) };
@@ -242,6 +280,7 @@ module.exports = function (ctx) {
     const lg = await login(clip(b.sid, 60), String(b.pin || ""), !!b.setPin);
     if (lg.status !== 200) return { status: lg.status, msg: lg.msg, needSet: lg.needSet };
     if (b.setPin) cache.t = 0; // 방금 번호를 정했으면 명단을 새로 읽게
+    if (b.mode === "out") return checkOut(lg.sid);
     return checkIn(lg.sid, b.how === "QR" || pr.how === "QR" ? "QR" : "숫자");
   }
 

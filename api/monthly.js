@@ -606,15 +606,15 @@ async function notifyParent(pp, who, recId, r) { // r: { right, total, pct, nRig
   const how = notifyOf(pp); if (!how) return "";
   try {
     const st = await notion("pages/" + id32(who.sid), "GET"); if (!st) return "📲 알림 못 보냄 (학생 정보 읽기 실패)";
-    if (P.chk(st, "알림 끄기")) return "📲 알림 꺼진 학생";
-    const ph = N_().phone((st.properties["학부모 연락처"] || {}).phone_number || ""); if (!ph) return "📲 학부모 연락처 없음";
+    const ph = N_().phone((st.properties["학부모 연락처"] || {}).phone_number || "");
     if (how === "first") { const a = (await attemptsOf(pp.id, who.sid, true)) || []; if (a.some((x) => normId(x.id) !== normId(recId))) return "📲 오늘 이미 보냄 (하루 첫 응시만)"; }
     const ps = passCfg(pp.cfg && pp.cfg.pass);
     const passOk = ps ? (ps.by === "cnt" ? r.nRight >= ps.v : r.pct >= ps.v) : null;
     const vars = { 학생: who.name, 시험: clip(String(pp.title).replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\uFE0F]/gu, "").replace(/\s+/g, " ").trim(), 40), 범위: clip(r.range, 60) || "-", 점수: r.weighted ? r.right + " / " + r.total + "점" : r.right + " / " + r.total + "문항 (" + r.pct + "점)",
       결과: ps ? (passOk ? "통과" : "재시험 필요 (통과 기준 " + (ps.by === "cnt" ? ps.v + "개" : ps.v + "점") + ")") : gradeOf(r.pct), 일시: kstWhen() };
-    const out = (await N_().sendMany([{ to: ph, vars }], TEST_TPL))[0] || {};
-    return "📲 " + (out.ok ? out.msg : out.how === "off" ? "알림 발송 설정 전" : out.msg || "알림 실패");
+    const d = await ALERT().deliver(st, { kind: "시험", title: "📝 " + who.name + " · 시험 결과", body: vars.시험 + (vars.범위 && vars.범위 !== "-" ? " (" + vars.범위 + ")" : "") + "\n점수 " + vars.점수 + " · " + vars.결과 + "\n" + vars.일시 + " 응시", by: "자동 알림" },
+      ph && !P.chk(st, "알림 끄기") ? async () => { const out = (await N_().sendMany([{ to: ph, vars }], TEST_TPL))[0] || {}; return { ok: out.ok, msg: out.ok ? out.msg : out.how === "off" ? "" : out.msg || "문자 실패" }; } : null);
+    return d.note;
   } catch (e) { return "📲 알림 실패"; }
 }
 const N_ = () => require("./_notify.js");
@@ -928,14 +928,15 @@ async function studentClasses() {
   return stuCls.list;
 }
 let _game = null; const GAME = () => _game || (_game = require("./_game.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, getLastErr: () => lastErr }));
-const HW = () => _hw || (_hw = require("./_homework.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, STUDENT_DB, listenUnit, getLastErr: () => lastErr }));
+const HW = () => _hw || (_hw = require("./_homework.js")({ ALERT: () => ALERT(), notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, STUDENT_DB, listenUnit, getLastErr: () => lastErr }));
 // 🎧 받아쓰기 숙제용: 듣기 회차의 문항별 음성 + 대본
 function listenUnit(uid) { const d = unitData(uid); if (!d || d.area !== "듣기") return null; const items = (d.qs || []).filter((q) => q.script).map((q) => ({ id: q.id, audio: q.audio || "", script: q.script })); return items.length ? { name: d.name, book: d.book, items } : null; }
 let _lib = null; const LIB = () => _lib || (_lib = require("./_library.js")({ notion, queryAll, P, rt, rtLong, sel, clip, num, normId, id32, unitIndex, rangeText, getLastErr: () => lastErr }));
 let _sc = null; const SC = () => _sc || (_sc = require("./_schedule.js")({ notion, queryAll, P, rt, sel, clip, normId, id32, getLastErr: () => lastErr }));
 let _prt = null; const PRT = () => _prt || (_prt = require("./_print.js")({ notion, queryAll, P, uuid, normId, id32, STUDENT_DB, EXAM_DB, CERT_DB: () => id32(process.env.NOTION_DB_ID || "d6164dec4d2e461aa2f102de18814b7d"), GAME_DB: () => id32(process.env.NOTION_GAME_DB_ID || "3ef113187ca24388b1a68de4cc535144"), PLUS_DB: () => id32(process.env.NOTION_PLUS_DB_ID || "c539836a490b41ec98df5ddc0b384b6d"), HW, getLastErr: () => lastErr }));
-let _par = null; const PAR = () => _par || (_par = require("./_parent.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, EXAM_DB, CERT_DB: () => id32(process.env.NOTION_DB_ID || "d6164dec4d2e461aa2f102de18814b7d"), GAME_DB: () => id32(process.env.NOTION_GAME_DB_ID || "3ef113187ca24388b1a68de4cc535144"), HW, getLastErr: () => lastErr }));
-let _plus = null; const PLUS = () => _plus || (_plus = require("./_plus.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, SCHED_DB: () => SC().SCHED_DB(), secret, signToken, readToken, login, getLastErr: () => lastErr }));
+let _par = null; const PAR = () => _par || (_par = require("./_parent.js")({ ALERT: () => ALERT(), notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, EXAM_DB, CERT_DB: () => id32(process.env.NOTION_DB_ID || "d6164dec4d2e461aa2f102de18814b7d"), GAME_DB: () => id32(process.env.NOTION_GAME_DB_ID || "3ef113187ca24388b1a68de4cc535144"), HW, getLastErr: () => lastErr }));
+let _alert = null; const ALERT = () => _alert || (_alert = require("./_alert.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, HW, secret, getLastErr: () => lastErr }));
+let _plus = null; const PLUS = () => _plus || (_plus = require("./_plus.js")({ ALERT, notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, SCHED_DB: () => SC().SCHED_DB(), secret, signToken, readToken, login, getLastErr: () => lastErr }));
 let _con = null; const CON = () => _con || (_con = require("./_consult.js")({ notion, queryAll, P, rt, rtLong, sel, clip, uuid, normId, id32, HW, secret, getLastErr: () => lastErr })); // 📅 신규생 상담 예약
 const baseOf = (req) => (String(req.headers["x-forwarded-proto"] || "https").split(",")[0].trim() || "https") + "://" + String(req.headers["x-forwarded-host"] || req.headers.host || "cmacademy.vercel.app").split(",")[0].trim();
 const plusOut = (send, r) => send(r.status || 200, Object.assign({ ok: (r.status || 200) === 200 && r.ok !== false }, r, { status: undefined }));
@@ -1464,7 +1465,21 @@ module.exports = async function handler(req, res) {
     if (act === "t_dict_preview") { const r = HW().dictPreview(clip(b.u, 40), b.r); return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg }); }
     if (act === "t_pm_inbox") { const a = await STU().all(); const r = await PAR().inbox(a ? a.students : []); return r.status === 200 ? send(200, { ok: true, list: r.list, unread: r.unread }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
     if (act === "t_pm_thread") { const r = await PAR().teacherThread(clip(b.sid, 60)); return r.status === 200 ? send(200, { ok: true, msgs: r.msgs }) : send(r.status, { ok: false, msg: r.msg }); }
-    if (act === "t_pm_send") { const r = await PAR().teacherSend(me, clip(b.sid, 60), clip(b.cls, 40), clip(b.text, 1500)); return r.status === 200 ? send(200, { ok: true, msg: r.msg }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_pm_send") { const r = await PAR().teacherSend(me, clip(b.sid, 60), clip(b.cls, 40), clip(b.text, 1500)); return r.status === 200 ? send(200, { ok: true, msg: r.msg, note: r.note }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_alert_overview") { // 🔔 반별 학부모 앱 알림 현황 + 문자 함께 쓰기 설정
+      const [l, mode] = await Promise.all([ALERT().overview(clip(b.cls, 40)), ALERT().smsMode(true)]);
+      return l ? send(200, { ok: true, list: l, sms: mode, smsReady: require("./_notify.js").mode() !== "off" }) : send(502, { ok: false, msg: "명단을 읽지 못했어요.", debug: lastErr });
+    }
+    if (act === "t_alert_sms") { return (await ALERT().setSmsMode(String(b.mode || ""))) ? send(200, { ok: true, sms: b.mode }) : send(502, { ok: false, msg: "설정을 저장하지 못했어요.", debug: lastErr }); }
+    if (act === "t_alert_send") { // 📢 학부모 공지: 고른 학생들의 부모님께 앱 알림 (문자는 보내지 않아요)
+      const title = clip(String(b.title || "").trim(), 60), body = clip(String(b.body || "").trim(), 1200), sids = (Array.isArray(b.sids) ? b.sids : []).map((x) => normId(clip(x, 60))).filter(Boolean).slice(0, 200);
+      if (!title || !body) return send(400, { ok: false, msg: "제목과 내용을 써 주세요." });
+      if (!sids.length) return send(400, { ok: false, msg: "보낼 학생을 골라 주세요." });
+      const out = []; let i = 0; const t0 = Date.now();
+      const one = async () => { while (i < sids.length) { const sid = sids[i++]; if (Date.now() - t0 > 50000) { out.push({ sid, ok: false, note: "시간 초과" }); continue; } const r = await ALERT().deliver(sid, { kind: "공지", title: "📢 " + title, body, by: me.name + " 선생님" }); out.push({ sid, ok: r.ok, logged: r.logged, note: r.note }); } };
+      await Promise.all([one(), one(), one(), one()]);
+      return send(200, { ok: true, sent: out.filter((x) => x.ok).length, logged: out.filter((x) => x.logged).length, total: sids.length, results: out });
+    }
     if (act === "t_parent_links") { const r = await HW().parentLinks(clip(b.cls, 40)); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
     if (act === "t_parent_reset") { const r = await HW().parentReset(clip(b.sid, 60)); return r.status === 200 ? send(200, { ok: true, k: r.k }) : send(r.status, { ok: false, msg: r.msg }); }
     // 📦 시험지 보관함 (모든 선생님이 함께 쓰는 시험지 틀)
@@ -1854,9 +1869,24 @@ module.exports = async function handler(req, res) {
     if (pLocked(ip)) return send(429, { ok: false, msg: "잠시 뒤 다시 열어 주세요." });
     const k = String(b.k || "");
     const r = act === "p_home" ? await PAR().home(k) : act === "p_report" ? await PAR().reportPage(k, b.pid) : await PAR().parentSend(k, clip(b.text, 1500));
+    if (act === "p_home" && r.status === 200) r.pushKey = ALERT().publicKey();
     if (act === "p_home" && r.status === 200 && r.student && r.student.cls) { try { r.sched = (await SC().upcoming(r.student.cls, 28)).map(SC().pub); } catch (e) { r.sched = []; } } // 📅 다가오는 반 일정
     if (r.status === 403 || r.status === 404) pFail(ip);
     return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg });
+  }
+
+  if (/^p_(push_sub|push_unsub|push_test|inbox)$/.test(act)) { // 🔔 학부모 앱 알림(무료 푸시) · 알림함
+    const ip = String((req.headers["x-forwarded-for"] || "").split(",")[0]).trim() || "x";
+    if (pLocked(ip)) return send(429, { ok: false, msg: "잠시 뒤 다시 열어 주세요." });
+    const a = await PAR().auth(String(b.k || ""));
+    if (a.status !== 200) { if (a.status === 403 || a.status === 404) pFail(ip); return send(a.status, { ok: false, msg: a.msg }); }
+    if (act === "p_inbox") { const l = await ALERT().inbox(a.sid, 80); return l ? send(200, { ok: true, list: l, pushKey: ALERT().publicKey() }) : send(502, { ok: false, msg: "알림함을 불러오지 못했어요.", debug: lastErr }); }
+    if (act === "p_push_sub") { const r = await ALERT().subscribe(a.page, b.sub, clip(b.label, 40)); return r.status === 200 ? send(200, { ok: true, n: r.n }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "p_push_unsub") { const r = await ALERT().unsubscribe(a.page, clip(b.endpoint, 900)); return send(r.status, { ok: r.status === 200, msg: r.msg }); }
+    if (act === "p_push_test") {
+      const r = await ALERT().deliver(a.page, { kind: "기타", title: "🔔 알림이 잘 와요!", body: a.name + " 학생 소식을 이제 이 휴대폰으로 받아요. 과제·플러스 수업·시험·선생님 답장을 알려 드릴게요.", by: "학부모 앱", tag: "test" });
+      return send(200, { ok: true, pushed: r.pushed, subs: r.subs, note: r.note });
+    }
   }
 
   const who = readToken(b.token);
@@ -1993,7 +2023,7 @@ module.exports = async function handler(req, res) {
     if (!pg) return send(502, { error: "notion", msg: "결과를 저장하지 못했어요. 다시 제출해 주세요. (답은 그대로 남아 있어요)", debug: lastErr });
     const sentNote = nPend ? (notifyOf(pp) ? "📲 서술형 채점 뒤 보내요" : "") : await notifyParent(pp, who, pg.id, { right, total, pct, nRight, nTot, range, weighted });
     if (sentNote) await notion("pages/" + id32(pg.id), "PATCH", { properties: { "코멘트": { rich_text: rt(clip((comment ? comment + " · " : "") + sentNote, 1900)) } } });
-    const out = { ok: true, show: pp.show, saved: true, areas: pp.show ? areaSum : undefined, sent: /보냄$/.test(sentNote), pend: nPend };
+    const out = { ok: true, show: pp.show, saved: true, areas: pp.show ? areaSum : undefined, sent: /보냄/.test(sentNote), pend: nPend };
     if (pp.show) Object.assign(out, { result: { score: right, total, pct, grade: gradeOf(pct), comment, mins }, units, items: key.items.map((k, i) => ({ n: i + 1, q: k.q, sub: k.sub, given: res1[i].given, answer: k.answer, ok: res1[i].ok, exp: k.exp, unit: k.ch || k.unit, ai: res1[i].ai || "", pend: res1[i].pend ? 1 : undefined })) });
     return send(200, out);
   }

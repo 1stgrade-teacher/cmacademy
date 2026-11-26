@@ -221,7 +221,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         <span class="hint" style="margin:0">휴대폰·태블릿에서 쓰기 문제(철자·뜻 쓰기·서술형)를 누르면 휴대폰 키보드 대신 시험용 키보드가 떠요. 단어 추천·자동완성이 없어요. 한글·영어·숫자 모두 돼요. (만든 학생: 김태호)</span>
       </div>
       <div id="ntBox" style="margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px">
-        <label style="margin:0;font-weight:800"><input type="checkbox" id="eNt"> 📲 시험이 끝나면 학부모님께 결과 바로 보내기 (카카오 알림톡)</label>
+        <label style="margin:0;font-weight:800"><input type="checkbox" id="eNt"> 📲 시험이 끝나면 학부모님께 결과 바로 보내기 (🔔 앱 알림 · 무료)</label>
         <div id="ntIn" style="display:none;margin:6px 0 0 22px">
           <div class="seg" style="display:inline-flex"><label><input type="radio" name="ntHow" value="each" checked>볼 때마다</label><label><input type="radio" name="ntHow" value="first">하루 첫 응시만</label></div>
           <div id="ntInfo" class="hint" style="margin:6px 0 0;line-height:1.7">불러오는 중…</div>
@@ -474,9 +474,22 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   </section>
 
   <section id="v-pm" style="display:none">
+    <div class="card" id="alCard">
+      <div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">🔔 학부모 앱 알림 (무료)</h2><div class="row" style="margin:0"><select id="alCls" style="width:auto"></select><button class="sub sm" id="alLoad">불러오기</button></div></div>
+      <div class="hint">문자·알림톡 대신 <b>학부모 앱 알림(무료 푸시)</b>으로 알려요: <b>📸 과제 미제출 · 🏫 플러스 수업 출석/미참여/🏁마침 · 📝 시험 결과(켠 시험지) · 💬 상담 답장 · 📢 공지</b>. 보낸 알림은 모두 부모님 앱 <b>🔔 알림</b> 탭과 노션 「🔔 학부모 알림함」에 쌓여요.<br>
+        부모님이 할 일: 아래 <b>👪 학부모 앱 링크</b>를 열고 <b>🔔 알림 받기 → 허용</b> 한 번. (아이폰은 먼저 Safari에서 <b>홈 화면에 추가</b>한 아이콘으로 열어야 해요)</div>
+      <div class="row" style="align-items:center;gap:8px;margin-top:8px"><b>문자·알림톡(유료)</b><select id="alSms" style="width:auto"><option value="nopush">앱 알림을 못 받는 부모님께만 보내기</option><option value="off">보내지 않기 (앱 알림만 · 무료)</option><option value="all">앱 알림과 함께 모두 보내기</option></select><span id="alSmsMsg" class="hint" style="margin:0"></span></div>
+      <div id="alOut"></div>
+      <details style="margin-top:10px" id="alSendBox"><summary style="cursor:pointer;font-weight:800">📢 학부모 공지 보내기 (앱 알림 · 무료)</summary>
+        <div class="hint" style="margin:6px 0">위 표에서 <b>체크한 학생</b>의 부모님께 보내요. 알림을 안 켠 부모님도 앱 <b>🔔 알림</b> 탭에서 볼 수 있어요. (문자는 보내지 않아요)</div>
+        <input id="alTitle" maxlength="60" placeholder="제목 (예: 12월 휴원 안내)">
+        <textarea id="alBody" rows="4" maxlength="1200" placeholder="내용" style="margin-top:6px"></textarea>
+        <div class="row" style="margin-top:6px;gap:8px;align-items:center"><button id="alSend">📢 보내기</button><span id="alMsg" class="hint" style="margin:0"></span></div>
+      </details>
+    </div>
     <div class="card">
       <div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">💬 학부모 상담</h2><div class="row" style="margin:0"><select id="pmCls" style="width:auto"><option value="">모든 반</option></select><button class="sub sm" id="pmReload">새로고침</button></div></div>
-      <div class="hint">부모님이 학부모 앱의 「💬 상담」에 남긴 글이에요. 안 읽은 글이 있는 학생이 맨 위에 와요. 답장하면 부모님 앱에 바로 보여요. (카톡 알림은 가지 않으니, 급한 답은 전화로 해 주세요)</div>
+      <div class="hint">부모님이 학부모 앱의 「💬 상담」에 남긴 글이에요. 안 읽은 글이 있는 학생이 맨 위에 와요. 답장하면 부모님 앱에 바로 보이고, 🔔 앱 알림을 켠 부모님 휴대폰에는 알림도 가요. (급한 답은 전화로 해 주세요)</div>
       <div id="pmList"><p class="hint">불러오는 중…</p></div>
     </div>
     <div class="card" id="pmThreadCard" style="display:none"><div id="pmThread"></div></div>
@@ -558,7 +571,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       </div>
       <label class="l" style="margin-top:10px">설명 (학생에게 보여요)</label><textarea id="hwDesc" rows="2" placeholder="예: 공책에 3번씩 쓰고 한 페이지씩 사진 찍어 올리기"></textarea>
       <div class="grid" style="margin-top:10px"><div><label class="l">학생에게 보이는 날 (비우면 바로)</label><input id="hwShow" type="date"></div></div>
-      <div class="row" style="margin-top:10px"><label><input type="checkbox" id="hwNotify" checked> 마감까지 안 내면 학부모님께 알림톡 보내기</label><label><input type="checkbox" id="hwActive" checked> 학생에게 보이기</label></div>
+      <div class="row" style="margin-top:10px"><label><input type="checkbox" id="hwNotify" checked> 마감까지 안 내면 학부모님께 알림 보내기 (🔔 앱 알림)</label><label><input type="checkbox" id="hwActive" checked> 학생에게 보이기</label></div>
       <div class="row" style="margin-top:10px"><button id="hwSave">💾 과제 저장</button><button class="sub" id="hwNew">새로 쓰기</button><span class="msg" id="hwMsg" style="margin:0"></span></div>
       <div class="hint" id="hwLink"></div>
     </div>
@@ -792,7 +805,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       hwLoad(true);
     });
   };
-  var HW_MODE = { kakao: "✅ 미제출 알림: 카카오 알림톡 (안 되면 문자)", sms: "📱 미제출 알림: 문자 (알림톡 템플릿 등록 전)", off: "⚠️ 미제출 알림 발송 설정 전 — 미제출 명단과 보낼 문구만 기록돼요. (설정방법 문서 「📸 과제」 참고)" };
+  var HW_MODE = { kakao: "🔔 미제출 알림: 학부모 앱 알림(무료) · 문자는 알림톡 (설정: 💬 학부모 탭)", sms: "🔔 미제출 알림: 학부모 앱 알림(무료) · 문자는 LMS (설정: 💬 학부모 탭)", off: "🔔 미제출 알림: 학부모 앱 알림(무료)으로 보내요. 앱 알림을 켠 부모님 휴대폰에 가고, 모든 부모님 앱 🔔 알림 탭에 남아요." };
   function hwLoad(keepMode) {
     $("hwList").innerHTML = '<p class="hint">불러오는 중…</p>';
     post({ action: "t_hw_list", cls: $("hwFilter").value }).then(function (j) {
@@ -814,8 +827,44 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     var opts = (DATA.classes || []).filter(function (c) { return c !== "신입 반배정"; }).map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
     if ($("pmCls").options.length < 2) $("pmCls").innerHTML = '<option value="">모든 반</option>' + opts;
     if (!$("plCls").options.length) { $("plCls").innerHTML = opts; var lc = lsGet("cm-teacher-cls"); if (lc && (DATA.classes || []).indexOf(lc) >= 0) $("plCls").value = lc; }
-    pmLoad();
+    pmLoad(); alFill(); if (!AL.length) alLoad();
   }
+  // ---------- 🔔 학부모 앱 알림 현황 · 문자 설정 · 공지 ----------
+  var AL = [];
+  function alFill() {
+    if ($("alCls").options.length) return;
+    $("alCls").innerHTML = '<option value="">모든 반</option>' + (DATA.classes || []).map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
+    var lc = lsGet("cm-teacher-cls"); if (lc && (DATA.classes || []).indexOf(lc) >= 0) $("alCls").value = lc;
+  }
+  function alDraw() {
+    var on = AL.filter(function (x) { return x.subs; }).length;
+    $("alOut").innerHTML = !AL.length ? '<p class="hint">학생이 없어요.</p>' : '<p style="margin:10px 0 4px"><b>' + AL.length + "명 중 " + on + '명</b>의 부모님이 앱 알림을 켰어요' + (AL.length ? " (" + Math.round(on / AL.length * 100) + "%)" : "") + '.</p><div class="tw" style="max-height:420px;overflow:auto"><table><thead><tr><th><input type="checkbox" id="alAll" checked></th><th>이름</th><th>반</th><th>🔔 앱 알림</th><th>문자 연락처</th></tr></thead><tbody>' +
+      AL.map(function (x, i) { return '<tr><td><input type="checkbox" class="alck" data-i="' + i + '" checked></td><td><b>' + esc(x.name) + "</b></td><td>" + esc(x.cls) + "</td><td>" + (x.subs ? '<span class="ok">✅ 켬 · ' + x.subs + "대</span>" + (x.devices.length ? ' <span class="hint" style="margin:0">' + esc(x.devices.join(", ")) + "</span>" : "") : '<span class="hint" style="margin:0">아직 안 켬</span>') + "</td><td>" + (x.phone ? (x.mute ? "있음 (알림 끄기)" : "있음") : '<span class="hint" style="margin:0">없음</span>') + "</td></tr>"; }).join("") + "</tbody></table></div>";
+    $("alAll").onchange = function () { var c = this.checked; Array.prototype.forEach.call($("alOut").querySelectorAll(".alck"), function (x) { x.checked = c; }); };
+  }
+  function alLoad() {
+    alFill(); $("alOut").innerHTML = '<p class="hint">불러오는 중…</p>';
+    post({ action: "t_alert_overview", cls: $("alCls").value }).then(function (j) {
+      if (!j.ok) { $("alOut").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; }
+      AL = j.list; $("alSms").value = j.sms || "nopush"; $("alSmsMsg").innerHTML = j.smsReady ? "" : "솔라피(문자) 설정이 없어서 지금은 문자가 나가지 않아요 → 앱 알림만 가요"; alDraw();
+    });
+  }
+  $("alLoad").onclick = alLoad; $("alCls").onchange = alLoad;
+  $("alSms").onchange = function () { var v = this.value; $("alSmsMsg").textContent = "저장 중…"; post({ action: "t_alert_sms", mode: v }).then(function (j) { $("alSmsMsg").innerHTML = j.ok ? '<span class="ok">저장했어요 ✓</span>' : '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; }); };
+  $("alSend").onclick = function () {
+    var sids = Array.prototype.filter.call($("alOut").querySelectorAll(".alck"), function (x) { return x.checked; }).map(function (x) { return AL[+x.getAttribute("data-i")].sid; });
+    var t = $("alTitle").value.trim(), body = $("alBody").value.trim();
+    if (!sids.length) { $("alMsg").innerHTML = '<span class="er">먼저 위에서 반을 불러와 받을 학생을 체크해 주세요.</span>'; return; }
+    if (!t || !body) { $("alMsg").innerHTML = '<span class="er">제목과 내용을 써 주세요.</span>'; return; }
+    if (!confirm(sids.length + "명의 부모님께 공지를 보낼까요?\n\n📢 " + t)) return;
+    var b = this; b.disabled = true; $("alMsg").textContent = "보내는 중… (" + sids.length + "명)";
+    post({ action: "t_alert_send", sids: sids, title: t, body: body }).then(function (j) {
+      b.disabled = false;
+      if (!j.ok) { $("alMsg").innerHTML = '<span class="er">' + esc(j.msg || "보내지 못했어요.") + "</span>"; return; }
+      $("alMsg").innerHTML = '<span class="ok">📢 ' + j.total + "명 중 <b>" + j.sent + "명</b> 휴대폰에 알림이 갔어요 · 알림함 기록 " + j.logged + "명 ✓</span>" + (j.total - j.sent ? ' <span class="hint" style="margin:0">(알림을 안 켠 ' + (j.total - j.sent) + "명은 앱 🔔 알림 탭에서 볼 수 있어요)</span>" : "");
+      $("alTitle").value = ""; $("alBody").value = "";
+    });
+  };
   function pmTime(at) { return at ? at.slice(5, 16).replace("T", " ").replace("-", "/") : ""; }
   function pmLoad() {
     $("pmList").innerHTML = '<p class="hint">불러오는 중…</p>';
@@ -1704,7 +1753,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   function ntShow(j) {
     if (!j || !j.ok) { $("ntInfo").innerHTML = '<span class="er">' + esc((j && j.msg) || "알림 설정을 불러오지 못했어요.") + "</span>"; return; }
     var M = { kakao: '<span class="ok">✅ 카카오 알림톡으로 보내요</span> (안 되면 문자)', sms: '<span style="color:#9A5B00">📱 지금은 <b>문자(LMS)</b>로 보내요</span> — 알림톡 템플릿을 등록해 Vercel에 <b>' + esc(j.env) + "</b>을 넣으면 알림톡으로 바뀌어요(더 싸요).", off: '<span class="er">⚠️ 문자 발송 설정 전</span> — 지금은 보내지 않고 기록 코멘트에 「알림 발송 설정 전」만 남아요.' };
-    $("ntInfo").innerHTML = M[j.mode] + "<br>학생 기록의 <b>학부모 연락처</b>로 보내요(📋 학생 명단에서 「알림 끄기」한 학생은 빼요). 보냈는지는 📊 응시 결과의 코멘트에 「📲 알림톡 보냄」으로 남아요." +
+    $("ntInfo").innerHTML = "🔔 <b>앱 알림을 켠 부모님께는 무료 앱 알림</b>으로 가요. 문자·알림톡은 💬 학부모 탭 「🔔 학부모 앱 알림」 설정을 따라요.<br>문자로 보낼 때: " + M[j.mode] + "<br>학생 기록의 <b>학부모 연락처</b>로 보내요(📋 학생 명단에서 「알림 끄기」한 학생은 빼요). 보냈는지는 📊 응시 결과의 코멘트에 「📲 알림톡 보냄」으로 남아요." +
       '<details style="margin-top:4px"><summary style="cursor:pointer">학부모님이 받는 문구 보기 · 알림톡 템플릿 등록용</summary><pre style="white-space:pre-wrap;background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px;margin:6px 0;font-size:13px">' + esc(j.sample) + '</pre><div class="hint" style="margin:0">솔라피 → 카카오 알림톡 → 템플릿 등록에 아래 문구를 그대로 붙여 넣고, 심사 통과 후 나온 템플릿 ID(KA01TP…)를 Vercel 환경 변수 <b>' + esc(j.env) + '</b>에 넣고 Redeploy 하세요.</div><pre style="white-space:pre-wrap;background:#F7FBFB;border:1px solid var(--line);border-radius:8px;padding:8px;margin:6px 0;font-size:13px" id="ntTpl">' + esc(j.template) + '</pre><button type="button" class="sm sub" id="ntCopy">📋 템플릿 문구 복사</button></details>' +
       ($("eSelf").checked ? "" : '<div style="margin-top:4px">💡 「하루 첫 응시만」은 📝 자율 단어시험처럼 여러 번 보는 시험에 쓰면 좋아요.</div>');
     var c = $("ntCopy"); if (c) c.onclick = function () { (navigator.clipboard ? navigator.clipboard.writeText(j.template) : Promise.reject()).then(function () { c.textContent = "복사했어요 ✓"; }, function () { c.textContent = "복사 안 됨 — 위 글을 직접 복사하세요"; }); };

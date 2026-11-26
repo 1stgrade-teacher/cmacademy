@@ -74,6 +74,14 @@
   .lb button{border:0;border-radius:10px;background:rgba(255,255,255,.16);color:#fff;font:700 16px var(--font);padding:10px 16px;cursor:pointer}
   .inst{background:#FFF8E6;border:1px solid #F2D58A;border-radius:12px;padding:12px 14px;margin-top:10px;font-size:14px;line-height:1.6}
   .inst b{color:#8A5A00}
+  /* 🔔 알림 */
+  .pushbox{background:#EEF7FF;border:1.5px solid #B9D8F5;border-radius:var(--radius);padding:14px 16px;margin-top:12px;font-size:14.5px;line-height:1.6}
+  .pushbox b.t{display:block;font-size:16px;color:#1F4F80;margin-bottom:2px}.pushbox .btn{margin-top:8px}
+  .pushok{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#EAF7EF;border:1px solid #BFE3CC;border-radius:12px;padding:10px 12px;margin-top:10px;font-size:14px;color:#1E6B3E}
+  .nt{display:flex;gap:12px;align-items:flex-start}.nt .ic{font-size:24px;line-height:1.2}.nt .b{flex:1;min-width:0}
+  .nt .t{font-weight:800;font-size:15.5px;line-height:1.4}.nt .w{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .nt .x{white-space:pre-wrap;font-size:14.5px;line-height:1.6;margin-top:6px;color:#2E3A45}
+  .box.new{border-color:#7FB3E8;box-shadow:0 0 0 2px #E1EEFB}
 </style>
 </head>
 <body>
@@ -96,6 +104,7 @@
   var KIDS = ls.get("cm-parent-kids", []), K = keyFrom(location.search) || ls.get("cm-parent-cur", "") || (KIDS[0] && KIDS[0].k) || "";
   if (K && !KIDS.some(function (x) { return x.k === K; })) KIDS.push({ k: K, name: "" });
   function saveKid(name, cls) { KIDS.forEach(function (x) { if (x.k === K) { x.name = name; x.cls = cls; } }); ls.set("cm-parent-kids", KIDS); ls.set("cm-parent-cur", K); }
+  var HASH = (location.hash || "").slice(1);
   if (K && location.search.indexOf("k=") >= 0) { try { history.replaceState(null, "", "/parent?k=" + K); } catch (e) {} }
   function setManifest() { var l = document.querySelector('link[rel="manifest"]'); if (!l) { l = document.createElement("link"); l.rel = "manifest"; document.head.appendChild(l); } l.href = "/api/monthly?pm=" + encodeURIComponent(K); }
   function post(b) {
@@ -103,14 +112,14 @@
       .then(function (r) { return r.json().catch(function () { return {}; }); }, function () { return { ok: false, msg: "인터넷 연결을 확인해 주세요." }; });
   }
   var D = null, TAB = "home", SEEN = function () { return ls.get("cm-parent-seen-" + K.slice(0, 32), ""); };
-  var TABS = [["home", "🏠 요약"], ["hw", "📸 과제"], ["exam", "📝 시험"], ["rep", "📄 리포트"], ["cert", "📺 인강"], ["chat", "💬 상담"]];
+  var TABS = [["home", "🏠 요약"], ["inbox", "🔔 알림"], ["hw", "📸 과제"], ["exam", "📝 시험"], ["rep", "📄 리포트"], ["cert", "📺 인강"], ["chat", "💬 상담"]];
   function newReplies() { var s = SEEN(); return D ? D.msgs.filter(function (m) { return m.from === "선생님" && m.at > s; }).length : 0; }
   function drawTabs() {
     $("tabs").style.display = "";
-    $("tabs").innerHTML = TABS.map(function (t) { return '<button data-t="' + t[0] + '"' + (TAB === t[0] ? ' class="on"' : "") + ">" + t[1] + (t[0] === "chat" && newReplies() ? '<span class="dot" aria-label="새 답장"></span>' : "") + "</button>"; }).join("");
+    $("tabs").innerHTML = TABS.map(function (t) { return '<button data-t="' + t[0] + '"' + (TAB === t[0] ? ' class="on"' : "") + ">" + t[1] + (t[0] === "chat" && newReplies() ? '<span class="dot" aria-label="새 답장"></span>' : "") + (t[0] === "inbox" && newAlerts() ? '<span class="dot" aria-label="새 알림"></span>' : "") + "</button>"; }).join("");
     Array.prototype.forEach.call($("tabs").children, function (b) { b.onclick = function () { go(b.getAttribute("data-t")); }; });
   }
-  function go(t) { TAB = t; drawTabs(); window.scrollTo(0, 0); ({ home: vHome, hw: vHw, exam: vExam, rep: vRep, cert: vCert, chat: vChat })[t](); }
+  function go(t) { TAB = t; drawTabs(); window.scrollTo(0, 0); ({ home: vHome, inbox: vInbox, hw: vHw, exam: vExam, rep: vRep, cert: vCert, chat: vChat })[t](); }
   function drawTop() {
     var s = D.student, many = KIDS.length > 1;
     $("top").innerHTML = '<div class="kid"><h1>👪 ' + esc(s.name) + "</h1>" + '<span class="c">' + esc([s.cls, s.grade, s.school].filter(Boolean).join(" · ")) + "</span>" +
@@ -146,7 +155,7 @@
     var hw = D.hw, sub = hw.filter(function (h) { return h.status === "제출"; }).length, late = hw.filter(function (h) { return h.status === "지각 제출"; }).length, miss = hw.filter(function (h) { return h.status === "미제출"; }).length, due = sub + late + miss;
     var c30 = D.certs.filter(function (c) { return d30(c.at); }), avg = function (a, k) { var v = a.map(function (x) { return x[k]; }).filter(function (x) { return x != null; }); return v.length ? Math.round(v.reduce(function (p, q) { return p + q; }, 0) / v.length) : null; };
     var nr = newReplies(), ex = D.exams.slice(0, 3);
-    app.innerHTML = (nr ? '<div class="box" style="border-color:#E5483E;cursor:pointer" id="nr">💬 <b>선생님 답장 ' + nr + "개</b>가 와 있어요. 눌러서 보기</div>" : "") +
+    app.innerHTML = pushBox(false) + (newAlerts() ? '<div class="box new" style="cursor:pointer" id="na">🔔 <b>새 알림 ' + newAlerts() + "개</b>가 있어요. 눌러서 보기</div>" : "") + (nr ? '<div class="box" style="border-color:#E5483E;cursor:pointer" id="nr">💬 <b>선생님 답장 ' + nr + "개</b>가 와 있어요. 눌러서 보기</div>" : "") +
       '<div class="grid2">' +
       '<div class="stat" data-go="hw"><h3>📸 과제 (최근 두 달)</h3><div class="big">' + (due ? Math.round((sub + late) / due * 100) + "%" : "-") + '</div><div class="m">제출 ' + sub + " · 늦게 " + late + " · 미제출 " + miss + "</div></div>" +
       '<div class="stat" data-go="cert"><h3>📺 인강 인증 (30일)</h3><div class="big">' + c30.length + '회</div><div class="m">평균 시청률 ' + (avg(c30, "watch") != null ? avg(c30, "watch") + "%" : "-") + " · 확인 문제 " + (avg(c30, "score") != null ? avg(c30, "score") + "점" : "-") + "</div></div>" +
@@ -161,6 +170,8 @@
     bindCommon();
     Array.prototype.forEach.call(app.querySelectorAll("[data-go]"), function (b) { b.onclick = function () { go(b.getAttribute("data-go")); }; });
     if ($("nr")) $("nr").onclick = function () { go("chat"); };
+    if ($("na")) $("na").onclick = function () { go("inbox"); };
+    bindPush();
   }
   // 📅 다가오는 반 일정 (4주): 선생님이 미리 넣어 둔 단어시험·평가·휴원 …
   function schedBox(L) {
@@ -289,13 +300,100 @@
     $("pkb").onclick = function () { var k = keyFrom($("pk").value); if (!k) { alert("링크가 올바르지 않아요."); return; } if (!KIDS.some(function (x) { return x.k === k; })) KIDS.push({ k: k, name: "" }); K = k; ls.set("cm-parent-kids", KIDS); ls.set("cm-parent-cur", K); load(); };
     Array.prototype.forEach.call(app.querySelectorAll("[data-kk]"), function (b) { b.onclick = function () { K = b.getAttribute("data-kk"); ls.set("cm-parent-cur", K); load(); }; });
   }
+  // ---------- 🔔 앱 알림(무료 웹 푸시) + 알림함 ----------
+  var INBOX = null, PUSH = { st: "", sub: null };
+  var seenKey = function () { return "cm-parent-inbox-seen-" + K.slice(0, 32); };
+  function newAlerts() { if (!INBOX) return 0; var s = ls.get(seenKey(), ""); return INBOX.filter(function (m) { return m.at > s; }).length; }
+  function pushSupported() { return "serviceWorker" in navigator && "PushManager" in window && "Notification" in window; }
+  function b64ToU8(s) { s = (s + "===".slice((s.length + 3) % 4)).replace(/-/g, "+").replace(/_/g, "/"); var r = atob(s), a = new Uint8Array(r.length); for (var i = 0; i < r.length; i++) a[i] = r.charCodeAt(i); return a; }
+  function swReg() { return pushSupported() ? navigator.serviceWorker.register("/parent-sw.js", { scope: "/parent" }).then(function () { return navigator.serviceWorker.ready; }) : Promise.reject(new Error("no")); }
+  function devLabel() { var u = navigator.userAgent; return (/iPhone/.test(u) ? "아이폰" : /iPad/.test(u) ? "아이패드" : /Android/.test(u) ? "안드로이드" : /Mac/.test(u) ? "맥" : /Windows/.test(u) ? "PC" : "기기") + (/SamsungBrowser/.test(u) ? " 삼성인터넷" : /CriOS|Chrome/.test(u) ? " 크롬" : /Safari/.test(u) ? " 사파리" : ""); }
+  function pushState() { // "on" · "off" · "ios" · "kakao" · "denied" · "no"
+    var ua = navigator.userAgent, ios = /iPhone|iPad|iPod/i.test(ua), standalone = (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone;
+    if (/KAKAOTALK|NAVER|Instagram|FBAN|FBAV|Line\//i.test(ua)) return "kakao";
+    if (ios && !standalone) return "ios";
+    if (!pushSupported()) return "no";
+    if (Notification.permission === "denied") return "denied";
+    return PUSH.sub && ls.get("cm-push-ok-" + K.slice(0, 32), "") === PUSH.sub.endpoint ? "on" : "off";
+  }
+  function pushBox(inInbox) {
+    var st = pushState();
+    if (st === "on") return inInbox ? '<div class="pushok">✅ <b>이 휴대폰으로 알림을 받고 있어요</b><span style="flex:1"></span><button class="lnk" id="pTest">테스트 알림</button> · <button class="lnk" id="pOff">알림 끄기</button></div>' : "";
+    if (!inInbox && ls.get("cm-push-later", 0) > Date.now()) return "";
+    var head = '<div class="pushbox" id="pbox"><b class="t">🔔 우리 아이 소식을 휴대폰 알림으로 받으세요</b>과제를 안 냈을 때, 플러스 수업 출석·마침, 시험 결과, 선생님 답장을 <b>무료 알림</b>으로 바로 알려 드려요. (문자·카톡 대신)<br>';
+    var tail = (inInbox ? "" : ' <button class="lnk" id="pLater" style="float:right;margin-top:8px">나중에</button>') + "</div>";
+    if (st === "kakao") return head + '<span style="color:#8A5A00">지금은 카카오톡(앱 안의 창)에서 열려 있어서 알림을 켤 수 없어요.</span> 오른쪽 위 <b>⋮</b>(또는 공유) → <b>다른 브라우저로 열기</b>를 누른 뒤, 그 화면에서 알림을 켜 주세요.' + tail;
+    if (st === "ios") return head + '아이폰은 먼저 <b>홈 화면에 추가</b>해야 알림을 받을 수 있어요.<br>① Safari 아래쪽 <b>공유 버튼(□↑)</b> → <b>홈 화면에 추가</b><br>② 홈 화면에 생긴 <b>청명 학부모</b> 아이콘으로 열기<br>③ 이 상자의 <b>🔔 알림 받기</b> 누르기 <span style="color:var(--muted)">(iOS 16.4 이상)</span>' + tail;
+    if (st === "no") return head + '<span style="color:#8A5A00">이 브라우저는 알림을 지원하지 않아요.</span> 안드로이드는 <b>크롬</b>이나 <b>삼성 인터넷</b>, 아이폰은 <b>Safari → 홈 화면에 추가</b>로 열어 주세요.' + tail;
+    if (st === "denied") return head + '<span style="color:#A2342A">알림이 <b>차단</b>되어 있어요.</span> 주소창 왼쪽 <b>🔒(자물쇠)</b> 또는 휴대폰 <b>설정 → 앱/사이트 알림</b>에서 이 사이트 알림을 <b>허용</b>으로 바꾼 뒤 다시 눌러 주세요.<br><button class="btn" id="pOn">🔔 알림 받기</button>' + tail;
+    return head + '<button class="btn" id="pOn">🔔 알림 받기</button> <span class="sub" style="display:inline">「허용」을 눌러 주세요</span><div class="err" id="pErr"></div>' + tail;
+  }
+  function bindPush() {
+    if ($("pLater")) $("pLater").onclick = function () { ls.set("cm-push-later", Date.now() + 3 * 864e5); var b = $("pbox"); if (b) b.remove(); };
+    if ($("pOn")) $("pOn").onclick = function () {
+      var b = this; b.disabled = true; b.textContent = "켜는 중…"; var er = $("pErr");
+      pushOn().then(function () { go(TAB === "home" ? "inbox" : TAB); }, function (e) { b.disabled = false; b.textContent = "🔔 알림 받기"; if (er) er.textContent = e && e.message || "알림을 켜지 못했어요."; else alert(e && e.message || "알림을 켜지 못했어요."); if (TAB !== "inbox") vHome(); });
+    };
+    if ($("pTest")) $("pTest").onclick = function () { var b = this; b.textContent = "보내는 중…"; post({ action: "p_push_test", k: K }).then(function (j) { b.textContent = j.pushed ? "보냈어요 ✓ (잠시 뒤 알림이 떠요)" : "알림이 가지 않았어요 — 알림 끄기 후 다시 켜 보세요"; loadInbox(true); }); };
+    if ($("pOff")) $("pOff").onclick = function () {
+      if (!confirm("이 휴대폰에서 " + (KIDS.length > 1 ? "자녀들의 " : "") + "알림을 끌까요?")) return;
+      var ep = PUSH.sub && PUSH.sub.endpoint;
+      Promise.all(KIDS.map(function (x) { return post({ action: "p_push_unsub", k: x.k, endpoint: ep }); })).then(function () { KIDS.forEach(function (x) { ls.set("cm-push-ok-" + x.k.slice(0, 32), ""); }); return PUSH.sub ? PUSH.sub.unsubscribe() : null; }).then(function () { PUSH.sub = null; go(TAB); });
+    };
+  }
+  function pushOn() {
+    if (!D || !D.pushKey) return Promise.reject(new Error("잠시 뒤 다시 눌러 주세요."));
+    return Notification.requestPermission().then(function (perm) {
+      if (perm !== "granted") throw new Error("알림을 「허용」해야 받을 수 있어요. 다시 눌러 「허용」을 골라 주세요.");
+      return swReg();
+    }).then(function (reg) {
+      var key = b64ToU8(D.pushKey);
+      return reg.pushManager.getSubscription().then(function (old) { return old ? old.unsubscribe().then(function () { return reg; }, function () { return reg; }) : reg; })
+        .then(function () { return reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key }); });
+    }).then(function (sub) {
+      PUSH.sub = sub; var js = sub.toJSON();
+      return Promise.all(KIDS.map(function (x) { return post({ action: "p_push_sub", k: x.k, sub: js, label: devLabel() }).then(function (j) { if (j.ok) ls.set("cm-push-ok-" + x.k.slice(0, 32), sub.endpoint); return j; }); }));
+    }).then(function (rs) {
+      if (!rs.some(function (j) { return j.ok; })) throw new Error((rs[0] && rs[0].msg) || "알림 등록을 저장하지 못했어요. 잠시 뒤 다시 눌러 주세요.");
+      return post({ action: "p_push_test", k: K });
+    }).then(function () { loadInbox(true); });
+  }
+  // 이미 알림을 켠 기기: 새로 추가한 자녀도 조용히 등록
+  function pushSync() {
+    if (!pushSupported() || Notification.permission !== "granted") return Promise.resolve();
+    return swReg().then(function (reg) { return reg.pushManager.getSubscription(); }).then(function (sub) {
+      PUSH.sub = sub; if (!sub) return;
+      var js = sub.toJSON();
+      return Promise.all(KIDS.filter(function (x) { return ls.get("cm-push-ok-" + x.k.slice(0, 32), "") !== sub.endpoint; }).map(function (x) { return post({ action: "p_push_sub", k: x.k, sub: js, label: devLabel() }).then(function (j) { if (j.ok) ls.set("cm-push-ok-" + x.k.slice(0, 32), sub.endpoint); }); }));
+    }).catch(function () {});
+  }
+  function loadInbox(redraw) {
+    return post({ action: "p_inbox", k: K }).then(function (j) { if (!j.ok) return; INBOX = j.list; if (j.pushKey && D) D.pushKey = j.pushKey; drawTabs(); if (redraw && TAB === "inbox") vInbox(); else if (TAB === "home" && newAlerts() && !$("na")) vHome(); });
+  }
+  function vInbox() {
+    var seen = ls.get(seenKey(), "");
+    if (INBOX && INBOX[0]) ls.set(seenKey(), INBOX[0].at);
+    app.innerHTML = pushBox(true) + '<p class="sub" style="margin-top:10px">학원에서 보낸 알림이 모두 여기에 모여요. 휴대폰 알림을 놓쳐도 여기서 다시 볼 수 있어요.</p>' +
+      (!INBOX ? '<div class="box"><p class="sub">불러오는 중…</p></div>' : INBOX.length ? INBOX.map(function (m) {
+        var em = /^([\u2600-\u27BF\uD83C-\uDBFF][\uDC00-\uDFFF]?\uFE0F?)\s*/.exec(m.title || ""); if (em) m = Object.assign({}, m, { icon: em[1], title: m.title.slice(em[0].length) });
+        return '<div class="box' + (m.at > seen ? " new" : "") + '"><div class="nt"><span class="ic">' + esc(m.icon || "🔔") + '</span><div class="b"><div class="t">' + esc(m.title) + '</div><div class="w">' + esc(m.at.slice(5, 16).replace("T", " ").replace("-", "/")) + (m.by ? " · " + esc(m.by) : "") + (m.at > seen ? ' · <b style="color:#1F5FA8">새 알림</b>' : "") + "</div>" + (m.body ? '<div class="x">' + esc(m.body) + "</div>" : "") +
+          (m.kind === "상담" ? '<button class="btn ghost" style="margin-top:8px" data-gochat="1">💬 상담 열기</button>' : "") + (m.link ? '<a class="btn ghost" style="display:inline-block;margin-top:8px;text-decoration:none" target="_blank" rel="noopener" href="' + esc(m.link) + '">열어 보기 →</a>' : "") + "</div></div></div>";
+      }).join("") : '<div class="box"><p class="sub">아직 받은 알림이 없어요.</p></div>');
+    bindPush(); drawTabs();
+    Array.prototype.forEach.call(app.querySelectorAll("[data-gochat]"), function (b) { b.onclick = function () { go("chat"); }; });
+    if (!INBOX) loadInbox(true);
+  }
+  if ("serviceWorker" in navigator) navigator.serviceWorker.addEventListener("message", function (e) { if (e.data && e.data.cm === "inbox" && D) { loadInbox(true); go("inbox"); } });
+
   function load() {
     if (!K) { fail("링크를 열어 주세요. 선생님께 받은 우리 아이 전용 링크로 들어올 수 있어요."); return; }
     setManifest(); $("top").innerHTML = '<p class="sub">불러오는 중…</p>'; app.innerHTML = "";
     post({ action: "p_home", k: K }).then(function (j) {
       if (!j.ok) { if (/더 이상|올바르지/.test(j.msg || "")) { KIDS = KIDS.filter(function (x) { return x.k !== K; }); ls.set("cm-parent-kids", KIDS); if (ls.get("cm-parent-cur", "") === K) ls.set("cm-parent-cur", ""); } fail(j.msg || "불러오지 못했어요. 잠시 뒤 다시 열어 주세요."); return; }
       D = j; saveKid(j.student.name, j.student.cls); document.title = j.student.name + " · 청명 학부모"; SHOW = 10; KIND = "";
-      drawTop(); go(TAB);
+      if (HASH === "inbox") { TAB = "inbox"; HASH = ""; } INBOX = null;
+      drawTop(); go(TAB); loadInbox(false);
+      pushSync().then(function () { if (TAB === "home" || TAB === "inbox") go(TAB); });
     });
   }
   load();

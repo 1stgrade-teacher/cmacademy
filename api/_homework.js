@@ -4,7 +4,7 @@
 const N = require("./_notify.js");
 
 module.exports = function (ctx) {
-  const { notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, STUDENT_DB, listenUnit, getLastErr } = ctx;
+  const { notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, STUDENT_DB, listenUnit, getLastErr, ALERT } = ctx;
   const crypto = require("crypto");
   const HW_DB = () => id32(process.env.NOTION_HW_DB_ID || "284584e0b6d64f2297137ffdcb2b6298");
   const SUB_DB = () => id32(process.env.NOTION_HWSUB_DB_ID || "f81f921219e94f6cb1afd0b9c58338df");
@@ -345,17 +345,21 @@ module.exports = function (ctx) {
       const ros = onlyTargets(hw, ros0);
       const have = new Set(subs.map(readSub).map((s) => s.sid));
       const miss = ros.filter((st) => !have.has(st.id));
-      const targets = hw.notify ? miss.filter((st) => !st.mute && N.phone(st.phone)) : [];
-      const sent = targets.length ? await N.sendMany(targets.map((st) => ({ to: st.phone, vars: { 학생: st.name, 과제: hw.title, 마감: hw.dueLabel } }))) : [];
-      const res = new Map(targets.map((st, i) => [st.id, sent[i]]));
+      // 🔔 앱 알림(무료) 먼저 → 설정에 따라 앱 알림을 못 받는 부모님께만 문자
+      const res = new Map(), sent = [];
+      if (hw.notify) { let qi = 0; const one = async () => { while (qi < miss.length) { const st = miss[qi++];
+        const r = await ALERT().deliver(st.id, { kind: "과제", title: "📸 과제 미제출 안내", body: st.name + " 학생이 「" + hw.title + "」 과제를 마감(" + hw.dueLabel + ")까지 내지 않았어요. 가정에서 한 번 확인 부탁드려요.", by: "자동 알림" },
+          !st.mute && N.phone(st.phone) ? async () => { const o = (await N.sendMany([{ to: st.phone, vars: { 학생: st.name, 과제: hw.title, 마감: hw.dueLabel } }]))[0] || {}; return { ok: o.ok, msg: o.how === "off" ? "" : o.msg }; } : null);
+        res.set(st.id, { msg: r.note }); sent.push(r); } };
+        await Promise.all([one(), one(), one()]); }
       let made = 0;
       for (const st of miss) {
-        const r = res.get(st.id), note = !hw.notify ? "알림 꺼짐" : st.mute ? "알림 끄기 학생" : !N.phone(st.phone) ? "학부모 연락처 없음" : r ? r.msg : "";
+        const r = res.get(st.id), note = !hw.notify ? "알림 꺼짐" : r ? r.msg : "";
         const pg = await notion("pages", "POST", { parent: { database_id: SUB_DB() }, properties: { "제목": { title: rt(st.name + " · " + hw.title) }, "과제": { relation: [{ id: uuid(hw.id) }] }, "학생": { relation: [{ id: uuid(st.id) }] }, "상태": sel("미제출"), "알림 결과": { rich_text: rt(clip(new Date(Date.now() + 9 * 3600e3).toISOString().slice(5, 16).replace("T", " ") + " " + note, 1900)) } } });
         if (pg) made++;
       }
       await notion("pages/" + hw.id, "PATCH", { properties: { "알림 처리": { checkbox: true } } });
-      report.push({ title: hw.title, cls: hw.cls, students: ros.length, missing: miss.length, sent: sent.filter((x) => x && x.ok).length, failed: sent.filter((x) => x && !x.ok && x.how !== "off").length, notSent: sent.filter((x) => x && x.how === "off").length, rows: made });
+      report.push({ title: hw.title, cls: hw.cls, students: ros.length, missing: miss.length, sent: sent.filter((x) => x && x.ok).length, failed: 0, notSent: sent.filter((x) => x && !x.ok).length, rows: made });
     }
     return { ok: true, checked: due.length, mode: N.mode(), report };
   }

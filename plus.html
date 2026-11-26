@@ -32,16 +32,29 @@ button:disabled{background:#B9CDD0}button.ghost{background:#EAF3F3;color:#0A5F61
 .me{display:flex;gap:10px;margin-top:6px}.me button{flex:1}
 .spin{display:inline-block;width:18px;height:18px;border:3px solid #CFE5E4;border-top-color:#0E8A8C;border-radius:50%;animation:s 0.8s linear infinite;vertical-align:-3px;margin-right:6px}
 @keyframes s{to{transform:rotate(360deg)}}
+.mode{display:flex;gap:8px;margin:0 0 14px}.mode button{flex:1;padding:12px 10px;font-size:17px;background:#fff;color:#0A5F61;border:2px solid #CFE5E4}
+.mode button.on{background:#0E8A8C;color:#fff;border-color:#0E8A8C}.mode button.on.out{background:#7A4FD0;border-color:#7A4FD0}
+.done.end h2{color:#5B36B0}
 </style></head><body><div class="wrap">
-<h1>🏫 플러스 수업 출석</h1>
+<h1 id="h1">🏫 플러스 수업 출석</h1>
 <p class="sub" id="sub">자습실에서 출석해요</p>
+<div class="mode" id="mode"><button type="button" data-m="in" class="on">✅ 출석하기</button><button type="button" data-m="out">🏁 수업 마치기</button></div>
 <div class="card" id="app"><span class="spin"></span>준비 중…</div>
 </div>
 <script>
 (function () {
   var API = "/api/monthly", LS_ME = "cm-plus-me";
   var app = document.getElementById("app");
-  var S = { proof: "", how: "", classes: [], cls: null, stu: null, phone: false };
+  var S = { proof: "", how: "", classes: [], cls: null, stu: null, phone: false, mode: "in" };
+  var OUT = function () { return S.mode === "out"; };
+  function drawMode() {
+    Array.prototype.forEach.call(document.querySelectorAll("#mode button"), function (b) { var on = b.getAttribute("data-m") === S.mode; b.className = on ? "on" + (OUT() ? " out" : "") : ""; });
+    document.getElementById("h1").textContent = OUT() ? "🏁 플러스 수업 마치기" : "🏫 플러스 수업 출석";
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("#mode button"), function (b) { b.onclick = function () {
+    S.mode = b.getAttribute("data-m"); drawMode(); S.stu = null; S.cls = null;
+    if (S.proof) loadToday(); else stepCode();
+  }; });
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function lsGet(k) { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } }
   function lsSet(k, v) { try { if (v) localStorage.setItem(k, JSON.stringify(v)); else localStorage.removeItem(k); } catch (e) {} }
@@ -76,9 +89,10 @@ button:disabled{background:#B9CDD0}button.ghost{background:#EAF3F3;color:#0A5F61
   // ---------- 2. 오늘 플러스 수업 학생 ----------
   function loadToday() {
     app.innerHTML = '<span class="spin"></span>확인 중…';
-    post({ action: "plus_today", proof: S.proof }).then(function (j) {
+    post({ action: "plus_today", proof: S.proof, mode: S.mode }).then(function (j) {
       if (!j.ok) { return stepCode(j.expired && S.how === "QR" ? "QR이 지났어요. 자습실 화면의 숫자 4자리를 넣어 주세요." : j.msg || "다시 해 주세요."); }
       S.classes = j.classes || [];
+      if (!S.classes.length && OUT()) { app.innerHTML = '<h2>지금 마칠 수 있는 학생이 없어요</h2><p class="hint">오늘 출석하고 아직 마치지 않은 학생만 보여요. 출석을 안 했다면 위의 <b>✅ 출석하기</b>를 먼저 눌러 주세요.</p><button class="ghost" id="rs">처음으로</button>'; document.getElementById("rs").onclick = start; return; }
       if (!S.classes.length) { app.innerHTML = '<h2>지금은 출석할 수 있는 학생이 없어요</h2><p class="hint">플러스 수업 30분 전부터 출석할 수 있어요. 시간이 맞는데도 이름이 없으면 선생님께 말씀해 주세요.</p><button class="ghost" id="rs">처음으로</button>'; document.getElementById("rs").onclick = start; return; }
       var me = S.phone && lsGet(LS_ME), found = null;
       if (me) S.classes.forEach(function (c) { c.students.forEach(function (s) { if (s.id === me.sid) { found = s; S.cls = c.cls; } }); });
@@ -87,13 +101,13 @@ button:disabled{background:#B9CDD0}button.ghost{background:#EAF3F3;color:#0A5F61
     });
   }
   function stepMe(s) {
-    app.innerHTML = '<h2>' + esc(s.name) + ' 학생 맞나요?</h2><p class="hint">' + esc(S.cls) + " · 플러스 수업 " + esc(s.hm) + '</p><div class="me"><button id="y">네, 맞아요</button><button class="ghost" id="n">아니에요</button></div>';
+    app.innerHTML = '<h2>' + esc(s.name) + ' 학생 맞나요?</h2><p class="hint">' + esc(S.cls) + (OUT() ? " · " : " · 플러스 수업 ") + esc(s.hm) + '</p><div class="me"><button id="y">네, 맞아요</button><button class="ghost" id="n">아니에요</button></div>';
     document.getElementById("y").onclick = function () { S.stu = s; stepPin(); };
     document.getElementById("n").onclick = function () { lsSet(LS_ME, null); stepClass(); };
   }
   function stepClass() {
     if (S.classes.length === 1) { S.cls = S.classes[0].cls; return stepName(true); }
-    app.innerHTML = '<h2>내 반을 골라요</h2><p class="hint">지금 플러스 수업이 있는 반만 보여요.</p><div class="chips">' +
+    app.innerHTML = '<h2>내 반을 골라요</h2><p class="hint">' + (OUT() ? "오늘 출석한 학생이 있는 반만 보여요." : "지금 플러스 수업이 있는 반만 보여요.") + '</p><div class="chips">' +
       S.classes.map(function (c, i) { return '<button data-i="' + i + '">' + esc(c.cls) + "<small>" + c.students.length + "명</small></button>"; }).join("") + "</div>";
     app.querySelectorAll(".chips button").forEach(function (b) { b.onclick = function () { S.cls = S.classes[+b.getAttribute("data-i")].cls; stepName(false); }; });
   }
@@ -112,7 +126,7 @@ button:disabled{background:#B9CDD0}button.ghost{background:#EAF3F3;color:#0A5F61
       '<p class="hint">' + (first ? "처음이에요. 나만 아는 숫자 4자리를 정해 주세요. (학습 인증·시험에서도 같은 번호를 써요)" : "학습 인증 때 쓰는 나만의 숫자 4자리") + "</p>" +
       '<input class="pin" id="p1" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="····">' +
       (first ? '<input class="pin" id="p2" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="한 번 더" style="margin-top:10px;letter-spacing:6px;font-size:28px">' : "") +
-      '<button class="go" id="ok">출석하기</button><div class="err" id="er">' + esc(msg || "") + "</div>";
+      '<button class="go" id="ok"' + (OUT() ? ' style="background:#7A4FD0"' : "") + '>' + (OUT() ? "🏁 수업 마치기" : "출석하기") + '</button><div class="err" id="er">' + esc(msg || "") + "</div>";
     document.getElementById("bk").onclick = function () { stepName(S.classes.length === 1); };
     var p1 = document.getElementById("p1"), p2 = document.getElementById("p2"), ok = document.getElementById("ok"), er = document.getElementById("er");
     p1.focus();
@@ -120,12 +134,12 @@ button:disabled{background:#B9CDD0}button.ghost{background:#EAF3F3;color:#0A5F61
       var pin = p1.value.replace(/\D/g, "");
       if (pin.length !== 4) { er.textContent = "숫자 4자리를 넣어 주세요."; return; }
       if (first && p2.value !== pin) { er.textContent = "두 번 넣은 번호가 달라요."; return; }
-      ok.disabled = true; ok.innerHTML = '<span class="spin"></span>출석하는 중…';
-      post({ action: "plus_check", proof: S.proof, how: S.how, sid: s.id, pin: pin, setPin: first }).then(function (j) {
+      ok.disabled = true; ok.innerHTML = '<span class="spin"></span>' + (OUT() ? "마치는 중…" : "출석하는 중…");
+      post({ action: "plus_check", proof: S.proof, how: S.how, sid: s.id, pin: pin, setPin: first, mode: S.mode }).then(function (j) {
         if (j.ok) return stepDone(j);
         if (j.needSet) return stepPin("", true);
         if (j.expired) return stepCode("시간이 지나 화면 숫자가 바뀌었어요. 지금 화면의 숫자를 다시 넣어 주세요. (번호는 다시 넣어야 해요)");
-        ok.disabled = false; ok.textContent = "출석하기"; er.textContent = j.msg || "다시 해 주세요.";
+        ok.disabled = false; ok.textContent = OUT() ? "🏁 수업 마치기" : "출석하기"; er.textContent = j.msg || "다시 해 주세요.";
       });
     };
     [p1, p2].forEach(function (x) { if (x) x.onkeydown = function (e) { if (e.key === "Enter") ok.onclick(); }; });
@@ -134,6 +148,15 @@ button:disabled{background:#B9CDD0}button.ghost{background:#EAF3F3;color:#0A5F61
   // ---------- 4. 완료 ----------
   function stepDone(j) {
     if (S.phone) lsSet(LS_ME, { sid: S.stu.id, name: j.name });
+    if (j.out || (OUT() && j.already)) {
+      var hm = j.mins != null ? (j.mins >= 60 ? Math.floor(j.mins / 60) + "시간 " : "") + (j.mins % 60) + "분" : "";
+      app.innerHTML = '<div class="done end"><div class="ic">' + (j.already ? "👍" : "🏁") + "</div><h2>" + esc(j.name) + (j.already ? " · 이미 마쳤어요" : " · 수고했어요!") + "</h2>" +
+        "<p>" + esc(j.slot) + " 플러스 수업</p><p>" + (j.at ? "출석 <b>" + esc(j.at) + "</b> → " : "") + "마침 <b>" + esc(j.end) + "</b>" + (hm ? " (" + hm + " 공부)" : "") + "</p>" +
+        (j.already ? "" : '<p style="margin-top:12px;color:#5F6E7C;font-size:15px">부모님께 마친 소식을 보냈어요. 오늘도 잘했어요! 🌙</p>') +
+        (S.phone ? "" : '<div class="timer" id="tm">8초 뒤 처음 화면으로 돌아가요</div>') + "</div>" + (S.phone ? "" : '<button class="ghost" id="rs">다음 학생</button>');
+      if (!S.phone) { document.getElementById("rs").onclick = start; resetSoon(8); }
+      return;
+    }
     var late = j.state === "지각";
     app.innerHTML = '<div class="done ' + (late ? "late" : "ok") + '"><div class="ic">' + (j.already ? "👍" : late ? "⏰" : "✅") + "</div>" +
       "<h2>" + esc(j.name) + (j.already ? " · 이미 출석했어요" : late ? " · 출석 (지각)" : " · 출석 완료") + "</h2>" +
@@ -146,7 +169,7 @@ button:disabled{background:#B9CDD0}button.ghost{background:#EAF3F3;color:#0A5F61
 
   // ---------- 시작 ----------
   function start() {
-    clearInterval(resetTimer);
+    clearInterval(resetTimer); if (!S.phone) { S.mode = "in"; S.proof = ""; drawMode(); }
     var q = new URLSearchParams(location.search).get("c");
     if (q) { // 휴대폰으로 QR을 찍어서 들어옴 → 주소에서 지움(다시 쓰지 못하게)
       try { history.replaceState(null, "", "/plus.html"); } catch (e) {}

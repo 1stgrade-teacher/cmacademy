@@ -5,7 +5,7 @@
 const crypto = require("crypto");
 
 module.exports = function (ctx) {
-  const { notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, EXAM_DB, CERT_DB, GAME_DB, HW, getLastErr } = ctx;
+  const { notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, EXAM_DB, CERT_DB, GAME_DB, HW, getLastErr, ALERT } = ctx;
   const PKEY = "부모 링크 키", MSG_TITLE = "💬 학부모 상담";
   const kst = (iso) => (iso ? new Date(Date.parse(iso) + 9 * 3600e3).toISOString().slice(0, 16) : "");
   const pct = (v) => (typeof v === "number" ? Math.round(v <= 1.5 ? v * 100 : v) : null);
@@ -161,7 +161,9 @@ module.exports = function (ctx) {
   async function teacherSend(me, sid, cls, text) {
     if (!String(text || "").trim()) return { status: 400, msg: "답장을 써 주세요." };
     const pg = await addMsg(sid, cls, "선생님", text, me.name);
-    return pg ? { status: 200, msg: readMsg(pg) } : { status: 502, msg: "보내지 못했어요.", debug: getLastErr() };
+    if (!pg) return { status: 502, msg: "보내지 못했어요.", debug: getLastErr() };
+    let note = ""; try { const d = await ALERT().deliver(sid, { kind: "상담", title: "💬 " + me.name + " 선생님 답장", body: clip(String(text).trim(), 300), by: me.name + " 선생님", tag: "chat-" + normId(sid) }); note = d.note; } catch (e) {} // 🔔 부모님 휴대폰에 알림
+    return { status: 200, msg: readMsg(pg), note };
   }
 
   // 홈 화면 앱(PWA) 설정: 시작 주소에 이 아이의 링크를 넣어, 앱 아이콘으로 열면 바로 우리 아이 화면이 나와요
