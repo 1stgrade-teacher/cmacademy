@@ -7,6 +7,7 @@
 // · 선생님 구글·네이버 캘린더에 '구독 주소(ICS)'를 넣으면 예약이 캘린더에 자동으로 보여요.
 // 노션: 📅 신규 상담 예약(한 줄 = 예약 1건) · ⚙️ 상담 예약 설정 — 처음 쓸 때 📸 과제 DB와 같은 페이지 아래에 자동으로 만들어요.
 //       (NOTION_CONSULT_DB_ID, NOTION_CONSULT_CFG_DB_ID 로 직접 지정 가능)
+// 🔔 선생님 알림: 관리 화면에서 '알림 켜기'를 누른 휴대폰·컴퓨터로 웹 푸시(무료, 설정 필요 없음) + '알림 받을 번호'로 문자(솔라피 연결 시)
 // 알림톡 템플릿 ID: KAKAO_TPL_CONSULT_OK(확정·변경), KAKAO_TPL_CONSULT_REMIND(리마인더), KAKAO_TPL_CONSULT_CANCEL(취소),
 //                  KAKAO_TPL_CONSULT_ALERT(선생님께 새 예약 알림) — 없으면 문자로, 솔라피가 없으면 '발송 설정 전'으로 기록만
 // ------------------------------------------------------------------
@@ -46,6 +47,7 @@ const STATES = [ST.ok, ST.done, ST.cancel, ST.noshow];
 
 module.exports = function (ctx) {
   const { notion, queryAll, P, rt, rtLong, sel, clip, uuid, normId, id32, HW, secret, getLastErr } = ctx;
+  const WP = require("./_webpush.js")(secret);
   const MIN = 60000, H = 3600000, DAYS = "일월화수목금토";
   const BOOK_TITLE = "📅 신규 상담 예약", CFG_TITLE = "⚙️ 상담 예약 설정";
 
@@ -176,6 +178,38 @@ module.exports = function (ctx) {
     return c;
   }
 
+  // ---------- 🔔 알림 받을 기기 (⚙️ 상담 예약 설정의 '푸시' 줄에 저장) ----------
+  let subCache = { t: 0, list: null, pid: null };
+  async function loadSubs(fresh) {
+    if (!fresh && subCache.list && Date.now() - subCache.t < 30000) return subCache;
+    const db = await CFG_DB(); if (!db) return { list: [], pid: null };
+    const rows = await queryAll(db, {}, 1); if (!rows) return { list: subCache.list || [], pid: subCache.pid };
+    const row = rows.find((p) => !p.archived && P.title(p, "이름") === "푸시");
+    let l = []; try { l = row ? JSON.parse(P.text(row, "값") || "[]") : []; } catch (e) { l = []; }
+    subCache = { t: Date.now(), list: Array.isArray(l) ? l.filter((x) => x && x.endpoint && x.keys) : [], pid: row ? normId(row.id) : null };
+    return subCache;
+  }
+  async function saveSubs(list) {
+    const cur = await loadSubs(true), db = await CFG_DB(); if (!db) return false;
+    const props = { "이름": { title: rt("푸시") }, "값": { rich_text: rtLong(JSON.stringify(list.slice(-10))) } };
+    const r = cur.pid ? await notion("pages/" + cur.pid, "PATCH", { properties: props }) : await notion("pages", "POST", { parent: { database_id: db }, properties: props });
+    if (!r) return false;
+    subCache = { t: Date.now(), list: list.slice(-10), pid: normId(r.id) };
+    return true;
+  }
+  const subId = (endpoint) => crypto.createHash("sha256").update(String(endpoint)).digest("hex").slice(0, 12);
+  const subView = (x) => ({ id: subId(x.endpoint), name: x.name, at: x.at, last: x.last || "", service: /apple/.test(x.endpoint) ? "아이폰·맥" : /mozilla/.test(x.endpoint) ? "파이어폭스" : /fcm|google/.test(x.endpoint) ? "크롬·안드로이드" : /windows|notify\.windows/.test(x.endpoint) ? "엣지(윈도우)" : "브라우저" });
+  async function pushAll(msg, only) { // 모든 기기로 (꺼진 기기는 목록에서 빼요)
+    const S = await loadSubs(); const list = S.list.filter((x) => !only || subId(x.endpoint) === only);
+    if (!list.length) return { n: 0, ok: 0, res: [] };
+    const res = await Promise.all(list.map((x) => WP.send(x, msg)));
+    const gone = list.filter((x, i) => res[i].gone).map((x) => x.endpoint);
+    let changed = gone.length > 0; const now = dayOf().slice(5) + " " + hmOf();
+    list.forEach((x, i) => { if (res[i].ok) { x.last = now; changed = true; } });
+    if (changed) await saveSubs(S.list.filter((x) => !gone.includes(x.endpoint)));
+    return { n: list.length, ok: res.filter((r) => r.ok).length, res: res.map((r, i) => ({ id: subId(list[i].endpoint), name: list[i].name, ok: r.ok, msg: r.msg })) };
+  }
+
   // ---------- 예약 ----------
   function readBook(p) {
     const d = P.date(p, "상담 일시") || {}, start = Date.parse(d.start || ""), end = d.end ? Date.parse(d.end) : start + 30 * MIN;
@@ -275,10 +309,19 @@ module.exports = function (ctx) {
     return tag + (r.msg || "");
   }
   async function toTeacher(what, cfg, b, base) {
+    const out = [];
+    // 🔔 웹 푸시 (알림 켠 기기마다)
+    const icon = /취소/.test(what) ? "❌" : /변경/.test(what) ? "🔁" : "📅";
+    const p = await pushAll({ title: icon + " 상담 예약 " + what.replace(/ \(.*$/, ""), tag: "consult-" + b.id, url: "/admin/consult.html#b=" + b.id,
+      body: label(b.start) + "~" + b.endHm + "\n" + b.student + (b.grade ? "(" + b.grade + ")" : "") + " · " + (b.parent || "-") + " 학부모 · " + (b.mode || "-") + (/변경/.test(what) ? "\n" + what : "") + (b.ask && !/취소/.test(what) ? "\n💬 " + clip(b.ask, 60) : "") }).catch(() => ({ n: 0 }));
+    if (p.n) out.push("푸시 " + p.ok + "/" + p.n + "대");
+    // 📱 문자·알림톡 (솔라피 연결 시)
     const tos = String(cfg.alert || "").split(",").map((x) => N.phone(x)).filter(Boolean);
-    if (!tos.length) return "";
-    const r = await N.sendMany(tos.map((to) => ({ to, vars: vars(cfg, b, base, { 구분: what }) })), TPL.alert);
-    return stamp() + "선생님 알림(" + what + "): " + (r.every((x) => x.ok) ? (r[0] || {}).msg : r.map((x) => x.msg).join(" / "));
+    if (tos.length) {
+      const r = await N.sendMany(tos.map((to) => ({ to, vars: vars(cfg, b, base, { 구분: what }) })), TPL.alert);
+      out.push("문자 " + (r.every((x) => x.ok) ? (r[0] || {}).msg : r.map((x) => x.msg).join(" / ")));
+    }
+    return out.length ? stamp() + "선생님 알림(" + what + "): " + out.join(" · ") : stamp() + "선생님 알림(" + what + "): 알림 켠 기기·번호 없음";
   }
   async function note(b, lines) {
     const t = lines.filter(Boolean); if (!t.length) return;
@@ -423,7 +466,7 @@ module.exports = function (ctx) {
       const from = isDate(b.from) ? b.from : addDays(dayOf(), -30), to = isDate(b.to) ? b.to : addDays(dayOf(), 120);
       const l = db ? await listRange(from, to) : null;
       return { cfg: C.cfg, dbOk: !!(db && C.dbOk !== false && l), list: (l || []).map((x) => teacherBook(x, base)), today: dayOf(), now: Date.now(),
-        mode: { ok: N.mode(TPL.ok), alert: N.mode(TPL.alert) }, links: { book: base + "/consult.html", ics: base + "/api/monthly?consult_ics=" + icsToken() },
+        mode: { ok: N.mode(TPL.ok), alert: N.mode(TPL.alert) }, push: { key: WP.publicKey(), subs: (await loadSubs()).list.map(subView) }, links: { book: base + "/consult.html", ics: base + "/api/monthly?consult_ics=" + icsToken() },
         free: freeSlots(C.cfg, (l || []).filter(live), Date.now()), err: db && l ? null : getLastErr() };
     }
     if (act === "t_consult_cfg") {
@@ -472,6 +515,28 @@ module.exports = function (ctx) {
       const bk = readBook(p), cfg = (await loadCfg()).cfg;
       const line = await toParent(b.kind === "remind" ? "remind" : "ok", cfg, bk, base); await note(bk, [line]);
       return { book: teacherBook(bk, base), msg: line };
+    }
+    if (act === "t_consult_push") { // 🔔 알림 켜기·끄기·시험 보내기
+      const S = await loadSubs(true);
+      if (b.op === "add") {
+        const x = b.sub || {};
+        if (!/^https:\/\/[^\s]{10,800}$/.test(String(x.endpoint || "")) || !x.keys || !x.keys.p256dh || !x.keys.auth) return { status: 400, msg: "알림 정보가 올바르지 않아요." };
+        const one = { endpoint: String(x.endpoint), keys: { p256dh: clip(x.keys.p256dh, 120), auth: clip(x.keys.auth, 60) }, name: clip(b.name, 30) || me.name + "의 기기", at: dayOf().slice(5) + " " + hmOf() };
+        const list = S.list.filter((y) => y.endpoint !== one.endpoint).concat([one]);
+        if (!(await saveSubs(list))) return { status: 502, msg: "저장하지 못했어요. 노션 연결을 확인해 주세요." };
+        const t = await pushAll({ title: "🔔 알림이 켜졌어요", body: "이제 학부모님이 상담을 예약·변경·취소하면 이 기기로 바로 알려 드려요.", tag: "consult-test", url: "/admin/consult.html" }, subId(one.endpoint));
+        return { subs: (await loadSubs()).list.map(subView), id: subId(one.endpoint), test: t };
+      }
+      if (b.op === "del") {
+        const list = S.list.filter((y) => subId(y.endpoint) !== String(b.id) && y.endpoint !== String(b.endpoint || "-"));
+        if (list.length !== S.list.length && !(await saveSubs(list))) return { status: 502, msg: "지우지 못했어요." };
+        return { subs: list.map(subView) };
+      }
+      if (b.op === "test") {
+        const t = await pushAll({ title: "🔔 시험 알림", body: "이 알림이 보이면 상담 예약 알림이 잘 와요. (" + hmOf() + ")", tag: "consult-test", url: "/admin/consult.html" }, b.id ? String(b.id) : "");
+        return { subs: (await loadSubs()).list.map(subView), test: t };
+      }
+      return { key: WP.publicKey(), subs: S.list.map(subView) };
     }
     if (act === "t_consult_tpl") {
       const cfg = (await loadCfg()).cfg;
