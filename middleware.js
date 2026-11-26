@@ -4,7 +4,7 @@
 export const config = { matcher: "/((?!api/|_vercel/).*)" };
 
 // 메인 첫 화면(랜딩)은 누구나 볼 수 있고, 하위 폴더로 들어갈 때부터 입장 코드를 묻습니다.
-const OPEN = ["/", "/index.html", "/parent.html", "/parent", "/r", "/parent-sw.js", "/plus.html", "/consult", "/consult.html", "/admin/consult-sw.js", "/admin/consult-manifest.json", "/style.css", "/logo.webp", "/gate.html", "/learn-check.js", "/manifest.json", "/favicon-32.png", "/apple-touch-icon.png", "/icon-192.png", "/icon-512.png", "/icon-maskable-512.png", "/check-manifest.json", "/check-icon-192.png", "/check-icon-512.png", "/check-icon-maskable-512.png", "/check-apple-touch-icon.png", "/check-favicon-32.png"];
+const OPEN = ["/", "/index.html", "/parent.html", "/parent", "/r", "/parent-sw.js", "/badge-96.png", "/plus.html", "/consult", "/consult.html", "/admin/consult-sw.js", "/admin/consult-manifest.json", "/style.css", "/logo.webp", "/gate.html", "/learn-check.js", "/manifest.json", "/favicon-32.png", "/apple-touch-icon.png", "/icon-192.png", "/icon-512.png", "/icon-maskable-512.png", "/check-manifest.json", "/check-icon-192.png", "/check-icon-512.png", "/check-icon-maskable-512.png", "/check-apple-touch-icon.png", "/check-favicon-32.png"];
 
 function pass() {
   return new Response(null, { headers: { "x-middleware-next": "1" } });
