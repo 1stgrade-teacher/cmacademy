@@ -347,6 +347,18 @@ async function studentLogin(db, id, pin, setPin) {
 }
 
 // 판정은 확인문제 점수와 시청률로만 정함 (한줄요약 AI 평가는 참고용이라 판정·총점에 반영하지 않음)
+// 신호등: 🟢 초록(통과) · 🟡 노랑(보통) · 🔴 빨강(재수강 권장)
+function lightOfVerdict(v) { return /통과/.test(v || "") ? "초록" : /재수강/.test(v || "") ? "빨강" : "노랑"; }
+// 영역별 신호등 (확인 문제 종류가 '문법 · …', '구문 · …'으로 시작하는 강의만). 기준은 verdictOf와 같아요: 80% 이상 초록, 50% 미만 빨강
+function lightOfRate(r) { return r >= 0.8 ? "초록" : r < 0.5 ? "빨강" : "노랑"; }
+function areaStats(items) {
+  const areaOf = (k) => /^\s*문법/.test(k || "") ? "문법" : /^\s*구문/.test(k || "") ? "구문" : "내용";
+  if (!items.some((x) => /^\s*(문법|구문)/.test(x.kind || ""))) return [];
+  const m = new Map();
+  items.forEach((x) => { const a = areaOf(x.kind); const e = m.get(a) || { area: a, right: 0, total: 0 }; e.total++; if (x.ok) e.right++; m.set(a, e); });
+  return ["문법", "구문", "내용"].filter((a) => m.has(a)).map((a) => { const e = m.get(a); return Object.assign(e, { light: lightOfRate(e.right / e.total) }); });
+}
+
 function verdictOf(score, coverage) {
   const cov = coverage == null ? 1 : coverage;
   if ((score != null && score < 0.5) || cov < 0.5) return "🔴 재수강 권장";
@@ -461,7 +473,9 @@ module.exports = async function handler(req, res) {
 
   const items = (Array.isArray(qz.items) ? qz.items : []).slice(0, 20).map((it) => ({
     q: clip(it && it.q, 300), given: clip(it && it.given, 300), answer: clip(it && it.answer, 300), ok: !!(it && it.ok), src: it && it.src === "ai" ? "ai" : "lecture",
+    kind: clip(it && it.kind, 40),
   }));
+  const areas = areaStats(items); // 문법·구문 확인 문제가 있는 강의(초등 Lesson 메이커 등)는 영역별 신호등을 함께 기록
   const total = items.length, right = items.filter((x) => x.ok).length;
   const score = total ? right / total : null;
   const coverage = num(s.coverage, 0, 1);
@@ -478,11 +492,11 @@ module.exports = async function handler(req, res) {
     name, cls: clip(st.cls, 30) || "기타", studentId: who.sid,
     title: clip(pg.title, 200), area: clip(pg.area, 20) || "기타", book: clip(pg.book, 100),
     url: /^https?:\/\//.test(pg.url || "") ? clip(pg.url, 500) : "",
-    score, correctText: total ? right + " / " + total : "문제 없음",
+    score, correctText: total ? right + " / " + total + (areas.length ? " · " + areas.map((x) => x.area + " " + x.right + "/" + x.total).join(" · ") : "") : "문제 없음",
     coverage, activeMin: num(Math.round((Number(s.activeSec) || 0) / 6) / 10, 0, 1440),
     away: num(s.away, 0, 999), maxRate: num(s.maxRate, 0.5, 4),
     understanding: clip(b.understanding, 20), summary, message: clip(b.message, 1000),
-    wrongText: items.filter((x) => !x.ok).map((x, i) => "• " + x.q + " → 학생: " + (x.given || "무응답") + " / 정답: " + x.answer).join("\n"),
+    wrongText: items.filter((x) => !x.ok).map((x, i) => "• " + (areas.length && x.kind ? "[" + x.kind + "] " : "") + x.q + " → 학생: " + (x.given || "무응답") + " / 정답: " + x.answer).join("\n"),
     items, aiGrade, aiFeedback, at: kstIso(),
   };
   rec.verdict = verdictOf(score, coverage);
@@ -495,5 +509,5 @@ module.exports = async function handler(req, res) {
       msg: unset ? "학습 인증이 아직 준비되지 않았어요. (선생님: Vercel에 NOTION_TOKEN, NOTION_DB_ID를 넣어 주세요)" : "기록을 저장하지 못했어요. 잠시 뒤 다시 제출해 주세요.",
     });
   }
-  return sendJson(res, 200, { ok: true, verdict: rec.verdict, score, right, total, aiGrade, aiFeedback, saved: { notion: nr.ok, student: !!nr.student, sheet: sr.ok } });
+  return sendJson(res, 200, { ok: true, verdict: rec.verdict, light: lightOfVerdict(rec.verdict), areas, score, right, total, aiGrade, aiFeedback, saved: { notion: nr.ok, student: !!nr.student, sheet: sr.ok } });
 };

@@ -38,6 +38,8 @@
   .row{display:flex;gap:10px;align-items:flex-start}.row .t{flex:1;min-width:0;font-weight:700;font-size:16px;line-height:1.4}
   .m2{font-size:13.5px;color:var(--muted);margin-top:4px;line-height:1.55}
   .tag{flex:0 0 auto;font:700 12.5px var(--font);padding:5px 9px;border-radius:8px;background:var(--accent-bg);color:var(--accent-ink);white-space:nowrap}
+  .tl{display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 4px 0 1px;vertical-align:-1px}.tl-g{background:#22B573}.tl-y{background:#F5B700}.tl-r{background:#E5484D}
+  .als{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:4px}.al{font:600 12.5px var(--font);color:var(--ink);display:inline-flex;align-items:center}
   .tag.ok{background:#DFF5E8;color:#1E7A45}.tag.late,.tag.mid{background:#FFF1D6;color:#8A5A00}.tag.miss,.tag.bad{background:#FDE3E1;color:#A2342A}.tag.gray{background:#EEF1F3;color:#5F6E7C}
   .desc{white-space:pre-wrap;background:#F7F9FA;border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.6;margin-top:8px;color:#3A4651}
   .shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px;margin-top:10px}
@@ -148,7 +150,10 @@
 
   // ---------- 화면들 ----------
   function tagHw(h) { return h.status === "제출" ? '<span class="tag ok">✓ 제출</span>' : h.status === "지각 제출" ? '<span class="tag late">늦게 제출</span>' : h.status === "미제출" ? '<span class="tag miss">미제출</span>' : '<span class="tag">진행 중</span>'; }
-  function tagVerdict(v) { return !v ? "" : /통과/.test(v) ? '<span class="tag ok">' + esc(v) + "</span>" : /재수강/.test(v) ? '<span class="tag bad">' + esc(v) + "</span>" : '<span class="tag mid">' + esc(v) + "</span>"; }
+  // 인강 학습 인증 신호등: 🟢 초록불(통과) · 🟡 노란불(보통) · 🔴 빨간불(재수강 권장)
+  function lightOf(v) { return /통과/.test(v || "") ? "g" : /재수강/.test(v || "") ? "r" : "y"; }
+  function tagVerdict(v) { if (!v) return ""; var L = lightOf(v); return '<span class="tag ' + ({ g: "ok", y: "mid", r: "bad" })[L] + '"><i class="tl tl-' + L + '"></i>' + ({ g: "초록불", y: "노란불", r: "빨간불" })[L] + " · " + esc(String(v).replace(/^[^가-힣]+/, "")) + "</span>"; }
+  function areaLights(right) { var out = [], re = /(문법|구문|내용)\s+(\d+)\/(\d+)/g, m; while ((m = re.exec(right || ""))) { var r = +m[2] / Math.max(1, +m[3]); out.push('<span class="al"><i class="tl tl-' + (r >= 0.8 ? "g" : r < 0.5 ? "r" : "y") + '"></i>' + m[1] + " " + m[2] + "/" + m[3] + "</span>"); } return out.length ? '<div class="als">' + out.join("") + "</div>" : ""; }
   function scoreOf(e) { return e.score != null && e.total ? e.score + '<small> / ' + e.total + "점</small>" + (e.pct != null ? ' <small>(' + Math.round(e.pct) + "%)</small>" : "") : e.pct != null ? Math.round(e.pct) + "<small>%</small>" : "-"; }
   function d30(at) { return at && Date.parse(at.slice(0, 10)) >= Date.now() - 30 * 864e5; }
   function vHome() {
@@ -226,9 +231,10 @@
     bindCommon();
   }
   function vCert() {
-    app.innerHTML = '<p class="sub" style="margin-top:4px">인강을 보고 낸 「학습 완료 인증」이에요. 시청률은 실제로 본 화면의 비율, 점수는 확인 문제 점수예요.</p>' + (D.certs.length ? D.certs.map(function (c) {
+    app.innerHTML = '<p class="sub" style="margin-top:4px">인강을 보고 낸 「학습 완료 인증」이에요. 시청률은 실제로 본 화면의 비율, 점수는 확인 문제 점수예요.<br><i class="tl tl-g"></i>초록불 확인 문제 80% 이상·시청률 80% 이상 · <i class="tl tl-y"></i>노란불 보통 · <i class="tl tl-r"></i>빨간불 50% 미만(다시 보기 권장)</p>' + (D.certs.length ? D.certs.map(function (c) {
       return '<div class="box"><div class="row"><div class="t">' + esc(c.lecture || c.book || "인강") + "</div>" + tagVerdict(c.verdict) + '</div><div class="m2">' + esc(c.at.slice(5, 16).replace("T", " ").replace("-", "/")) + " · " + esc([c.area, c.book].filter(Boolean).join(" · ")) + "</div>" +
-        '<div class="m2" style="color:var(--ink)">시청률 <b>' + (c.watch != null ? c.watch + "%" : "-") + "</b> · 확인 문제 <b>" + (c.score != null ? c.score + "점" : "-") + "</b>" + (c.right ? " (" + esc(c.right) + ")" : "") + (c.minutes != null ? " · 집중 " + c.minutes + "분" : "") + (c.understand ? " · 이해도 " + esc(c.understand) : "") + "</div>" +
+        '<div class="m2" style="color:var(--ink)">시청률 <b>' + (c.watch != null ? c.watch + "%" : "-") + "</b> · 확인 문제 <b>" + (c.score != null ? c.score + "점" : "-") + "</b>" + (c.right ? " (" + esc(String(c.right).split(" · ")[0]) + ")" : "") + (c.minutes != null ? " · 집중 " + c.minutes + "분" : "") + (c.understand ? " · 이해도 " + esc(c.understand) : "") + "</div>" +
+        areaLights(c.right) +
         (c.summary ? '<div class="desc">✍️ 한 줄 요약: ' + esc(c.summary) + (c.sumGrade ? " (" + esc(c.sumGrade) + ")" : "") + (c.feedback ? "\n🤖 " + esc(c.feedback) : "") + "</div>" : "") +
         (c.question ? '<div class="m2">💬 아이 질문: ' + esc(c.question) + (c.checked ? " · ✓ 선생님 확인" : "") + "</div>" : "") + "</div>";
     }).join("") : '<div class="box"><p class="sub">아직 인강 학습 인증 기록이 없어요.</p></div>');

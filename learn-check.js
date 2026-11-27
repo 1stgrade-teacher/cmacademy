@@ -341,6 +341,9 @@
     ".opt{text-align:left;border:1px solid #D6E4E4;background:#fff;border-radius:10px;padding:9px 12px;font-size:14.5px;cursor:pointer;color:#1B2733;line-height:1.45}" +
     ".opt:hover{background:#F0F8F8}.opt.on{border-color:#0E8A8C;background:#DDF2F1;font-weight:600}" +
     ".opt.ok{border-color:#2E9E5B;background:#E5F6EC}.opt.ng{border-color:#D9534F;background:#FBE9E8}" +
+    ".tl3{display:inline-flex;gap:8px;background:#2B3440;border-radius:999px;padding:7px 12px;margin-bottom:6px}.tlb{width:22px;height:22px;border-radius:50%;opacity:.22;display:block}.tlb.on{opacity:1;box-shadow:0 0 12px 2px currentColor}" +
+    ".tl-g{background:#22B573;color:#22B573}.tl-y{background:#F5B700;color:#F5B700}.tl-r{background:#E5484D;color:#E5484D}" +
+    ".tlar{display:flex;flex-wrap:wrap;gap:6px 12px;justify-content:center;margin:6px 0 2px}.tla{font-size:13.5px;font-weight:600;color:#3D4B57;display:inline-flex;align-items:center;gap:5px}.tld{width:11px;height:11px;border-radius:50%;display:inline-block}" +
     ".res{margin-top:8px;font-size:13.5px;line-height:1.5;padding:8px 10px;border-radius:8px}.res.ok{background:#E5F6EC;color:#1F6E40}.res.ng{background:#FBE9E8;color:#9B2C28}" +
     ".arr-ans{min-height:48px;margin-top:8px;padding:8px;border:2px dashed #BFD9D8;border-radius:10px;background:#F9FDFD;display:flex;flex-wrap:wrap;gap:6px;align-items:center}.arr-ph{color:#8FA3A8;font-size:13.5px}" +
     ".arr-pool{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}" +
@@ -731,7 +734,7 @@
 
     var items = qs.map(function (q, k) {
       var g = grade(q, answers[k]);
-      return { q: q.q + (q.sub ? " | " + clean(q.sub) : ""), given: g.given, answer: q.answer, ok: g.ok, src: q.src };
+      return { q: q.q + (q.sub ? " | " + clean(q.sub) : ""), given: g.given, answer: q.answer, ok: g.ok, src: q.src, kind: q.kind || "" };
     });
     busy = true;
     var go = ft.querySelector(".go");
@@ -774,12 +777,23 @@
     });
   }
 
+  // 신호등 (초록·노랑·빨강) — 판정 기준은 api/report.js 의 verdictOf / lightOfRate
+  function bulbs(lt) { return ["빨강", "노랑", "초록"].map(function (c) { return '<i class="tlb tl-' + ({ 초록: "g", 노랑: "y", 빨강: "r" })[c] + (c === lt ? " on" : "") + '"></i>'; }).join(""); }
+  function localAreas(qs, items) {
+    if (!qs.some(function (q) { return /^\s*(문법|구문)/.test(q.kind || ""); })) return [];
+    var m = {}, order = ["문법", "구문", "내용"];
+    qs.forEach(function (q, i) { var a = /^\s*문법/.test(q.kind || "") ? "문법" : /^\s*구문/.test(q.kind || "") ? "구문" : "내용"; m[a] = m[a] || { area: a, right: 0, total: 0 }; m[a].total++; if (items[i] && items[i].ok) m[a].right++; });
+    return order.filter(function (a) { return m[a]; }).map(function (a) { var e = m[a], r = e.right / e.total; e.light = r >= 0.8 ? "초록" : r < 0.5 ? "빨강" : "노랑"; return e; });
+  }
   function renderResult(j, qs, items) {
     var pct = j.total ? Math.round(j.right / j.total * 100) : null;
     var msg = j.verdict && j.verdict.indexOf("통과") >= 0 ? "훌륭해요! 오늘 강의 완벽하게 끝!" :
       j.verdict && j.verdict.indexOf("재수강") >= 0 ? "틀린 부분을 다시 보고, 강의를 한 번 더 들어 보면 좋겠어요." : "잘했어요! 틀린 문제만 다시 확인해 봐요.";
-    var h = '<div class="card big"><div class="v">' + (pct == null ? "✓" : pct + "점") + '</div><div class="t">' + esc(j.verdict || "") + "</div>" +
-      '<div class="hint">' + esc(msg) + "<br>기록이 선생님께 전달되었어요. 📬</div></div>";
+    var lt = j.light || (j.verdict && j.verdict.indexOf("통과") >= 0 ? "초록" : j.verdict && j.verdict.indexOf("재수강") >= 0 ? "빨강" : "노랑");
+    var areas = j.areas || localAreas(qs, items);
+    var h = '<div class="card big"><div class="tl3">' + bulbs(lt) + '</div><div class="v">' + (pct == null ? "✓" : pct + "점") + '</div><div class="t">' + esc(lt + "불 · " + String(j.verdict || "").replace(/^[^가-힣]+/, "")) + "</div>" +
+      (areas.length ? '<div class="tlar">' + areas.map(function (a) { return '<span class="tla"><i class="tld tl-' + ({ 초록: "g", 노랑: "y", 빨강: "r" })[a.light] + '"></i>' + esc(a.area) + " " + a.right + "/" + a.total + "</span>"; }).join("") + "</div>" : "") +
+      '<div class="hint">' + esc(msg) + "<br>기록이 선생님과 부모님께 전달되었어요. 📬</div></div>";
     if (j.aiFeedback) h += '<div class="card ai"><h4>🤖 요약 AI 피드백 (참고용) · ' + esc(j.aiGrade) + "</h4><div style=\"font-size:14.5px;line-height:1.6\">" + esc(j.aiFeedback) + "</div></div>";
     if (qs.length) {
       h += '<div class="card"><h4>📝 채점 결과</h4>';
