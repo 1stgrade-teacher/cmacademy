@@ -221,7 +221,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         <span class="hint" style="margin:0">휴대폰·태블릿에서 쓰기 문제(철자·뜻 쓰기·서술형)를 누르면 휴대폰 키보드 대신 시험용 키보드가 떠요. 단어 추천·자동완성이 없어요. 한글·영어·숫자 모두 돼요. (만든 학생: 김태호)</span>
       </div>
       <div id="ntBox" style="margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px">
-        <label style="margin:0;font-weight:800"><input type="checkbox" id="eNt"> 📲 시험이 끝나면 학부모님께 결과 바로 보내기 (카카오 알림톡)</label>
+        <label style="margin:0;font-weight:800"><input type="checkbox" id="eNt"> 📲 시험이 끝나면 학부모님께 결과 바로 보내기 (🔔 앱 알림 · 무료)</label>
         <div id="ntIn" style="display:none;margin:6px 0 0 22px">
           <div class="seg" style="display:inline-flex"><label><input type="radio" name="ntHow" value="each" checked>볼 때마다</label><label><input type="radio" name="ntHow" value="first">하루 첫 응시만</label></div>
           <div id="ntInfo" class="hint" style="margin:6px 0 0;line-height:1.7">불러오는 중…</div>
@@ -474,9 +474,22 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   </section>
 
   <section id="v-pm" style="display:none">
+    <div class="card" id="alCard">
+      <div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">🔔 학부모 앱 알림 (무료)</h2><div class="row" style="margin:0"><select id="alCls" style="width:auto"></select><button class="sub sm" id="alLoad">불러오기</button></div></div>
+      <div class="hint">문자·알림톡 대신 <b>학부모 앱 알림(무료 푸시)</b>으로 알려요: <b>📸 과제 미제출 · 🏫 플러스 수업 출석/미참여/🏁마침 · 📝 시험 결과(켠 시험지) · 💬 상담 답장 · 📢 공지</b>. 보낸 알림은 모두 부모님 앱 <b>🔔 알림</b> 탭과 노션 「🔔 학부모 알림함」에 쌓여요.<br>
+        부모님이 할 일: 아래 <b>👪 학부모 앱 링크</b>를 열고 <b>🔔 알림 받기 → 허용</b> 한 번. (아이폰은 먼저 Safari에서 <b>홈 화면에 추가</b>한 아이콘으로 열어야 해요)</div>
+      <div class="row" style="align-items:center;gap:8px;margin-top:8px"><b>문자·알림톡(유료)</b><select id="alSms" style="width:auto"><option value="nopush">앱 알림을 못 받는 부모님께만 보내기</option><option value="off">보내지 않기 (앱 알림만 · 무료)</option><option value="all">앱 알림과 함께 모두 보내기</option></select><span id="alSmsMsg" class="hint" style="margin:0"></span></div>
+      <div id="alOut"></div>
+      <details style="margin-top:10px" id="alSendBox"><summary style="cursor:pointer;font-weight:800">📢 학부모 공지 보내기 (앱 알림 · 무료)</summary>
+        <div class="hint" style="margin:6px 0">위 표에서 <b>체크한 학생</b>의 부모님께 보내요. 알림을 안 켠 부모님도 앱 <b>🔔 알림</b> 탭에서 볼 수 있어요. (문자는 보내지 않아요)</div>
+        <input id="alTitle" maxlength="60" placeholder="제목 (예: 12월 휴원 안내)">
+        <textarea id="alBody" rows="4" maxlength="1200" placeholder="내용" style="margin-top:6px"></textarea>
+        <div class="row" style="margin-top:6px;gap:8px;align-items:center"><button id="alSend">📢 보내기</button><span id="alMsg" class="hint" style="margin:0"></span></div>
+      </details>
+    </div>
     <div class="card">
       <div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">💬 학부모 상담</h2><div class="row" style="margin:0"><select id="pmCls" style="width:auto"><option value="">모든 반</option></select><button class="sub sm" id="pmReload">새로고침</button></div></div>
-      <div class="hint">부모님이 학부모 앱의 「💬 상담」에 남긴 글이에요. 안 읽은 글이 있는 학생이 맨 위에 와요. 답장하면 부모님 앱에 바로 보여요. (카톡 알림은 가지 않으니, 급한 답은 전화로 해 주세요)</div>
+      <div class="hint">부모님이 학부모 앱의 「💬 상담」에 남긴 글이에요. 안 읽은 글이 있는 학생이 맨 위에 와요. 답장하면 부모님 앱에 바로 보이고, 🔔 앱 알림을 켠 부모님 휴대폰에는 알림도 가요. (급한 답은 전화로 해 주세요)</div>
       <div id="pmList"><p class="hint">불러오는 중…</p></div>
     </div>
     <div class="card" id="pmThreadCard" style="display:none"><div id="pmThread"></div></div>
@@ -558,7 +571,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       </div>
       <label class="l" style="margin-top:10px">설명 (학생에게 보여요)</label><textarea id="hwDesc" rows="2" placeholder="예: 공책에 3번씩 쓰고 한 페이지씩 사진 찍어 올리기"></textarea>
       <div class="grid" style="margin-top:10px"><div><label class="l">학생에게 보이는 날 (비우면 바로)</label><input id="hwShow" type="date"></div></div>
-      <div class="row" style="margin-top:10px"><label><input type="checkbox" id="hwNotify" checked> 마감까지 안 내면 학부모님께 알림톡 보내기</label><label><input type="checkbox" id="hwActive" checked> 학생에게 보이기</label></div>
+      <div class="row" style="margin-top:10px"><label><input type="checkbox" id="hwNotify" checked> 마감까지 안 내면 학부모님께 알림 보내기 (🔔 앱 알림)</label><label><input type="checkbox" id="hwActive" checked> 학생에게 보이기</label></div>
       <div class="row" style="margin-top:10px"><button id="hwSave">💾 과제 저장</button><button class="sub" id="hwNew">새로 쓰기</button><span class="msg" id="hwMsg" style="margin:0"></span></div>
       <div class="hint" id="hwLink"></div>
     </div>
@@ -618,7 +631,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     </div>
     <div class="card"><div class="row"><select id="rCls" style="width:auto;max-width:180px" title="반별로 걸러 보기"></select><select id="rKind" style="width:auto;max-width:150px" title="종류별로 걸러 보기"></select><select id="rPaper" style="max-width:520px;flex:1;min-width:200px"></select><button class="sub" id="rLoad">불러오기</button><button class="sub" id="rRename" title="고른 시험지의 이름을 바꿔요">✏️ 이름 바꾸기</button><span id="rRnMsg" style="flex-basis:100%"></span><button class="sub" id="rPrint" style="display:none">🖨 간단 성적표 인쇄</button><button class="sub" id="rXls" style="display:none" title="이 시험지의 응시 결과를 엑셀에서 열 수 있는 파일로 받아요">⬇ 엑셀로 받기</button></div>
       <div class="repbox" id="rRep" style="display:none">
-        <div class="row"><button id="rMake">📄 학생별 분석 리포트 만들기 (노션)</button><label><input type="checkbox" id="rForce"> 이미 만든 학생도 다시 만들기</label></div>
+        <div class="row"><button id="rMake">📄 학생별 분석 리포트 만들기 (노션)</button><label><input type="checkbox" id="rForce"> 이미 만든 학생도 다시 만들기</label><button class="sub" id="rLinks" title="리포트가 있는 학생들의 학부모용 웹 링크를 「이름: 주소」로 한꺼번에 복사해요">🔗 학부모용 링크 모두 복사</button></div>
         <div class="hint">선생님의 「○월 월례고사 분석레포트」 양식 그대로, 학생마다 <b>평가 개요 → 총평 → 영역별 성적 → 문항별 오답 원인 → 학습 대책 → 복습 강의 링크 → 성적 추이</b>를 AI가 써서 노션 <b>📔 학습리포트 › 학생 학습레포트</b> 아래에 만들어요. 학생 1명에 20~40초 걸려요. 보내기 전에 노션에서 한 번 읽고 고쳐 주세요.</div>
         <div id="rProg"></div>
       </div>
@@ -792,7 +805,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       hwLoad(true);
     });
   };
-  var HW_MODE = { kakao: "✅ 미제출 알림: 카카오 알림톡 (안 되면 문자)", sms: "📱 미제출 알림: 문자 (알림톡 템플릿 등록 전)", off: "⚠️ 미제출 알림 발송 설정 전 — 미제출 명단과 보낼 문구만 기록돼요. (설정방법 문서 「📸 과제」 참고)" };
+  var HW_MODE = { kakao: "🔔 미제출 알림: 학부모 앱 알림(무료) · 문자는 알림톡 (설정: 💬 학부모 탭)", sms: "🔔 미제출 알림: 학부모 앱 알림(무료) · 문자는 LMS (설정: 💬 학부모 탭)", off: "🔔 미제출 알림: 학부모 앱 알림(무료)으로 보내요. 앱 알림을 켠 부모님 휴대폰에 가고, 모든 부모님 앱 🔔 알림 탭에 남아요." };
   function hwLoad(keepMode) {
     $("hwList").innerHTML = '<p class="hint">불러오는 중…</p>';
     post({ action: "t_hw_list", cls: $("hwFilter").value }).then(function (j) {
@@ -814,8 +827,44 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     var opts = (DATA.classes || []).filter(function (c) { return c !== "신입 반배정"; }).map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
     if ($("pmCls").options.length < 2) $("pmCls").innerHTML = '<option value="">모든 반</option>' + opts;
     if (!$("plCls").options.length) { $("plCls").innerHTML = opts; var lc = lsGet("cm-teacher-cls"); if (lc && (DATA.classes || []).indexOf(lc) >= 0) $("plCls").value = lc; }
-    pmLoad();
+    pmLoad(); alFill(); if (!AL.length) alLoad();
   }
+  // ---------- 🔔 학부모 앱 알림 현황 · 문자 설정 · 공지 ----------
+  var AL = [];
+  function alFill() {
+    if ($("alCls").options.length) return;
+    $("alCls").innerHTML = '<option value="">모든 반</option>' + (DATA.classes || []).map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
+    var lc = lsGet("cm-teacher-cls"); if (lc && (DATA.classes || []).indexOf(lc) >= 0) $("alCls").value = lc;
+  }
+  function alDraw() {
+    var on = AL.filter(function (x) { return x.subs; }).length;
+    $("alOut").innerHTML = !AL.length ? '<p class="hint">학생이 없어요.</p>' : '<p style="margin:10px 0 4px"><b>' + AL.length + "명 중 " + on + '명</b>의 부모님이 앱 알림을 켰어요' + (AL.length ? " (" + Math.round(on / AL.length * 100) + "%)" : "") + '.</p><div class="tw" style="max-height:420px;overflow:auto"><table><thead><tr><th><input type="checkbox" id="alAll" checked></th><th>이름</th><th>반</th><th>🔔 앱 알림</th><th>문자 연락처</th></tr></thead><tbody>' +
+      AL.map(function (x, i) { return '<tr><td><input type="checkbox" class="alck" data-i="' + i + '" checked></td><td><b>' + esc(x.name) + "</b></td><td>" + esc(x.cls) + "</td><td>" + (x.subs ? '<span class="ok">✅ 켬 · ' + x.subs + "대</span>" + (x.devices.length ? ' <span class="hint" style="margin:0">' + esc(x.devices.join(", ")) + "</span>" : "") : '<span class="hint" style="margin:0">아직 안 켬</span>') + "</td><td>" + (x.phone ? (x.mute ? "있음 (알림 끄기)" : "있음") : '<span class="hint" style="margin:0">없음</span>') + "</td></tr>"; }).join("") + "</tbody></table></div>";
+    $("alAll").onchange = function () { var c = this.checked; Array.prototype.forEach.call($("alOut").querySelectorAll(".alck"), function (x) { x.checked = c; }); };
+  }
+  function alLoad() {
+    alFill(); $("alOut").innerHTML = '<p class="hint">불러오는 중…</p>';
+    post({ action: "t_alert_overview", cls: $("alCls").value }).then(function (j) {
+      if (!j.ok) { $("alOut").innerHTML = '<p class="er">' + esc(j.msg || "불러오지 못했어요.") + "</p>"; return; }
+      AL = j.list; $("alSms").value = j.sms || "nopush"; $("alSmsMsg").innerHTML = j.smsReady ? "" : "솔라피(문자) 설정이 없어서 지금은 문자가 나가지 않아요 → 앱 알림만 가요"; alDraw();
+    });
+  }
+  $("alLoad").onclick = alLoad; $("alCls").onchange = alLoad;
+  $("alSms").onchange = function () { var v = this.value; $("alSmsMsg").textContent = "저장 중…"; post({ action: "t_alert_sms", mode: v }).then(function (j) { $("alSmsMsg").innerHTML = j.ok ? '<span class="ok">저장했어요 ✓</span>' : '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; }); };
+  $("alSend").onclick = function () {
+    var sids = Array.prototype.filter.call($("alOut").querySelectorAll(".alck"), function (x) { return x.checked; }).map(function (x) { return AL[+x.getAttribute("data-i")].sid; });
+    var t = $("alTitle").value.trim(), body = $("alBody").value.trim();
+    if (!sids.length) { $("alMsg").innerHTML = '<span class="er">먼저 위에서 반을 불러와 받을 학생을 체크해 주세요.</span>'; return; }
+    if (!t || !body) { $("alMsg").innerHTML = '<span class="er">제목과 내용을 써 주세요.</span>'; return; }
+    if (!confirm(sids.length + "명의 부모님께 공지를 보낼까요?\n\n📢 " + t)) return;
+    var b = this; b.disabled = true; $("alMsg").textContent = "보내는 중… (" + sids.length + "명)";
+    post({ action: "t_alert_send", sids: sids, title: t, body: body }).then(function (j) {
+      b.disabled = false;
+      if (!j.ok) { $("alMsg").innerHTML = '<span class="er">' + esc(j.msg || "보내지 못했어요.") + "</span>"; return; }
+      $("alMsg").innerHTML = '<span class="ok">📢 ' + j.total + "명 중 <b>" + j.sent + "명</b> 휴대폰에 알림이 갔어요 · 알림함 기록 " + j.logged + "명 ✓</span>" + (j.total - j.sent ? ' <span class="hint" style="margin:0">(알림을 안 켠 ' + (j.total - j.sent) + "명은 앱 🔔 알림 탭에서 볼 수 있어요)</span>" : "");
+      $("alTitle").value = ""; $("alBody").value = "";
+    });
+  };
   function pmTime(at) { return at ? at.slice(5, 16).replace("T", " ").replace("-", "/") : ""; }
   function pmLoad() {
     $("pmList").innerHTML = '<p class="hint">불러오는 중…</p>';
@@ -1704,7 +1753,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   function ntShow(j) {
     if (!j || !j.ok) { $("ntInfo").innerHTML = '<span class="er">' + esc((j && j.msg) || "알림 설정을 불러오지 못했어요.") + "</span>"; return; }
     var M = { kakao: '<span class="ok">✅ 카카오 알림톡으로 보내요</span> (안 되면 문자)', sms: '<span style="color:#9A5B00">📱 지금은 <b>문자(LMS)</b>로 보내요</span> — 알림톡 템플릿을 등록해 Vercel에 <b>' + esc(j.env) + "</b>을 넣으면 알림톡으로 바뀌어요(더 싸요).", off: '<span class="er">⚠️ 문자 발송 설정 전</span> — 지금은 보내지 않고 기록 코멘트에 「알림 발송 설정 전」만 남아요.' };
-    $("ntInfo").innerHTML = M[j.mode] + "<br>학생 기록의 <b>학부모 연락처</b>로 보내요(📋 학생 명단에서 「알림 끄기」한 학생은 빼요). 보냈는지는 📊 응시 결과의 코멘트에 「📲 알림톡 보냄」으로 남아요." +
+    $("ntInfo").innerHTML = "🔔 <b>앱 알림을 켠 부모님께는 무료 앱 알림</b>으로 가요. 문자·알림톡은 💬 학부모 탭 「🔔 학부모 앱 알림」 설정을 따라요.<br>문자로 보낼 때: " + M[j.mode] + "<br>학생 기록의 <b>학부모 연락처</b>로 보내요(📋 학생 명단에서 「알림 끄기」한 학생은 빼요). 보냈는지는 📊 응시 결과의 코멘트에 「📲 알림톡 보냄」으로 남아요." +
       '<details style="margin-top:4px"><summary style="cursor:pointer">학부모님이 받는 문구 보기 · 알림톡 템플릿 등록용</summary><pre style="white-space:pre-wrap;background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px;margin:6px 0;font-size:13px">' + esc(j.sample) + '</pre><div class="hint" style="margin:0">솔라피 → 카카오 알림톡 → 템플릿 등록에 아래 문구를 그대로 붙여 넣고, 심사 통과 후 나온 템플릿 ID(KA01TP…)를 Vercel 환경 변수 <b>' + esc(j.env) + '</b>에 넣고 Redeploy 하세요.</div><pre style="white-space:pre-wrap;background:#F7FBFB;border:1px solid var(--line);border-radius:8px;padding:8px;margin:6px 0;font-size:13px" id="ntTpl">' + esc(j.template) + '</pre><button type="button" class="sm sub" id="ntCopy">📋 템플릿 문구 복사</button></details>' +
       ($("eSelf").checked ? "" : '<div style="margin-top:4px">💡 「하루 첫 응시만」은 📝 자율 단어시험처럼 여러 번 보는 시험에 쓰면 좋아요.</div>');
     var c = $("ntCopy"); if (c) c.onclick = function () { (navigator.clipboard ? navigator.clipboard.writeText(j.template) : Promise.reject()).then(function () { c.textContent = "복사했어요 ✓"; }, function () { c.textContent = "복사 안 됨 — 위 글을 직접 복사하세요"; }); };
@@ -2852,6 +2901,69 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     });
   };
   // 학생 여러 명 리포트를 차례로 만들기 (한 번에 한 명씩 → 시간 초과 없음)
+  // 🔗 링크 복사 버튼 (리포트 웹 링크 등): data-cpy
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest("[data-cpy]"); if (!b) return; e.preventDefault();
+    var v = b.getAttribute("data-cpy"), old = b.textContent, ok = function () { b.textContent = "복사됨 ✓"; setTimeout(function () { b.textContent = old; }, 1500); };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(v).then(ok, function () { prompt("아래 주소를 복사하세요", v); });
+    else prompt("아래 주소를 복사하세요", v);
+  });
+  // ---------- ✏️ 분석 리포트 바로 고치기 (노션에 안 들어가도 돼요) ----------
+  var RE = null;
+  document.addEventListener("click", function (e) { var b = e.target.closest && e.target.closest("[data-repedit]"); if (!b) return; e.preventDefault(); repEdit(b.getAttribute("data-repedit"), b.getAttribute("data-repname") || ""); });
+  function repEdit(web, name) {
+    var ov = $("repEd"); if (!ov) { ov = document.createElement("div"); ov.id = "repEd"; ov.style.cssText = "position:fixed;inset:0;z-index:60;background:rgba(15,40,42,.45);overflow:auto;padding:20px 10px"; document.body.appendChild(ov); }
+    ov.style.display = ""; document.body.style.overflow = "hidden";
+    ov.innerHTML = '<div class="card" style="max-width:860px;margin:0 auto"><p class="hint">리포트를 불러오는 중…</p></div>';
+    var k = (web.split("k=")[1] || "");
+    post({ action: "t_rep_blocks", k: k }).then(function (j) {
+      if (!j.ok) { ov.innerHTML = '<div class="card" style="max-width:860px;margin:0 auto"><p class="er">' + esc(j.msg || "불러오지 못했어요.") + '</p><button class="sub" onclick="document.getElementById(\'repEd\').style.display=\'none\';document.body.style.overflow=\'\'">닫기</button></div>'; return; }
+      RE = { k: k, web: web, blocks: j.blocks, dels: {}, adds: [] };
+      var LBL = { heading_1: "큰 제목", heading_2: "제목", heading_3: "소제목", bulleted_list_item: "•", numbered_list_item: "1.", quote: "인용", callout: "알림", toggle: "▸", to_do: "☐", paragraph: "" };
+      var ta = function (id, v, big) { return '<textarea data-reb="' + id + '" rows="1" style="width:100%;resize:vertical;font-size:' + (big ? "17px;font-weight:800" : "15px") + ';line-height:1.6;padding:6px 8px;border:1px solid transparent;border-radius:8px;background:#FAFCFC">' + esc(v) + "</textarea>"; };
+      var rows = j.blocks.map(function (b) {
+        var pad = "margin-left:" + Math.min(b.depth, 3) * 22 + "px";
+        if (b.type === "table") return '<div style="' + pad + ';overflow-x:auto;margin:6px 0"><table>' + b.rows.map(function (r) { return '<tr data-rer="' + r.id + '">' + r.cells.map(function (c, ci) { return '<td style="padding:2px"><input data-rec="' + ci + '" value="' + esc(c) + '" data-v0="' + esc(c) + '" style="min-width:90px;font-size:14px;padding:4px 6px"></td>'; }).join("") + "</tr>"; }).join("") + "</table></div>";
+        if (b.ro) return '<div class="hint" style="' + pad + ';margin:4px 0">' + esc(b.text || b.type) + " <span style=\"opacity:.6\">(여기서는 못 고쳐요)</span></div>";
+        var big = /^heading/.test(b.type);
+        return '<div class="reb" data-id="' + b.id + '" style="' + pad + ';display:flex;gap:6px;align-items:flex-start;margin:2px 0"><span class="hint" style="margin:8px 0 0;min-width:34px;text-align:right">' + esc(b.icon || LBL[b.type] || "") + "</span>" + ta(b.id, b.text, big) +
+          '<span style="display:flex;flex-direction:column;gap:2px;margin-top:4px">' + (b.depth === 0 ? '<button type="button" class="sm sub" data-readd="' + b.id + '" title="아래에 새 문단 넣기" style="padding:2px 7px">＋</button>' : "") + '<button type="button" class="sm sub" data-redel="' + b.id + '" title="이 줄 지우기" style="padding:2px 7px">🗑</button>' + "</span></div>" + (b.links ? '<div class="hint" style="' + pad + ';margin:0 0 4px 40px">🔗 이 줄에는 링크가 있어요. 글을 고치면 링크가 빠지니, 링크는 그대로 두세요.</div>' : "");
+      }).join("");
+      ov.innerHTML = '<div class="card" style="max-width:860px;margin:0 auto">' +
+        '<div class="row" style="justify-content:space-between;align-items:center;position:sticky;top:-20px;background:#fff;z-index:2;padding:8px 0;border-bottom:1px solid var(--line)"><b style="font-size:17px">✏️ ' + esc(j.title.indexOf(name) >= 0 || !name ? j.title : name + " · " + j.title) + '</b><span class="row" style="gap:6px;margin:0"><button id="reSave">💾 저장</button><a class="sm sub" href="' + esc(web) + '" target="_blank" style="text-decoration:none;padding:6px 10px;border-radius:8px;border:1px solid var(--line)">🌐 학부모 화면</a><button class="sub" id="reClose">닫기</button></span></div>' +
+        '<p class="hint" style="margin:8px 0">글을 바로 고치고 <b>💾 저장</b>을 누르면 학부모님 링크에도 바로 반영돼요. <b>**굵게**</b>는 별표 두 개로 감싸면 돼요. 고친 칸은 노란 테두리가 생겨요.</p><div id="reMsg"></div>' +
+        '<div id="reBody">' + rows + "</div></div>";
+      var grow = function (t) { t.style.height = "auto"; t.style.height = (t.scrollHeight + 2) + "px"; };
+      Array.prototype.forEach.call(ov.querySelectorAll("textarea[data-reb]"), function (t) { t.setAttribute("data-v0", t.value); grow(t); });
+      ov.querySelector("#reBody").addEventListener("input", function (e) { var t = e.target; if (t.tagName === "TEXTAREA") grow(t); var ch = t.value !== t.getAttribute("data-v0"); t.style.border = ch ? "2px solid #F0A500" : "1px solid transparent"; });
+      ov.querySelector("#reBody").addEventListener("click", function (e) {
+        var d = e.target.closest("[data-redel]"), a = e.target.closest("[data-readd]");
+        if (d) { var id = d.getAttribute("data-redel"), row = ov.querySelector('.reb[data-id="' + id + '"]'); if (RE.dels[id]) { delete RE.dels[id]; row.style.opacity = ""; row.querySelector("textarea").disabled = false; d.textContent = "🗑"; } else { RE.dels[id] = 1; row.style.opacity = ".35"; row.querySelector("textarea").disabled = true; d.textContent = "↩"; } }
+        if (a) { var after = a.getAttribute("data-readd"), nb = document.createElement("div"); nb.className = "readd"; nb.setAttribute("data-after", after); nb.style.cssText = "display:flex;gap:6px;margin:2px 0 6px 40px";
+          nb.innerHTML = '<select style="width:auto;font-size:13px"><option value="paragraph">문단</option><option value="bulleted_list_item">• 목록</option><option value="heading_3">소제목</option></select><textarea rows="2" placeholder="새로 넣을 글" style="flex:1;border:2px solid #F0A500;border-radius:8px;padding:6px 8px;font-size:15px"></textarea>';
+          var host = a.closest(".reb"); host.parentNode.insertBefore(nb, host.nextSibling); nb.querySelector("textarea").focus(); }
+      });
+      $("reClose").onclick = function () { if (reDirty() && !confirm("저장하지 않은 고친 내용이 있어요. 그래도 닫을까요?")) return; ov.style.display = "none"; document.body.style.overflow = ""; };
+      $("reSave").onclick = function () {
+        var p = reCollect(); if (!p.edits.length && !p.cells.length && !p.dels.length && !p.adds.length) { $("reMsg").innerHTML = '<p class="hint">바뀐 곳이 없어요.</p>'; return; }
+        if (p.dels.length && !confirm(p.dels.length + "줄을 지울까요?")) return;
+        var b = this; b.disabled = true; b.textContent = "저장 중…";
+        post(Object.assign({ action: "t_rep_save", k: RE.k }, p)).then(function (d) {
+          b.disabled = false; b.textContent = "💾 저장";
+          if (!d.ok) { $("reMsg").innerHTML = '<p class="er">' + esc(d.msg || "저장하지 못했어요.") + "</p>"; return; }
+          repEdit(RE.web, name); setTimeout(function () { var m = $("reMsg"); if (m) m.innerHTML = '<p class="ok">💾 ' + d.saved + "곳 저장했어요. 학부모님 링크에도 바로 반영돼요 ✓" + (d.failed ? ' <span class="er">' + d.failed + "곳은 못 했어요</span>" : "") + "</p>"; }, 1200);
+        });
+      };
+    });
+  }
+  function reCollect() {
+    var ov = $("repEd"), p = { edits: [], cells: [], dels: Object.keys(RE.dels), adds: [] };
+    Array.prototype.forEach.call(ov.querySelectorAll("textarea[data-reb]"), function (t) { var id = t.getAttribute("data-reb"); if (!RE.dels[id] && t.value !== t.getAttribute("data-v0")) p.edits.push({ id: id, text: t.value }); });
+    Array.prototype.forEach.call(ov.querySelectorAll("tr[data-rer]"), function (tr) { var ins = tr.querySelectorAll("input[data-rec]"), ch = false, cells = []; Array.prototype.forEach.call(ins, function (i) { cells.push(i.value); if (i.value !== i.getAttribute("data-v0")) ch = true; }); if (ch) p.cells.push({ id: tr.getAttribute("data-rer"), cells: cells }); });
+    Array.prototype.slice.call(ov.querySelectorAll(".readd")).reverse().forEach(function (nb) { var t = nb.querySelector("textarea").value.trim(); if (t) p.adds.push({ after: nb.getAttribute("data-after"), type: nb.querySelector("select").value, text: t }); });
+    return p;
+  }
+  function reDirty() { if (!RE || !$("repEd")) return false; var p = reCollect(); return !!(p.edits.length || p.cells.length || p.dels.length || p.adds.length); }
   function runReports(jobs, box, done) {
     var total = jobs.length, ok = 0, fail = 0, lines = [];
     if (!total) { box.innerHTML = '<p class="hint">만들 리포트가 없어요.</p>'; return; }
@@ -2861,7 +2973,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       if (!j) { lines.push("<b>끝! 완료 " + ok + "명" + (fail ? " · 실패 " + fail + "명" : "") + "</b>"); paint(); if (done) done(); return; }
       paint(j.name);
       post(Object.assign({ contact: $("contact").value.trim() }, j.body)).then(function (r) {
-        if (r.ok && r.url) { ok++; lines.push((r.skipped ? "⏭ " : "✅ ") + esc(j.name) + ' — <a href="' + esc(r.url) + '" target="_blank">' + (r.skipped ? "이미 있음" : "노션에서 보기") + "</a>" + (r.found === false ? ' <span class="er">(학생 학습레포트 페이지를 못 찾아 🤖 자동 분석 리포트에 저장)</span>' : "") + (r.ai === false && !r.skipped ? ' <span class="hint">(AI 없이 기본 문장)</span>' : "")); }
+        if (r.ok && r.url) { ok++; lines.push((r.skipped ? "⏭ " : "✅ ") + esc(j.name) + ' — <a href="' + esc(r.url) + '" target="_blank">' + (r.skipped ? "이미 있음" : "노션에서 보기") + "</a>" + (r.web ? ' · <a href="' + esc(r.web) + '" target="_blank">🌐 학부모용 웹 보기</a> <button type="button" class="sm sub" data-repedit="' + esc(r.web) + '" data-repname="' + esc(j.name) + '">✏️ 고치기</button> <button type="button" class="sm sub" data-cpy="' + esc(r.web) + '">🔗 링크 복사</button>' : "") + (r.found === false ? ' <span class="er">(학생 학습레포트 페이지를 못 찾아 🤖 자동 분석 리포트에 저장)</span>' : "") + (r.ai === false && !r.skipped ? ' <span class="hint">(AI 없이 기본 문장)</span>' : "")); }
         else { fail++; lines.push("❌ " + esc(j.name) + " — " + esc(r.msg || "실패")); }
         next();
       });
@@ -3036,7 +3148,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         '<div class="row recdel"><label style="margin:0;font-size:13.5px"><input type="checkbox" id="rAll"> 기록 모두 고르기</label><select id="rDate" style="width:auto;padding:5px 8px;font-size:13px" title="그날 본 기록을 모두 골라요"></select><button class="sm sub" id="rDel" disabled>🗑 고른 기록 지우기</button><button class="sm sub" id="rTot" disabled>✏️ 고른 기록 만점 바꾸기</button><span class="hint" style="margin:0">잘못 만든 기록만 골라 지워요. 노션 휴지통으로 가서 30일 안에 되살릴 수 있어요.</span></div>' +
         (DUPS.length ? '<p class="hint" style="margin:6px 0"><span class="pill p">기록 겹침</span> 같은 학생의 기록이 둘 이상인 경우가 ' + DUPS.length + "개 있어요. 아래 표 맨 끝(노란 줄)에 따로 보여 줘요. 위 표의 점수는 가장 최근 기록이에요.</p>" : "") +
         '<div class="tw"><table><thead><tr><th></th><th>순위</th><th>이름</th><th>점수</th><th>환산</th>' + (PL ? "<th>추천 반</th><th>반 배정</th>" : "") + '<th>시험일</th>' + (PS ? "<th>통과</th>" : "") + '<th>평가</th><th>소요</th><th>자리비움</th><th>코멘트</th><th>분석 리포트</th><th></th></tr></thead><tbody>' +
-        sorted.concat(DUPS).map(function (r, i) { return "<tr" + (r.dup ? ' class="dupr"' : "") + '><td><input type="checkbox" class="rck" value="' + esc(r.rec) + '" data-name="' + esc(r.name) + '" aria-label="' + esc(r.name) + ' 기록 고르기"></td><td class=num>' + (r.dup ? '<span class="pill p" title="' + esc(r.made) + ' 기록">겹침</span>' : i + 1) + "</td><td><b>" + esc(r.name) + "</b>" + clsTag(r) + (r.sgrade || r.school ? '<div class="hint" style="margin:0">' + esc([r.sgrade, r.school].filter(Boolean).join(" · ")) + "</div>" : "") + (r.how === "종이" ? ' <span class="pill" title="종이 시험으로 넣은 기록" style="font-size:11px">📄 종이</span>' : "") + "</td><td class=num>" + r.score + "/" + r.total + "</td><td class=num>" + round1(r.pct) + "</td>" + (PL ? "<td><b>" + esc(r.rec2 || "-") + "</b></td><td>" + assignCell(r) + "</td>" : "") + "<td class=num style=\"white-space:nowrap\">" + esc(String(r.date || "").slice(5, 10).replace("-", "/")) + "</td>" + (PS ? "<td>" + (passOk(PS, r) ? '<span class="pill go">✅ 통과</span>' : '<span class="pill p">🔁 재시험</span>') + "</td>" : "") + "<td>" + esc(r.grade) + "</td><td class=num>" + (r.mins ? r.mins + "분" : "-") + "</td><td class=num>" + (r.away || 0) + "</td><td>" + esc(r.comment) + "</td><td>" + (r.report ? '<a href="' + esc(r.report) + '" target="_blank">📄 보기</a>' : '<span class="hint">-</span>') + '</td><td style="white-space:nowrap"><button class="sm sub" data-redit="' + esc(r.rec) + '" title="점수·평가·코멘트 고치기">✏️ 고치기</button> <a href="' + esc(r.url) + '" target="_blank">기록</a></td></tr>'; }).join("") +
+        sorted.concat(DUPS).map(function (r, i) { return "<tr" + (r.dup ? ' class="dupr"' : "") + '><td><input type="checkbox" class="rck" value="' + esc(r.rec) + '" data-name="' + esc(r.name) + '" aria-label="' + esc(r.name) + ' 기록 고르기"></td><td class=num>' + (r.dup ? '<span class="pill p" title="' + esc(r.made) + ' 기록">겹침</span>' : i + 1) + "</td><td><b>" + esc(r.name) + "</b>" + clsTag(r) + (r.sgrade || r.school ? '<div class="hint" style="margin:0">' + esc([r.sgrade, r.school].filter(Boolean).join(" · ")) + "</div>" : "") + (r.how === "종이" ? ' <span class="pill" title="종이 시험으로 넣은 기록" style="font-size:11px">📄 종이</span>' : "") + "</td><td class=num>" + r.score + "/" + r.total + "</td><td class=num>" + round1(r.pct) + "</td>" + (PL ? "<td><b>" + esc(r.rec2 || "-") + "</b></td><td>" + assignCell(r) + "</td>" : "") + "<td class=num style=\"white-space:nowrap\">" + esc(String(r.date || "").slice(5, 10).replace("-", "/")) + "</td>" + (PS ? "<td>" + (passOk(PS, r) ? '<span class="pill go">✅ 통과</span>' : '<span class="pill p">🔁 재시험</span>') + "</td>" : "") + "<td>" + esc(r.grade) + "</td><td class=num>" + (r.mins ? r.mins + "분" : "-") + "</td><td class=num>" + (r.away || 0) + "</td><td>" + esc(r.comment) + "</td><td>" + (r.report ? (r.rweb ? '<a href="' + esc(r.rweb) + '" target="_blank" title="학부모님이 보시는 화면 (노션 공유 필요 없음)">🌐 보기</a> <button type="button" class="sm sub" data-repedit="' + esc(r.rweb) + '" data-repname="' + esc(r.name) + '" title="리포트 글을 여기서 바로 고쳐요">✏️ 고치기</button> <button type="button" class="sm sub" data-cpy="' + esc(r.rweb) + '" title="학부모님께 보낼 링크 복사">🔗 복사</button> <a href="' + esc(r.report) + '" target="_blank" class="hint" style="margin:0" title="노션에서 고치기">노션</a>' : '<a href="' + esc(r.report) + '" target="_blank">📄 보기</a>') : '<span class="hint">-</span>') + '</td><td style="white-space:nowrap"><button class="sm sub" data-redit="' + esc(r.rec) + '" title="점수·평가·코멘트 고치기">✏️ 고치기</button> <a href="' + esc(r.url) + '" target="_blank">기록</a></td></tr>'; }).join("") +
         j.rows.filter(function (r) { return r.missing; }).sort(function (a, b) { return (SKIP[a.sid] ? 1 : 0) - (SKIP[b.sid] ? 1 : 0); }).map(function (r) { var sk = !!SKIP[r.sid]; return '<tr class="miss' + (sk ? " skipr" : "") + '"><td></td><td>-</td><td>' + esc(r.name) + clsTag(r) + (r.sgrade || r.school ? '<div class="hint" style="margin:0">' + esc([r.sgrade, r.school].filter(Boolean).join(" · ")) + "</div>" : "") + '</td><td colspan="' + ((PL ? 11 : 9) + (PS ? 1 : 0)) + '">' +
           (sk ? '↪ 다른 시험으로 봄 <button class="sm sub" data-rskip="' + esc(r.sid) + '" data-on="" style="margin-left:8px">되돌리기</button>'
               : '미응시 <button class="sm sub" data-radd="' + esc(r.sid) + '" data-name="' + esc(r.name) + '" style="margin-left:8px" title="나중에 종이로 본 점수 넣기">📄 종이 점수 넣기</button> <button class="sm sub" data-rskip="' + esc(r.sid) + '" data-on="1" title="다른 단어장·다른 시험지로 본 학생: 미응시 수에서 빠져요">↪ 다른 시험으로 봄</button>') + (PL ? " · " + assignCell(r) : "") + "</td></tr>"; }).join("") +
@@ -3193,6 +3305,14 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     if (!confirm(jobs.length + "명의 분석 리포트를 노션에 만들까요? (약 " + Math.ceil(jobs.length * 0.5) + "분)")) return;
     $("rMake").disabled = true;
     runReports(jobs, $("rProg"), function () { $("rMake").disabled = false; loadResultsKeep(); });
+  };
+  $("rLinks").onclick = function () {
+    if (!LAST_RES) return; var L = LAST_RES.rows.filter(function (r) { return !r.missing && r.rweb; });
+    if (!L.length) { $("rProg").innerHTML = '<p class="hint">아직 만든 리포트가 없어요. 먼저 📄 분석 리포트를 만들어 주세요.</p>'; return; }
+    var txt = L.map(function (r) { return r.name + " 학부모님: " + r.rweb; }).join("\n"), b = this;
+    var done = function () { $("rProg").innerHTML = '<p class="ok">🔗 ' + L.length + "명의 학부모용 리포트 링크를 복사했어요. 카톡·문자에 붙여 넣으세요 ✓</p>"; };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(done, function () { $("rProg").innerHTML = '<textarea rows="8" style="width:100%">' + esc(txt) + "</textarea>"; });
+    else $("rProg").innerHTML = '<textarea rows="8" style="width:100%">' + esc(txt) + "</textarea>";
   };
   function loadResultsKeep() { var prog = $("rProg").innerHTML; loadResults(function () { $("rProg").innerHTML = prog; }); }
   // ⬇ 응시 결과 엑셀로 받기 (엑셀에서 바로 열리는 CSV · 한글 깨짐 없음)

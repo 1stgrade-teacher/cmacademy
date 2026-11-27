@@ -71,7 +71,7 @@ body.scr{background:#0B3B3D;color:#fff;padding:0;overflow:hidden}
       <input type="date" id="bdate"><select id="bcls"><option value="">모든 반</option></select>
       <button class="sub" id="bload">새로고침</button><button class="sub" id="tick" title="수업 시각 10분이 지난 학생 중 출석이 없는 학생을 지금 확인해요">지금 미참여 확인</button>
     </div>
-    <div class="tw"><table><thead><tr><th>시각</th><th>이름</th><th>반</th><th>상태</th><th>출석</th><th>방법</th><th>알림 결과 · 메모</th><th>선생님 처리 (알림 없음)</th></tr></thead><tbody id="blist"></tbody></table></div>
+    <div class="tw"><table><thead><tr><th>시각</th><th>이름</th><th>반</th><th>상태</th><th>출석 · 🏁마침</th><th>방법</th><th>알림 결과 · 메모</th><th>선생님 처리 (알림 없음)</th></tr></thead><tbody id="blist"></tbody></table></div>
     <div class="msg" id="bmsg"></div>
     <div class="hint" style="margin-top:8px">· 결석을 미리 연락받았으면 수업 10분 전까지 <b>면제</b>를 누르면 미참여 알림이 가지 않아요. · 반 일정에 <b>휴원</b>으로 넣은 날은 자동으로 면제돼요.<br>· 선생님이 바꾼 상태는 학부모님께 알림이 가지 않아요.</div>
   </div>
@@ -162,7 +162,7 @@ body.scr{background:#0B3B3D;color:#fff;padding:0;overflow:hidden}
       setTimeout(function () { bar.style.transition = "width " + (j.left / 1000) + "s linear"; bar.style.width = "0%"; }, 50);
       if (j.board) {
         var l = j.board.list || [];
-        $("sBoard").innerHTML = l.length ? l.map(function (x) { return '<span class="' + esc(x.state) + '">' + esc(x.hm) + " " + esc(x.name) + " · " + esc(x.state === "확인 중" ? "확인 중" : x.state) + (x.at ? " " + esc(x.at) : "") + "</span>"; }).join("") : '<span>오늘은 플러스 수업이 없어요</span>';
+        $("sBoard").innerHTML = l.length ? l.map(function (x) { return '<span class="' + esc(x.state) + '">' + esc(x.hm) + " " + esc(x.name) + " · " + esc(x.state === "확인 중" ? "확인 중" : x.state) + (x.at ? " " + esc(x.at) : "") + (x.end ? " → 🏁" + esc(x.end) : "") + "</span>"; }).join("") : '<span>오늘은 플러스 수업이 없어요</span>';
       }
     }
     function load() {
@@ -223,7 +223,7 @@ body.scr{background:#0B3B3D;color:#fff;padding:0;overflow:hidden}
       if (!l.length) { $("blist").innerHTML = '<tr><td colspan="8" class="hint">' + esc(j.label) + " 플러스 수업이 있는 학생이 없어요. 🕒 학생별 일정에서 시간을 넣어 주세요.</td></tr>"; return; }
       $("blist").innerHTML = l.map(function (x, i) {
         var cls = x.state === "확인 중" ? "확인" : x.state;
-        return "<tr><td>" + esc(x.hm) + '</td><td class="nm">' + (x.url ? '<a href="' + esc(x.url) + '" target="_blank" rel="noopener" style="color:inherit">' + esc(x.name) + "</a>" : esc(x.name)) + "</td><td>" + esc(x.cls) + '</td><td><span class="b ' + esc(cls) + '">' + esc(x.state) + "</span></td><td>" + esc(x.at || "-") + "</td><td>" + esc(x.how || "") + '</td><td class="nt">' + esc([x.notice, x.memo].filter(Boolean).join("\n")) + "</td><td>" +
+        return "<tr><td>" + esc(x.hm) + '</td><td class="nm">' + (x.url ? '<a href="' + esc(x.url) + '" target="_blank" rel="noopener" style="color:inherit">' + esc(x.name) + "</a>" : esc(x.name)) + "</td><td>" + esc(x.cls) + '</td><td><span class="b ' + esc(cls) + '">' + esc(x.state) + "</span></td><td>" + esc(x.at || "-") + (x.end ? '<br><span style="color:#5B36B0;font-weight:700">🏁 ' + esc(x.end) + "</span>" : "") + "</td><td>" + esc(x.how || "") + '</td><td class="nt">' + esc([x.notice, x.memo].filter(Boolean).join("\n")) + "</td><td>" +
           ["면제", "출석", "미참여"].map(function (s) { return '<button class="sub sm" data-i="' + i + '" data-s="' + s + '">' + s + "</button>"; }).join(" ") + "</td></tr>";
       }).join("");
       STATE.list = l;

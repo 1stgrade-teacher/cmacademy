@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0E8A8C">
+<title>신입생 상담 예약 · 청명학원</title>
+<meta property="og:type" content="website"><meta property="og:site_name" content="청명학원">
+<meta property="og:title" content="청명학원 신입생 상담 예약"><meta property="og:description" content="편하신 날짜와 시간을 골라 상담을 예약해 주세요.">
+<meta property="og:image" content="https://cmacademy.vercel.app/icon-512.png">
+<link rel="icon" href="/favicon-32.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--brand:#0E8A8C;--deep:#0A5F61;--ink:#1B2733;--muted:#5F6E7C;--line:#DCEAEA;--soft:#EAF3F3;--bg:#F0F8F8}
+body{margin:0;min-height:100vh;background:var(--bg);font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;color:var(--ink);-webkit-text-size-adjust:100%}
+.wrap{max-width:560px;margin:0 auto;padding:18px 14px 48px}
+.head{display:flex;align-items:center;gap:12px;margin:2px 2px 14px}
+.head img{width:46px;height:46px;border-radius:12px;object-fit:cover;background:#fff;box-shadow:0 2px 8px rgba(10,60,62,.12)}
+.head h1{font-size:21px;color:var(--deep);margin:0;line-height:1.3}.head .acad{font-size:13px;color:var(--muted);font-weight:600}
+.card{background:#fff;border-radius:18px;padding:18px 16px;box-shadow:0 2px 12px rgba(10,60,62,.07);margin-bottom:12px}
+.intro{white-space:pre-line;font-size:15px;line-height:1.65;color:#33424F;margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}.meta span{background:var(--soft);color:var(--deep);border-radius:999px;padding:5px 11px;font-size:13px;font-weight:700}
+h2{font-size:17px;margin:0 0 12px;display:flex;align-items:center;gap:8px}h2 .n{display:inline-flex;width:24px;height:24px;border-radius:50%;background:var(--brand);color:#fff;font-size:13px;align-items:center;justify-content:center}
+.mon{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.mon b{font-size:17px}
+.mon button{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--deep);font-size:18px;cursor:pointer}.mon button:disabled{opacity:.3;cursor:default}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.cal .w{font-size:12px;color:var(--muted);font-weight:700;padding:4px 0}.cal .w.su{color:#C0392B}.cal .w.sa{color:#2E6FB7}
+.cal button{aspect-ratio:1/1;border:0;border-radius:12px;background:none;font-size:15px;font-family:inherit;color:#B7C2CB;cursor:default;position:relative;padding:0}
+.cal button.on{color:var(--deep);font-weight:800;background:var(--soft);cursor:pointer}
+.cal button.on::after{content:"";position:absolute;left:50%;bottom:6px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--brand)}
+.cal button.pick{background:var(--brand);color:#fff}.cal button.pick::after{background:#fff}
+.cal button.today{box-shadow:inset 0 0 0 2px #BFE3E1}
+.times h3{font-size:13px;color:var(--muted);margin:14px 0 8px;font-weight:700}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px}
+.chips button{border:1.5px solid var(--line);background:#fff;color:var(--ink);font-size:16px;font-weight:700;border-radius:12px;padding:12px 0;cursor:pointer;font-family:inherit}
+.chips button.pick{border-color:var(--brand);background:var(--brand);color:#fff}
+.empty{color:var(--muted);font-size:14.5px;line-height:1.6;padding:6px 0}
+label.l{display:block;font-size:14px;font-weight:700;margin:14px 0 6px}label.l small{color:var(--muted);font-weight:500}
+input,select,textarea{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px;font-size:16px;font-family:inherit;background:#fff;color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px #DDF2F1}
+textarea{min-height:84px;resize:vertical;line-height:1.5}
+.opts{display:flex;flex-wrap:wrap;gap:6px}.opts button{border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:9px 14px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
+.opts button.pick{border-color:var(--brand);background:var(--brand);color:#fff}
+.agree{display:flex;gap:10px;align-items:flex-start;margin-top:16px;font-size:14.5px;line-height:1.5}.agree input{width:22px;height:22px;flex:none;margin:1px 0 0;accent-color:var(--brand)}
+.pv{font-size:13px;color:var(--muted);line-height:1.6;background:#F6FAFA;border-radius:10px;padding:10px 12px;margin-top:8px;display:none}
+.lk{background:none;border:0;color:var(--deep);text-decoration:underline;font-size:13px;padding:0;cursor:pointer;font-family:inherit}
+.btn{display:block;width:100%;border:0;border-radius:14px;background:var(--brand);color:#fff;font-size:17px;font-weight:800;padding:15px;cursor:pointer;font-family:inherit;margin-top:16px;text-align:center;text-decoration:none}
+.btn:disabled{background:#B9CDD0}.btn.ghost{background:var(--soft);color:var(--deep)}.btn.red{background:#FDE6E3;color:#B03A2E}
+.row2{display:flex;gap:8px}.row2 .btn{flex:1}
+.sum{background:#F2FAFA;border:1px solid #CFE8E6;border-radius:14px;padding:14px;font-size:15px;line-height:1.75}
+.sum b{color:var(--deep)}.sum .big{font-size:19px;font-weight:800;color:var(--deep);margin-bottom:4px;line-height:1.4}
+.err{color:#C0392B;font-size:14.5px;line-height:1.5;margin-top:10px;min-height:0}
+.done{text-align:center;padding:8px 0 4px}.done .ic{font-size:60px;line-height:1}.done h2{justify-content:center;font-size:22px;margin:12px 0 6px}.done p{color:var(--muted);margin:0 0 14px;font-size:15px;line-height:1.6}
+.badge{display:inline-block;border-radius:999px;padding:3px 10px;font-size:13px;font-weight:800}.badge.예약확정{background:#E1EEFB;color:#235C9C}.badge.상담완료{background:#E3F5EA;color:#1F6E40}.badge.취소{background:#EEF1F3;color:#5F6E7C}.badge.노쇼{background:#FDE6E3;color:#B03A2E}
+.bar{display:flex;align-items:center;gap:10px;background:#FFF6E0;border:1px solid #F2D58A;color:#7A5300;border-radius:14px;padding:12px 14px;font-size:14.5px;margin-bottom:12px}.bar button{margin-left:auto;flex:none;border:0;border-radius:10px;background:#7A5300;color:#fff;font-weight:700;padding:8px 12px;font-family:inherit;cursor:pointer}
+.foot{text-align:center;margin-top:18px;font-size:13.5px;color:var(--muted)}
+.spin{display:inline-block;width:18px;height:18px;border:3px solid #CFE5E4;border-top-color:var(--brand);border-radius:50%;animation:s .8s linear infinite;vertical-align:-3px;margin-right:6px}@keyframes s{to{transform:rotate(360deg)}}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1B2733;color:#fff;border-radius:999px;padding:10px 18px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}.toast.on{opacity:.92}
+</style></head><body><div class="wrap">
+<div class="head"><img src="/logo.webp" alt=""><div><div class="acad">청명학원 영어과</div><h1 id="ttl">신입생 상담 예약</h1></div></div>
+<div id="app"><div class="card"><span class="spin"></span>불러오는 중…</div></div>
+<div class="foot" id="foot"></div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+(function () {
+  var API = "/api/monthly", LS = "cm-consult-k", DAYS = "일월화수목금토";
+  var $ = function (id) { return document.getElementById(id); }, app = $("app");
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function lsGet() { try { return localStorage.getItem(LS) || ""; } catch (e) { return ""; } }
+  function lsSet(v) { try { if (v) localStorage.setItem(LS, v); else localStorage.removeItem(LS); } catch (e) {} }
+  function post(b) {
+    return fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { j._s = r.status; return j; }); })
+      .catch(function () { return { _s: 0, msg: "인터넷 연결을 확인해 주세요." }; });
+  }
+  function toast(t) { var el = $("toast"); el.textContent = t; el.classList.add("on"); setTimeout(function () { el.classList.remove("on"); }, 1800); }
+  function copy(t) { try { navigator.clipboard.writeText(t).then(function () { toast("복사했어요"); }, function () { prompt("아래 주소를 복사해 주세요", t); }); } catch (e) { prompt("아래 주소를 복사해 주세요", t); } }
+  function dlabel(d) { var x = new Date(d + "T00:00:00Z"); return (x.getUTCMonth() + 1) + "월 " + x.getUTCDate() + "일(" + DAYS[x.getUTCDay()] + ")"; }
+  function ampm(hm) { var h = +hm.slice(0, 2), m = hm.slice(3); return (h < 12 ? "오전 " : "오후 ") + (h % 12 === 0 ? 12 : h % 12) + ":" + m; }
+  var INFO = null, SLOTS = {}, TODAY = "", S = { date: "", hm: "", grade: "", mode: "", month: "" }, MOVE = null;
+  var params = new URLSearchParams(location.search);
+
+  function foot() {
+    var t = INFO && INFO.tel ? '문의 <a href="tel:' + esc(INFO.tel.replace(/[^\d+]/g, "")) + '" style="color:#0A5F61;font-weight:700">' + esc(INFO.tel) + "</a> · " : "";
+    $("foot").innerHTML = t + '<button class="lk" id="findBtn">예약 확인·변경하기</button>';
+    $("findBtn").onclick = findView;
+  }
+
+  // =================== 달력 + 시간 ===================
+  function picker(el, onPick, title) {
+    var keys = Object.keys(SLOTS).sort();
+    var first = (TODAY || keys[0] || "").slice(0, 7), last = (keys[keys.length - 1] || first).slice(0, 7);
+    if (!S.month || S.month < first || S.month > last) S.month = (S.date || keys[0] || first).slice(0, 7);
+    function draw() {
+      var y = +S.month.slice(0, 4), m = +S.month.slice(5, 7), d1 = new Date(Date.UTC(y, m - 1, 1)), nd = new Date(Date.UTC(y, m, 0)).getUTCDate();
+      var h = '<h2><span class="n">1</span>' + esc(title || "날짜와 시간을 골라 주세요") + "</h2>";
+      h += '<div class="mon"><button id="pv" aria-label="이전 달"' + (S.month <= first ? " disabled" : "") + '>‹</button><b>' + y + "년 " + m + '월</b><button id="nx" aria-label="다음 달"' + (S.month >= last ? " disabled" : "") + ">›</button></div>";
+      h += '<div class="cal">' + DAYS.split("").map(function (w, i) { return '<div class="w' + (i === 0 ? " su" : i === 6 ? " sa" : "") + '">' + w + "</div>"; }).join("");
+      for (var i = 0; i < d1.getUTCDay(); i++) h += "<span></span>";
+      for (var d = 1; d <= nd; d++) {
+        var ds = S.month + "-" + String(d).padStart(2, "0"), on = !!SLOTS[ds];
+        h += '<button data-d="' + ds + '" class="' + (on ? "on" : "") + (ds === S.date ? " pick" : "") + (ds === TODAY ? " today" : "") + '"' + (on ? ' aria-label="' + dlabel(ds) + ' 예약 가능"' : " disabled") + ">" + d + "</button>";
+      }
+      h += "</div>";
+      if (!keys.length) h += '<p class="empty" style="margin-top:12px">지금은 예약할 수 있는 시간이 없어요. 학원으로 연락 주시면 시간을 맞춰 드릴게요.</p>';
+      h += '<div class="times" id="times"></div>';
+      el.innerHTML = h;
+      if ($("pv")) $("pv").onclick = function () { var x = new Date(Date.UTC(y, m - 2, 1)); S.month = x.toISOString().slice(0, 7); draw(); };
+      if ($("nx")) $("nx").onclick = function () { var x = new Date(Date.UTC(y, m, 1)); S.month = x.toISOString().slice(0, 7); draw(); };
+      el.querySelectorAll(".cal button.on").forEach(function (b) { b.onclick = function () { S.date = b.getAttribute("data-d"); S.hm = ""; draw(); var t = $("times"); if (t && t.scrollIntoView) t.scrollIntoView({ behavior: "smooth", block: "nearest" }); }; });
+      times();
+    }
+    function times() {
+      var t = $("times"); if (!t) return;
+      if (!S.date || !SLOTS[S.date]) { t.innerHTML = keys.length ? '<p class="empty" style="margin-top:12px">● 표시된 날짜를 눌러 주세요.</p>' : ""; return; }
+      var am = SLOTS[S.date].filter(function (x) { return x < "12:00"; }), pm = SLOTS[S.date].filter(function (x) { return x >= "12:00"; });
+      var chip = function (l) { return '<div class="chips">' + l.map(function (x) { return '<button data-h="' + x + '" class="' + (x === S.hm ? "pick" : "") + '">' + x + "</button>"; }).join("") + "</div>"; };
+      t.innerHTML = '<h3 style="color:#0A5F61;font-size:15px">' + dlabel(S.date) + "</h3>" + (am.length ? "<h3>오전</h3>" + chip(am) : "") + (pm.length ? "<h3>오후</h3>" + chip(pm) : "");
+      t.querySelectorAll("button[data-h]").forEach(function (b) { b.onclick = function () { S.hm = b.getAttribute("data-h"); onPick(S.date, S.hm); }; });
+    }
+    draw();
+  }
+
+  // =================== 처음 화면 (예약하기) ===================
+  function home() {
+    MOVE = null; history.replaceState(null, "", location.pathname);
+    app.innerHTML = '<div class="card"><span class="spin"></span>예약 가능한 시간을 불러오는 중…</div>';
+    post({ action: "consult_info" }).then(function (j) {
+      if (!j.ok) { app.innerHTML = '<div class="card"><p class="err">' + esc(j.msg || "불러오지 못했어요.") + '</p><button class="btn ghost" id="re">다시 시도</button></div>'; $("re").onclick = home; return; }
+      INFO = j.info; SLOTS = j.slots || {}; TODAY = j.today || ""; document.title = INFO.title + " · 청명학원"; $("ttl").textContent = INFO.title; foot();
+      var saved = lsGet(), h = "";
+      if (saved) h += '<div class="bar">📌 이 기기로 예약하신 상담이 있어요<button id="mine">확인하기</button></div>';
+      h += '<div class="card"><p class="intro">' + esc(INFO.intro) + '</p><div class="meta"><span>⏱ ' + INFO.dur + "분</span>" + (INFO.place ? "<span>📍 " + esc(INFO.place) + "</span>" : "") + INFO.modes.map(function (m) { return "<span>" + (/전화/.test(m) ? "📞 " : /화상|온라인|줌/.test(m) ? "💻 " : "🏫 ") + esc(m) + "</span>"; }).join("") + "</div></div>";
+      if (j.closed) h += '<div class="card"><p class="empty">지금은 온라인 상담 예약을 받지 않고 있어요.' + (INFO.tel ? "<br>학원(" + esc(INFO.tel) + ")으로 연락 주시면 안내해 드릴게요." : "") + "</p></div>";
+      else h += '<div class="card" id="pick"></div>';
+      app.innerHTML = h;
+      if ($("mine")) $("mine").onclick = function () { manage(saved); };
+      if (!j.closed) picker($("pick"), function () { form(); });
+    });
+  }
+
+  // =================== 정보 입력 ===================
+  function form() {
+    var g = INFO.grades, m = INFO.modes;
+    if (m.length === 1) S.mode = m[0];
+    var h = '<div class="card"><h2><span class="n">2</span>정보를 적어 주세요</h2>';
+    h += '<div class="sum"><div class="big">' + dlabel(S.date) + " " + ampm(S.hm) + '</div>상담 ' + INFO.dur + "분" + (INFO.place ? " · " + esc(INFO.place) : "") + ' &nbsp;<button class="lk" id="chg">시간 바꾸기</button></div>';
+    h += '<label class="l" for="fParent">학부모님 성함</label><input id="fParent" autocomplete="name" maxlength="20" placeholder="예: 김민지">';
+    h += '<label class="l" for="fPhone">휴대폰 번호 <small>예약 안내 문자를 보내 드려요</small></label><input id="fPhone" type="tel" inputmode="numeric" autocomplete="tel" maxlength="13" placeholder="010-1234-5678">';
+    h += '<label class="l" for="fStudent">학생 이름</label><input id="fStudent" maxlength="20" placeholder="예: 이준서">';
+    h += '<label class="l">학년</label><div class="opts" id="fGrade">' + g.map(function (x) { return '<button type="button" data-v="' + esc(x) + '" class="' + (x === S.grade ? "pick" : "") + '">' + esc(x) + "</button>"; }).join("") + "</div>";
+    h += '<label class="l" for="fSchool">학교 <small>(선택)</small></label><input id="fSchool" maxlength="30" placeholder="예: 대전중학교">';
+    h += '<label class="l">상담 방식</label><div class="opts" id="fMode">' + m.map(function (x) { return '<button type="button" data-v="' + esc(x) + '" class="' + (x === S.mode ? "pick" : "") + '">' + esc(x) + "</button>"; }).join("") + "</div>";
+    h += '<label class="l" for="fAsk">궁금하신 점 <small>(선택) 미리 알려 주시면 준비해 둘게요</small></label><textarea id="fAsk" maxlength="600" placeholder="예: 현재 영어 공부 상황, 내신 대비, 반 편성, 수업 시간 등"></textarea>';
+    h += '<input class="hp" id="fHp" tabindex="-1" autocomplete="off" aria-hidden="true">';
+    h += '<label class="agree"><input type="checkbox" id="fAgree"><span>개인정보 수집·이용에 동의합니다. <button type="button" class="lk" id="pvBtn">자세히</button></span></label>';
+    h += '<div class="pv" id="pv">· 수집 항목: 학부모 성함, 휴대폰 번호, 학생 이름·학년·학교, 문의 내용<br>· 이용 목적: 상담 예약 확인, 일정 안내 문자 발송, 상담 진행<br>· 보유 기간: 상담 후 1년 (요청하시면 바로 삭제해 드려요)<br>· 동의하지 않으셔도 되지만, 그 경우 온라인 예약은 어렵고 학원으로 전화 주시면 예약해 드려요.</div>';
+    h += '<div class="err" id="fErr"></div><button class="btn" id="fGo">예약하기</button></div>';
+    app.innerHTML = h; window.scrollTo(0, 0);
+    var F = S.f || {};
+    [["fParent", "parent"], ["fPhone", "phone"], ["fStudent", "student"], ["fSchool", "school"], ["fAsk", "ask"]].forEach(function (x) { if (F[x[1]]) $(x[0]).value = F[x[1]]; });
+    var keep = function () { S.f = { parent: $("fParent").value, phone: $("fPhone").value, student: $("fStudent").value, school: $("fSchool").value, ask: $("fAsk").value }; };
+    $("chg").onclick = function () { keep(); home2(); };
+    $("pvBtn").onclick = function () { var p = $("pv"); p.style.display = p.style.display === "block" ? "none" : "block"; };
+    $("fPhone").oninput = function () { var d = this.value.replace(/\D/g, "").slice(0, 11); this.value = d.length < 4 ? d : d.length < 8 ? d.slice(0, 3) + "-" + d.slice(3) : d.slice(0, 3) + "-" + d.slice(3, d.length - 4) + "-" + d.slice(-4); };
+    [["fGrade", "grade"], ["fMode", "mode"]].forEach(function (x) {
+      $(x[0]).querySelectorAll("button").forEach(function (b) { b.onclick = function () { S[x[1]] = b.getAttribute("data-v"); $(x[0]).querySelectorAll("button").forEach(function (o) { o.classList.toggle("pick", o === b); }); }; });
+    });
+    $("fGo").onclick = function () {
+      var e = $("fErr"), body = { action: "consult_book", date: S.date, hm: S.hm, parent: $("fParent").value.trim(), phone: $("fPhone").value, student: $("fStudent").value.trim(), grade: S.grade, school: $("fSchool").value.trim(), mode: S.mode, ask: $("fAsk").value, agree: $("fAgree").checked, hp: $("fHp").value };
+      if (!body.parent) return (e.textContent = "학부모님 성함을 적어 주세요.");
+      if (!/^01[016789]\d{7,8}$/.test(body.phone.replace(/\D/g, ""))) return (e.textContent = "휴대폰 번호를 정확히 적어 주세요.");
+      if (!body.student) return (e.textContent = "학생 이름을 적어 주세요.");
+      if (!body.grade) return (e.textContent = "학년을 골라 주세요.");
+      if (!body.mode) return (e.textContent = "상담 방식을 골라 주세요.");
+      if (!body.agree) return (e.textContent = "개인정보 수집·이용에 동의해 주세요.");
+      e.textContent = ""; var btn = this; btn.disabled = true; btn.innerHTML = '<span class="spin"></span>예약하는 중…';
+      post(body).then(function (j) {
+        btn.disabled = false; btn.textContent = "예약하기";
+        if (j.ok) { lsSet(j.token); S.f = null; return done(j.book, j.token); }
+        e.textContent = j.msg || "예약하지 못했어요. 다시 시도해 주세요.";
+        if (j.taken) { e.innerHTML = esc(j.msg) + ' <button class="lk" id="again">다른 시간 고르기</button>'; $("again").onclick = function () { keep(); home2(); }; }
+      });
+    };
+  }
+  // 입력한 정보는 그대로 두고 시간만 다시 고르기
+  function home2() {
+    app.innerHTML = '<div class="card"><span class="spin"></span>불러오는 중…</div>';
+    post({ action: "consult_info" }).then(function (j) {
+      SLOTS = (j && j.slots) || {}; app.innerHTML = '<div class="card" id="pick"></div><button class="btn ghost" id="bk">← 처음으로</button>';
+      $("bk").onclick = home; picker($("pick"), function () { form(); });
+    });
+  }
+
+  // =================== 예약 완료 ===================
+  function sumHtml(b) {
+    return '<div class="sum"><div class="big">' + esc(b.label.replace(/ (\d\d:\d\d)$/, "")) + " " + ampm(b.hm) + " ~ " + ampm(b.endHm).replace(/^오[전후] /, "") + "</div>" +
+      "<b>학생</b> " + esc(b.student) + (b.grade ? " (" + esc(b.grade) + ")" : "") + (b.school ? " · " + esc(b.school) : "") + "<br><b>학부모</b> " + esc(b.parent) + " · " + esc(b.phone) +
+      "<br><b>방식</b> " + esc(b.mode) + (b.place && !/전화/.test(b.mode) ? "<br><b>장소</b> " + esc(b.place) : "") + (b.ask ? '<br><b>문의</b> <span style="white-space:pre-line">' + esc(b.ask) + "</span>" : "") + "</div>";
+  }
+  function done(b, token) {
+    var link = location.origin + "/consult.html?b=" + token;
+    app.innerHTML = '<div class="card"><div class="done"><div class="ic">✅</div><h2>예약이 확정되었어요</h2><p>' + esc(b.phone) + " 번호로 안내 문자를 보내 드려요.<br>상담 전에 한 번 더 알려 드릴게요.</p></div>" + sumHtml(b) +
+      '<div class="row2"><button class="btn ghost" id="ics">📅 캘린더 추가</button><button class="btn ghost" id="cp">🔗 링크 복사</button></div>' +
+      '<p class="empty" style="font-size:13.5px;margin-top:12px">시간 변경·취소는 안내 문자의 링크나, 이 페이지 아래 <b>예약 확인·변경하기</b>에서 하실 수 있어요.</p></div>';
+    window.scrollTo(0, 0);
+    $("ics").onclick = function () { ics(b); };
+    $("cp").onclick = function () { copy(link); };
+    history.replaceState(null, "", "/consult.html?b=" + token);
+  }
+  function ics(b) {
+    var z = function (iso) { return new Date(iso).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, ""); };
+    var e = function (s) { return String(s || "").replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n"); };
+    var t = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//cmacademy//consult//KO", "BEGIN:VEVENT", "UID:" + Date.now() + "@cmacademy", "DTSTAMP:" + z(new Date().toISOString()), "DTSTART:" + z(b.start), "DTEND:" + z(b.end),
+      "SUMMARY:" + e("청명학원 상담 (" + b.student + ")"), "LOCATION:" + e(/전화/.test(b.mode) ? "전화 상담" : b.place), "DESCRIPTION:" + e(b.mode + (b.link ? "\n예약 확인·변경: " + b.link : "")),
+      "BEGIN:VALARM", "TRIGGER:-PT1H", "ACTION:DISPLAY", "DESCRIPTION:" + e("청명학원 상담 1시간 전"), "END:VALARM", "END:VEVENT", "END:VCALENDAR"].join("\r\n");
+    var blob = new Blob([t], { type: "text/calendar;charset=utf-8" }), a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = "청명학원_상담.ics"; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }
+
+  // =================== 예약 확인·변경·취소 ===================
+  function manage(token) {
+    app.innerHTML = '<div class="card"><span class="spin"></span>예약을 확인하는 중…</div>';
+    post({ action: "consult_get", k: token }).then(function (j) {
+      if (!j.ok) { if (token === lsGet()) lsSet(""); app.innerHTML = '<div class="card"><p class="err">' + esc(j.msg || "예약을 찾지 못했어요.") + '</p><button class="btn" id="hm">상담 예약하러 가기</button><button class="btn ghost" id="fd">번호로 예약 찾기</button></div>'; $("hm").onclick = home; $("fd").onclick = findView; return; }
+      INFO = j.info || INFO; if (INFO) { $("ttl").textContent = INFO.title; foot(); }
+      var b = j.book, h = '<div class="card"><h2>📋 상담 예약 <span class="badge ' + esc(b.state) + '">' + esc(b.state) + "</span></h2>" + sumHtml(b);
+      if (b.canChange) h += '<div class="row2"><button class="btn" id="mv">시간 바꾸기</button><button class="btn red" id="cc">예약 취소</button></div><button class="btn ghost" id="ics">📅 내 캘린더에 추가</button>';
+      else if (b.state === "예약확정" && !b.past) h += '<p class="empty" style="margin-top:12px">상담 시간이 가까워 온라인으로는 바꿀 수 없어요.' + (b.tel ? ' 변경이 필요하시면 <a href="tel:' + esc(b.tel.replace(/[^\d+]/g, "")) + '">' + esc(b.tel) + "</a>로 연락 주세요." : " 학원으로 연락 주세요.") + "</p>";
+      else if (b.state === "취소") h += '<button class="btn" id="nb">새로 예약하기</button>';
+      h += "</div>";
+      app.innerHTML = h; history.replaceState(null, "", "/consult.html?b=" + token); lsSet(b.state === "예약확정" && !b.past ? token : "");
+      if ($("ics")) $("ics").onclick = function () { ics(b); };
+      if ($("nb")) $("nb").onclick = home;
+      if ($("cc")) $("cc").onclick = function () { cancelView(token, b); };
+      if ($("mv")) $("mv").onclick = function () { moveView(token, b); };
+    });
+  }
+  function cancelView(token, b) {
+    app.innerHTML = '<div class="card"><h2>예약을 취소할까요?</h2>' + sumHtml(b) + '<label class="l" for="rs">취소 사유 <small>(선택)</small></label><textarea id="rs" maxlength="200" placeholder="예: 일정이 생겼어요"></textarea><div class="err" id="cErr"></div>' +
+      '<div class="row2"><button class="btn ghost" id="no">돌아가기</button><button class="btn red" id="yes">예약 취소하기</button></div></div>';
+    $("no").onclick = function () { manage(token); };
+    $("yes").onclick = function () {
+      var btn = this; btn.disabled = true;
+      post({ action: "consult_cancel", k: token, reason: $("rs").value }).then(function (j) {
+        btn.disabled = false; if (!j.ok) return ($("cErr").textContent = j.msg || "취소하지 못했어요.");
+        lsSet(""); toast("예약을 취소했어요"); manage(token);
+      });
+    };
+  }
+  function moveView(token, b) {
+    app.innerHTML = '<div class="card"><span class="spin"></span>바꿀 수 있는 시간을 불러오는 중…</div>';
+    post({ action: "consult_info", k: token }).then(function (j) {
+      SLOTS = (j && j.slots) || {}; TODAY = (j && j.today) || TODAY; S.date = ""; S.hm = ""; S.month = "";
+      app.innerHTML = '<div class="card"><div class="sum" style="margin-bottom:14px">지금 예약: <b>' + esc(b.label) + '</b></div><div id="pick"></div></div><button class="btn ghost" id="bk">← 돌아가기</button>';
+      $("bk").onclick = function () { manage(token); };
+      picker($("pick"), function (d, hm) {
+        if (d === b.date && hm === b.hm) return toast("지금 예약과 같은 시간이에요");
+        if (!confirm(dlabel(d) + " " + ampm(hm) + "(으)로 바꿀까요?")) return;
+        post({ action: "consult_move", k: token, date: d, hm: hm }).then(function (r) {
+          if (!r.ok) { alert(r.msg || "바꾸지 못했어요."); return moveView(token, b); }
+          toast("시간을 바꿨어요"); manage(token);
+        });
+      }, "바꿀 날짜와 시간을 골라 주세요");
+    });
+  }
+  function findView() {
+    app.innerHTML = '<div class="card"><h2>🔎 예약 확인·변경하기</h2><p class="empty" style="margin:-4px 0 4px">예약하실 때 적은 번호와 학생 이름으로 찾아요.</p>' +
+      '<label class="l" for="qPhone">휴대폰 번호</label><input id="qPhone" type="tel" inputmode="numeric" maxlength="13" placeholder="010-1234-5678">' +
+      '<label class="l" for="qStu">학생 이름</label><input id="qStu" maxlength="20"><div class="err" id="qErr"></div><button class="btn" id="qGo">예약 찾기</button><button class="btn ghost" id="qBk">← 상담 예약하기</button></div>';
+    window.scrollTo(0, 0);
+    $("qBk").onclick = home;
+    $("qGo").onclick = function () {
+      var btn = this; btn.disabled = true;
+      post({ action: "consult_find", phone: $("qPhone").value, student: $("qStu").value }).then(function (j) {
+        btn.disabled = false; if (!j.ok) return ($("qErr").textContent = j.msg || "찾지 못했어요.");
+        lsSet(j.token); manage(j.token);
+      });
+    };
+  }
+
+  var k = params.get("b");
+  if (k) manage(k); else home();
+})();
+</script>
+</body></html>

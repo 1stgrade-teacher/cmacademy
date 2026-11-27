@@ -606,15 +606,15 @@ async function notifyParent(pp, who, recId, r) { // r: { right, total, pct, nRig
   const how = notifyOf(pp); if (!how) return "";
   try {
     const st = await notion("pages/" + id32(who.sid), "GET"); if (!st) return "📲 알림 못 보냄 (학생 정보 읽기 실패)";
-    if (P.chk(st, "알림 끄기")) return "📲 알림 꺼진 학생";
-    const ph = N_().phone((st.properties["학부모 연락처"] || {}).phone_number || ""); if (!ph) return "📲 학부모 연락처 없음";
+    const ph = N_().phone((st.properties["학부모 연락처"] || {}).phone_number || "");
     if (how === "first") { const a = (await attemptsOf(pp.id, who.sid, true)) || []; if (a.some((x) => normId(x.id) !== normId(recId))) return "📲 오늘 이미 보냄 (하루 첫 응시만)"; }
     const ps = passCfg(pp.cfg && pp.cfg.pass);
     const passOk = ps ? (ps.by === "cnt" ? r.nRight >= ps.v : r.pct >= ps.v) : null;
     const vars = { 학생: who.name, 시험: clip(String(pp.title).replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\uFE0F]/gu, "").replace(/\s+/g, " ").trim(), 40), 범위: clip(r.range, 60) || "-", 점수: r.weighted ? r.right + " / " + r.total + "점" : r.right + " / " + r.total + "문항 (" + r.pct + "점)",
       결과: ps ? (passOk ? "통과" : "재시험 필요 (통과 기준 " + (ps.by === "cnt" ? ps.v + "개" : ps.v + "점") + ")") : gradeOf(r.pct), 일시: kstWhen() };
-    const out = (await N_().sendMany([{ to: ph, vars }], TEST_TPL))[0] || {};
-    return "📲 " + (out.ok ? out.msg : out.how === "off" ? "알림 발송 설정 전" : out.msg || "알림 실패");
+    const d = await ALERT().deliver(st, { kind: "시험", title: "📝 " + who.name + " · 시험 결과", body: vars.시험 + (vars.범위 && vars.범위 !== "-" ? " (" + vars.범위 + ")" : "") + "\n점수 " + vars.점수 + " · " + vars.결과 + "\n" + vars.일시 + " 응시", by: "자동 알림" },
+      ph && !P.chk(st, "알림 끄기") ? async () => { const out = (await N_().sendMany([{ to: ph, vars }], TEST_TPL))[0] || {}; return { ok: out.ok, msg: out.ok ? out.msg : out.how === "off" ? "" : out.msg || "문자 실패" }; } : null);
+    return d.note;
   } catch (e) { return "📲 알림 실패"; }
 }
 const N_ = () => require("./_notify.js");
@@ -658,6 +658,78 @@ async function makeSheet(pp, uids, sid) {
 }
 
 // ---------- 학생 본인 확인 (학습 인증과 같은 번호를 씀) ----------
+// 🔗 노션 분석 리포트를 우리 사이트(/r?k=…)에서 공유 없이 보여 주는 서명 링크
+const repSig = (id) => crypto.createHmac("sha256", secret()).update("rep|" + id).digest("hex").slice(0, 20);
+function webRep(host, url) { const m = String(url || "").replace(/-/g, "").match(/([0-9a-f]{32})(?:[?#]|$)/i); if (!m) return ""; const id = m[1].toLowerCase(); return "https://" + (host || "cmacademy.vercel.app") + "/r?k=" + id + "." + repSig(id); }
+async function blockKids(id, depth) {
+  const out = []; let cur = "";
+  for (let i = 0; i < 10; i++) {
+    const j = await notion("blocks/" + id32(id) + "/children?page_size=100" + (cur ? "&start_cursor=" + cur : ""), "GET"); if (!j) break;
+    out.push(...(j.results || [])); if (!j.has_more) break; cur = j.next_cursor;
+  }
+  if (depth < 3) await Promise.all(out.filter((b) => b.has_children && b.type !== "child_page" && b.type !== "child_database").map(async (b) => { b._kids = await blockKids(b.id, depth + 1); }));
+  return out;
+}
+function renderBlocks(list) {
+  const h = (v) => String(v == null ? "" : v).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  const COL = { gray: "#6B7280", brown: "#8B5E3C", orange: "#C2410C", yellow: "#A16207", green: "#15803D", blue: "#1D4ED8", purple: "#7E22CE", pink: "#BE185D", red: "#B91C1C" };
+  const rtx = (arr) => (arr || []).map((t) => {
+    let x = h(t.plain_text != null ? t.plain_text : (t.text || {}).content || "").replace(/\n/g, "<br>"); const a = t.annotations || {};
+    if (a.code) x = "<code>" + x + "</code>"; if (a.bold) x = "<b>" + x + "</b>"; if (a.italic) x = "<i>" + x + "</i>"; if (a.underline) x = "<u>" + x + "</u>"; if (a.strikethrough) x = "<s>" + x + "</s>";
+    const c = a.color && a.color !== "default" ? a.color.replace("_background", "") : ""; if (c && COL[c]) x = '<span style="' + (/_background$/.test(a.color) ? "background:" + COL[c] + "22" : "color:" + COL[c]) + '">' + x + "</span>";
+    const href = t.href || (t.text && t.text.link && t.text.link.url); if (href && /^https?:/.test(href)) x = '<a href="' + h(href) + '" target="_blank" rel="noopener">' + x + "</a>";
+    return x;
+  }).join("");
+  let out = "", i = 0;
+  while (i < list.length) {
+    const b = list[i], d = b[b.type] || {}, kids = b._kids ? renderBlocks(b._kids) : "";
+    if (b.type === "bulleted_list_item" || b.type === "numbered_list_item") {
+      const tag = b.type === "bulleted_list_item" ? "ul" : "ol"; let li = "";
+      while (i < list.length && list[i].type === b.type) { const x = list[i], xd = x[x.type]; li += "<li>" + rtx(xd.rich_text) + (x._kids ? renderBlocks(x._kids) : "") + "</li>"; i++; }
+      out += "<" + tag + ">" + li + "</" + tag + ">"; continue;
+    }
+    i++;
+    switch (b.type) {
+      case "paragraph": out += d.rich_text && d.rich_text.length ? "<p>" + rtx(d.rich_text) + "</p>" + kids : '<div class="sp"></div>'; break;
+      case "heading_1": out += "<h1>" + rtx(d.rich_text) + "</h1>" + kids; break;
+      case "heading_2": out += "<h2>" + rtx(d.rich_text) + "</h2>" + kids; break;
+      case "heading_3": out += "<h3>" + rtx(d.rich_text) + "</h3>" + kids; break;
+      case "quote": out += "<blockquote>" + rtx(d.rich_text) + kids + "</blockquote>"; break;
+      case "callout": out += '<div class="callout"><span class="ci">' + h((d.icon && d.icon.emoji) || "💡") + "</span><div>" + rtx(d.rich_text) + kids + "</div></div>"; break;
+      case "toggle": out += "<details><summary>" + rtx(d.rich_text) + "</summary>" + kids + "</details>"; break;
+      case "to_do": out += '<p>' + (d.checked ? "☑️ " : "⬜ ") + rtx(d.rich_text) + "</p>" + kids; break;
+      case "divider": out += "<hr>"; break;
+      case "code": out += "<pre>" + rtx(d.rich_text) + "</pre>"; break;
+      case "image": { const u = d.type === "external" ? d.external.url : d.file && d.file.url; if (u) out += '<figure><img src="' + h(u) + '" alt="">' + (d.caption && d.caption.length ? "<figcaption>" + rtx(d.caption) + "</figcaption>" : "") + "</figure>"; break; }
+      case "bookmark": case "link_preview": case "embed": case "video": { const u = d.url || (d.external && d.external.url) || ""; if (u) out += '<p><a class="bm" href="' + h(u) + '" target="_blank" rel="noopener">🔗 ' + (d.caption && d.caption.length ? rtx(d.caption) : h(u)) + "</a></p>"; break; }
+      case "table": { const rows = (b._kids || []).filter((r) => r.type === "table_row"); out += '<div class="tw"><table>' + rows.map((r, ri) => "<tr>" + r.table_row.cells.map((c) => (ri === 0 && d.has_column_header ? "<th>" : "<td>") + rtx(c) + (ri === 0 && d.has_column_header ? "</th>" : "</td>")).join("") + "</tr>").join("") + "</table></div>"; break; }
+      case "column_list": out += '<div class="cols">' + (b._kids || []).map((c) => "<div>" + (c._kids ? renderBlocks(c._kids) : "") + "</div>").join("") + "</div>"; break;
+      default: if (d.rich_text) out += "<p>" + rtx(d.rich_text) + "</p>"; out += kids;
+    }
+  }
+  return out;
+}
+// ✏️ 리포트 고치기: 노션 글 ↔ 간단 표시(**굵게**, `코드`, ⟪밑줄⟫)
+const EDIT_T = ["paragraph", "heading_1", "heading_2", "heading_3", "bulleted_list_item", "numbered_list_item", "quote", "callout", "toggle", "to_do"];
+function rtToMark(arr) { return (arr || []).map((t) => { const x = t.plain_text != null ? t.plain_text : (t.text || {}).content || "", a = t.annotations || {}; return a.code ? "`" + x + "`" : a.bold ? "**" + x + "**" : a.underline ? "⟪" + x + "⟫" : x; }).join("").replace(/\*\*\*\*/g, ""); }
+function markToRt(s, keep) { // keep: 원래 rich_text (링크·색은 글이 안 바뀌었으면 그대로)
+  s = String(s == null ? "" : s); const out = [], re = /(\*\*[^*]+\*\*|`[^`]+`|⟪[^⟫]+⟫)/g; let last = 0, m;
+  const push = (t, ann) => { for (let i = 0; i < t.length; i += 1900) out.push({ type: "text", text: { content: t.slice(i, i + 1900) }, annotations: Object.assign({ bold: false, italic: false, strikethrough: false, underline: false, code: false, color: "default" }, ann || {}) }); };
+  while ((m = re.exec(s))) { if (m.index > last) push(s.slice(last, m.index)); const t = m[0]; if (t[0] === "*") push(t.slice(2, -2), { bold: true }); else if (t[0] === "⟪") push(t.slice(1, -1), { underline: true }); else push(t.slice(1, -1), { code: true }); last = m.index + t.length; }
+  if (last < s.length) push(s.slice(last));
+  return out.slice(0, 95);
+}
+function flatBlocks(list, depth, out) {
+  (list || []).forEach((b) => {
+    const d = b[b.type] || {};
+    if (b.type === "table") { out.push({ id: b.id, type: "table", depth, rows: (b._kids || []).filter((r) => r.type === "table_row").map((r) => ({ id: r.id, cells: r.table_row.cells.map(rtToMark) })) }); return; }
+    if (EDIT_T.includes(b.type)) out.push({ id: b.id, type: b.type, depth, text: rtToMark(d.rich_text), icon: b.type === "callout" && d.icon && d.icon.emoji || undefined, links: (d.rich_text || []).some((t) => t.href) || undefined });
+    else out.push({ id: b.id, type: b.type, depth, ro: 1, text: b.type === "divider" ? "──────" : b.type === "image" ? "🖼 그림" : (d.url || (d.external && d.external.url) || "") });
+    if (b._kids && b.type !== "table") flatBlocks(b._kids, depth + 1, out);
+  });
+  return out;
+}
+const repKey = (k) => { const m = String(k || "").match(/([0-9a-f]{32})\.([0-9a-f]{20})/); return m && m[2] === repSig(m[1]) ? m[1] : ""; };
 function secret() { return process.env.REPORT_SECRET || process.env.NOTION_TOKEN || "cm"; }
 function signToken(obj) { const body = b64u(JSON.stringify(obj)); return body + "." + b64u(crypto.createHmac("sha256", secret()).update(body).digest()); }
 function readToken(t, game) { // game: 🏆 단어 게임용 긴 토큰(sc:"g")도 받기
@@ -856,14 +928,17 @@ async function studentClasses() {
   return stuCls.list;
 }
 let _game = null; const GAME = () => _game || (_game = require("./_game.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, getLastErr: () => lastErr }));
-const HW = () => _hw || (_hw = require("./_homework.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, STUDENT_DB, listenUnit, getLastErr: () => lastErr }));
+const HW = () => _hw || (_hw = require("./_homework.js")({ ALERT: () => ALERT(), notion, queryAll, P, rt, sel, clip, uuid, normId, id32, roster, STUDENT_DB, listenUnit, getLastErr: () => lastErr }));
 // 🎧 받아쓰기 숙제용: 듣기 회차의 문항별 음성 + 대본
 function listenUnit(uid) { const d = unitData(uid); if (!d || d.area !== "듣기") return null; const items = (d.qs || []).filter((q) => q.script).map((q) => ({ id: q.id, audio: q.audio || "", script: q.script })); return items.length ? { name: d.name, book: d.book, items } : null; }
 let _lib = null; const LIB = () => _lib || (_lib = require("./_library.js")({ notion, queryAll, P, rt, rtLong, sel, clip, num, normId, id32, unitIndex, rangeText, getLastErr: () => lastErr }));
 let _sc = null; const SC = () => _sc || (_sc = require("./_schedule.js")({ notion, queryAll, P, rt, sel, clip, normId, id32, getLastErr: () => lastErr }));
 let _prt = null; const PRT = () => _prt || (_prt = require("./_print.js")({ notion, queryAll, P, uuid, normId, id32, STUDENT_DB, EXAM_DB, CERT_DB: () => id32(process.env.NOTION_DB_ID || "d6164dec4d2e461aa2f102de18814b7d"), GAME_DB: () => id32(process.env.NOTION_GAME_DB_ID || "3ef113187ca24388b1a68de4cc535144"), PLUS_DB: () => id32(process.env.NOTION_PLUS_DB_ID || "c539836a490b41ec98df5ddc0b384b6d"), HW, getLastErr: () => lastErr }));
-let _par = null; const PAR = () => _par || (_par = require("./_parent.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, EXAM_DB, CERT_DB: () => id32(process.env.NOTION_DB_ID || "d6164dec4d2e461aa2f102de18814b7d"), GAME_DB: () => id32(process.env.NOTION_GAME_DB_ID || "3ef113187ca24388b1a68de4cc535144"), HW, getLastErr: () => lastErr }));
-let _plus = null; const PLUS = () => _plus || (_plus = require("./_plus.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, SCHED_DB: () => SC().SCHED_DB(), secret, signToken, readToken, login, getLastErr: () => lastErr }));
+let _par = null; const PAR = () => _par || (_par = require("./_parent.js")({ ALERT: () => ALERT(), notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, EXAM_DB, CERT_DB: () => id32(process.env.NOTION_DB_ID || "d6164dec4d2e461aa2f102de18814b7d"), GAME_DB: () => id32(process.env.NOTION_GAME_DB_ID || "3ef113187ca24388b1a68de4cc535144"), HW, getLastErr: () => lastErr }));
+let _alert = null; const ALERT = () => _alert || (_alert = require("./_alert.js")({ notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, HW, secret, getLastErr: () => lastErr }));
+let _plus = null; const PLUS = () => _plus || (_plus = require("./_plus.js")({ ALERT, notion, queryAll, P, rt, sel, clip, uuid, normId, id32, STUDENT_DB, SCHED_DB: () => SC().SCHED_DB(), secret, signToken, readToken, login, getLastErr: () => lastErr }));
+let _con = null; const CON = () => _con || (_con = require("./_consult.js")({ notion, queryAll, P, rt, rtLong, sel, clip, uuid, normId, id32, HW, secret, getLastErr: () => lastErr })); // 📅 신규생 상담 예약
+const baseOf = (req) => (String(req.headers["x-forwarded-proto"] || "https").split(",")[0].trim() || "https") + "://" + String(req.headers["x-forwarded-host"] || req.headers.host || "cmacademy.vercel.app").split(",")[0].trim();
 const plusOut = (send, r) => send(r.status || 200, Object.assign({ ok: (r.status || 200) === 200 && r.ok !== false }, r, { status: undefined }));
 let _rep = null;
 function reporter() {
@@ -905,6 +980,28 @@ module.exports = async function handler(req, res) {
     res.statusCode = 200; res.setHeader("Content-Type", "application/manifest+json; charset=utf-8"); res.setHeader("Cache-Control", "private, max-age=3600");
     return res.end(JSON.stringify(PAR().manifest(k)));
   }
+  if (req.method === "GET" && /[?&]rv=1\b/.test(req.url || "")) { // 🔗 /r?k=… 분석 리포트 웹 보기 (노션 공유 없이)
+    const k = new URL(req.url, "http://x").searchParams.get("k") || "", m = k.match(/^([0-9a-f]{32})\.([0-9a-f]{20})$/);
+    const page = (code, title, body, desc) => { res.statusCode = code; res.setHeader("Content-Type", "text/html; charset=utf-8"); res.setHeader("Cache-Control", "no-store");
+      const hh = (v) => String(v).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+      return res.end('<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>' + hh(title) + '</title><meta property="og:title" content="' + hh(title) + '"><meta property="og:description" content="' + hh(desc || "청명학원 학습 분석 리포트") + '"><meta property="og:site_name" content="청명학원">' +
+        '<style>:root{--ink:#1F2933;--muted:#5F6E7C;--line:#E3EAEA;--brand:#145A5C;--bg:#F4F8F8}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 "Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;-webkit-text-size-adjust:100%}' +
+        '.wrap{max-width:760px;margin:0 auto;padding:18px 16px 40px}.paper{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 20px;box-shadow:0 4px 18px rgba(10,60,62,.06)}.top{display:flex;align-items:center;gap:8px;color:var(--brand);font-weight:800;margin:0 0 10px;font-size:14px}' +
+        'h1.t{font-size:23px;line-height:1.4;margin:0 0 14px}h2{font-size:20px;margin:28px 0 8px;padding-top:8px;border-top:2px solid #E6F2F1}h3{font-size:17px;margin:22px 0 6px;color:var(--brand)}p{margin:6px 0}.sp{height:8px}ul,ol{margin:4px 0;padding-left:22px}li{margin:2px 0}' +
+        'blockquote{margin:10px 0;padding:10px 14px;border-left:4px solid var(--brand);background:#F2F8F8;border-radius:0 10px 10px 0}.callout{display:flex;gap:10px;margin:10px 0;padding:12px 14px;background:#F7F7F5;border-radius:12px}.ci{font-size:20px;line-height:1.4}' +
+        '.tw{overflow-x:auto;margin:8px 0}table{border-collapse:collapse;width:100%;font-size:14.5px}th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}th,tr:first-child td{background:#F2F8F8}code{background:#FFF4E5;color:#9A3412;padding:1px 5px;border-radius:5px;font-size:.92em}' +
+        'hr{border:0;border-top:1px solid var(--line);margin:18px 0}img{max-width:100%;border-radius:10px}figure{margin:10px 0}figcaption{color:var(--muted);font-size:13px}a{color:#0F6E70}a.bm{display:inline-block;padding:6px 10px;border:1px solid var(--line);border-radius:10px;text-decoration:none;background:#FAFCFC}.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}' +
+        '.foot{color:var(--muted);font-size:12.5px;text-align:center;margin-top:16px}@media print{body{background:#fff}.paper{border:0;box-shadow:none;padding:0}.foot{display:none}}</style></head><body><div class="wrap"><div class="paper">' + body + '</div><div class="foot">청명학원 · 이 링크는 학부모님께만 보내 드린 주소예요</div></div></body></html>');
+    };
+    if (!m || m[2] !== repSig(m[1])) return page(404, "리포트를 찾을 수 없어요", '<h1 class="t">리포트를 찾을 수 없어요</h1><p>주소가 잘못되었거나 바뀌었어요. 선생님께 새 링크를 받아 주세요.</p>');
+    const pg = await notion("pages/" + id32(m[1]), "GET");
+    if (!pg || pg.archived || pg.in_trash) return page(404, "리포트를 찾을 수 없어요", '<h1 class="t">리포트를 찾을 수 없어요</h1><p>이 리포트는 지워졌거나 아직 준비 중이에요. 선생님께 문의해 주세요.</p>');
+    const tp = Object.values(pg.properties || {}).find((x) => x.type === "title"), title = tp ? tp.title.map((t) => t.plain_text).join("") : "학습 리포트";
+    const icon = pg.icon && pg.icon.type === "emoji" ? pg.icon.emoji + " " : "";
+    const blocks = await blockKids(m[1], 0);
+    const hh = (v) => String(v).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+    return page(200, title + " · 청명학원", '<div class="top">📘 청명학원 학습 리포트</div><h1 class="t">' + icon + hh(title) + "</h1>" + renderBlocks(blocks), "청명학원에서 보내 드리는 " + title + "입니다.");
+  }
   if (req.method === "GET" && /[?&]pp=1\b/.test(req.url || "")) { // 👪 학부모 링크(/parent?k=…): 카톡 미리보기에 「○○ 학부모님」이 보이게 제목을 넣어서 보내요
     let html = ""; try { const pa = require("path"); html = [pa.join(__dirname, "..", "parent.html"), pa.join(process.cwd(), "parent.html")].map((f) => { try { return fs.readFileSync(f, "utf8"); } catch (e) { return ""; } }).find(Boolean); if (!html) throw new Error("no file"); } catch (e) { res.statusCode = 302; res.setHeader("Location", "/parent.html" + (req.url.split("?")[1] ? "?" + req.url.split("?")[1].replace(/(^|&)pp=1/, "") : "")); return res.end(); }
     const k = new URL(req.url, "http://x").searchParams.get("k") || "";
@@ -920,6 +1017,13 @@ module.exports = async function handler(req, res) {
     const cs = String(process.env.CRON_SECRET || "").trim(), au = String(req.headers.authorization || "");
     if (cs ? au !== "Bearer " + cs : !/vercel-cron/i.test(String(req.headers["user-agent"] || ""))) return send(401, { error: "cron" });
     return send(200, await PLUS().tick(true));
+  }
+  if (req.method === "GET" && /[?&]consult_ics=/.test(req.url || "")) { // 📆 상담 예약 캘린더 구독 주소 (구글·네이버 캘린더에 URL로 추가)
+    const tok = new URL(req.url, "http://x").searchParams.get("consult_ics") || "";
+    const body = process.env.NOTION_TOKEN ? await CON().ics(tok, baseOf(req)) : null;
+    if (!body) { res.statusCode = 404; res.setHeader("Content-Type", "text/plain; charset=utf-8"); return res.end("not found"); }
+    res.statusCode = 200; res.setHeader("Content-Type", "text/calendar; charset=utf-8"); res.setHeader("Cache-Control", "private, no-store"); res.setHeader("Content-Disposition", 'inline; filename="consult.ics"');
+    return res.end(body);
   }
   if (req.method === "GET" && /[?&]im=/.test(req.url || "")) { // 🖼 듣기 그림 보기 (설명 = "그림 3")
     if (!siteOk(req)) return send(401, { error: "site" });
@@ -942,10 +1046,27 @@ module.exports = async function handler(req, res) {
   const origin = req.headers.origin || "", host = req.headers["x-forwarded-host"] || req.headers.host || "";
   if (origin) { let oh = ""; try { oh = new URL(origin).host; } catch (e) {} if (oh !== host) return send(403, { error: "origin" }); }
   if (!process.env.NOTION_TOKEN) return send(503, { error: "unset", msg: "아직 준비되지 않았어요. (Vercel에 NOTION_TOKEN 필요)" });
-  if (process.env.MONTHLY_OFF === "1") return send(503, { error: "off", msg: "온라인 평가가 잠시 꺼져 있어요." });
-  if (!loadCatalog()) return send(503, { error: "bank", msg: "문제은행(exam-bank)이 없어요." });
   const b = await readBody(req);
   const act = String(b.action || "");
+  // =================== 📅 신규생 상담 예약 (온라인 평가 끄기·문제은행과 상관없이 작동) ===================
+  if (act === "consult_cron") { // GitHub Actions(30분마다): 상담 리마인더
+    const sec = String(process.env.HW_CRON_SECRET || "").trim();
+    if (sec && String(b.secret || "") !== sec) return send(401, { error: "secret" });
+    try { return send(200, await CON().cron(baseOf(req))); } catch (e) { return send(500, { ok: false, msg: clip(e && e.message, 200) }); }
+  }
+  if (/^consult_(info|book|find|get|cancel|move)$/.test(act)) { // 학부모님: 입장 코드 없이
+    const ip = String((req.headers["x-forwarded-for"] || "").split(",")[0]).trim() || "x";
+    try { return plusOut(send, await CON().pub(act, b, ip, baseOf(req))); } catch (e) { return send(500, { ok: false, msg: "잠시 문제가 생겼어요. 다시 시도해 주세요.", debug: clip(e && e.message, 200) }); }
+  }
+  if (/^t_consult\w*$/.test(act)) {
+    const ip = String((req.headers["x-forwarded-for"] || "").split(",")[0]).trim() || "x";
+    if (tBlocked(ip)) return send(429, { error: "limit", msg: "코드를 여러 번 틀렸어요. 10분 뒤에 다시 해 주세요." });
+    const me = await whoTeacher(b.code);
+    if (!me) { tFail(ip); return send(401, { error: "code", msg: "선생님 코드가 맞지 않아요." }); }
+    try { return plusOut(send, Object.assign({ me: { name: me.name } }, await CON().teacher(act, b, me, baseOf(req)))); } catch (e) { return send(500, { ok: false, msg: "잠시 문제가 생겼어요. 다시 시도해 주세요.", debug: clip(e && e.message, 200) }); }
+  }
+  if (process.env.MONTHLY_OFF === "1") return send(503, { error: "off", msg: "온라인 평가가 잠시 꺼져 있어요." });
+  if (!loadCatalog()) return send(503, { error: "bank", msg: "문제은행(exam-bank)이 없어요." });
   if (act === "hw_cron") { // ⏰ 과제 마감 확인 (GitHub Actions가 30분마다). 몇 번을 불러도 과제마다 한 번만 처리돼요.
     const sec = String(process.env.HW_CRON_SECRET || "").trim();
     if (sec && String(b.secret || "") !== sec) return send(401, { error: "secret" });
@@ -1192,6 +1313,26 @@ module.exports = async function handler(req, res) {
       if (!rows) return send(502, { error: "notion", msg: "기록을 불러오지 못했어요.", debug: lastErr });
       return send(200, { ok: true, recs: rows.map((p) => ({ rec: normId(p.id), url: p.url, paper: normId(P.rel(p, "시험지")[0] || ""), title: P.title(p, "시험명"), kind: P.sel(p, "종류"), cls: P.sel(p, "반"), date: (P.date(p, "시험일") || {}).start || "", range: P.text(p, "시험 범위"), score: P.num(p, "점수"), total: P.num(p, "만점"), grade: P.sel(p, "종합 평가"), how: P.sel(p, "응시 방식"), comment: P.text(p, "코멘트") })) });
     }
+    if (act === "t_rep_blocks") { // ✏️ 리포트 내용 불러오기 (웹 링크 k로)
+      const pid = repKey(b.k); if (!pid) return send(400, { error: "k", msg: "리포트 링크가 맞지 않아요." });
+      const pg = await notion("pages/" + id32(pid), "GET"); if (!pg || pg.archived || pg.in_trash) return send(404, { error: "nf", msg: "리포트를 찾지 못했어요." });
+      const tp = Object.values(pg.properties || {}).find((x) => x.type === "title");
+      return send(200, { ok: true, title: tp ? tp.title.map((t) => t.plain_text).join("") : "", blocks: flatBlocks(await blockKids(pid, 0), 0, []) });
+    }
+    if (act === "t_rep_save") { // ✏️ 리포트 고친 것 저장: edits [{id, text}] · cells [{id, cells}] · dels [id] · adds [{after, text}]
+      const pid = repKey(b.k); if (!pid) return send(400, { error: "k", msg: "리포트 링크가 맞지 않아요." });
+      const edits = (b.edits || []).slice(0, 200), cells = (b.cells || []).slice(0, 100), dels = (b.dels || []).slice(0, 100), adds = (b.adds || []).slice(0, 30);
+      let ok = 0, bad = 0; const tick = (r) => (r ? ok++ : bad++);
+      // 블록이 정말 이 리포트 안에 있는지 확인
+      const all = flatBlocks(await blockKids(pid, 0), 0, []), ids = new Set(); all.forEach((x) => { ids.add(normId(x.id)); (x.rows || []).forEach((r) => ids.add(normId(r.id))); });
+      const own = (id) => ids.has(normId(id));
+      for (const e of edits) { const x = all.find((y) => normId(y.id) === normId(e.id)); if (!x || x.ro) { bad++; continue; } tick(await notion("blocks/" + id32(e.id), "PATCH", { [x.type]: { rich_text: markToRt(clip(e.text, 9000)) } }, 2)); }
+      for (const c of cells) { if (!own(c.id) || !Array.isArray(c.cells)) { bad++; continue; } tick(await notion("blocks/" + id32(c.id), "PATCH", { table_row: { cells: c.cells.slice(0, 20).map((t) => markToRt(clip(t, 1900))) } }, 2)); }
+      for (const a of adds) { if (a.after && !own(a.after)) { bad++; continue; } const x = all.find((y) => normId(y.id) === normId(a.after)), parentId = x && x.depth > 0 ? null : pid; if (!parentId) { bad++; continue; }
+        tick(await notion("blocks/" + id32(parentId) + "/children", "PATCH", Object.assign({ children: [{ object: "block", type: a.type === "heading_3" ? "heading_3" : a.type === "bulleted_list_item" ? "bulleted_list_item" : "paragraph", [a.type === "heading_3" ? "heading_3" : a.type === "bulleted_list_item" ? "bulleted_list_item" : "paragraph"]: { rich_text: markToRt(clip(a.text, 9000)) } }] }, a.after ? { after: uuid(normId(a.after)) } : {}), 2)); }
+      for (const id of dels) { if (!own(id)) { bad++; continue; } tick(await notion("blocks/" + id32(id), "DELETE", null, 2)); }
+      return send(200, { ok: true, saved: ok, failed: bad });
+    }
     if (act === "t_paper_rename") { // ✏️ 시험지 이름 바꾸기 (그 시험지로 본 기록의 시험명도 같이)
       const pp = await getPaper(b.id); if (!pp) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." });
       if (!me.master && pp.teacher && pp.teacher !== me.name) return send(403, { error: "owner", msg: pp.teacher + "이(가) 만든 시험지는 " + pp.teacher + "이나 관리자만 바꿀 수 있어요." });
@@ -1324,7 +1465,21 @@ module.exports = async function handler(req, res) {
     if (act === "t_dict_preview") { const r = HW().dictPreview(clip(b.u, 40), b.r); return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg }); }
     if (act === "t_pm_inbox") { const a = await STU().all(); const r = await PAR().inbox(a ? a.students : []); return r.status === 200 ? send(200, { ok: true, list: r.list, unread: r.unread }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
     if (act === "t_pm_thread") { const r = await PAR().teacherThread(clip(b.sid, 60)); return r.status === 200 ? send(200, { ok: true, msgs: r.msgs }) : send(r.status, { ok: false, msg: r.msg }); }
-    if (act === "t_pm_send") { const r = await PAR().teacherSend(me, clip(b.sid, 60), clip(b.cls, 40), clip(b.text, 1500)); return r.status === 200 ? send(200, { ok: true, msg: r.msg }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_pm_send") { const r = await PAR().teacherSend(me, clip(b.sid, 60), clip(b.cls, 40), clip(b.text, 1500)); return r.status === 200 ? send(200, { ok: true, msg: r.msg, note: r.note }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "t_alert_overview") { // 🔔 반별 학부모 앱 알림 현황 + 문자 함께 쓰기 설정
+      const [l, mode] = await Promise.all([ALERT().overview(clip(b.cls, 40)), ALERT().smsMode(true)]);
+      return l ? send(200, { ok: true, list: l, sms: mode, smsReady: require("./_notify.js").mode() !== "off" }) : send(502, { ok: false, msg: "명단을 읽지 못했어요.", debug: lastErr });
+    }
+    if (act === "t_alert_sms") { return (await ALERT().setSmsMode(String(b.mode || ""))) ? send(200, { ok: true, sms: b.mode }) : send(502, { ok: false, msg: "설정을 저장하지 못했어요.", debug: lastErr }); }
+    if (act === "t_alert_send") { // 📢 학부모 공지: 고른 학생들의 부모님께 앱 알림 (문자는 보내지 않아요)
+      const title = clip(String(b.title || "").trim(), 60), body = clip(String(b.body || "").trim(), 1200), sids = (Array.isArray(b.sids) ? b.sids : []).map((x) => normId(clip(x, 60))).filter(Boolean).slice(0, 200);
+      if (!title || !body) return send(400, { ok: false, msg: "제목과 내용을 써 주세요." });
+      if (!sids.length) return send(400, { ok: false, msg: "보낼 학생을 골라 주세요." });
+      const out = []; let i = 0; const t0 = Date.now();
+      const one = async () => { while (i < sids.length) { const sid = sids[i++]; if (Date.now() - t0 > 50000) { out.push({ sid, ok: false, note: "시간 초과" }); continue; } const r = await ALERT().deliver(sid, { kind: "공지", title: "📢 " + title, body, by: me.name + " 선생님" }); out.push({ sid, ok: r.ok, logged: r.logged, note: r.note }); } };
+      await Promise.all([one(), one(), one(), one()]);
+      return send(200, { ok: true, sent: out.filter((x) => x.ok).length, logged: out.filter((x) => x.logged).length, total: sids.length, results: out });
+    }
     if (act === "t_parent_links") { const r = await HW().parentLinks(clip(b.cls, 40)); return r.status === 200 ? send(200, { ok: true, list: r.list }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
     if (act === "t_parent_reset") { const r = await HW().parentReset(clip(b.sid, 60)); return r.status === 200 ? send(200, { ok: true, k: r.k }) : send(r.status, { ok: false, msg: r.msg }); }
     // 📦 시험지 보관함 (모든 선생님이 함께 쓰는 시험지 틀)
@@ -1363,7 +1518,7 @@ module.exports = async function handler(req, res) {
       const list = (ros || []).map((s) => ({ name: s.name, sid: s.id })).concat(extraIds.map((k) => ({ name: nm.get(k) ? nm.get(k).name : "(다른 반 학생)", sid: k })));
       const info = new Map((ros || []).map((s) => [s.id, s]).concat(extraIds.filter((k) => nm.get(k)).map((k) => [k, { cls: nm.get(k).cls, grade: nm.get(k).grade || "" }])));
       const MAN = !!(omrOf(pp) && omrOf(pp).items.some((x) => x.man)); // ✍️ 선생님 채점 문항이 있는 OMR 시험
-      const recRow = (s, st, p) => Object.assign({ name: s.name, sid: s.sid, cls: st.cls || P.sel(p, "반") || "", sgrade: st.grade || "", school: st.school || "", rec2: P.text(p, "추천 반"), url: p.url, rec: normId(p.id), made: String(p.created_time || "").slice(0, 16), how: P.sel(p, "응시 방식"), range: P.text(p, "시험 범위"), report: (p.properties["분석 리포트"] || {}).url || "", mins: P.num(p, "소요시간(분)"), away: P.num(p, "자리비움"), units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }, MAN ? { man: manOf(p) } : {}, attemptSummary(p));
+      const recRow = (s, st, p) => Object.assign({ rweb: webRep(req.headers.host, (p.properties["분석 리포트"] || {}).url || ""), name: s.name, sid: s.sid, cls: st.cls || P.sel(p, "반") || "", sgrade: st.grade || "", school: st.school || "", rec2: P.text(p, "추천 반"), url: p.url, rec: normId(p.id), made: String(p.created_time || "").slice(0, 16), how: P.sel(p, "응시 방식"), range: P.text(p, "시험 범위"), report: (p.properties["분석 리포트"] || {}).url || "", mins: P.num(p, "소요시간(분)"), away: P.num(p, "자리비움"), units: (() => { try { return JSON.parse(P.text(p, "단원 분석") || "[]"); } catch (e) { return []; } })() }, MAN ? { man: manOf(p) } : {}, attemptSummary(p));
       const out = list.map((s) => { const p = done.get(s.sid), st = info.get(s.sid) || {}; return p ? recRow(s, st, p) : { name: s.name, sid: s.sid, cls: st.cls || "", sgrade: st.grade || "", school: st.school || "", missing: true }; });
       list.forEach((s) => (byS.get(s.sid) || []).slice(1).forEach((p) => out.push(Object.assign(recRow(s, info.get(s.sid) || {}, p), { dup: true }))));
       return send(200, { ok: true, paper: pub(pp), rows: out });
@@ -1641,13 +1796,13 @@ module.exports = async function handler(req, res) {
     }
     if (act === "t_rep") { // 학생 1명 · 시험 1회 분석 리포트를 노션에 작성
       const r = await reporter().buildTestReport({ recId: clip(b.rec, 60), contact: clip(b.contact, 600), host, force: !!b.force, me });
-      return r.error ? send(200, { ok: false, msg: r.error, debug: lastErr }) : send(200, Object.assign({ ok: true }, r));
+      return r.error ? send(200, { ok: false, msg: r.error, debug: lastErr }) : send(200, Object.assign({ ok: true, web: webRep(req.headers.host, r.url) }, r));
     }
     if (act === "t_qrep") { // 학생 1명 · 분기 종합 리포트
       const from = /^\d{4}-\d{2}-\d{2}$/.test(b.from || "") ? b.from : null, to = /^\d{4}-\d{2}-\d{2}$/.test(b.to || "") ? b.to : null;
       if (!from || !to) return send(400, { error: "input", msg: "기간을 골라 주세요." });
       const r = await reporter().buildQuarterReport({ sid: clip(b.sid, 60), from, to, label: clip(b.label, 40) || from + "~" + to, contact: clip(b.contact, 600), host, me });
-      return r.error ? send(200, { ok: false, msg: r.error, debug: lastErr }) : send(200, Object.assign({ ok: true }, r));
+      return r.error ? send(200, { ok: false, msg: r.error, debug: lastErr }) : send(200, Object.assign({ ok: true, web: webRep(req.headers.host, r.url) }, r));
     }
     return send(400, { error: "action" });
   }
@@ -1714,9 +1869,24 @@ module.exports = async function handler(req, res) {
     if (pLocked(ip)) return send(429, { ok: false, msg: "잠시 뒤 다시 열어 주세요." });
     const k = String(b.k || "");
     const r = act === "p_home" ? await PAR().home(k) : act === "p_report" ? await PAR().reportPage(k, b.pid) : await PAR().parentSend(k, clip(b.text, 1500));
+    if (act === "p_home" && r.status === 200) r.pushKey = ALERT().publicKey();
     if (act === "p_home" && r.status === 200 && r.student && r.student.cls) { try { r.sched = (await SC().upcoming(r.student.cls, 28)).map(SC().pub); } catch (e) { r.sched = []; } } // 📅 다가오는 반 일정
     if (r.status === 403 || r.status === 404) pFail(ip);
     return r.status === 200 ? send(200, Object.assign({ ok: true }, r, { status: undefined })) : send(r.status, { ok: false, msg: r.msg });
+  }
+
+  if (/^p_(push_sub|push_unsub|push_test|inbox)$/.test(act)) { // 🔔 학부모 앱 알림(무료 푸시) · 알림함
+    const ip = String((req.headers["x-forwarded-for"] || "").split(",")[0]).trim() || "x";
+    if (pLocked(ip)) return send(429, { ok: false, msg: "잠시 뒤 다시 열어 주세요." });
+    const a = await PAR().auth(String(b.k || ""));
+    if (a.status !== 200) { if (a.status === 403 || a.status === 404) pFail(ip); return send(a.status, { ok: false, msg: a.msg }); }
+    if (act === "p_inbox") { const l = await ALERT().inbox(a.sid, 80); return l ? send(200, { ok: true, list: l, pushKey: ALERT().publicKey() }) : send(502, { ok: false, msg: "알림함을 불러오지 못했어요.", debug: lastErr }); }
+    if (act === "p_push_sub") { const r = await ALERT().subscribe(a.page, b.sub, clip(b.label, 40)); return r.status === 200 ? send(200, { ok: true, n: r.n }) : send(r.status, { ok: false, msg: r.msg, debug: r.debug }); }
+    if (act === "p_push_unsub") { const r = await ALERT().unsubscribe(a.page, clip(b.endpoint, 900)); return send(r.status, { ok: r.status === 200, msg: r.msg }); }
+    if (act === "p_push_test") {
+      const r = await ALERT().deliver(a.page, { kind: "기타", title: "🔔 알림이 잘 와요!", body: a.name + " 학생 소식을 이제 이 휴대폰으로 받아요. 과제·플러스 수업·시험·선생님 답장을 알려 드릴게요.", by: "학부모 앱", tag: "test" });
+      return send(200, { ok: true, pushed: r.pushed, subs: r.subs, note: r.note });
+    }
   }
 
   const who = readToken(b.token);
@@ -1853,11 +2023,11 @@ module.exports = async function handler(req, res) {
     if (!pg) return send(502, { error: "notion", msg: "결과를 저장하지 못했어요. 다시 제출해 주세요. (답은 그대로 남아 있어요)", debug: lastErr });
     const sentNote = nPend ? (notifyOf(pp) ? "📲 서술형 채점 뒤 보내요" : "") : await notifyParent(pp, who, pg.id, { right, total, pct, nRight, nTot, range, weighted });
     if (sentNote) await notion("pages/" + id32(pg.id), "PATCH", { properties: { "코멘트": { rich_text: rt(clip((comment ? comment + " · " : "") + sentNote, 1900)) } } });
-    const out = { ok: true, show: pp.show, saved: true, areas: pp.show ? areaSum : undefined, sent: /보냄$/.test(sentNote), pend: nPend };
+    const out = { ok: true, show: pp.show, saved: true, areas: pp.show ? areaSum : undefined, sent: /보냄/.test(sentNote), pend: nPend };
     if (pp.show) Object.assign(out, { result: { score: right, total, pct, grade: gradeOf(pct), comment, mins }, units, items: key.items.map((k, i) => ({ n: i + 1, q: k.q, sub: k.sub, given: res1[i].given, answer: k.answer, ok: res1[i].ok, exp: k.exp, unit: k.ch || k.unit, ai: res1[i].ai || "", pend: res1[i].pend ? 1 : undefined })) });
     return send(200, out);
   }
   return send(400, { error: "action" });
 };
 // 시험용 내부 함수 (로컬 점검에서 씀)
-module.exports._t = { parseOmr, omrSheet, sectionPick, get unitIndex() { return unitIndex; }, custom, audioPath, AUDIO_TYPES, canTake, targetOf, targetText, cleanAudioDir, listenMode, cleanSections, assignPoints, hasSections, placeRec, expandAccept, shortOk, pick, buildSheet, seal, unseal, grade, unitStats, rangeText, loadCatalog, unitData, poolFor, rngOf };
+module.exports._t = { renderBlocks, webRep, repSig, parseOmr, omrSheet, sectionPick, get unitIndex() { return unitIndex; }, custom, audioPath, AUDIO_TYPES, canTake, targetOf, targetText, cleanAudioDir, listenMode, cleanSections, assignPoints, hasSections, placeRec, expandAccept, shortOk, pick, buildSheet, seal, unseal, grade, unitStats, rangeText, loadCatalog, unitData, poolFor, rngOf };

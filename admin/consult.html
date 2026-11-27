@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><title>상담 예약 관리 · 일등급샘</title>
+<link rel="icon" href="/favicon-32.png"><link rel="manifest" href="/admin/consult-manifest.json"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#0E8A8C"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="상담 예약">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#F0F8F8;font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;color:#1B2733;padding:14px 12px 60px}
+.wrap{max-width:1100px;margin:0 auto}h1{font-size:20px;color:#0A5F61;margin:4px 0 12px}h3{font-size:16px;margin:0 0 10px;color:#0A5F61}
+.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 2px 10px rgba(10,60,62,.08)}
+label{display:block;font-size:12.5px;color:#5F6E7C;margin-bottom:4px}
+input,select,textarea{border:1px solid #CFE5E4;border-radius:9px;padding:9px 10px;font-size:15px;background:#fff;color:#1B2733;font-family:inherit}
+textarea{width:100%;resize:vertical;line-height:1.5}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#0E8A8C;box-shadow:0 0 0 3px #DDF2F1}
+button{border:0;border-radius:10px;background:#0E8A8C;color:#fff;font-size:15px;font-weight:700;padding:10px 15px;cursor:pointer;font-family:inherit}
+button.sub{background:#EAF3F3;color:#0A5F61}button.sm{padding:6px 10px;font-size:13px}button.red{background:#FDE6E3;color:#B03A2E}button:disabled{background:#B9CDD0}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px 12px}.grid input,.grid select{width:100%}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs button{background:#fff;color:#0A5F61;border:1px solid #CFE5E4}.tabs button.on{background:#0E8A8C;color:#fff;border-color:#0E8A8C}
+.msg{margin-top:8px;font-size:14px;line-height:1.5}.ok{color:#1F6E40}.er{color:#C0392B}.hint{font-size:13px;color:#6B7A88;line-height:1.6}
+.warn{background:#FFF6E0;border:1px solid #F2D58A;color:#7A5300;border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.55;margin-bottom:12px}
+pre{white-space:pre-wrap;background:#F6FAFA;border-radius:10px;padding:12px;font-size:14px;line-height:1.6;font-family:inherit;margin:6px 0}
+.stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.stat{background:#fff;border-radius:12px;padding:10px 14px;box-shadow:0 2px 10px rgba(10,60,62,.06);min-width:110px}.stat b{display:block;font-size:22px;color:#0A5F61}.stat span{font-size:12.5px;color:#5F6E7C}
+.day{margin:16px 0 6px;font-weight:800;color:#0A5F61;font-size:15px}.day.today::after{content:" 오늘";background:#0E8A8C;color:#fff;border-radius:999px;padding:1px 8px;font-size:12px;margin-left:6px;vertical-align:1px}
+.bk{background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:8px;box-shadow:0 1px 6px rgba(10,60,62,.07);display:grid;grid-template-columns:110px 1fr auto;gap:10px 14px;align-items:start;border-left:5px solid #2E6FB7}
+.bk.상담완료{border-left-color:#2E9E5B}.bk.취소{border-left-color:#B7C2CB;opacity:.75}.bk.노쇼{border-left-color:#C0392B}
+.bk .tm{font-size:18px;font-weight:800;color:#0A5F61;line-height:1.2}.bk .tm small{display:block;font-size:12.5px;color:#5F6E7C;font-weight:600;margin-top:3px}
+.bk .nm{font-size:16px;font-weight:800}.bk .nm small{font-weight:600;color:#5F6E7C;font-size:13px}.bk .ln{font-size:14px;color:#33424F;line-height:1.6}
+.bk .ask{white-space:pre-line;background:#F6FAFA;border-radius:8px;padding:6px 9px;margin-top:4px;font-size:13.5px}
+.bk .act{display:flex;flex-direction:column;gap:6px;align-items:stretch;min-width:132px}
+.bk .more{grid-column:1/-1;display:none;border-top:1px dashed #DCEAEA;padding-top:10px}.bk.open .more{display:block}
+.tag{display:inline-block;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:700;background:#F3EAFB;color:#6B3FA0;margin-left:4px}
+.nt{font-size:12.5px;color:#5F6E7C;white-space:pre-line;line-height:1.5;margin-top:6px}
+a{color:#0F6E70}
+.wk{width:100%;border-collapse:collapse}.wk td{padding:8px 6px;border-bottom:1px solid #EEF4F4;vertical-align:middle}.wk td:first-child{width:52px;font-weight:800;font-size:16px;color:#0A5F61}
+.chip{display:inline-flex;align-items:center;gap:4px;background:#E3F5EA;color:#1F6E40;border-radius:999px;padding:4px 6px 4px 11px;font-weight:700;font-size:14px;margin:2px 4px 2px 0;white-space:nowrap}
+.chip.off{background:#EEF1F3;color:#5F6E7C}.chip button{background:none;color:inherit;padding:0 5px;font-size:15px;line-height:1}
+.addr{display:inline-flex;gap:4px;align-items:center}.addr input[type=time]{width:112px;padding:6px 8px}
+.none{color:#9AA7B3;font-size:13px}
+.prev{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.prev div{background:#F6FAFA;border-radius:10px;padding:8px 10px;font-size:13px;line-height:1.5}.prev b{color:#0A5F61}
+.url{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;background:#F6FAFA;border:1px solid #DCEAEA;border-radius:8px;padding:8px 10px;word-break:break-all;flex:1;min-width:220px}
+.qr{background:#fff;border:1px solid #DCEAEA;border-radius:12px;padding:12px;display:inline-block;line-height:0}.qr svg{width:180px!important;height:180px!important}
+.sw{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:#1B2733;cursor:pointer}.sw input{width:20px;height:20px;accent-color:#0E8A8C}
+.push{border:2px solid #0E8A8C}.push.on{border-color:#CFE5E4}.dev{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:7px 0;border-top:1px solid #EEF4F4;font-size:14px}.dev b{min-width:150px}.dev .me{background:#0E8A8C;color:#fff;border-radius:999px;padding:1px 8px;font-size:12px}
+.bk.hl{box-shadow:0 0 0 3px #F2C14E}
+@media(max-width:700px){.bk{grid-template-columns:1fr}.bk .act{flex-direction:row;flex-wrap:wrap}}
+</style></head><body><div class="wrap">
+<script src="/admin/nav.js" data-here="consult"></script>
+<h1>📅 신규생 상담 예약 관리</h1>
+
+<div class="card" id="login">
+  <label for="tcode">선생님 코드</label>
+  <div class="row"><input id="tcode" type="password" autocomplete="off" placeholder="선생님 전용 코드" style="max-width:260px"><button id="loginBtn">확인</button></div>
+  <div class="msg er" id="loginMsg"></div>
+</div>
+
+<div id="main" style="display:none">
+  <div id="warn"></div>
+  <div class="card push" id="push"></div>
+  <div class="tabs" id="tabs">
+    <button data-t="list" class="on">📋 예약 목록</button><button data-t="time">🗓 가능 시간 설정</button><button data-t="share">🔗 예약 링크 공유</button><button data-t="add">➕ 직접 추가</button><button data-t="tpl">💬 알림 문구</button>
+  </div>
+
+  <!-- 📋 예약 목록 -->
+  <div class="tab" id="t-list">
+    <div class="stats" id="stats"></div>
+    <div class="card"><div class="row">
+      <button class="sm sub on" data-f="up">다가오는 예약</button><button class="sm sub" data-f="past">지난 예약</button><button class="sm sub" data-f="all">전체 (취소 포함)</button>
+      <input id="q" placeholder="학생·학부모 이름, 번호 찾기" style="flex:1;min-width:180px"><button class="sm sub" id="reload">↻ 새로고침</button>
+    </div></div>
+    <div id="list"></div>
+  </div>
+
+  <!-- 🗓 가능 시간 설정 -->
+  <div class="tab" id="t-time" style="display:none">
+    <div class="card">
+      <h3>기본 정보</h3>
+      <label class="sw" style="margin-bottom:12px"><input type="checkbox" id="cOpen"> 온라인 예약 받기 <span class="hint" style="font-weight:500">(끄면 학부모 화면에 '지금은 예약을 받지 않아요'가 보여요)</span></label>
+      <div class="grid">
+        <div><label for="cTitle">예약 페이지 제목</label><input id="cTitle" maxlength="40"></div>
+        <div><label for="cPlace">장소 (주소)</label><input id="cPlace" maxlength="120"></div>
+        <div><label for="cTel">학원 전화번호 (학부모 화면에 보여요)</label><input id="cTel" maxlength="30" placeholder="042-000-0000"></div>
+        <div><label for="cOwner">기본 담당 선생님</label><input id="cOwner" maxlength="30" placeholder="예: 일등급샘"></div>
+      </div>
+      <label for="cIntro" style="margin-top:10px">안내 문구 (예약 화면 맨 위)</label><textarea id="cIntro" rows="3" maxlength="800"></textarea>
+    </div>
+    <div class="card">
+      <h3>상담 시간 규칙</h3>
+      <div class="grid">
+        <div><label for="cDur">상담 길이</label><select id="cDur"></select></div>
+        <div><label for="cStep">시작 시각 간격</label><select id="cStep"></select></div>
+        <div><label for="cBuf">상담 앞뒤 여유 시간</label><select id="cBuf"></select></div>
+        <div><label for="cMax">하루 최대 상담 수</label><select id="cMax"></select></div>
+        <div><label for="cMinH">최소 몇 시간 전까지 예약</label><select id="cMinH"></select></div>
+        <div><label for="cDays">며칠 앞까지 예약 받기</label><select id="cDays"></select></div>
+        <div><label for="cRemind">리마인더 보내는 때</label><select id="cRemind"></select></div>
+      </div>
+      <p class="hint" style="margin:10px 0 0">· 예: 상담 30분 · 간격 30분 → 13:00, 13:30, 14:00… / 여유 10분 → 상담과 상담 사이를 10분씩 비워요.<br>· 최소 3시간 전 → 지금이 오후 1시면 오후 4시부터 고를 수 있어요. 학부모님이 직접 바꾸거나 취소할 수 있는 시한도 같아요.</p>
+    </div>
+    <div class="card">
+      <h3>요일별 상담 가능 시간</h3>
+      <table class="wk" id="week"></table>
+      <p class="hint" style="margin:8px 0 0">한 요일에 시간대를 여러 개 넣을 수 있어요 (예: 10:00~12:00, 14:00~17:00). 시간대가 없는 요일은 예약을 받지 않아요.</p>
+    </div>
+    <div class="card">
+      <h3>특별한 날 (휴무·시간 바꾸기)</h3>
+      <div class="row" style="margin-bottom:10px">
+        <input type="date" id="xDate">
+        <select id="xType"><option value="off">하루 종일 휴무</option><option value="set">이날만 시간 따로 정하기</option></select>
+        <span class="addr" id="xRange" style="display:none"><input type="time" id="xFrom" value="10:00" step="600">~<input type="time" id="xTo" value="12:00" step="600"></span>
+        <button class="sm" id="xAdd">추가</button>
+      </div>
+      <div id="except"></div>
+    </div>
+    <div class="card">
+      <h3>선생님께 오는 알림</h3>
+      <div class="grid"><div style="grid-column:1/-1"><label for="cAlert">문자로도 받을 휴대폰 번호 — 솔라피 연결 후 (여러 개면 쉼표로, 최대 3개) · 앱 알림은 맨 위 🔔에서 켜요</label><input id="cAlert" placeholder="010-0000-0000" style="width:100%"></div></div>
+      <div class="grid" style="margin-top:10px">
+        <div><label for="cModes">상담 방식 (쉼표로 구분)</label><input id="cModes"></div>
+        <div><label for="cGrades">학년 고르기 (쉼표로 구분)</label><input id="cGrades"></div>
+      </div>
+    </div>
+    <div class="row"><button id="cSave">💾 설정 저장</button><span class="msg" id="cMsg"></span></div>
+    <div class="card" style="margin-top:12px"><h3>👀 지금 학부모님께 보이는 빈 시간 (앞으로 7일)</h3><div class="prev" id="prev"></div></div>
+  </div>
+
+  <!-- 🔗 공유 -->
+  <div class="tab" id="t-share" style="display:none">
+    <div class="card">
+      <h3>예약 페이지 주소</h3>
+      <div class="row"><div class="url" id="bookUrl"></div><button class="sm" id="cpUrl">복사</button><a id="openUrl" target="_blank" rel="noopener"><button class="sm sub">열어 보기 ↗</button></a></div>
+      <p class="hint">카톡·문자·블로그·학원 홈페이지에 이 주소를 붙여 넣으면 학부모님이 바로 예약하실 수 있어요. 입장 코드 없이 열려요.</p>
+      <div class="row" style="align-items:flex-start;gap:16px;margin-top:10px">
+        <div><div class="qr" id="qr"></div><div class="row" style="margin-top:6px"><button class="sm sub" id="qrDl">QR 그림 저장</button></div></div>
+        <div style="flex:1;min-width:260px"><label>카톡으로 보낼 안내 문구</label><pre id="kakao"></pre><button class="sm" id="cpKakao">문구 복사</button></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>📆 내 캘린더에 예약 자동으로 띄우기 (구독 주소)</h3>
+      <div class="row"><div class="url" id="icsUrl"></div><button class="sm" id="cpIcs">복사</button></div>
+      <p class="hint">· <b>구글 캘린더</b>(컴퓨터): 왼쪽 '다른 캘린더' 옆 <b>+</b> → <b>URL로 추가</b> → 이 주소 붙여넣기<br>· <b>네이버 캘린더</b>: 환경설정 → <b>캘린더 구독</b> → URL 입력<br>· 아이폰: 설정 → 캘린더 → 계정 → 계정 추가 → 기타 → <b>구독 캘린더 추가</b><br>
+      · 캘린더 앱이 몇 시간마다 새로 읽어 와서, 새 예약이 캘린더에 보이기까지 시간이 걸릴 수 있어요 (구글은 길면 반나절). 바로 확인은 이 화면에서 해 주세요.<br>· 이 주소에는 학부모 연락처가 들어 있으니 다른 사람에게 보내지 마세요.</p>
+    </div>
+  </div>
+
+  <!-- ➕ 직접 추가 -->
+  <div class="tab" id="t-add" style="display:none">
+    <div class="card">
+      <h3>전화로 받은 예약 넣기</h3>
+      <p class="hint" style="margin-top:-4px">가능 시간 밖이어도 넣을 수 있어요. 넣은 시간은 학부모 예약 화면에서 바로 빠져요.</p>
+      <div class="grid">
+        <div><label for="aDate">날짜</label><input type="date" id="aDate"></div>
+        <div><label for="aHm">시각</label><input type="time" id="aHm" step="300" value="15:00"></div>
+        <div><label for="aDur">상담 길이</label><select id="aDur"></select></div>
+        <div><label for="aStu">학생 이름 *</label><input id="aStu" maxlength="20"></div>
+        <div><label for="aGrade">학년</label><select id="aGrade"></select></div>
+        <div><label for="aSchool">학교</label><input id="aSchool" maxlength="30"></div>
+        <div><label for="aParent">학부모 성함</label><input id="aParent" maxlength="20"></div>
+        <div><label for="aPhone">학부모 휴대폰</label><input id="aPhone" type="tel" maxlength="13" placeholder="010-1234-5678"></div>
+        <div><label for="aMode">상담 방식</label><select id="aMode"></select></div>
+        <div><label for="aOwner">담당</label><input id="aOwner" maxlength="30"></div>
+      </div>
+      <label for="aAsk" style="margin-top:10px">문의 내용</label><textarea id="aAsk" rows="2"></textarea>
+      <label for="aMemo" style="margin-top:8px">선생님 메모 (학부모님께 안 보여요)</label><textarea id="aMemo" rows="2"></textarea>
+      <label class="sw" style="margin:10px 0"><input type="checkbox" id="aNotify" checked> 학부모님께 확정 안내 문자 보내기 (예약 확인·변경 링크 포함)</label>
+      <div class="row"><button id="aGo">예약 넣기</button><button class="sub" id="aForce" style="display:none">겹쳐도 넣기</button><span class="msg" id="aMsg"></span></div>
+    </div>
+  </div>
+
+  <!-- 💬 알림 문구 -->
+  <div class="tab" id="t-tpl" style="display:none">
+    <div class="card">
+      <p class="hint" style="margin-top:0">솔라피를 연결하면 아래 문구로 문자가 가요. <b>카카오 알림톡</b>으로 보내려면 문구를 그대로 카카오 템플릿 심사에 올리고, 통과한 템플릿 ID를 Vercel 환경 변수에 넣어 주세요. 템플릿 ID가 없으면 문자로 가고, 솔라피가 없으면 보내지 않고 예약의 알림 기록에만 남아요.</p>
+      <div id="tpls"></div>
+    </div>
+  </div>
+</div>
+</div>
+<script src="/admin/qrcode.js"></script>
+<script>
+(function () {
+  var API = "/api/monthly", CODE = "", LS_T = "cm-teacher-code", DAYS = "일월화수목금토", ORDER = [1, 2, 3, 4, 5, 6, 0];
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function lsGet(k) { try { return localStorage.getItem(k) || ""; } catch (e) { return ""; } }
+  function lsSet(k, v) { try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); } catch (e) {} }
+  function post(b) {
+    b.code = CODE;
+    return fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { j._s = r.status; return j; }); })
+      .catch(function () { return { _s: 0, msg: "인터넷 연결을 확인해 주세요." }; });
+  }
+  function msg(id, t, ok) { var el = $(id); el.className = "msg " + (ok ? "ok" : "er"); el.textContent = t || ""; }
+  function copy(t, btn) { try { navigator.clipboard.writeText(t); if (btn) { var o = btn.textContent; btn.textContent = "복사됨 ✓"; setTimeout(function () { btn.textContent = o; }, 1500); } } catch (e) { prompt("복사해 주세요", t); } }
+  function dlabel(d) { var x = new Date(d + "T00:00:00Z"); return (x.getUTCMonth() + 1) + "/" + x.getUTCDate() + "(" + DAYS[x.getUTCDay()] + ")"; }
+  function addDays(d, n) { return new Date(Date.parse(d + "T00:00:00Z") + n * 864e5).toISOString().slice(0, 10); }
+  function opts(id, list, val) { $(id).innerHTML = list.map(function (x) { var v = Array.isArray(x) ? x[0] : x, l = Array.isArray(x) ? x[1] : x; return '<option value="' + esc(v) + '"' + (String(v) === String(val) ? " selected" : "") + ">" + esc(l) + "</option>"; }).join(""); }
+  var D = { cfg: null, list: [], today: "", links: {}, free: {}, filter: "up" };
+
+  // ---------- 탭 ----------
+  document.querySelectorAll("#tabs button").forEach(function (b) {
+    b.onclick = function () {
+      document.querySelectorAll("#tabs button").forEach(function (x) { x.classList.toggle("on", x === b); });
+      document.querySelectorAll(".tab").forEach(function (t) { t.style.display = t.id === "t-" + b.getAttribute("data-t") ? "" : "none"; });
+      var t = b.getAttribute("data-t"); if (t === "tpl") loadTpl(); if (t === "share") share(); history.replaceState(null, "", "#" + t);
+    };
+  });
+
+  // ---------- 불러오기 ----------
+  function load(cb) {
+    post({ action: "t_consult_list" }).then(function (j) {
+      if (j._s === 401) { $("loginMsg").textContent = j.msg; lsSet(LS_T, ""); $("login").style.display = ""; $("main").style.display = "none"; return; }
+      if (!j.ok) { $("loginMsg").textContent = j.msg || "불러오지 못했어요."; return; }
+      lsSet(LS_T, CODE); $("login").style.display = "none"; $("main").style.display = "";
+      if (j.push) { PUSH = j.push; findMine(); }
+      D.cfg = j.cfg; D.list = j.list || []; D.today = j.today; D.links = j.links || {}; D.free = j.free || {};
+      var w = "";
+      if (!j.dbOk) w += '<div class="warn">⚠️ 노션에 <b>📅 신규 상담 예약</b> 데이터베이스를 만들거나 읽지 못했어요. 노션의 <b>💗 일등급샘 반별 관리페이지</b>(📸 과제가 있는 페이지) ⋯ → 연결 → <b>cmacademy 학습인증</b>이 있는지 확인해 주세요.' + (j.err && j.err.msg ? '<br><small>' + esc(j.err.msg) + "</small>" : "") + "</div>";
+      if (j.mode && j.mode.ok === "off") w += '<div class="warn">📵 아직 솔라피가 연결되지 않아 안내 문자가 실제로 가지 않아요. 예약은 그대로 받고, 예약마다 <b>알림 기록</b>에 "발송 설정 전"과 보낼 문구가 남아요.</div>';
+      if (D.cfg && !D.cfg.open) w += '<div class="warn">⏸ 지금은 <b>온라인 예약 받기가 꺼져</b> 있어요. 🗓 가능 시간 설정에서 켤 수 있어요.</div>';
+      $("warn").innerHTML = w;
+      renderList(); fillCfg(); fillAdd();
+      if (cb) cb();
+    });
+  }
+
+  // =================== 📋 예약 목록 ===================
+  document.querySelectorAll("[data-f]").forEach(function (b) { b.onclick = function () { D.filter = b.getAttribute("data-f"); document.querySelectorAll("[data-f]").forEach(function (x) { x.classList.toggle("on", x === b); x.style.background = x === b ? "#0E8A8C" : ""; x.style.color = x === b ? "#fff" : ""; }); renderList(); }; });
+  document.querySelector('[data-f="up"]').style.background = "#0E8A8C"; document.querySelector('[data-f="up"]').style.color = "#fff";
+  $("q").oninput = function () { renderList(); };
+  $("reload").onclick = function () { load(); };
+  function renderList() {
+    var now = Date.now(), q = $("q").value.trim().replace(/[\s-]/g, ""), act = D.list.filter(function (b) { return b.state !== "취소"; });
+    var wkEnd = addDays(D.today, 7 - ((new Date(D.today + "T00:00:00Z").getUTCDay() + 6) % 7));
+    $("stats").innerHTML = [["오늘", act.filter(function (b) { return b.date === D.today; }).length], ["이번 주 남은 상담", act.filter(function (b) { return b.date >= D.today && b.date < wkEnd && b.end > now && b.state === "예약확정"; }).length], ["앞으로 전체", act.filter(function (b) { return b.end > now && b.state === "예약확정"; }).length], ["최근 30일 상담 완료", D.list.filter(function (b) { return b.state === "상담완료"; }).length]]
+      .map(function (x) { return '<div class="stat"><b>' + x[1] + "</b><span>" + x[0] + "</span></div>"; }).join("");
+    var l = D.list.filter(function (b) {
+      if (D.filter === "up" && (b.end < now - 3600e3 || b.state === "취소")) return false;
+      if (D.filter === "past" && b.end >= now) return false;
+      if (q && (b.student + b.parent + b.phone.replace(/-/g, "") + b.school).replace(/\s/g, "").indexOf(q) < 0) return false;
+      return true;
+    });
+    if (D.filter === "past") l = l.slice().reverse();
+    if (!l.length) { $("list").innerHTML = '<div class="card none">' + (D.filter === "up" ? "다가오는 예약이 없어요. 🔗 예약 링크 공유에서 주소를 학부모님께 보내 보세요." : "해당하는 예약이 없어요.") + "</div>"; return; }
+    var h = "", last = "";
+    l.forEach(function (b) {
+      if (b.date !== last) { last = b.date; h += '<div class="day' + (b.date === D.today ? " today" : "") + '">' + dlabel(b.date) + "</div>"; }
+      h += '<div class="bk ' + esc(b.state) + '" data-id="' + b.id + '"><div class="tm">' + esc(b.hm) + "<small>~" + esc(b.endHm) + "</small></div>" +
+        '<div><div class="nm">' + esc(b.student) + " <small>" + esc([b.grade, b.school].filter(Boolean).join(" · ")) + "</small>" + (b.via === "선생님 입력" ? '<span class="tag">직접 입력</span>' : "") + "</div>" +
+        '<div class="ln">👤 ' + esc(b.parent || "-") + (b.phone ? ' · <a href="tel:' + esc(b.phone.replace(/\D/g, "")) + '">' + esc(b.phone) + "</a>" : "") + " · " + esc(b.mode || "-") + (b.owner ? " · 담당 " + esc(b.owner) : "") + "</div>" +
+        (b.ask ? '<div class="ask">💬 ' + esc(b.ask) + "</div>" : "") + (b.reason ? '<div class="nt">❌ ' + esc(b.reason) + "</div>" : "") + (b.memo ? '<div class="nt">📝 ' + esc(b.memo) + "</div>" : "") + "</div>" +
+        '<div class="act"><select data-a="state">' + ["예약확정", "상담완료", "노쇼", "취소"].map(function (s) { return "<option" + (s === b.state ? " selected" : "") + ">" + s + "</option>"; }).join("") + '</select><button class="sm sub" data-a="more">메모·더 보기</button></div>' +
+        '<div class="more"><label>선생님 메모 (학부모님께 안 보여요)</label><textarea rows="2" data-a="memo">' + esc(b.memo) + '</textarea><div class="row" style="margin-top:6px"><input data-a="owner" placeholder="담당" value="' + esc(b.owner) + '" style="width:140px"><button class="sm" data-a="save">저장</button>' +
+        (b.state === "예약확정" ? '<button class="sm sub" data-a="send">확정 안내 다시 보내기</button><button class="sm sub" data-a="remind">리마인더 지금 보내기</button>' : "") +
+        '<button class="sm sub" data-a="link">학부모용 링크 복사</button>' + (b.url ? '<a href="' + esc(b.url) + '" target="_blank" rel="noopener"><button class="sm sub">노션에서 열기 ↗</button></a>' : "") + '<span class="msg" data-a="m"></span></div>' +
+        (b.notice ? '<div class="nt">🔔 알림 기록\n' + esc(b.notice) + "</div>" : "") + "</div></div>";
+    });
+    $("list").innerHTML = h;
+    $("list").querySelectorAll(".bk").forEach(function (el) {
+      var id = el.getAttribute("data-id"), b = D.list.filter(function (x) { return x.id === id; })[0], q2 = function (a) { return el.querySelector('[data-a="' + a + '"]'); };
+      var m = function (t, ok) { var e = q2("m"); e.className = "msg " + (ok ? "ok" : "er"); e.textContent = t; };
+      q2("more").onclick = function () { el.classList.toggle("open"); };
+      q2("state").onchange = function () {
+        var s = this.value, body = { action: "t_consult_set", id: id, state: s };
+        if (s === "취소") {
+          if (!confirm(b.student + " 학생 상담을 취소할까요?")) { this.value = b.state; return; }
+          body.reason = prompt("취소 사유 (선택, 학부모님께는 안 보여요)", "") || "";
+          body.notify = b.end > Date.now() && !!b.phone && confirm("학부모님께 취소 안내 문자를 보낼까요?");
+        }
+        save(body);
+      };
+      q2("save").onclick = function () { save({ action: "t_consult_set", id: id, memo: q2("memo").value, owner: q2("owner").value }, true); };
+      q2("link").onclick = function () { copy(b.link, this); };
+      ["send", "remind"].forEach(function (k) { var x = q2(k); if (x) x.onclick = function () { if (!confirm("학부모님께 " + (k === "send" ? "확정 안내" : "리마인더") + "를 보낼까요?")) return; post({ action: "t_consult_send", id: id, kind: k }).then(function (j) { if (!j.ok) return m(j.msg || "보내지 못했어요."); replace(j.book, true); }); }; });
+      function save(body, keepOpen) { post(body).then(function (j) { if (!j.ok) return m(j.msg || "저장하지 못했어요."); replace(j.book, keepOpen); }); }
+    });
+  }
+  function replace(nb, keepOpen) {
+    D.list = D.list.map(function (x) { return x.id === nb.id ? nb : x; }); renderList();
+    if (keepOpen) { var el = document.querySelector('.bk[data-id="' + nb.id + '"]'); if (el) { el.classList.add("open"); var mm = el.querySelector('[data-a="m"]'); mm.className = "msg ok"; mm.textContent = "저장했어요"; } }
+  }
+
+  // =================== 🗓 가능 시간 설정 ===================
+  var W = {}, X = {};
+  opts("cDur", [10, 15, 20, 30, 40, 45, 50, 60, 90, 120].map(function (x) { return [x, x + "분"]; }));
+  opts("cStep", [10, 15, 20, 30, 40, 45, 60, 90, 120].map(function (x) { return [x, x + "분마다"]; }));
+  opts("cBuf", [0, 5, 10, 15, 20, 30, 60].map(function (x) { return [x, x ? x + "분씩 비우기" : "없음"]; }));
+  opts("cMax", [[0, "제한 없음"]].concat([1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20].map(function (x) { return [x, "하루 " + x + "건"]; })));
+  opts("cMinH", [0, 1, 2, 3, 5, 12, 24, 48].map(function (x) { return [x, x ? x + "시간 전까지" : "바로 직전까지"]; }));
+  opts("cDays", [7, 14, 21, 30, 45, 60, 90].map(function (x) { return [x, x + "일 앞까지"]; }));
+  opts("cRemind", [[0, "보내지 않음"], [2, "2시간 전"], [3, "3시간 전"], [12, "12시간 전"], [24, "하루 전"], [48, "이틀 전"]]);
+  function ensure(id, v) { if (![].some.call($(id).options, function (o) { return o.value === String(v); })) { var o = document.createElement("option"); o.value = v; o.textContent = v; $(id).appendChild(o); } $(id).value = String(v); }
+  function fillCfg() {
+    var c = D.cfg; if (!c) return;
+    $("cOpen").checked = c.open; $("cTitle").value = c.title; $("cPlace").value = c.place; $("cTel").value = c.tel; $("cOwner").value = c.owner; $("cIntro").value = c.intro;
+    ensure("cDur", c.dur); ensure("cStep", c.step); ensure("cBuf", c.buf); ensure("cMax", c.maxDay); ensure("cMinH", c.minHours); ensure("cDays", c.days); ensure("cRemind", c.remindH);
+    $("cAlert").value = c.alert; $("cModes").value = c.modes.join(", "); $("cGrades").value = c.grades.join(", ");
+    W = JSON.parse(JSON.stringify(c.week)); X = JSON.parse(JSON.stringify(c.except));
+    drawWeek(); drawExcept(); drawPrev();
+  }
+  function drawWeek() {
+    $("week").innerHTML = ORDER.map(function (d) {
+      var r = W[d] || [];
+      return '<tr><td style="' + (d === 0 ? "color:#C0392B" : d === 6 ? "color:#2E6FB7" : "") + '">' + DAYS[d] + "</td><td>" + (r.length ? r.map(function (x, i) { return '<span class="chip">' + x[0] + "~" + x[1] + '<button data-d="' + d + '" data-i="' + i + '" title="지우기">×</button></span>'; }).join("") : '<span class="none">쉬어요</span>') + "</td>" +
+        '<td style="text-align:right;white-space:nowrap"><span class="addr"><input type="time" step="600" value="' + (r.length ? r[r.length - 1][1] : "13:00") + '" data-f="' + d + '">~<input type="time" step="600" value="' + (r.length ? "" : "17:00") + '" data-t="' + d + '"><button class="sm" data-add="' + d + '">추가</button></span></td></tr>';
+    }).join("") + '<tr><td></td><td colspan="2"><button class="sm sub" id="copyMon">월요일 시간을 화~금에 똑같이</button></td></tr>';
+    $("week").querySelectorAll(".chip button").forEach(function (b) { b.onclick = function () { W[b.getAttribute("data-d")].splice(+b.getAttribute("data-i"), 1); drawWeek(); }; });
+    $("week").querySelectorAll("[data-add]").forEach(function (b) {
+      b.onclick = function () {
+        var d = b.getAttribute("data-add"), f = $("week").querySelector('[data-f="' + d + '"]').value, t = $("week").querySelector('[data-t="' + d + '"]').value;
+        if (!f || !t || t <= f) return alert("끝 시각이 시작 시각보다 늦어야 해요.");
+        W[d] = (W[d] || []).concat([[f, t]]).sort(function (a, b) { return a[0] < b[0] ? -1 : 1; }); drawWeek();
+      };
+    });
+    $("copyMon").onclick = function () { [2, 3, 4, 5].forEach(function (d) { W[d] = JSON.parse(JSON.stringify(W[1] || [])); }); drawWeek(); };
+  }
+  $("xType").onchange = function () { $("xRange").style.display = this.value === "set" ? "" : "none"; };
+  $("xAdd").onclick = function () {
+    var d = $("xDate").value; if (!d) return alert("날짜를 골라 주세요.");
+    if ($("xType").value === "off") X[d] = [];
+    else { var f = $("xFrom").value, t = $("xTo").value; if (!f || !t || t <= f) return alert("끝 시각이 시작 시각보다 늦어야 해요."); X[d] = (X[d] || []).concat([[f, t]]); }
+    drawExcept();
+  };
+  function drawExcept() {
+    var ks = Object.keys(X).sort();
+    $("except").innerHTML = ks.length ? ks.map(function (d) {
+      return '<div style="margin:4px 0"><b style="display:inline-block;width:90px">' + dlabel(d) + "</b>" + (X[d].length ? X[d].map(function (r) { return '<span class="chip">' + r[0] + "~" + r[1] + "</span>"; }).join("") : '<span class="chip off">휴무</span>') + ' <button class="sm sub" data-x="' + d + '">지우기</button></div>';
+    }).join("") : '<span class="none">없어요. 휴가·명절·시험 기간처럼 평소와 다른 날을 넣어 주세요.</span>';
+    $("except").querySelectorAll("[data-x]").forEach(function (b) { b.onclick = function () { delete X[b.getAttribute("data-x")]; drawExcept(); }; });
+  }
+  function drawPrev() {
+    var h = "";
+    for (var i = 0; i < 7; i++) { var d = addDays(D.today, i), s = D.free[d] || []; h += "<div><b>" + dlabel(d) + "</b><br>" + (s.length ? s.join(" ") : '<span class="none">없음</span>') + "</div>"; }
+    $("prev").innerHTML = h;
+  }
+  $("cSave").onclick = function () {
+    var cfg = { open: $("cOpen").checked, title: $("cTitle").value, place: $("cPlace").value, tel: $("cTel").value, owner: $("cOwner").value, intro: $("cIntro").value,
+      dur: +$("cDur").value, step: +$("cStep").value, buf: +$("cBuf").value, maxDay: +$("cMax").value, minHours: +$("cMinH").value, days: +$("cDays").value, remindH: +$("cRemind").value,
+      alert: $("cAlert").value, modes: $("cModes").value.split(","), grades: $("cGrades").value.split(","), week: W, except: X };
+    var btn = this; btn.disabled = true; msg("cMsg", "저장하는 중…", true);
+    post({ action: "t_consult_cfg", cfg: cfg }).then(function (j) {
+      btn.disabled = false;
+      if (!j.ok) return msg("cMsg", j.msg || "저장하지 못했어요.");
+      load(function () { msg("cMsg", "저장했어요 ✓ 학부모 화면에 바로 반영돼요.", true); });
+    });
+  };
+
+  // =================== 🔗 공유 ===================
+  function share() {
+    var u = D.links.book || location.origin + "/consult.html";
+    $("bookUrl").textContent = u; $("openUrl").href = u; $("icsUrl").textContent = D.links.ics || "";
+    if (window.qrcode) { var q = qrcode(0, "M"); q.addData(u); q.make(); $("qr").innerHTML = q.createSvgTag({ cellSize: 6, margin: 2 }); }
+    var c = D.cfg || {};
+    $("kakao").textContent = "안녕하세요, 청명학원 영어과입니다.\n" + (c.title || "신입생 상담 예약").replace(/\s*예약$/, "") + " 예약 안내드립니다.\n\n아래 링크에서 편하신 날짜와 시간을 고르시면 바로 예약이 확정되고, 안내 문자를 보내 드려요.\n(상담 " + (c.dur || 30) + "분" + (c.modes ? " · " + c.modes.join(" / ") : "") + ")\n\n👉 " + u + "\n\n" + (c.tel ? "문의: " + c.tel : "감사합니다.");
+  }
+  $("cpUrl").onclick = function () { copy($("bookUrl").textContent, this); };
+  $("cpIcs").onclick = function () { copy($("icsUrl").textContent, this); };
+  $("cpKakao").onclick = function () { copy($("kakao").textContent, this); };
+  $("qrDl").onclick = function () {
+    var svg = $("qr").querySelector("svg"); if (!svg) return;
+    var img = new Image(), s = new XMLSerializer().serializeToString(svg);
+    img.onload = function () { var cv = document.createElement("canvas"); cv.width = cv.height = 600; var x = cv.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, 600, 600); x.drawImage(img, 0, 0, 600, 600); var a = document.createElement("a"); a.href = cv.toDataURL("image/png"); a.download = "상담예약_QR.png"; a.click(); };
+    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
+  };
+
+  // =================== ➕ 직접 추가 ===================
+  function fillAdd() {
+    var c = D.cfg; if (!c) return;
+    if (!$("aDate").value) $("aDate").value = addDays(D.today, 1);
+    opts("aDur", [10, 15, 20, 30, 40, 45, 50, 60, 90, 120].map(function (x) { return [x, x + "분"]; }), c.dur);
+    opts("aGrade", [""].concat(c.grades), $("aGrade").value); opts("aMode", c.modes, $("aMode").value);
+    if (!$("aOwner").value) $("aOwner").value = c.owner;
+  }
+  function addNow(force) {
+    var body = { action: "t_consult_add", date: $("aDate").value, hm: $("aHm").value, dur: +$("aDur").value, student: $("aStu").value, grade: $("aGrade").value, school: $("aSchool").value, parent: $("aParent").value, phone: $("aPhone").value, mode: $("aMode").value, owner: $("aOwner").value, ask: $("aAsk").value, memo: $("aMemo").value, notify: $("aNotify").checked, force: !!force };
+    msg("aMsg", "넣는 중…", true); $("aForce").style.display = "none";
+    post(body).then(function (j) {
+      if (!j.ok) { msg("aMsg", j.msg || "넣지 못했어요."); if (j.clash) $("aForce").style.display = ""; return; }
+      ["aStu", "aSchool", "aParent", "aPhone", "aAsk", "aMemo"].forEach(function (id) { $(id).value = ""; });
+      load(function () { msg("aMsg", "넣었어요 ✓ " + dlabel(j.book.date) + " " + j.book.hm + " " + j.book.student, true); });
+    });
+  }
+  $("aGo").onclick = function () { addNow(false); };
+  $("aForce").onclick = function () { addNow(true); };
+
+  // =================== 💬 알림 문구 ===================
+  function loadTpl() {
+    $("tpls").innerHTML = "불러오는 중…";
+    post({ action: "t_consult_tpl" }).then(function (j) {
+      if (!j.ok) return ($("tpls").textContent = j.msg || "불러오지 못했어요.");
+      $("tpls").innerHTML = j.list.map(function (t, i) {
+        return '<div style="margin:14px 0"><h3>' + esc(t.name) + ' <span class="hint" style="font-weight:500">· 환경 변수 <code>' + esc(t.env) + "</code> · 지금: " + ({ kakao: "알림톡", sms: "문자", off: "발송 설정 전" }[t.mode] || t.mode) + "</span></h3>" +
+          '<label>템플릿에 등록할 문구 (#{…}는 변수)</label><pre>' + esc(t.template) + '</pre><button class="sm sub" data-c="' + i + '">문구 복사</button><label style="margin-top:8px">실제로 가는 모양 (예시)</label><pre>' + esc(t.sample) + "</pre></div>";
+      }).join("");
+      $("tpls").querySelectorAll("[data-c]").forEach(function (b) { b.onclick = function () { copy(j.list[+b.getAttribute("data-c")].template, b); }; });
+    });
+  }
+
+  // =================== 🔔 새 예약 알림 (웹 푸시) ===================
+  var PUSH = { key: "", subs: [] }, MY = "", PUSHOPEN = false;
+  var isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  var standalone = window.navigator.standalone === true || (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
+  var canPush = "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+  function u8(b64) { var p = "=".repeat((4 - (b64.length % 4)) % 4), r = atob((b64 + p).replace(/-/g, "+").replace(/_/g, "/")), a = new Uint8Array(r.length); for (var i = 0; i < r.length; i++) a[i] = r.charCodeAt(i); return a; }
+  function sha12(t) { return crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)).then(function (h) { return Array.prototype.map.call(new Uint8Array(h), function (x) { return ("0" + x.toString(16)).slice(-2); }).join("").slice(0, 12); }); }
+  function devName() {
+    var u = navigator.userAgent, os = /iPhone/.test(u) ? "아이폰" : /iPad/.test(u) || (isIOS && !/iPhone/.test(u)) ? "아이패드" : /Android/.test(u) ? "안드로이드 휴대폰" : /Windows/.test(u) ? "윈도우 컴퓨터" : /Mac/.test(u) ? "맥" : "기기";
+    var br = /Edg\//.test(u) ? "엣지" : /SamsungBrowser/.test(u) ? "삼성 인터넷" : /CriOS|Chrome\//.test(u) ? "크롬" : /Firefox|FxiOS/.test(u) ? "파이어폭스" : /Safari/.test(u) ? "사파리" : "";
+    return os + (br && !(isIOS && standalone) ? " " + br : "");
+  }
+  function myReg() { return canPush ? navigator.serviceWorker.getRegistration("/admin/").catch(function () { return null; }) : Promise.resolve(null); }
+  function findMine() {
+    return myReg().then(function (reg) { return reg ? reg.pushManager.getSubscription() : null; }).then(function (sub) { return sub ? sha12(sub.endpoint) : ""; }).catch(function () { return ""; })
+      .then(function (id) { MY = id; drawPush(); });
+  }
+  function drawPush(note, ok) {
+    var subs = PUSH.subs || [], mine = MY && subs.some(function (x) { return x.id === MY; }), h = "";
+    $("push").classList.toggle("on", subs.length > 0);
+    if (!subs.length) h += '<h3 style="margin-bottom:6px">🔔 학부모님이 예약하면 바로 알림 받기</h3><p class="hint" style="margin:0 0 10px">이 휴대폰(또는 컴퓨터)에서 <b>알림 켜기</b>를 누르고 \'허용\'을 고르면, 새 예약·시간 변경·취소가 생길 때마다 알림이 와요. 무료이고, 문자 설정이 없어도 돼요.</p>';
+    else h += '<div class="row" style="justify-content:space-between"><h3 style="margin:0">🔔 알림 받는 기기 ' + subs.length + '대' + (mine ? ' <span class="hint" style="font-weight:500">· 이 기기 포함</span>' : "") + '</h3><button class="sm sub" id="pToggle">' + (PUSHOPEN ? "접기" : "관리") + "</button></div>";
+    if (!subs.length || PUSHOPEN || !mine) {
+      if (isIOS && !standalone) h += '<div class="warn" style="margin:10px 0">📱 <b>아이폰·아이패드</b>는 이 화면을 <b>홈 화면 앱</b>으로 열어야 알림을 받을 수 있어요 (iOS 16.4 이상).<br>① 사파리 아래 <b>공유 버튼(□↑)</b> → <b>홈 화면에 추가</b> → 추가<br>② 홈 화면에 생긴 <b>상담 예약</b> 아이콘으로 열기 → 입장 코드·선생님 코드 입력<br>③ 거기서 <b>이 기기에서 알림 켜기</b></div>';
+      else if (!canPush) h += '<div class="warn" style="margin:10px 0">이 브라우저는 알림을 받을 수 없어요. 휴대폰은 <b>크롬</b>(안드로이드)이나 <b>홈 화면 앱</b>(아이폰), 컴퓨터는 <b>크롬·엣지</b>로 열어 주세요. (카카오톡 안에서 열린 화면은 알림이 안 돼요)</div>';
+      else if (!mine) h += '<div class="row" style="margin-top:10px"><button id="pOn">🔔 이 기기에서 알림 켜기</button><span class="hint">' + esc(devName()) + "</span></div>";
+      if (subs.length && (PUSHOPEN || !mine)) {
+        h += '<div style="margin-top:10px">' + subs.map(function (x) {
+          return '<div class="dev"><b>' + esc(x.name) + (x.id === MY ? ' <span class="me">이 기기</span>' : "") + '</b><span class="hint">' + esc(x.service) + " · " + esc(x.at) + " 켬" + (x.last ? " · 마지막 알림 " + esc(x.last) : "") + '</span><span style="margin-left:auto" class="row"><button class="sm sub" data-pt="' + x.id + '">시험 알림</button><button class="sm red" data-pd="' + x.id + '">끄기</button></span></div>';
+        }).join("") + "</div>";
+        h += '<p class="hint" style="margin:8px 0 0">· 알림이 안 오면: 휴대폰 <b>설정 → 알림</b>에서 크롬(또는 홈 화면 앱) 알림이 켜져 있는지, 방해 금지 모드가 아닌지 확인해 주세요.<br>· 솔라피를 연결하면 🗓 가능 시간 설정의 \'알림 받을 번호\'로 문자도 함께 가요.</p>';
+      }
+    }
+    if (note) h += '<div class="msg ' + (ok ? "ok" : "er") + '">' + esc(note) + "</div>";
+    $("push").innerHTML = h;
+    if ($("pToggle")) $("pToggle").onclick = function () { PUSHOPEN = !PUSHOPEN; drawPush(); };
+    if ($("pOn")) $("pOn").onclick = pushOn;
+    $("push").querySelectorAll("[data-pt]").forEach(function (b) { b.onclick = function () { b.disabled = true; post({ action: "t_consult_push", op: "test", id: b.getAttribute("data-pt") }).then(function (j) { b.disabled = false; if (!j.ok) return drawPush(j.msg || "보내지 못했어요."); PUSH.subs = j.subs; var r = (j.test && j.test.res || [])[0]; drawPush(r ? (r.ok ? "시험 알림을 보냈어요. 몇 초 안에 그 기기에 알림이 떠야 해요." : r.msg) : "그 기기가 목록에 없어요.", r && r.ok); }); }; });
+    $("push").querySelectorAll("[data-pd]").forEach(function (b) {
+      b.onclick = function () {
+        var id = b.getAttribute("data-pd"); if (!confirm("이 기기의 알림을 끌까요?")) return;
+        var off = id === MY ? myReg().then(function (reg) { return reg && reg.pushManager.getSubscription(); }).then(function (s) { return s && s.unsubscribe(); }).catch(function () {}) : Promise.resolve();
+        off.then(function () { return post({ action: "t_consult_push", op: "del", id: id }); }).then(function (j) { if (!j.ok) return drawPush(j.msg); PUSH.subs = j.subs; if (id === MY) MY = ""; drawPush("알림을 껐어요.", true); });
+      };
+    });
+  }
+  function pushOn() {
+    var btn = $("pOn"); btn.disabled = true; btn.textContent = "켜는 중…";
+    Notification.requestPermission().then(function (perm) {
+      if (perm !== "granted") throw new Error(perm === "denied" ? "알림이 '차단'되어 있어요. 주소창 왼쪽 🔒(또는 설정 → 사이트 설정 → 알림)에서 이 사이트 알림을 '허용'으로 바꾼 뒤 다시 눌러 주세요." : "알림 허용을 눌러 주세요.");
+      return navigator.serviceWorker.register("/admin/consult-sw.js", { scope: "/admin/" }).then(function () { return navigator.serviceWorker.ready; });
+    }).then(function (reg) {
+      return reg.pushManager.getSubscription().then(function (old) {
+        var key = u8(PUSH.key), same = old && old.options && old.options.applicationServerKey && new Uint8Array(old.options.applicationServerKey).join() === key.join();
+        if (old && !same) return old.unsubscribe().then(function () { return null; });
+        return old;
+      }).then(function (old) { return old || reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: u8(PUSH.key) }); });
+    }).then(function (sub) {
+      var name = prompt("이 기기 이름 (알림 받는 기기 목록에 보여요)", devName()); if (name == null) name = devName();
+      return post({ action: "t_consult_push", op: "add", sub: sub.toJSON(), name: name }).then(function (j) {
+        if (!j.ok) throw new Error(j.msg || "저장하지 못했어요.");
+        PUSH.subs = j.subs; MY = j.id;
+        var t = (j.test && j.test.res || [])[0];
+        drawPush(t && t.ok ? "알림을 켰어요 ✓ 방금 '알림이 켜졌어요' 알림이 왔는지 확인해 주세요." : "알림은 켰는데 시험 알림을 보내지 못했어요: " + (t ? t.msg : "") , !!(t && t.ok));
+      });
+    }).catch(function (e) { drawPush(String(e && e.message || e)); });
+  }
+  if (canPush) navigator.serviceWorker.addEventListener("message", function (e) {
+    var d = e.data || {}; if (d.type === "consult-push") load();
+    if (d.type === "consult-open") { var m = /#b=([0-9a-f]{32})/.exec(d.url || ""); load(function () { if (m) showBook(m[1]); }); }
+  });
+  function showBook(id) {
+    document.querySelector('#tabs button[data-t="list"]').click();
+    if (!D.list.some(function (x) { return x.id === id && x.end > Date.now() - 3600e3 && x.state !== "취소"; })) document.querySelector('[data-f="all"]').click();
+    var el = document.querySelector('.bk[data-id="' + id + '"]'); if (!el) return;
+    el.classList.add("hl"); el.scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(function () { el.classList.remove("hl"); }, 4000);
+  }
+
+  // ---------- 시작 ----------
+  function start() { load(function () { var t = (location.hash || "").slice(1), m = /^b=([0-9a-f]{32})$/.exec(t); if (m) return showBook(m[1]); var b = document.querySelector('#tabs button[data-t="' + t + '"]'); if (b) b.click(); }); }
+  $("loginBtn").onclick = function () { CODE = $("tcode").value.trim(); if (CODE) start(); };
+  $("tcode").onkeydown = function (e) { if (e.key === "Enter") $("loginBtn").onclick(); };
+  CODE = lsGet(LS_T); if (CODE) start();
+})();
+</script>
+</body></html>
