@@ -615,9 +615,10 @@
     bd.innerHTML = '<div class="card me">🙋 <b>' + esc(me.name) + "</b> · " + esc(me.cls) + '<a class="chg">내가 아니에요</a></div>' +
       statsHtml() +
       '<div class="card qbox"><h4>📝 확인 문제</h4><div class="hint"><span class="spin"></span>문제를 준비하고 있어요…</div></div>' +
-      '<div class="card"><h4>✍️ ' + (isPassage() ? "본문의 내용을 한 줄로 요약" : "오늘 배운 내용 한 줄 요약") + ' <small style="color:#C0392B;font-weight:400">(필수)</small></h4>' +
+      (!isPassage() ? "" : '<div class="card"><h4>✍️ ' + (isPassage() ? "본문의 내용을 한 줄로 요약" : "오늘 배운 내용 한 줄 요약") + ' <small style="color:#C0392B;font-weight:400">(필수)</small></h4>' +
       '<textarea class="sum" maxlength="400" placeholder="' + (isPassage() ? "예: 본문의 중심 내용을 우리말로 한 문장으로 적어요." : "예: 주어가 I면 am, he/she/it이면 is, 여럿이면 are를 쓴다.") + '"></textarea>' +
-      '<div class="hint">' + (isPassage() ? "글쓴이가 말하고 싶은 핵심을 한 문장으로 적어 보세요. 점수에는 포함되지 않고, AI가 읽고 한마디 해 줘요." : "강의를 안 본 친구에게 설명하듯 내 말로 적어 보세요. 점수에는 포함되지 않고, AI가 읽고 한마디 해 줘요.") + "</div></div>" +
+      '<div class="hint">' + (isPassage() ? "글쓴이가 말하고 싶은 핵심을 한 문장으로 적어 보세요. 점수에는 포함되지 않고, AI가 읽고 한마디 해 줘요." : "강의를 안 본 친구에게 설명하듯 내 말로 적어 보세요. 점수에는 포함되지 않고, AI가 읽고 한마디 해 줘요.") + "</div></div>") + // 강의(문법 등)는 한 줄 요약 없이 바로 제출
+
       '<div class="card"><h4>🤔 얼마나 이해했나요?</h4><div class="rate">' +
       [["5", "완벽해요", "😎"], ["4", "거의 이해", "🙂"], ["3", "보통", "😐"], ["2", "헷갈려요", "😕"], ["1", "모르겠어요", "😵"]].map(function (r) {
         return '<button type="button" data-v="' + r[0] + " " + r[1] + '"><b>' + r[2] + "</b>" + r[1] + "</button>";
@@ -718,12 +719,12 @@
     if (busy) return;
     var me = sess();
     if (!me) return renderLogin("로그인이 풀렸어요. 다시 이름을 골라 주세요.");
-    var sum = clean(bd.querySelector(".sum").value), msg = (bd.querySelector(".msg").value || "").trim();
+    var sumEl = bd.querySelector(".sum"), sum = sumEl ? clean(sumEl.value) : "", msg = (bd.querySelector(".msg").value || "").trim();
     var qs = QUIZ || [];
     for (var i = 0; i < qs.length; i++) {
       if (answers[i] == null || answers[i] === "") return showErr("Q" + (i + 1) + "번을 아직 안 풀었어요.");
     }
-    if (sum.length < 10) { bd.querySelector(".sum").focus(); return showErr((isPassage() ? "본문 요약을" : "한줄요약을") + " 10자 이상 적어 주세요."); }
+    if (sumEl && sum.length < 10) { bd.querySelector(".sum").focus(); return showErr((isPassage() ? "본문 요약을" : "한줄요약을") + " 10자 이상 적어 주세요."); }
     if (!rate) return showErr("이해도를 골라 주세요.");
     var codeIn = bd.querySelector(".code");
     if (codeIn && codeIn.value.trim()) lsSet(LS_CODE, codeIn.value.trim());

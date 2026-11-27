@@ -457,7 +457,7 @@ module.exports = async function handler(req, res) {
   const name = normName(st.name);
   if (!name) return sendJson(res, 400, { error: "name", msg: "이름을 입력해 주세요." });
   const summary = clip(b.summary, 400);
-  if (summary.length < 5) return sendJson(res, 400, { error: "summary", msg: "오늘 배운 내용을 한 줄로 적어 주세요." });
+  if (b.summaryKind === "passage" && summary.length < 5) return sendJson(res, 400, { error: "summary", msg: "본문 내용을 한 줄로 적어 주세요." }); // 강의 인증은 한 줄 요약 없이도 제출돼요
 
   const items = (Array.isArray(qz.items) ? qz.items : []).slice(0, 20).map((it) => ({
     q: clip(it && it.q, 300), given: clip(it && it.given, 300), answer: clip(it && it.answer, 300), ok: !!(it && it.ok), src: it && it.src === "ai" ? "ai" : "lecture",
@@ -469,7 +469,7 @@ module.exports = async function handler(req, res) {
   // AI 요약 평가 (실패해도 제출은 계속)
   let aiGrade = "평가없음", aiFeedback = "";
   const lec = clip(b.lectureText, 5000);
-  if (aiOn() && lec.length >= 60) {
+  if (aiOn() && lec.length >= 60 && summary.length >= 5) {
     const out = await askAI(b.summaryKind === "passage" ? PASSAGE_SYS : SUMMARY_SYS, "강의 제목: " + clip(pg.title, 200) + "\n[강의 내용]\n" + lec + "\n[강의 내용 끝]\n\n학생 " + (b.summaryKind === "passage" ? "본문 요약" : "한줄요약") + ": " + summary, 300);
     if (out && /^[상중하]$/.test(out.grade)) { aiGrade = out.grade; aiFeedback = clip(out.feedback, 300); }
   }
