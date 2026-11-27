@@ -1,5 +1,5 @@
 {
- "built": "2026-11-25T05:48:39.565Z",
+ "built": "2026-11-27T04:12:17.291Z",
  "books": [
   {
    "id": "bb391852c",
@@ -1225,6 +1225,60 @@
      "key": "_",
      "name": "단원",
      "units": [
+      {
+       "id": "u7e4855ac",
+       "name": "초등기초문법 1강 — Grammar",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u5824b300",
+       "name": "초등기초문법 2강 — Grammar",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ucb86e2e3",
+       "name": "초등기초문법 3강 — Grammar",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "uca5eb53f",
+       "name": "초등기초문법 4강 — Grammar",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u57312c55",
+       "name": "초등기초문법 5강 — Grammar",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ud035fe81",
+       "name": "초등기초문법 6강 — Grammar",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "ufeaf90fc",
+       "name": "초등기초문법 7강 — Grammar",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u9499b534",
+       "name": "초등기초문법 8강 — Grammar",
+       "n": 0,
+       "lv": null
+      },
+      {
+       "id": "u2a9647df",
+       "name": "초등기초문법 9강 — Grammar",
+       "n": 0,
+       "lv": null
+      },
       {
        "id": "u2dd7dce7",
        "name": "be동사, 나와 세상을 설명하는 마법의 동사 — Unit 1 be동사의 현재형",
@@ -9801,30 +9855,6 @@
      "key": "8과",
      "name": "Lesson 8",
      "units": [
-      {
-       "id": "uf8144d40",
-       "name": "1강 — Grammar",
-       "n": 0,
-       "lv": null
-      },
-      {
-       "id": "u1927067a",
-       "name": "천일문 고등 GRAMMAR UNIT 02 — Grammar",
-       "n": 0,
-       "lv": null
-      },
-      {
-       "id": "uc67f8122",
-       "name": "3강 — Grammar",
-       "n": 0,
-       "lv": null
-      },
-      {
-       "id": "uba702ab6",
-       "name": "4강 — Grammar",
-       "n": 0,
-       "lv": null
-      },
       {
        "id": "u8449a236",
        "name": "듣기 · 중2 천재 이상기 8과 대화문 A Listen and Choose (1) — A Listen and Choose (1)",
