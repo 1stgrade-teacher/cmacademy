@@ -1217,7 +1217,8 @@ module.exports = async function handler(req, res) {
       const f = b.paper || {};
       const title = clip(f.title, 120), cls = clip(f.cls, 40), kind = KINDS.includes(f.kind) ? f.kind : "월간평가";
       if (!title || !cls) return send(400, { error: "input", msg: "시험명과 반을 넣어 주세요." });
-      const mode = f.mode === "choice" ? "choice" : "fixed";
+      let mode = f.mode === "choice" ? "choice" : "fixed";
+      if (f.id && mode === "fixed") { const o0 = await getPaper(f.id); if (o0 && isAuto(o0)) mode = "choice"; } // 🤖 스스로 단어시험(자동)은 늘 학생 선택
       const units = (Array.isArray(f.units) ? f.units : []).filter((u) => unitIndex.has(u)).slice(0, 300);
       const books = (Array.isArray(f.books) ? f.books : []).filter((x) => allBooks().some((bk) => bk.id === x)).slice(0, 40);
       const omr = f.omr && typeof f.omr === "object" ? parseOmr(f.omr.text) : null; // 📝 종이 시험지(OMR)

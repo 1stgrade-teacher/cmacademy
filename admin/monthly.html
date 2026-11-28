@@ -213,8 +213,8 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       <div class="fs"><div class="fh">② 어떻게 낼까<span>문제 수·난이도·시간</span></div>
       <div class="grid">
         <div><label class="l">출제 방식</label><div class="seg"><label><input type="radio" name="mode" value="fixed" checked>선생님 지정</label><label><input type="radio" name="mode" value="choice">학생 선택</label></div></div>
-        <div><label class="l">난이도</label><div class="seg"><label><input type="radio" name="lv" value="1">기본</label><label><input type="radio" name="lv" value="2" checked>표준</label><label><input type="radio" name="lv" value="3">심화</label></div></div>
-        <div><label class="l">문항 수</label><input id="eCount" type="number" min="5" max="100" value="20"></div>
+        <div><label class="l">난이도</label><div class="seg"><label><input type="radio" name="lv" value="1">기본</label><label><input type="radio" name="lv" value="2" checked>표준</label><label><input type="radio" name="lv" value="3">심화</label></div><div class="hint" id="lvHint" style="display:none;margin:4px 0 0;font-size:12.5px;line-height:1.5"></div></div>
+        <div><label class="l" id="eCountL">문항 수</label><input id="eCount" type="number" min="5" max="100" value="20"></div>
         <div><label class="l">제한시간(분, 0=없음)</label><input id="eMin" type="number" min="0" max="180" value="30"></div>
       </div>
       <div class="hint" id="modeHint"></div>
@@ -1746,7 +1746,8 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     $("aiOptBox").style.display = /단어시험|듣기시험/.test($("eKind").value) ? "none" : ""; $("listenHint").style.display = $("eKind").value === "듣기시험" ? "" : "none"; if ($("eKind").value === "듣기시험" && F.area !== "듣기" && DATA.catalog.some(function (b) { return b.area === "듣기"; })) { F.area = "듣기"; buildBookFilters(); renderBooks(); }
     var show = $("eKind").value === "단어시험" || vocabSelected(); $("vtBox").style.display = show ? "" : "none"; if (!show) return;
     if (VT_FRESH && !EDIT && $("eKind").value === "단어시험") { VT = []; VT_FRESH = false; } // 새 단어시험은 빈 칸에서 시작: 원하는 유형만 체크
-    var cnt = {}; DATA.catalog.forEach(function (b) { b.chapters.forEach(function (c) { c.units.forEach(function (u) { if (u.v && (SEL[u.id] || SELB[b.id])) Object.keys(u.v).forEach(function (t) { cnt[t] = (cnt[t] || 0) + u.v[t]; }); }); }); });
+    var allV = !!(EDIT && EDIT.auto && !Object.keys(SEL).length && !Object.keys(SELB).length); // 🤖 자동: 고른 교재가 없으면 모든 단어장 기준
+    var cnt = {}; DATA.catalog.forEach(function (b) { b.chapters.forEach(function (c) { c.units.forEach(function (u) { if (u.v && (allV || SEL[u.id] || SELB[b.id])) Object.keys(u.v).forEach(function (t) { cnt[t] = (cnt[t] || 0) + u.v[t]; }); }); }); });
     var any = Object.keys(cnt).length;
     $("vtList").innerHTML = (DATA.vtypes || []).map(function (t) {
       var on = !VT || VT.indexOf(t.id) >= 0, n = cnt[t.id] || 0;
@@ -1956,11 +1957,22 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   var SEL = {}, SELB = {}, EXCL = [], EDIT = null, RESEED = false, F = { area: "", grade: "", q: "" };
   function mode() { return document.querySelector('input[name=mode]:checked').value; }
   function level() { return +document.querySelector('input[name=lv]:checked').value; }
+  // 📒 단어시험 난이도 = 유형 묶음 (난이도를 누르면 아래 유형 체크가 바뀌어요. 유형을 직접 고쳐도 돼요)
+  var VT_LV = { 1: ["meaning", "unscramble", "blankmc"], 2: ["meaning", "spell", "mwrite"], 3: ["spell", "mwrite", "blank", "synw"] };
+  var VT_LV_TXT = { 1: "기본 = 뜻 고르기 · 철자 순서 맞추기 · 예문 빈칸 고르기 (고르기 위주)", 2: "표준 = 뜻 고르기 · 철자 쓰기 · 뜻 쓰기", 3: "심화 = 철자 쓰기 · 뜻 쓰기 · 예문 빈칸 쓰기 · 동의어·반의어 쓰기 (쓰기만)" };
+  function lvHint() { if (!VT_LV_TXT) return; var w = $("eKind").value === "단어시험"; $("lvHint").style.display = w ? "" : "none"; if (w) $("lvHint").innerHTML = "📒 단어시험은 난이도를 누르면 아래 <b>문제 유형</b>이 그 묶음으로 바뀌어요. (유형은 직접 더 고칠 수 있어요)<br>" + esc(VT_LV_TXT[level()]); }
+  Array.prototype.forEach.call(document.querySelectorAll("input[name=lv]"), function (r) { r.addEventListener("change", function () { if ($("eKind").value === "단어시험") { VT = VT_LV[level()].slice(); VT_FRESH = false; vtUi(); } lvHint(); }); });
+  $("eKind").addEventListener("change", lvHint);
   Array.prototype.forEach.call(document.querySelectorAll("input[name=mode]"), function (r) { r.onchange = function () { modeUi(); renderBooks(); }; });
   function modeUi() {
     var ch = mode() === "choice";
     $("modeHint").innerHTML = ch ? "📚 <b>학생 선택형</b>: 선생님이 고른 교재(또는 과) 안에서 학생이 <b>자기가 배운 과</b>를 직접 골라요. 같은 반이라도 진도가 다른 학생에게 알맞은 시험지가 나와요. 학생마다 문제가 달라요."
       : "🎯 <b>선생님 지정</b>: 고른 과에서 반 전체가 <b>같은 문제</b>를 봐요 (문제·보기 순서만 학생마다 섞여요). 미리보기에서 문제를 빼거나 다시 뽑을 수 있어요.";
+    var au = !!(EDIT && EDIT.auto), fx = document.querySelector('input[name=mode][value="fixed"]');
+    fx.disabled = au; fx.parentNode.title = au ? "스스로 단어시험(자동)은 학생이 단어장·Day를 고르는 「학생 선택」으로만 써요" : "";
+    $("eCountL").textContent = au ? "최대 문항 수 (고른 단어 수만큼, 이 수까지)" : "문항 수";
+    if (au) $("modeHint").innerHTML = "🤖 <b>스스로 단어시험(자동)</b>은 늘 <b>학생 선택</b>이에요: 학생이 자기 단어장·Day를 골라 보고, 볼 때마다 새 문제가 나와요. 교재를 안 고르면 저장된 📒 단어장이 모두 나와요.";
+    lvHint();
     $("rangeTitle").textContent = ch ? (EDIT && EDIT.auto ? "🤖 고르지 않으면 모든 📒 단어장이 자동으로 들어가요 (일부만 열고 싶을 때만 고르세요)" : "학생이 고를 수 있는 교재 (교재 전체 체크 또는 일부 과만)") : "출제 범위 (교재 → 챕터 → 과)";
     $("reseed").style.display = ch ? "none" : "";
     $("selfBox").style.display = ch ? "" : "none";

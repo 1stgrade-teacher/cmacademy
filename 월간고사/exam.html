@@ -187,7 +187,7 @@
       var p = j.paper;
       var html = '<div class="box"><p class="sub">' + esc(p.period) + " · " + esc(p.kind) + "</p><h2>" + esc(p.title) + "</h2>" +
         '<p class="sub">' + esc(ME.name) + ' 학생, 준비됐나요? <button class="reset" id="notme" style="margin:0">내가 아니에요</button></p>' +
-        '<div class="facts"><div class="fact"><b>문항 수</b><span>' + (p.auto ? "고른 단어 수만큼" : p.count + "문항") + "</span></div>" +
+        '<div class="facts"><div class="fact"><b>문항 수</b><span>' + (p.auto ? "고른 단어 수만큼 (최대 " + p.count + ")" : p.count + "문항") + "</span></div>" +
         '<div class="fact"><b>제한 시간</b><span>' + (p.minutes ? p.minutes + "분" : "없음") + "</span></div>" +
         '<div class="fact"><b>난이도</b><span>' + esc(p.level) + "</span></div>" +
         (p.end ? '<div class="fact"><b>응시 기간</b><span>~' + esc(p.end.slice(5).replace("-", "/")) + "</span></div>" : "") + "</div>" +
