@@ -360,13 +360,40 @@
     chunks.forEach(function (ws, ci) {
       if (!ws.length) return;
       var ch = chunks.length > 1 ? pre + ("000" + (start + ci)).slice(-wid) : day;
-      var meta = { book: book, chapter: ch, unit: "단어", area: "어휘", grade: o.grade || "", file: "🃏 Quizlet" + (o.title ? " · " + cleanQ(o.title) : "") };
+      var meta = { book: book, chapter: ch, unit: "단어", area: "어휘", grade: o.grade || "", file: o.file || ("🃏 Quizlet" + (o.title ? " · " + cleanQ(o.title) : "")) };
       if (ws.length <= 60) { units.push({ vocab: true, meta: meta, words: ws, questions: [], text: "" }); return; }
       for (var j = 0, k = 1; j < ws.length; j += 50, k++) units.push({ vocab: true, meta: Object.assign({}, meta, { unit: "단어 " + k }), words: ws.slice(j, j + 50), questions: [], text: "" });
     });
     return { units: units, words: r.words.length, dup: r.dup, skipped: r.skipped };
   }
 
-  var API = { quizletParse: quizletParse, quizletUnits: quizletUnits, fileLines: fileLines, parseAnswers: parseAnswers, splitAnswerSection: splitAnswerSection, parseQuestions: parseQuestions, guessMeta: guessMeta, xlsxUnits: xlsxUnits, vocabUnits: vocabUnits, vocabSheet: vocabSheet, htmlToLines: htmlToLines };
+  // 📒 단어 파일 하나 → { units } (예문·Day 칸이 있는 단어장 양식) 또는 { text } (「단어↹뜻」 줄 글: 단어장 칸에 넣어 읽어요)
+  async function wordFile(file) {
+    var ext = (String(file.name).split(".").pop() || "").toLowerCase();
+    if (!/^(xlsx|xls|csv)$/.test(ext)) return { text: (await fileLines(file)).join("\n") };
+    await loadScript(LIB.xlsx);
+    var buf = await file.arrayBuffer(), wb;
+    if (ext === "csv") { // 한국어 엑셀이 저장한 CSV(EUC-KR)도 읽어요
+      var t; try { t = new TextDecoder("utf-8", { fatal: true }).decode(buf); } catch (e) { try { t = new TextDecoder("euc-kr").decode(buf); } catch (e2) { t = new TextDecoder().decode(buf); } }
+      wb = window.XLSX.read(t.replace(/^\ufeff/, ""), { type: "string" });
+    } else wb = window.XLSX.read(buf, { type: "array" });
+    var cl = function (c) { return String(c == null ? "" : c).replace(/\s+/g, " ").trim(); }, rich = false, out = [];
+    wb.SheetNames.filter(function (n) { return !/안내|설명|예시|guide|readme/i.test(n); }).forEach(function (sn) {
+      var rs = window.XLSX.utils.sheet_to_json(wb.Sheets[sn], { header: 1, defval: "" }), v = vocabSheet(rs);
+      if (v && ["ex", "exk", "def", "syn", "ant", "day", "book"].some(function (k) { return v.col[k] != null; })) rich = true;
+      (v ? rs.slice(v.start) : rs).forEach(function (r) {
+        if (v) { var w = cl(r[v.col.w]), m = cl(r[v.col.m]); if (w || m) out.push(w + "\t" + m); return; }
+        var cs = r.map(cl).filter(Boolean), wi = -1, mi = -1;
+        for (var i = 0; i < cs.length; i++) if (/[A-Za-z]/.test(cs[i]) && !/[가-힣]/.test(cs[i])) { wi = i; break; }
+        if (wi >= 0) for (var j = wi + 1; j < cs.length; j++) if (/[가-힣]/.test(cs[j])) { mi = j; break; }
+        if (wi >= 0 && mi > 0) out.push(cs[wi] + "\t" + cs[mi]);
+        else if (cs.length && (/[A-Za-z]/.test(cs.join("")) || (out.length && out[out.length - 1].indexOf("\t") < 0))) out.push(cs.join("  ")); // 영어가 없는 제목 줄은 빼요
+      });
+    });
+    if (rich) { var vu = vocabUnits(wb, file.name); if (vu.length) return { units: vu }; }
+    return { text: out.join("\n") };
+  }
+
+  var API = { wordFile: wordFile, quizletParse: quizletParse, quizletUnits: quizletUnits, fileLines: fileLines, parseAnswers: parseAnswers, splitAnswerSection: splitAnswerSection, parseQuestions: parseQuestions, guessMeta: guessMeta, xlsxUnits: xlsxUnits, vocabUnits: vocabUnits, vocabSheet: vocabSheet, htmlToLines: htmlToLines };
   if (typeof module !== "undefined" && module.exports) module.exports = API; else root.ImportParser = API;
 })(typeof window !== "undefined" ? window : globalThis);

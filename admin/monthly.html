@@ -81,6 +81,14 @@ tr.miss td{color:#A0AAB2}
 .copy{font-size:12.5px;color:var(--ac-ink);background:var(--ac-soft);border:1px dashed #9BD3D0;border-radius:8px;padding:6px 9px;word-break:break-all;margin-top:6px}
 /* 학부모 리포트 (인쇄) */
 #printArea{display:none}
+.itiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-top:10px}
+.itile{display:flex;gap:10px;align-items:flex-start;text-align:left;background:#fff;color:var(--ink,#1F2933);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer;font-weight:400}
+.itile:hover{border-color:#0E8A8C;background:#F4FBFA}.itile.on{border-color:#0E8A8C;background:#E6F6F4;box-shadow:0 0 0 2px #BFE6E2 inset}
+.itile .ic{font-size:26px;line-height:1.1}.itile b{display:block;font-size:15.5px;color:#0A5F61}.itile span.d{display:block;font-size:12.5px;color:#5F6E7C;margin-top:2px;line-height:1.45}
+.steps{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}.steps span{background:#F2F8F8;border:1px solid #D7ECEA;border-radius:99px;padding:3px 10px;font-size:13px;color:#0A5F61;font-weight:700}
+.impbar{position:sticky;bottom:10px;z-index:15;display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#0A5F61;color:#fff;border-radius:14px;padding:10px 14px;margin-top:12px;box-shadow:0 6px 20px rgba(10,60,62,.25)}
+.impbar button{background:#fff;color:#0A5F61}body.impOn .totop{bottom:150px}
+@media (max-width:600px){.impbar .lg{display:none}.impbar{padding:8px 10px;gap:6px}}.impbar button.go{background:#F0A500;color:#3A2600}.impbar .sp{flex:1}
 .drop{border:2px dashed #9BD3D0;border-radius:14px;padding:22px;text-align:center;cursor:pointer;background:var(--ac-soft);line-height:1.8}
 .drop.on{background:var(--ac-bg);border-color:var(--ac)}
 .cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin-top:10px}
@@ -317,31 +325,54 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
 
   <!-- 📚 자료 올리기 -->
   <section id="v-import" style="display:none">
-    <div class="card">
-      <h2>📚 내 자료로 문제은행 채우기</h2>
-      <p class="hint" style="margin-top:0">문제지와 정답지를 함께 올리면 문항으로 나누고 정답을 맞춰 넣어요. 확인·수정한 뒤 저장하면 <b>새 시험지 → 출제 범위</b>에 <b>📁 교재 → 단원 → 과</b>로 나타나요.</p>
-      <div class="drop" id="drop"><b>파일을 여기에 끌어다 놓거나 눌러서 고르세요</b><br><span class="hint">워드(.docx) · 한글(.hwpx / .hwp) · PDF · 엑셀 양식(.xlsx) · 여러 개 함께 가능 · 파일 이름에 「정답」이 들어간 파일은 정답지로 읽어요</span>
-        <input type="file" id="impFiles" multiple accept=".docx,.hwpx,.hwp,.pdf,.txt,.xlsx" style="display:none"></div>
-      <div class="row" style="margin-top:10px"><a class="sm" href="./자료올리기_양식.xlsx" download style="font-size:13.5px;color:#0A5F61;font-weight:700">⬇ 엑셀 양식 내려받기</a><a class="sm" href="./단어장_양식.xlsx" download style="font-size:13.5px;color:#1F5FA8;font-weight:700">⬇ 📒 단어장 양식</a><span class="hint" style="margin:0">문제를 직접 정리하실 땐 엑셀 양식이 가장 정확해요.</span></div>
-      <div class="msg" id="impMsg"></div>
+    <div class="card" id="impHome">
+      <h2 style="margin-bottom:2px">📚 무엇을 올릴까요?</h2>
+      <p class="hint" style="margin:0">하나를 고르면 그 방법만 보여요. 저장한 자료는 <b>➕ 새 시험지 → 출제 범위</b>와 <b>📝 단어 시험</b>에 바로 나타나요.</p>
+      <div class="itiles">
+        <button type="button" class="itile" data-ik="word"><span class="ic">📒</span><span><b>단어장</b><span class="d">단어·뜻 목록 — 엑셀·한글에서 복사해 붙여넣기, Quizlet</span></span></button>
+        <button type="button" class="itile" data-ik="file"><span class="ic">📄</span><span><b>시험 문제 파일</b><span class="d">문제지·정답지 파일(한글·워드·PDF·엑셀)을 그대로 올리기</span></span></button>
+        <button type="button" class="itile" data-ik="mk"><span class="ic">✍️</span><span><b>문제 직접 쓰기</b><span class="d">몇 문제를 바로 쓰거나 글로 붙여넣기</span></span></button>
+        <button type="button" class="itile" data-ik="ls"><span class="ic">🎧</span><span><b>듣기 문제</b><span class="d">듣기 문제지·정답 + mp3 음원</span></span></button>
+        <button type="button" class="itile" data-ik="ai"><span class="ic">🧠</span><span><b>AI 단어 문제</b><span class="d">저장한 단어장으로 철자·문맥 문제 만들기</span></span></button>
+        <button type="button" class="itile" data-ik="drv"><span class="ic">📂</span><span><b>구글 드라이브</b><span class="d">공유 폴더의 문제 파일 가져오기</span></span></button>
+        <button type="button" class="itile" data-ik="edit"><span class="ic">🗂</span><span><b>올린 자료 고치기</b><span class="d">이미 저장한 문제를 열어서 고치기</span></span></button>
+      </div>
+      <p class="hint" id="impPick" style="margin:10px 0 0">👆 위에서 하나를 골라 주세요.</p>
     </div>
-    <div class="card" id="mkCard">
-      <h2>✍️ 직접 문제 만들기</h2>
-      <p class="hint" style="margin-top:0">드라이브나 파일이 없어도 여기서 문제를 바로 쓰거나 붙여넣어 문제은행에 넣어요. 저장하면 <b>새 시험지 → 출제 범위</b>에 <b>📁 교재 → 단원 → 과</b>로 나타나요. 이미 저장한 자료를 불러와 고칠 수도 있어요.</p>
-      <div class="row"><button id="mkBlank">✍️ 한 문제씩 입력하기</button><button class="sub" id="mkPasteOpen">📋 글로 붙여넣기</button>
-        <select id="mkLoadSel" style="width:auto;max-width:360px"><option value="">— 저장한 자료 불러와 고치기 —</option></select><button class="sub sm" id="mkLoad">불러오기</button></div>
+    <div class="card icard" id="fileCard" data-ik="file" style="display:none">
+      <h2>📄 시험 문제 파일 올리기</h2>
+      <div class="steps"><span>① 문제지·정답지 파일 끌어다 놓기</span><span>② 아래에서 문항·정답 확인</span><span>③ 💾 저장</span></div>
+      <div class="drop" id="drop"><b>문제지와 정답지 파일을 여기에 끌어다 놓거나 눌러서 고르세요</b><br><span class="hint">한글(.hwpx · .hwp) · 워드(.docx) · PDF · 엑셀 · 여러 개 한꺼번에 · 이름에 「정답」이 들어간 파일은 정답지로 읽어요</span>
+        <input type="file" id="impFiles" multiple accept=".docx,.hwpx,.hwp,.pdf,.txt,.xlsx" style="display:none"></div>
+      <div class="msg" id="impMsg"></div>
+      <details class="libf" style="margin-top:8px"><summary>잘 읽히게 하는 방법 · 엑셀 양식</summary><div class="hint" style="margin:6px 0 0;line-height:1.75">
+        • 문제 앞에 <b>1.</b> 같은 번호, 보기는 <b>① ② ③ ④ ⑤</b>로 되어 있으면 잘 나눠져요.<br>
+        • 정답은 ⓐ 정답지 파일(이름에 「정답」)을 같이 올리거나, ⓑ 문제지 맨 끝에 <b>정답</b> 줄 다음 <b>1. ③ 2. ①</b>처럼 있으면 자동으로 맞춰요. 없어도 아래 확인 화면에서 고를 수 있어요.<br>
+        • 한글(.hwp)이 안 읽히면 한글에서 <b>다른 이름으로 저장 → .hwpx 또는 PDF</b>로 저장해서 올려 주세요.<br>
+        • 문제를 처음부터 정리하신다면 <a href="./자료올리기_양식.xlsx" download style="color:#0A5F61;font-weight:700">⬇ 엑셀 양식</a>이 가장 정확해요.</div></details>
+    </div>
+    <div class="card icard" id="edCard" data-ik="edit" style="display:none">
+      <h2>🗂 올린 자료 고치기</h2>
+      <div class="steps"><span>① 자료 고르기</span><span>② 아래에서 고치기</span><span>③ 💾 저장</span></div>
+      <div class="row"><select id="mkLoadSel" style="width:auto;max-width:460px"><option value="">— 저장한 자료 고르기 —</option></select><button class="sub" id="mkLoad">열기</button></div>
+      <p class="hint">📒 단어장은 <b>같은 단어장 이름·Day로 다시 올리면</b> 새 내용으로 바뀌어요. 자료를 통째로 지우거나 이름을 바꾸려면 <b>📦 보관함</b> 탭을 쓰세요.</p>
+    </div>
+    <div class="card icard" id="mkCard" data-ik="mk" style="display:none">
+      <h2>✍️ 문제 직접 쓰기</h2>
+      <div class="steps"><span>① 빈 칸에 쓰기 또는 글 붙여넣기</span><span>② 정답 고르기</span><span>③ 💾 저장</span></div>
+      <div class="row"><button id="mkBlank">✍️ 한 문제씩 입력하기</button><button class="sub" id="mkPasteOpen">📋 글로 붙여넣기 (여러 문제 한꺼번에)</button></div>
       <div id="mkPaste" style="display:none;margin-top:10px">
         <div class="hint" style="margin-top:0">한글·워드·메모장에서 복사해 붙여넣으세요. 줄 맨 앞에 <b>1.</b> 번호, 보기는 <b>① ② ③ ④ ⑤</b>, 맨 끝에 <b>정답</b> 한 줄을 쓰고 그 아래에 <b>1. ③ 2. ① 3. has gone</b>처럼 쓰면 정답까지 들어가요. 정답을 안 써도 나눈 뒤 아래 편집 칸에서 고를 수 있어요.</div>
         <textarea id="mkText" rows="10" placeholder="[1-2] 다음 빈칸에 알맞은 말을 고르시오.&#10;1. She ______ to school every day.&#10;① go ② goes ③ going ④ gone ⑤ to go&#10;2. They ______ soccer now.&#10;① play ② plays ③ are playing ④ played ⑤ playing&#10;3. 다음 문장을 현재완료로 바꿔 쓰시오.&#10;I lost my key. → I ______ my key.&#10;&#10;정답&#10;1. ② 2. ③ 3. have lost"></textarea>
         <div class="row" style="margin-top:8px"><button id="mkSplit">✂️ 문항으로 나누기</button><span class="msg" id="mkMsg" style="margin:0"></span></div>
       </div>
-      <datalist id="bookList"></datalist>
     </div>
-    <div class="card" id="lsCard">
+    <div class="card icard" id="lsCard" data-ik="ls" style="display:none">
       <h2>🎧 듣기 문제 만들기</h2>
-      <p class="hint" style="margin-top:0"><b>① 문항 넣기</b> → <b>② 문항별 음원 올리기</b> 순서예요. 스피커로만 볼 땐 ①만 하면 돼요(음원은 선생님 컴퓨터에서 틀어요). 태블릿에서 들으려면 ②까지 해 주세요.</p>
+      <div class="steps"><span>① 문항 넣기</span><span>② mp3 올리기 (태블릿으로 들을 때만)</span></div>
+      <p class="hint" style="margin-top:0">스피커로 다 같이 들을 땐 ①만 하면 돼요(음원은 선생님 컴퓨터에서 틀어요).</p>
       <details class="libf" open><summary><b>① 문항 넣기</b></summary>
-        <div class="hint" style="margin:6px 0">• <b>✏️ 직접 만들기·고치기</b>: 아래 <b>✏️ 한 문제씩 입력하기</b>로 빈 표를 열거나, <b>저장한 듣기 불러와 고치기</b>로 열어서 문제·보기·정답·그림을 한 화면에서 써요. 보기 칸을 비우면 그림 보기(①~⑤)가 돼요.<br>• <b>📄 문제지 파일로 한 번에</b>: 20문제가 든 PDF·한글(.hwpx)·워드 파일을 아래 칸에 끌어다 놓으면 문제·보기·정답을 읽어요. 정답은 ⓐ 문제지 맨 끝 「정답」 줄, ⓑ 이름에 「정답」이 들어간 파일을 함께 올리기, ⓒ 아래 정답 칸에 쓰기 중 하나면 돼요. 그림 보기 문제는 ①~⑤ 답안카드로 바뀌어요.<br>• <b>정답만 빠르게</b>: 아래에 정답을 순서대로 쓰면 「듣기 1번 ①~⑤」 답안 문항이 만들어져요. (학생 화면에 번호와 ①~⑤만 보여요)<br></div>
+        <details style="margin:6px 0"><summary class="hint" style="cursor:pointer;margin:0">세 가지 방법 자세히 보기</summary><div class="hint" style="margin:6px 0">• <b>✏️ 직접 만들기·고치기</b>: 아래 <b>✏️ 한 문제씩 입력하기</b>로 빈 표를 열거나, <b>저장한 듣기 불러와 고치기</b>로 열어서 문제·보기·정답·그림을 한 화면에서 써요. 보기 칸을 비우면 그림 보기(①~⑤)가 돼요.<br>• <b>📄 문제지 파일로 한 번에</b>: 20문제가 든 PDF·한글(.hwpx)·워드 파일을 아래 칸에 끌어다 놓으면 문제·보기·정답을 읽어요. 정답은 ⓐ 문제지 맨 끝 「정답」 줄, ⓑ 이름에 「정답」이 들어간 파일을 함께 올리기, ⓒ 아래 정답 칸에 쓰기 중 하나면 돼요. 그림 보기 문제는 ①~⑤ 답안카드로 바뀌어요.<br>• <b>정답만 빠르게</b>: 아래에 정답을 순서대로 쓰면 「듣기 1번 ①~⑤」 답안 문항이 만들어져요. (학생 화면에 번호와 ①~⑤만 보여요)<br></div></details>
         <div class="grid">
           <div><label class="l">교재</label><input id="lsBook" value="예비중 반배정"></div>
           <div><label class="l">단원</label><input id="lsCh" placeholder="예: 초6" value="초6"></div>
@@ -368,41 +399,46 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         <div id="lsList" style="margin-top:8px"></div>
       </details>
     </div>
-    <div class="card" id="qzCard">
-      <h2>🃏 Quizlet 단어 가져오기</h2>
-      <p class="hint" style="margin-top:0">Quizlet 세트의 단어·뜻을 복사해 붙여 넣으면 📒 단어장으로 바뀌어요. 저장하면 단어시험 출제·단어 게임에 바로 쓰여요. (Quizlet이 주소로 직접 가져오는 것을 막아 두어서 복사해 붙여 넣는 방식이에요)</p>
-      <details class="libf" open><summary>복사하는 방법 3가지</summary>
-        <div class="hint" style="margin:6px 0 0;line-height:1.75">
-          <b>① 내가 만든 세트</b> — Quizlet 웹사이트에서 세트 열기 → <b>⋯ (더 보기)</b> → <b>내보내기(Export)</b> → <b>텍스트 복사</b> → 아래 칸에 붙여넣기. (구분 기호는 기본값 그대로 두면 돼요)<br>
-          <b>② 다른 사람이 만든 세트</b> — 내보내기가 안 돼요. 아래 <b>📌 Quizlet 단어 복사</b> 버튼을 컴퓨터 브라우저의 <b>북마크바로 끌어다 놓고</b>(한 번만), Quizlet 세트 화면에서 그 북마크를 누르면 단어가 모두 복사돼요. → 아래 칸에 붙여넣기.<br>
-          <span style="display:inline-flex;gap:8px;align-items:center;margin:4px 0"><a id="qzBm" href="#" class="sm" style="display:inline-block;padding:6px 12px;border-radius:10px;background:#4255FF;color:#fff;font-weight:800;text-decoration:none;cursor:grab">📌 Quizlet 단어 복사</a><span>← 북마크바로 끌어다 놓기 (북마크바가 안 보이면 Ctrl+Shift+B)</span></span><br>
-          <b>③ 그래도 안 되면</b> — 세트 화면 아래쪽 「이 세트의 용어」 목록을 마우스로 끌어서 선택 → 복사(Ctrl+C) → 붙여넣기. 영어 줄·한글 줄이 번갈아 있어도 짝을 맞춰 읽어요.<br>
-          세트 화면에 단어가 다 안 보이면 맨 아래까지 내리거나 「더 보기」를 누른 뒤 복사하세요. 남이 만든 세트는 학원 수업 자료로만 쓰세요.
-        </div></details>
-      <textarea id="qzText" rows="8" style="margin-top:10px" placeholder="attract&#9;끌어당기다&#10;adapt&#9;적응하다&#10;quiet&#9;(형) 조용한&#10;&#10;또는  attract - 끌어당기다  /  attract, 끌어당기다  /  영어 줄·한글 줄 번갈아"></textarea>
+    <div class="card icard" id="qzCard" data-ik="word" style="display:none">
+      <h2>📒 단어장 올리기</h2>
+      <div class="steps"><span>① 단어장 이름 쓰기</span><span>② 단어·뜻 넣기 (파일 또는 붙여넣기)</span><span>③ 읽기 → 아래에서 확인 → 💾 저장</span></div>
       <div class="grid" style="margin-top:8px">
-        <div><label class="l">교재(단어장 이름)</label><input id="qzBook" list="bookList" placeholder="예: 중1 필수 영단어"></div>
-        <div><label class="l">Day 이름 (첫 Day)</label><input id="qzDay" value="Day 01" placeholder="Day 01"></div>
+        <div><label class="l">단어장 이름 <span style="color:#C0392B">*</span></label><input id="qzBook" list="bookList" placeholder="예: 중1 필수 영단어"></div>
+        <div><label class="l">첫 Day 이름</label><input id="qzDay" value="Day 01" placeholder="Day 01"><div class="hint" id="qzDayHint" style="margin:3px 0 0;font-size:12.5px"></div></div>
         <div><label class="l">Day 나누기</label><select id="qzPer"><option value="0">나누지 않음 (한 Day)</option><option value="20">20단어씩</option><option value="25">25단어씩</option><option value="30">30단어씩</option><option value="40">40단어씩</option><option value="50">50단어씩</option></select></div>
         <div><label class="l">학년</label><select id="qzGrade"><option value="">고르지 않음</option><option>초등</option><option>중1</option><option>중2</option><option>중3</option><option>고등</option></select></div>
       </div>
-      <div class="row" style="margin-top:8px"><button id="qzGo">🃏 단어장으로 읽기</button><span class="msg" id="qzMsg" style="margin:0"></span></div>
-      <p class="hint">「(n) 사과」「v. 끌다」「run (v)」처럼 붙은 품사는 품사 칸으로 옮겨요. 뜻 → 단어 순서로 만든 세트도 알아서 바꿔요. 같은 단어가 두 번 나오면 하나만 넣어요. 읽은 뒤 아래 카드에서 확인하고 <b>💾 단어장 저장</b>을 누르세요.</p>
+      <div class="drop" id="wDrop" style="margin-top:10px;padding:14px"><b>📎 단어 파일을 끌어다 놓거나 눌러서 고르세요</b> <span class="hint">엑셀 · 한글(.hwpx) · 워드 · PDF · 메모장</span><br><span class="hint">또는 아래 칸에 붙여넣기 — 엑셀에서 「단어」「뜻」 두 칸을 끌어 복사하면 그대로 돼요</span>
+        <input type="file" id="wFiles" accept=".xlsx,.xls,.csv,.txt,.docx,.hwpx,.pdf" style="display:none"></div>
+      <textarea id="qzText" rows="8" style="margin-top:10px" placeholder="한 줄에 단어 하나 — 이렇게 쓰면 돼요&#10;attract	끌어당기다&#10;adapt - 적응하다&#10;quiet : (형) 조용한&#10;(영어 줄, 한글 줄이 번갈아 있어도 돼요)"></textarea>
+      <div class="row" style="margin-top:8px"><button id="qzGo">📒 단어장으로 읽기</button><span class="msg" id="qzMsg" style="margin:0"></span></div>
+      <details class="libf" style="margin-top:10px"><summary>🃏 Quizlet에서 가져오기</summary><div class="hint" style="margin:6px 0 0;line-height:1.75">
+          <b>① 내가 만든 세트</b> — Quizlet 세트 → <b>⋯</b> → <b>내보내기(Export)</b> → <b>텍스트 복사</b> → 위 칸에 붙여넣기.<br>
+          <b>② 다른 사람이 만든 세트</b> — 아래 버튼을 브라우저 <b>북마크바로 끌어다 놓고</b>(한 번만), Quizlet 세트 화면에서 그 북마크를 누르면 단어가 복사돼요 → 위 칸에 붙여넣기.<br>
+          <span style="display:inline-flex;gap:8px;align-items:center;margin:4px 0"><a id="qzBm" href="#" class="sm" style="display:inline-block;padding:6px 12px;border-radius:10px;background:#4255FF;color:#fff;font-weight:800;text-decoration:none;cursor:grab">📌 Quizlet 단어 복사</a><span>← 북마크바로 끌어다 놓기 (북마크바가 안 보이면 Ctrl+Shift+B)</span></span><br>
+          <b>③ 그래도 안 되면</b> — 세트 화면의 「이 세트의 용어」 목록을 마우스로 끌어 선택 → 복사 → 붙여넣기. 남이 만든 세트는 학원 수업 자료로만 쓰세요.</div></details>
+      <details class="libf" style="margin-top:6px"><summary>예문·영영정의까지 넣고 싶을 때 (단어장 양식)</summary><div class="hint" style="margin:6px 0 0;line-height:1.75">
+          <a href="./단어장_양식.xlsx" download style="color:#1F5FA8;font-weight:700">⬇ 📒 단어장 양식</a>에 단어·뜻·예문·영영정의·동의어를 채워 위 <b>📎 단어 파일</b> 칸에 끌어다 놓으면 그대로 들어가요. 빈 칸은 저장 전에 <b>🧠 빈 칸 AI로 채우기</b>로 채울 수도 있어요.<br>
+          「(n) 사과」「v. 끌다」처럼 붙은 품사는 품사 칸으로 옮기고, 뜻 → 단어 순서도 알아서 바꾸고, 같은 단어는 하나만 넣어요.</div></details>
     </div>
-    <div class="card" id="ctxCard">
+    <div class="card icard" id="ctxCard" data-ik="ai" style="display:none">
       <h2>🧠 AI 단어 문제 만들기 <span class="hint" style="margin:0;font-weight:500">문맥 5지선다 · 철자 고르기</span></h2>
-      <p class="hint" style="margin-top:0"><b>🔤 철자 고르기 (혼동 어휘)</b>: 우리말 뜻을 보고, 철자가 비슷한 단어 5개(예: adapt / adopt / adept / adult / admit) 중에서 정답 철자를 고르는 문제예요. 오답은 <b>중학생 수준을 넘지 않는 실제 단어</b>만 쓰고, AI가 한 번 더 검수해서 <b>그 뜻이 되는 보기가 둘 이상이거나 어려운 단어가 섞인 문제는 고치거나 버려요</b>. 단어시험 출제 유형 「철자 고르기」로 나와요.<br>
-        <b>🧠 문맥 5지선다</b>: 단어마다 AI가 예문 한 문장을 만들고, 빈칸에 들어갈 단어를 <b>보기 5개 중에서 고르는 문제</b>를 저장해 둬요. AI가 한 번 더 검수해서 <b>정답이 둘 이상인 문제는 버려요</b>. 저장된 문제는 학생 <b>단어 게임의 「🧠 문맥 고르기」</b>와 <b>단어시험 출제(유형 「문맥 5지선다」)</b>에 쓰여요. 키보드 자동완성이 통하지 않는 유형이에요.</p>
+      <div class="steps"><span>① 유형 고르기</span><span>② 단어장 고르기</span><span>③ 🧠 만들기 (자동 저장)</span></div>
+      <details style="margin:0 0 8px"><summary class="hint" style="cursor:pointer;margin:0">두 유형 자세히 보기</summary><p class="hint" style="margin-top:6px"><b>🔤 철자 고르기 (혼동 어휘)</b>: 우리말 뜻을 보고, 철자가 비슷한 단어 5개(예: adapt / adopt / adept / adult / admit) 중에서 정답 철자를 고르는 문제예요. 오답은 <b>중학생 수준을 넘지 않는 실제 단어</b>만 쓰고, AI가 한 번 더 검수해서 <b>그 뜻이 되는 보기가 둘 이상이거나 어려운 단어가 섞인 문제는 고치거나 버려요</b>. 단어시험 출제 유형 「철자 고르기」로 나와요.<br>
+        <b>🧠 문맥 5지선다</b>: 단어마다 AI가 예문 한 문장을 만들고, 빈칸에 들어갈 단어를 <b>보기 5개 중에서 고르는 문제</b>를 저장해 둬요. AI가 한 번 더 검수해서 <b>정답이 둘 이상인 문제는 버려요</b>. 저장된 문제는 학생 <b>단어 게임의 「🧠 문맥 고르기」</b>와 <b>단어시험 출제(유형 「문맥 5지선다」)</b>에 쓰여요. 키보드 자동완성이 통하지 않는 유형이에요.</p></details>
       <div class="row"><select id="ctxVt" style="width:auto"><option value="spellmc">🔤 철자 고르기 (혼동 어휘)</option><option value="ctx">🧠 문맥 5지선다</option></select><select id="ctxSel" style="width:auto;max-width:420px"><option value="">— 단어장(교재 또는 Day) 고르기 —</option></select><button id="ctxGo">🧠 만들기</button><span class="msg" id="ctxMsg" style="margin:0"></span></div>
       <p class="hint">이미 만든 단어는 건너뛰어요. 단어 8개마다 20~40초쯤 걸려요. 만든 뒤 시험 출제 화면에서 문제를 훑어볼 수 있어요.</p>
     </div>
-    <div class="card" id="drvCard">
+    <div class="card icard" id="drvCard" data-ik="drv" style="display:none">
       <h2>📂 구글 드라이브 문제은행 폴더</h2>
+      <div class="steps"><span>① 목록 불러오기</span><span>② 가져올 파일 체크 → 가져오기</span><span>③ 아래에서 확인 → 💾 저장</span></div>
       <p class="hint" style="margin-top:0">공유 폴더에 <b>교재 / 단원 / 문제지 + 정답지</b>로 넣어 두면, 여기서 필요한 파일만 골라 가져와요. (「가져옴」은 이미 저장한 파일, 「바뀜」은 저장 뒤 드라이브에서 고친 파일 — 바뀐 파일만 처음부터 체크돼 있어요) 폴더 이름이 그대로 교재·단원이 돼요.</p>
       <div class="row"><button class="sub" id="drvLoad">📂 드라이브 목록 불러오기</button><label><input type="checkbox" id="drvAll"> 이미 가져온 파일도 보기</label><span class="hint" id="drvInfo" style="margin:0"></span></div>
       <div id="drvList"></div>
     </div>
+    <datalist id="bookList"></datalist>
     <div id="impUnits"></div>
+    <div class="impbar" id="impBar" style="display:none"><span id="impBarTxt">읽은 자료</span><span class="sp"></span><button type="button" class="sm" id="impBarSee">👀 확인하러 가기</button><button type="button" class="sm go" id="impBarSave">💾 저장</button><button type="button" class="sm" id="impBarClr" title="읽은 내용 비우기 (저장한 것은 그대로)">✕ 비우기</button></div>
   </section>
 
   <!-- 선생님 관리 (관리자만) -->
@@ -740,7 +776,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       $("bankInfo").textContent = "문제은행: 교재 " + j.catalog.length + "권 · " + units + "과 · 문항 " + total + "개" + (j.ai ? " · AI 켜짐(" + (j.ais || []).map(function (a) { return a.label; }).join("·") + ")" : " · AI 꺼짐");
       buildAiSel(j); pmBadge();
       fillClassSelects(); renderList(); buildPeriods(); buildQuarters(); buildBookFilters();
-      var h = (location.hash || "").slice(1); if (h === "hw") { hwOpen(); tab("hw"); } else if (h === "game") { gmLoad(); rkLoad(); tab("game"); } else if (h === "stu") { stOpen(); tab("stu"); } else if (h === "cert") { ctOpen(); tab("cert"); } else if (h === "pm") { pmOpen(); tab("pm"); } else if (h === "lib") { libLoad(); tab("lib"); } else if (/^(results|report|import)$/.test(h) || (h === "teachers" && j.me.master)) { if (h === "results") fillResultSelect(); if (h === "teachers") loadTeachers(); if (h === "import") mkFill(); tab(h); }
+      var h = (location.hash || "").slice(1); if (h === "hw") { hwOpen(); tab("hw"); } else if (h === "game") { gmLoad(); rkLoad(); tab("game"); } else if (h === "stu") { stOpen(); tab("stu"); } else if (h === "cert") { ctOpen(); tab("cert"); } else if (h === "pm") { pmOpen(); tab("pm"); } else if (h === "lib") { libLoad(); tab("lib"); } else if (/^import-\w+$/.test(h)) { mkFill(); tab("import"); if (window.cmImpPick) cmImpPick(h.slice(7), true); } else if (/^(results|report|import)$/.test(h) || (h === "teachers" && j.me.master)) { if (h === "results") fillResultSelect(); if (h === "teachers") loadTeachers(); if (h === "import") mkFill(); tab(h); }
       tab.first = false;
     });
   }
@@ -1257,7 +1293,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
   var GM_URL = location.origin + "/어휘/";
   function copyText(t, b) { (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { var o = b.textContent; b.textContent = "✓ 복사됨"; setTimeout(function () { b.textContent = o; }, 1500); }, function () { prompt("복사해서 단톡방에 보내세요", t); }); }
   function gmRender(books) {
-    if (!books.length) { $("gmList").innerHTML = '<p class="hint">아직 📒 단어장이 없어요. 「📚 자료 올리기」에서 단어장 엑셀을 올려 저장하면 여기에 나타나요.</p>'; return; }
+    if (!books.length) { $("gmList").innerHTML = '<p class="hint">아직 📒 단어장이 없어요. 「📚 자료 올리기」에서 단어장을 올려 저장하면 여기에 나타나요. <button class="sm" onclick="cmGoImport(\'word\')">📒 단어장 올리러 가기</button></p>'; return; }
     $("gmList").innerHTML = books.map(function (bk, bi) {
       var all = [], on = 0; bk.chapters.forEach(function (c) { c.units.forEach(function (u) { all.push(u.id); if (!u.hide) on++; }); });
       return '<div style="border-top:1px solid var(--line);padding:12px 0"><div class="row" style="margin:0;justify-content:space-between"><b>📒 ' + esc(bk.name) + (bk.grade ? ' <span class="hint" style="margin:0">' + esc(bk.grade) + "</span>" : "") + '</b><span class="row" style="margin:0"><span class="hint" style="margin:0">학생에게 보임 ' + on + "/" + all.length + '</span><button class="sm sub" data-gall="' + bi + '" data-h="0">모두 보이기</button><button class="sm sub" data-gall="' + bi + '" data-h="1">모두 숨기기</button></span></div>' +
@@ -2229,12 +2265,24 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
         units.push({ meta: meta, questions: qs, text: qs.length >= 2 ? "" : lines.join("\n"), raw: part.q.join("\n"), keyText: Object.keys(key).map(function (k) { return k + ". " + key[k]; }).join(" "), keyCount: Object.keys(key).length });
       }
       if (!units.length) { $("impMsg").innerHTML = '<span class="er">문제지 파일이 없어요. (정답지만 올리셨다면 문제지도 함께 올려 주세요)</span>'; return; }
-      IMP = units; renderImport();
+      IMP = IMP.filter(function (u) { return !u.saved; }).concat(units); renderImport(); // 저장 끝난 카드는 치우고, 아직 저장 안 한 것은 남겨요
       var nq = units.reduce(function (a, u) { return a + u.questions.length; }, 0);
       var nw = units.reduce(function (a, u) { return a + (u.vocab ? u.words.length : 0); }, 0);
       $("impMsg").innerHTML = '<span class="ok">읽었어요: ' + units.length + "개 자료" + (nq ? " · 문항 " + nq + "개" : "") + (nw ? " · 📒 단어 " + nw + "개" : "") + "</span>" + impQuick();
+      // 문제로 못 나눈 파일이 「단어 · 뜻」 목록이면 단어장으로 읽자고 알려 줘요
+      var wl = units.filter(function (u) { return !u.vocab && u.questions.length < 2 && u.text && P.quizletParse(u.text).words.length >= 5; })[0];
+      if (wl) { WORDISH = wl; if (units.length === 1) $("impMsg").innerHTML = ""; $("impMsg").innerHTML += '<div style="margin-top:8px;padding:10px 12px;border-radius:10px;background:#EEF4FF;color:#1F3F7A">📒 <b>「' + esc(wl.meta.file) + "」은 문제가 아니라 단어 목록 같아요.</b> 단어 시험·단어 게임에 쓰려면 단어장으로 읽어 주세요. " + '<button type="button" class="sm" onclick="cmAsWords()">📒 단어장으로 읽기</button></div>'; }
     } catch (err) { $("impMsg").innerHTML = '<span class="er">파일을 읽지 못했어요: ' + esc(err.message) + "</span><br>한글(.hwp)이 안 읽히면 한글에서 <b>다른 이름으로 저장 → .hwpx 또는 PDF</b>로 저장해서 올려 주세요."; }
   }
+  var WORDISH = null;
+  window.cmAsWords = function () {
+    var u = WORDISH; if (!u) return; WORDISH = null;
+    IMP = IMP.filter(function (x) { return x !== u; }); renderImport(); $("impMsg").innerHTML = "";
+    $("qzText").value = u.text; cmImpPick("word", true); if (window.cmQzFrom) cmQzFrom(u.meta.file);
+    $("qzMsg").innerHTML = '<span class="ok">「' + esc(u.meta.file) + "」의 단어를 아래 칸에 넣었어요.</span> 단어장 이름을 확인하고 <b>📒 단어장으로 읽기</b>를 눌러 주세요.";
+    if (!$("qzBook").value.trim()) $("qzBook").value = String(u.meta.file || "").replace(/\.[^.]+$/, "").replace(/[_]+/g, " ").replace(/\s*(day|unit|lesson)\s*\d+.*$/i, "").trim().slice(0, 60);
+    setTimeout(function () { $("qzBook").focus(); $("qzBook").select(); }, 400);
+  };
   // 읽은 뒤 바로 옆에: 👀 확인하러 가기 · 💾 바로 저장 (아래 카드의 저장 버튼을 대신 눌러요)
   function impQuick() {
     return ' <span class="row" style="display:inline-flex;gap:6px;margin:4px 0 0 6px;vertical-align:middle"><button type="button" class="sm sub" onclick="cmImpGo(0)">👀 확인하러 가기 ↓</button><button type="button" class="sm" onclick="cmImpGo(1)">💾 바로 저장' + (IMP.length > 1 ? " (" + IMP.length + "개 모두)" : "") + "</button></span>";
@@ -2246,6 +2294,42 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     if (!b) { if (first) first.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
     b.scrollIntoView({ behavior: "smooth", block: "center" }); // 저장 결과 글씨가 저장 버튼 바로 옆에 나와요
     setTimeout(function () { b.click(); }, 350);
+  };
+  // 맨 위 「무엇을 올릴까요?」: 고른 방법의 카드만 보여요 (마지막에 고른 것을 기억)
+  var IMP_K = "";
+  window.cmImpPick = function (k, scroll) {
+    if (!document.querySelector('#v-import .icard[data-ik="' + k + '"]')) k = "";
+    IMP_K = k; lsSet("cm-imp-k", k);
+    Array.prototype.forEach.call(document.querySelectorAll("#impHome .itile"), function (t) { t.classList.toggle("on", t.getAttribute("data-ik") === k); });
+    Array.prototype.forEach.call(document.querySelectorAll("#v-import .icard"), function (c) { c.style.display = c.getAttribute("data-ik") === k ? "" : "none"; });
+    $("impPick").style.display = k ? "none" : "";
+    if (k === "word" && window.cmQzCheck && DATA && DATA.catalog) cmQzCheck();
+    var c = k && document.querySelector('#v-import .icard[data-ik="' + k + '"]');
+    if (c && scroll) setTimeout(function () { c.scrollIntoView({ behavior: "smooth", block: "start" }); var f = c.querySelector("input:not([type=file]):not([type=checkbox]),select,textarea"); if (f && !f.value && k === "word") f.focus({ preventScroll: true }); }, 30);
+  };
+  window.cmGoImport = function (k) { var t = document.querySelector('.tab[data-tab="import"]'); if (t) t.click(); cmImpPick(k, true); };
+  Array.prototype.forEach.call(document.querySelectorAll("#impHome .itile"), function (t) { t.onclick = function () { cmImpPick(t.getAttribute("data-ik"), true); }; });
+  cmImpPick(lsGet("cm-imp-k"), false);
+  // 아래에 붙는 저장 줄: 읽은 자료가 있으면 늘 화면 아래에 보여요
+  function impBar() {
+    var bar = $("impBar"); if (!bar) return;
+    document.body.classList.toggle("impOn", IMP.length > 0);
+    if (!IMP.length) { bar.style.display = "none"; return; }
+    var left = IMP.filter(function (u) { return !u.saved; }).length, nw = 0, nq = 0;
+    IMP.forEach(function (u) { if (u.vocab) nw += u.words.length; else nq += u.questions.filter(function (q) { return !q.off; }).length; });
+    bar.style.display = "";
+    $("impBarTxt").innerHTML = (left ? "📥 읽은 자료 <b>" + IMP.length + "개</b>" : "✅ <b>" + IMP.length + "개 모두 저장했어요</b>") + (nw ? " · 단어 " + nw : "") + (nq ? " · 문항 " + nq : "") + (left && left < IMP.length ? " · 남은 것 " + left + "개" : "") + (left ? ' <span class="lg" style="opacity:.85">— 확인하고 저장해 주세요</span>' : "");
+    $("impBarSave").style.display = left ? "" : "none"; $("impBarSave").textContent = "💾 " + (left > 1 ? left + "개 모두 " : "") + "저장";
+    $("impBarSee").style.display = left ? "" : "none";
+    $("impBarClr").textContent = left ? "✕ 비우기" : "✕ 닫고 새로 올리기";
+  }
+  $("impBarSee").onclick = function () { var c = $("impUnits").querySelector(".card[data-u]"); for (var i = 0; i < IMP.length; i++) if (!IMP[i].saved) { c = $("impUnits").querySelector('.card[data-u="' + i + '"]') || c; break; } if (c) c.scrollIntoView({ behavior: "smooth", block: "start" }); };
+  $("impBarSave").onclick = function () { cmImpGo(1); };
+  $("impBarClr").onclick = function () {
+    var left = IMP.filter(function (u) { return !u.saved; }).length;
+    if (left && !confirm("아직 저장하지 않은 자료 " + left + "개가 있어요. 비울까요?\n(이미 저장한 자료는 그대로 남아요)")) return;
+    IMP = []; renderImport(); if (window.cmQzCheck) cmQzCheck(); $("impMsg").innerHTML = ""; $("qzMsg").innerHTML = ""; if ($("mkMsg")) $("mkMsg").innerHTML = "";
+    $("impHome").scrollIntoView({ behavior: "smooth", block: "start" });
   };
   var TYPES = { mc: "객관식", multi: "모두 고르기", short: "서술형(직접 쓰기)", arrange: "배열" };
   // ---------- 🎧 듣기 문제 만들기 ----------
@@ -2492,18 +2576,70 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     var a = $("qzBm"); a.href = "javascript:" + encodeURIComponent(bm);
     a.onclick = function (e) { e.preventDefault(); alert("이 버튼은 누르는 게 아니라 브라우저 북마크바로 끌어다 놓는 버튼이에요.\n북마크바에 놓은 뒤, Quizlet 세트 화면에서 그 북마크를 누르세요."); };
     $("qzBook").value = lsGet("cm-qz-book");
+    // Day 이름 이어 가기: 이미 저장한 단어장이면 마지막 Day 다음부터, 읽고 나면 다음 Day로
+    var qzDayTouched = false;
+    $("qzDay").oninput = function () { qzDayTouched = true; $("qzDayHint").textContent = ""; };
+    function dayPlus(name, k) { var m = String(name || "").match(/^(.*?)(\d+)\s*$/); if (!m) return ""; return m[1] + ("000" + (+m[2] + k)).slice(-Math.max(2, m[2].length)); }
+    function bookDays(book) { // 저장한 Day + 지금 읽어 둔 Day 중 가장 큰 번호
+      var best = null, see = function (name) { var m = String(name || "").match(/(\d+)\s*$/); if (m && (!best || +m[1] > best.n)) best = { n: +m[1], name: name }; };
+      (DATA.catalog || []).forEach(function (b) { if (b.custom && b.name.replace(/^📁 /, "") === book) b.chapters.forEach(function (c) { if (c.units.some(function (u) { return u.v; })) see(c.name); }); });
+      IMP.forEach(function (u) { if (u.vocab && u.meta.book === book) see(u.meta.chapter); });
+      return best;
+    }
+    function qzBookCheck() {
+      if (qzDayTouched) return;
+      var book = $("qzBook").value.trim(), last = book ? bookDays(book) : null, h = $("qzDayHint");
+      if (!last) { $("qzDay").value = "Day 01"; h.textContent = ""; return; }
+      var nx = dayPlus(last.name, 1); $("qzDay").value = nx;
+      h.innerHTML = "「" + esc(last.name) + "」까지 있어요 → <b>" + esc(nx) + "</b>부터 이어요";
+    }
+    window.cmQzCheck = qzBookCheck;
+    function qzDayFromName(n) { var fd = String(n || "").match(/(day|unit|lesson)[\s_-]*0?(\d{1,3})/i); if (!fd) return; $("qzDay").value = fd[1][0].toUpperCase() + fd[1].slice(1).toLowerCase() + " " + ("0" + fd[2]).slice(-2); qzDayTouched = true; $("qzDayHint").textContent = "파일 이름에서 읽었어요"; }
+    window.cmQzFrom = function (name) { qzSrc = name || ""; qzDayFromName(name); };
+    $("qzBook").onchange = qzBookCheck; $("qzBook").onblur = qzBookCheck;
+    // 📎 단어 파일: 단어장 양식이면 그대로 카드로, 아니면 단어·뜻 글로 바꿔 칸에 넣고 읽어요
+    var qzSrc = "", wd = $("wDrop"), wf = $("wFiles");
+    wd.onclick = function () { wf.click(); };
+    wd.ondragover = function (e) { e.preventDefault(); wd.classList.add("on"); };
+    wd.ondragleave = function () { wd.classList.remove("on"); };
+    wd.ondrop = function (e) { e.preventDefault(); wd.classList.remove("on"); wordFile(e.dataTransfer.files[0]); };
+    wf.onchange = function () { wordFile(this.files[0]); this.value = ""; };
+    $("qzText").addEventListener("input", function () { if (!this.value.trim()) qzSrc = ""; });
+    async function wordFile(f) {
+      if (!f) return; var m = $("qzMsg"); m.textContent = "「" + f.name + "」 읽는 중…";
+      try {
+        var r = await window.ImportParser.wordFile(f), book = $("qzBook").value.trim(), g = $("qzGrade").value;
+        if (r.units && r.units.length) {
+          r.units.forEach(function (u) { if (book && !u.meta.bookFromCol) u.meta.book = book; if (g) u.meta.grade = g; });
+          IMP = IMP.filter(function (u) { return !u.saved; }); var n0 = IMP.length, nw = r.units.reduce(function (a, u) { return a + u.words.length; }, 0); IMP = IMP.concat(r.units); renderImport(); qzDayTouched = false; qzBookCheck();
+          var c0 = $("impUnits").querySelector('.card[data-u="' + n0 + '"]'); if (c0) c0.scrollIntoView({ behavior: "smooth", block: "start" });
+          m.innerHTML = '<span class="ok">📒 단어장 양식에서 단어 ' + nw + "개 → " + r.units.length + "개 묶음으로 읽었어요 ✓ 아래에서 확인하고 💾 저장하세요.</span>"; return;
+        }
+        var text = String(r.text || "").trim();
+        if (!text) { m.innerHTML = '<span class="er">파일에서 글을 찾지 못했어요.</span> 엑셀에서 단어·뜻 칸을 복사해 아래 칸에 붙여넣어 보세요.'; return; }
+        $("qzText").value = text; qzSrc = f.name;
+        qzDayFromName(f.name); // 파일 이름에 Day 3이 있으면 그 Day로
+        if (!book) {
+          $("qzBook").value = f.name.replace(/\.[^.]+$/, "").replace(/[_]+/g, " ").replace(/\s*(day|unit|lesson)\s*\d+.*$/i, "").trim().slice(0, 60);
+          $("qzBook").focus(); $("qzBook").select();
+          m.innerHTML = '<span class="ok">파일 내용을 아래 칸에 넣었어요.</span> 단어장 이름이 맞는지 확인하고 <b>📒 단어장으로 읽기</b>를 눌러 주세요.'; return;
+        }
+        $("qzGo").click();
+      } catch (err) { m.innerHTML = '<span class="er">파일을 읽지 못했어요: ' + esc(err.message) + "</span> 엑셀에서 단어·뜻 칸을 복사해 아래 칸에 붙여넣어도 돼요."; }
+    }
     $("qzGo").onclick = function () {
       var P = window.ImportParser, text = $("qzText").value, m = $("qzMsg");
       if (!text.trim()) { m.innerHTML = '<span class="er">붙여 넣은 글이 없어요.</span>'; return; }
-      var book = $("qzBook").value.trim(); if (!book) { m.innerHTML = '<span class="er">교재(단어장 이름)를 써 주세요.</span>'; $("qzBook").focus(); return; }
-      var r = P.quizletUnits(text, { book: book, day: $("qzDay").value, per: +$("qzPer").value, grade: $("qzGrade").value });
+      var book = $("qzBook").value.trim(); if (!book) { m.innerHTML = '<span class="er">맨 위 「단어장 이름」을 써 주세요.</span> (예: 능률 VOCA 중등 기본)'; $("qzBook").focus(); return; }
+      var r = P.quizletUnits(text, { book: book, day: $("qzDay").value, per: +$("qzPer").value, grade: $("qzGrade").value, file: qzSrc || "붙여넣은 단어" });
       if (!r.words) { m.innerHTML = '<span class="er">단어·뜻 짝을 찾지 못했어요.</span> 한 줄에 「단어 [탭] 뜻」, 또는 영어 줄 다음 한글 줄로 되어 있는지 확인해 주세요.'; return; }
       lsSet("cm-qz-book", book);
-      var n0 = IMP.length; IMP = IMP.concat(r.units); renderImport();
+      IMP = IMP.filter(function (u) { return !u.saved; }); var n0 = IMP.length; IMP = IMP.concat(r.units); renderImport();
+      qzDayTouched = false; qzBookCheck(); // 다음에 읽는 단어는 다음 Day로
       var c = $("impUnits").querySelectorAll('.card[data-u="' + n0 + '"]')[0]; if (c) c.scrollIntoView({ behavior: "smooth", block: "start" });
       m.innerHTML = '<span class="ok">단어 ' + r.words + "개 → " + r.units.length + "개 묶음으로 읽었어요 ✓</span>" + (r.dup.length ? " · 겹친 단어 " + r.dup.length + "개 뺐어요" : "") +
         (r.skipped.length ? '<br><span class="er">못 읽은 줄 ' + r.skipped.length + "개</span>: " + r.skipped.slice(0, 5).map(function (x) { return "「" + esc(String(x).slice(0, 40)) + "」"; }).join(" ") + (r.skipped.length > 5 ? " …" : "") + " — 필요하면 고쳐서 다시 읽어 주세요." : "");
-      $("qzText").value = "";
+      $("qzText").value = ""; qzSrc = "";
     };
   })();
   // ---------- 🧠 문맥 5지선다 (AI) ----------
@@ -2553,10 +2689,11 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     var sel = $("mkLoadSel"), books = (DATA.catalog || []).filter(function (b) { return b.custom; });
     $("bookList").innerHTML = books.map(function (b) { return '<option value="' + esc(b.name.replace(/^📁 /, "")) + '">'; }).join("");
     ctxFill();
-    sel.innerHTML = '<option value="">— 저장한 자료 불러와 고치기 —</option>' + books.map(function (b) {
+    sel.innerHTML = '<option value="">— 저장한 자료 고르기 —</option>' + books.map(function (b) {
       var opts = []; b.chapters.forEach(function (c) { c.units.forEach(function (u) { if (!u.v) opts.push('<option value="' + esc(u.id) + '">' + esc(c.name + " › " + u.name + " (" + u.n + "문항)") + "</option>"); }); });
       return opts.length ? '<optgroup label="' + esc(b.name) + '">' + opts.join("") + "</optgroup>" : "";
     }).join("");
+    if (window.cmQzCheck) cmQzCheck();
   }
   $("mkBlank").onclick = function () { mkAdd({ manual: true, meta: mkMeta(), questions: [blankQ()], text: "", raw: "" }); };
   $("mkPasteOpen").onclick = function () { var p = $("mkPaste"); p.style.display = p.style.display === "none" ? "" : "none"; if (p.style.display === "") $("mkText").focus(); };
@@ -2578,14 +2715,20 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     Array.prototype.forEach.call($("impUnits").querySelectorAll(".card[data-u]"), function (c) { if (c.__sync) c.__sync(); }); // 다시 그리기 전에 손본 내용 보존
     var areas = ["문법", "구문", "독해", "교과서", "어휘", "듣기", "기타"], grades = ["", "초등", "중1", "중2", "중3", "고등"];
     var VLAB = { w: "단어", pos: "품사", m: "뜻", ex: "예문", exk: "해석", def: "영영정의", syn: "동의어", ant: "반의어" };
+    function sameKey(a) { return [a.book, a.chapter, a.unit].map(function (x) { return String(x || "").trim(); }).join("|"); }
     function vocabCard(u, ui) {
+      var key = sameKey(u.meta), twin = !u.saved && IMP.some(function (o, oi) { return oi !== ui && !o.saved && o.vocab && sameKey(o.meta) === key; });
+      var old = !u.saved && (DATA.catalog || []).some(function (b) { return b.custom && b.name.replace(/^📁 /, "") === u.meta.book && b.chapters.some(function (c) { return c.name === u.meta.chapter && c.units.some(function (x) { return x.v && x.name === u.meta.unit; }); }); });
       var has = function (k) { return u.words.filter(function (x) { return x[k]; }).length; }, n = u.words.length, miss = ["m", "ex", "def", "syn", "ant"].filter(function (k) { return has(k) < n; });
       return '<div class="card" data-u="' + ui + '" data-vocab="1"><h2>📒 ' + (u.drive ? "📂 " : "") + esc(u.meta.file || "단어장") + " · 단어 " + n + "개</h2>" +
-        '<div class="grid"><div><label class="l">교재(단어장 이름)</label><input data-m="book" value="' + esc(u.meta.book) + '"></div>' +
-        '<div><label class="l">단원 (Day·Unit)</label><input data-m="chapter" value="' + esc(u.meta.chapter) + '"></div>' +
-        '<div><label class="l">과 이름</label><input data-m="unit" value="' + esc(u.meta.unit) + '"></div>' +
-        '<div><label class="l">영역</label><select data-m="area">' + areas.map(function (a) { return "<option" + (a === (u.meta.area || "어휘") ? " selected" : "") + ">" + a + "</option>"; }).join("") + "</select></div>" +
+        '<div class="grid"><div><label class="l">단어장 이름</label><input data-m="book" list="bookList" value="' + esc(u.meta.book) + '"></div>' +
+        '<div><label class="l">Day (Unit)</label><input data-m="chapter" value="' + esc(u.meta.chapter) + '"></div>' +
         '<div><label class="l">학년</label><select data-m="grade">' + grades.map(function (g) { return '<option value="' + g + '"' + (g === (u.meta.grade || "") ? " selected" : "") + ">" + (g || "고르지 않음") + "</option>"; }).join("") + "</select></div></div>" +
+        '<details style="margin:4px 0 0"><summary class="hint" style="cursor:pointer;margin:0">그 밖의 설정 (과 이름 · 영역) — 보통은 그대로 두세요</summary><div class="grid" style="margin-top:6px">' +
+        '<div><label class="l">과 이름</label><input data-m="unit" value="' + esc(u.meta.unit) + '"></div>' +
+        '<div><label class="l">영역</label><select data-m="area">' + areas.map(function (a) { return "<option" + (a === (u.meta.area || "어휘") ? " selected" : "") + ">" + a + "</option>"; }).join("") + "</select></div></div></details>" +
+        (twin ? '<p class="er" style="margin:6px 0">⚠ 아래(또는 위)에 <b>단어장 이름·Day가 똑같은 카드</b>가 또 있어요. 그대로 저장하면 나중 것이 앞의 것을 덮어써요 → 「Day (Unit)」 칸을 바꿔 주세요.</p>' : "") +
+        (old && !twin ? '<p class="hint" style="margin:6px 0;color:#9A5B00">ⓘ 「' + esc(u.meta.book) + " › " + esc(u.meta.chapter) + "」는 이미 저장돼 있어요. 저장하면 <b>새 내용으로 바뀌어요</b>. (새 Day로 넣으려면 「Day (Unit)」 칸을 바꿔 주세요)</p>" : "") +
         '<div class="chips2">' + ["m", "ex", "def", "syn", "ant"].map(function (k) { var h = k === "syn" ? u.words.filter(function (x) { return x.syn || x.ant; }).length : has(k); return k === "ant" ? "" : '<span class="pill' + (h === n ? " go" : h ? "" : " end") + '">' + (k === "syn" ? "동의어·반의어" : VLAB[k]) + " " + h + "/" + n + "</span>"; }).join("") + "</div>" +
         (miss.length ? '<p class="hint">빈 칸이 있으면 그 유형은 그 단어에서 빠져요. ' + (DATA.ai ? "<b>🧠 빈 칸 AI로 채우기</b>로 예문·해석·영영정의·동의어·반의어를 채울 수 있어요. (AI가 쓴 내용은 꼭 훑어보세요)" : "엑셀에서 채워서 다시 올려도 돼요.") + "</p>" : "") +
         '<div class="row" style="margin-top:8px">' + (DATA.ai && miss.length ? '<button class="sm sub" data-act="vfill">🧠 빈 칸 AI로 채우기</button>' : "") + '<button data-act="save">💾 단어장 저장 (문제 자동 생성)</button>' + (DATA.ai ? '<button class="sm sub" data-act="ctx">🧠 문맥 5지선다 만들기 (AI)</button><button class="sm sub" data-act="spellmc">🔤 철자 고르기 만들기 (AI)</button>' : "") + '<span class="msg" data-msg style="margin:0"></span></div>' +
@@ -2611,6 +2754,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
     }).join("");
     Array.prototype.forEach.call($("impUnits").querySelectorAll(".card[data-u]"), function (c) { if (c.getAttribute("data-vocab")) bindVocab(c); else bindUnit(c); });
     if ($("bulkSave")) bindBulk();
+    impBar();
   }
   // 📒 단어장 카드: 이름 고치기 · AI로 빈 칸 채우기 · 저장(서버가 8가지 유형 문항을 만들어요)
   function bindVocab(card) {
@@ -2643,7 +2787,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       return post({ action: "t_import_save", meta: u.meta, words: u.words, drive: u.drive || [] }).then(function (j) {
         btn.disabled = false;
         if (!j.ok) { msg.innerHTML = '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; return { ok: false, why: j.msg }; }
-        DATA.catalog = j.catalog || DATA.catalog; u.saved = true; u.uid = j.uid; if (u.manual && u.meta.book) lsSet("cm-mk-book", u.meta.book); mkFill();
+        DATA.catalog = j.catalog || DATA.catalog; u.saved = true; u.uid = j.uid; if (u.manual && u.meta.book) lsSet("cm-mk-book", u.meta.book); mkFill(); impBar();
         var t = (j.vocab && j.vocab.types) || {}, lab = {}; (DATA.vtypes || []).forEach(function (x) { lab[x.id] = x.label; });
         msg.innerHTML = '<span class="ok">저장했어요 ✓ 단어 ' + (j.vocab ? j.vocab.words : "") + "개로 문제 " + j.n + "개를 만들었어요</span>" + (j.vocab && j.vocab.words < 5 ? ' <span class="hint" style="margin:0">(단어가 5개보다 적으면 고르기 문제의 보기가 줄거나 빠져요. 같은 Day에 단어를 더 넣으면 좋아요)</span>' : "") + " · " + Object.keys(t).map(function (k) { return esc(lab[k] || k) + " " + t[k]; }).join(" · ") + ' · <a href="' + esc(j.url) + '" target="_blank">노션</a>';
         return { ok: true, n: j.n };
@@ -2779,7 +2923,7 @@ details.mpd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;mar
       return post({ action: "t_import_save", meta: u.meta, questions: qs.filter(function (q) { return bad.indexOf(q) < 0; }), text: u.text || "", replace: card.querySelector("[data-replace]").checked, drive: u.drive || [] }).then(function (j) {
         btn.disabled = false;
         if (!j.ok) { msg.innerHTML = '<span class="er">' + esc(j.msg || "저장하지 못했어요.") + "</span>"; return { ok: false, why: j.msg || "저장 실패" }; }
-        DATA.catalog = j.catalog || DATA.catalog; u.saved = true; if (u.manual && u.meta.book) lsSet("cm-mk-book", u.meta.book); mkFill();
+        DATA.catalog = j.catalog || DATA.catalog; u.saved = true; if (u.manual && u.meta.book) lsSet("cm-mk-book", u.meta.book); mkFill(); impBar();
         msg.innerHTML = '<span class="ok">저장했어요 ✓ 이 과의 문항 ' + j.n + "개" + (j.skipped && j.skipped.length ? " (건너뜀 " + j.skipped.length + "개)" : "") + (bad.length ? " (정답 없는 " + bad.length + "개는 뺐어요)" : "") + '</span> · <a href="' + esc(j.url) + '" target="_blank">노션</a> · 이제 <b>➕ 새 시험지</b>의 출제 범위에 📁 ' + esc(u.meta.book) + "로 보여요.";
         return { ok: true, n: j.n, dropped: bad.length };
       });
