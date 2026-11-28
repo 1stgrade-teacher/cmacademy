@@ -117,16 +117,24 @@
     post({ action: "s_list", cls: cls, grade: me0 && me0.cls === cls ? me0.grade || "" : "" }).then(function (j) {
       if (!j.papers) { box.innerHTML = '<div class="msgbox">' + esc(j.msg || "목록을 불러오지 못했어요.") + "</div>"; return; }
       if (!j.papers.length) { box.innerHTML = '<div class="msgbox">아직 열린 시험이 없어요.<br>선생님이 시험을 열면 여기에 나타나요.</div>'; return; }
+      // 📝 스스로 보는 단어 시험: 맨 위에 크게 · 학생 첫 화면 「단어 시험」 버튼으로 오면 하나뿐일 때 바로 열기
+      var selfs = j.papers.filter(function (p) { return p.self && !p.closed; });
+      if (qs.get("self") && selfs.length === 1) { location.replace("exam.html?id=" + encodeURIComponent(selfs[0].id) + "&c=" + encodeURIComponent(cls)); return; }
       // 시기별로 묶기 (최근 시기가 위로) — 반배정 시험은 학년별로, 내 학년이 맨 위
       var groups = {}, order = [], me = null; try { me = JSON.parse(sessionStorage.getItem("cm-monthly-me") || "null"); } catch (e) {}
       var myG = me && me.cls === cls && me.grade ? me.grade : "", place = j.papers.every(function (p) { return p.kind === "반배정시험"; });
       j.papers.forEach(function (p) {
+        if (p.self) return; // 단어 시험(스스로)은 위에 따로
         var gs = p.grades || [], k = !place ? (p.period || "기타") : myG ? (gs.indexOf(myG) >= 0 ? "⭐ 내 학년(" + myG + ") 시험" : gs.length ? "다른 학년 시험" : "모든 학년") : (gs.length ? gs.join("·") + " 시험" : "모든 학년");
         if (!groups[k]) { groups[k] = []; order.push(k); } groups[k].push(p);
       });
       if (place) order.sort(function (a, b) { var r = function (x) { return /^⭐/.test(x) ? 0 : x === "모든 학년" ? 2 : x === "다른 학년 시험" ? 3 : 1; }; var GO = ["초4", "초5", "초6", "중1", "중2", "중3"], gi = function (x) { var i = GO.indexOf(x.slice(0, 2)); return i < 0 ? 99 : i; }; return r(a) - r(b) || gi(a) - gi(b); });
       else order.sort(function (a, b) { return b.localeCompare(a, "ko", { numeric: true }); });
-      box.innerHTML = order.map(function (k) {
+      var selfHtml = j.papers.filter(function (p) { return p.self; }).map(function (p) {
+        var off = !!p.closed;
+        return '<a class="paper' + (off ? " off" : "") + '" style="border:2px solid #0E8A8C;background:#F2FBFA" href="exam.html?id=' + encodeURIComponent(p.id) + "&c=" + encodeURIComponent(cls) + '"><span class="kind v">단어</span><span class="body"><div class="t">📝 ' + esc(p.title) + '</div><div class="m">내 단어장·Day를 골라 스스로 · 볼 때마다 새 문제' + (p.pass ? " · 통과 기준 " + (p.pass.by === "cnt" ? p.pass.v + "개" : p.pass.v + "점") : "") + (p.when ? " · ⏰ " + esc(p.when) : "") + (p.loc && p.loc.wifi ? " · 🏫 학원 와이파이" : "") + '</div></span><span class="st">' + (off ? "지금은 닫힘" : "시작 →") + "</span></a>";
+      }).join("");
+      box.innerHTML = (selfHtml ? '<section class="period"><h2>📝 단어 시험 (스스로 보기)</h2>' + selfHtml + "</section>" : "") + order.map(function (k) {
         return '<section class="period"><h2>' + (place ? "" : "📅 ") + esc(k) + ' <span class="cnt">' + groups[k].length + "개</span></h2>" + groups[k].map(function (p) {
           var off = !!p.closed;
           var meta = [p.target ? "👥 공통 시험(" + (p.targetText || "") + ")" : "", p.grades && p.grades.length ? "대상 " + p.grades.join("·") : "", p.mode === "choice" ? "내가 배운 교재·과 선택" : (p.range || ""), p.count + "문항", p.minutes ? p.minutes + "분" : "시간 제한 없음", p.level].filter(Boolean).join(" · ");

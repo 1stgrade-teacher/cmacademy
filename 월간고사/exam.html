@@ -202,7 +202,7 @@
       html += '<div class="err" id="er"></div><div class="row"><button class="btn" id="start"' + (j.choose ? " disabled" : "") + ">시험 시작하기</button></div>";
       app.innerHTML = html; bindNotMe();
       var start = document.getElementById("start");
-      if (j.choose) bindChoose(start);
+      if (j.choose) { var last = ls.get("cm-self-last:" + PID); if (last && last.length) { var hit = 0; last.forEach(function (u) { var x = app.querySelector('input[data-u="' + (window.CSS && CSS.escape ? CSS.escape(u) : u) + '"]'); if (x) { x.checked = true; hit++; var d = x.closest("details"); if (d) d.open = true; } }); if (hit) { var note = document.createElement("p"); note.className = "sub"; note.style.cssText = "margin:8px 0 0;color:#0A7A55;font-weight:700"; note.textContent = "✔ 지난번에 고른 범위를 미리 체크해 뒀어요. 바꾸려면 다시 골라요."; var bx = app.querySelector(".bk"); if (bx && bx.parentNode) bx.parentNode.insertBefore(note, bx); } } bindChoose(start); }
       start.onclick = function () {
         var units = j.choose ? Array.prototype.map.call(app.querySelectorAll("input[data-u]:checked"), function (x) { return x.getAttribute("data-u"); }) : undefined;
         var sc = document.getElementById("scode"), code = sc ? sc.value.replace(/\D/g, "") : undefined;
@@ -212,7 +212,8 @@
         post({ action: "s_start", token: ME.token, id: PID, units: units, code: code }).then(function (r) {
           if (r.relogin) { logout(); loginFlow(r.msg); return; }
           if (!r.ok) { start.disabled = false; start.textContent = "시험 시작하기"; document.getElementById("er").textContent = r.msg || "시험지를 만들지 못했어요."; return; }
-          var run = { sid: sidOf(ME.token), key: r.key, questions: r.questions, t0: r.t0, deadline: r.deadline, paper: r.paper, range: r.range, answers: {}, away: 0 };
+          var run = { sid: sidOf(ME.token), key: r.key, questions: r.questions, t0: r.t0, deadline: r.deadline, paper: r.paper, range: r.range, answers: {}, away: 0, units: units, code: code };
+          if (units && units.length) ls.set("cm-self-last:" + PID, units);
           ls.set("cm-monthly-run:" + PID, run); runExam(run);
         });
       };
@@ -391,7 +392,8 @@
     }
     var r = j.result, items = j.items || [], ps = run.paper && run.paper.pass, SELF = !!(run.paper && run.paper.self);
     var html = '<div class="box"><p class="sub">' + esc(run.paper.title) + '</p><div class="score" style="margin-top:10px"><div class="ring" style="--p:' + r.pct + '"><span>' + Math.round(r.pct) + "<small>점</small></span></div>" +
-      '<div><h2 style="margin:0">' + r.score + " / " + r.total + (j.areas && j.areas.length ? "점" : " 문항") + " · " + esc(r.grade) + "</h2>" + passBadge(ps, r) + '<p class="sub">소요 ' + r.mins + "분" + (r.comment ? "<br>" + esc(r.comment) : "") + "</p>" + (j.sent ? '<p class="sub" style="margin-top:6px;color:#0A7A55;font-weight:700">📲 부모님께 결과를 보냈어요</p>' : "") + "</div></div></div>";
+      '<div>' + (j.round > 1 ? '<p class="sub" style="margin:0 0 4px;font-weight:800;color:#7A4FD0">🔁 재시험 ' + j.round + "회차</p>" : "") + '<h2 style="margin:0">' + r.score + " / " + r.total + (j.areas && j.areas.length ? "점" : " 문항") + " · " + esc(r.grade) + "</h2>" + passBadge(ps, r) + '<p class="sub">소요 ' + r.mins + "분" + (r.comment ? "<br>" + esc(r.comment) : "") + "</p>" + (j.sent ? '<p class="sub" style="margin-top:6px;color:#0A7A55;font-weight:700">📲 부모님께 결과를 보냈어요</p>' : "") + "</div></div></div>";
+    if (SELF) html = html.replace(/<\/div><\/div><\/div>$/, "</div></div>" + selfNext(ps, r, run, j, true) + "</div>"); // 점수 바로 아래에 「재시험 / 다음 범위」
     if (j.units && j.units.length) {
       html += '<div class="box"><h2>📊 단원별 정답률</h2>' + j.units.map(function (u) {
         var p = Math.round(u.r / u.t * 100);
@@ -406,8 +408,32 @@
     }).join("") + (function () { // 단어장 뜻과 달라도 AI가 맞다고 본 답
       var ai = items.filter(function (x) { return x.ok && /^AI 인정/.test(x.ai || ""); });
       return ai.length ? '<div class="rv"><div class="h">🤖 AI가 맞다고 인정한 뜻 (' + ai.length + ")</div>" + ai.map(function (x) { return '<div class="a">' + x.n + ". " + fmt(x.sub || "") + ' · <span class="ok">내 답: ' + fmt(x.given) + "</span> · 단어장 뜻: " + fmt(x.answer) + "</div>"; }).join("") + "</div>" : "";
-    })() + backRow() + "</div>";
-    app.innerHTML = html; bindBack();
+    })() + (SELF ? selfNext(ps, r, run, j) : backRow()) + "</div>";
+    app.innerHTML = html; bindBack(); bindSelfNext(run, j);
+  }
+  // 📝 자율 단어시험: 결과 다음 행동을 한 번에 — 못 넘으면 「재시험」, 넘으면 「다음 범위」
+  function passedOf(ps, r) { if (!ps || !r || r.score == null) return null; return ps.by === "cnt" ? r.score >= ps.v : (r.total ? r.score / r.total * 100 : 0) >= ps.v - 1e-9; }
+  function selfNext(ps, r, run, j, top) {
+    var ok = passedOf(ps, r), units = (j.uids || run.units || []);
+    var again = '<button class="btn" data-sn="retry" type="button"' + (units.length ? "" : " disabled") + '>🔁 ' + (ok === false ? "재시험 보기" : "같은 범위 한 번 더") + ' <small style="font-weight:600;opacity:.85">(새 문제)</small></button>';
+    var next = '<button class="btn' + (ok === false ? " ghost" : "") + '" data-sn="next" type="button">📚 ' + (ok === false ? "다른 범위 고르기" : "다음 범위 보기") + "</button>";
+    return '<div class="row" style="justify-content:center;margin-top:' + (top ? "12px" : "16px") + '">' + (ok === false ? again + next : next + again.replace('class="btn"', 'class="btn ghost"')) + "</div>" +
+      (top ? "" : '<div class="row" style="justify-content:center"><button class="btn ghost" id="done">끝내기 (다음 학생)</button></div>') + '<div class="err" data-snerr style="text-align:center"></div>';
+  }
+  function bindSelfNext(run, j) {
+    var units = j.uids || run.units || [];
+    Array.prototype.forEach.call(app.querySelectorAll("[data-sn]"), function (b) {
+      b.onclick = function () {
+        if (b.getAttribute("data-sn") === "next") { ls.del("cm-monthly-run:" + PID); openPaper(); window.scrollTo(0, 0); return; }
+        Array.prototype.forEach.call(app.querySelectorAll("[data-sn]"), function (x) { x.disabled = true; }); b.textContent = "새 시험지를 만드는 중…";
+        post({ action: "s_start", token: ME.token, id: PID, units: units, code: run.code }).then(function (r) {
+          if (r.relogin) { logout(); loginFlow(r.msg); return; }
+          if (!r.ok) { Array.prototype.forEach.call(app.querySelectorAll("[data-snerr]"), function (e) { e.textContent = r.msg || "시험지를 만들지 못했어요."; }); Array.prototype.forEach.call(app.querySelectorAll("[data-sn]"), function (x) { x.disabled = false; }); b.textContent = "🔁 다시 해 보기"; return; }
+          var nr = { sid: sidOf(ME.token), key: r.key, questions: r.questions, t0: r.t0, deadline: r.deadline, paper: r.paper, range: r.range, answers: {}, away: 0, units: units, code: run.code };
+          ls.set("cm-monthly-run:" + PID, nr); window.scrollTo(0, 0); runExam(nr);
+        });
+      };
+    });
   }
   function backRow() { return '<div class="row" style="justify-content:center">' + (PAPER && PAPER.self ? '<button class="btn" id="again" type="button">🔁 다른 범위로 / 다시 도전</button>' : "") + '<a class="btn ghost" style="text-decoration:none" href="./index.html' + (CLS ? "?c=" + encodeURIComponent(CLS) : "") + '">시험 목록으로</a><button class="btn ghost" id="done">끝내기 (다음 학생)</button></div>'; }
   function bindBack() { var a = document.getElementById("again"); if (a) a.onclick = function () { ls.del("cm-monthly-run:" + PID); openPaper(); window.scrollTo(0, 0); }; var d = document.getElementById("done"); if (d) d.onclick = function () { logout(); location.href = "./index.html" + (CLS ? "?c=" + encodeURIComponent(CLS) : ""); }; }
