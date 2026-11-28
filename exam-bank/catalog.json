@@ -1,5 +1,5 @@
 {
- "built": "2026-11-28T00:23:14.081Z",
+ "built": "2026-11-28T11:10:37.962Z",
  "books": [
   {
    "id": "b3f6961d3",
@@ -3622,6 +3622,370 @@
        "name": "강의 Unit 50 · 도치 구문 2 통합 강의",
        "n": 0,
        "lv": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bdff58c1a",
+   "area": "구문",
+   "grade": "중등",
+   "name": "플러스구문 Essential",
+   "path": "구문/plus-syntax-essential",
+   "n": 348,
+   "chapters": [
+    {
+     "key": "chapter01",
+     "name": "Chapter 1 문장의 기본 구조와 동사",
+     "units": [
+      {
+       "id": "u3efff988",
+       "name": "U01 주어+동사",
+       "n": 5,
+       "lv": 1.6
+      },
+      {
+       "id": "ud9d6eb0f",
+       "name": "U02 주어+동사+보어",
+       "n": 10,
+       "lv": 1.6
+      },
+      {
+       "id": "u24920d1c",
+       "name": "U03 주어+동사+목적어",
+       "n": 6,
+       "lv": 2.2
+      },
+      {
+       "id": "ue0ccddf3",
+       "name": "U04 주어+동사+간접목적어+직접목적어",
+       "n": 7,
+       "lv": 2
+      },
+      {
+       "id": "u8411ca57",
+       "name": "U05 주어+동사+목적어+보어",
+       "n": 8,
+       "lv": 1.5
+      }
+     ]
+    },
+    {
+     "key": "chapter02",
+     "name": "Chapter 2 동사를 통해 드러나는 시제",
+     "units": [
+      {
+       "id": "ud5c59099",
+       "name": "U06 현재시제가 나타내는 때·의미",
+       "n": 7,
+       "lv": 1.7
+      },
+      {
+       "id": "u137acea5",
+       "name": "U07 과거시제·미래시제",
+       "n": 8,
+       "lv": 1.9
+      },
+      {
+       "id": "ub2ba5f96",
+       "name": "U08 현재진행형이 나타내는 때·의미",
+       "n": 6,
+       "lv": 1.8
+      },
+      {
+       "id": "ucdb2f806",
+       "name": "U09 과거진행형·미래진행형",
+       "n": 6,
+       "lv": 2.2
+      },
+      {
+       "id": "uc5ed7b9a",
+       "name": "U10 현재완료형의 개념과 의미",
+       "n": 9,
+       "lv": 1.8
+      }
+     ]
+    },
+    {
+     "key": "chapter03",
+     "name": "Chapter 3 동사에 의미를 더하는 조동사",
+     "units": [
+      {
+       "id": "u668a9f3b",
+       "name": "U11 can / may",
+       "n": 7,
+       "lv": 2.1
+      },
+      {
+       "id": "uc3af2714",
+       "name": "U12 must / should",
+       "n": 8,
+       "lv": 1.9
+      },
+      {
+       "id": "u1fb6e37e",
+       "name": "U13 will / would / used to",
+       "n": 9,
+       "lv": 1.6
+      },
+      {
+       "id": "u8b56a42e",
+       "name": "U14 조동사 + have p.p.",
+       "n": 7,
+       "lv": 1.7
+      }
+     ]
+    },
+    {
+     "key": "chapter04",
+     "name": "Chapter 4 주어와 동사의 관계를 보여주는 태",
+     "units": [
+      {
+       "id": "u6a82598a",
+       "name": "U16 시제 형태에 주의할 수동태",
+       "n": 7,
+       "lv": 2.1
+      },
+      {
+       "id": "u00983df6",
+       "name": "U17 주의해야 할 수동태",
+       "n": 7,
+       "lv": 2.1
+      },
+      {
+       "id": "uf0b93abe",
+       "name": "U18 주어+be p.p.+목적어",
+       "n": 7,
+       "lv": 1.9
+      },
+      {
+       "id": "u6978230d",
+       "name": "U19 주어+be p.p.+명사/형용사 보어",
+       "n": 7,
+       "lv": 1.7
+      }
+     ]
+    },
+    {
+     "key": "chapter05",
+     "name": "Chapter 5 명사 역할을 하는 to-v, v-ing",
+     "units": [
+      {
+       "id": "u30511efc",
+       "name": "U20 주어로 쓰이는 to-v와 v-ing",
+       "n": 6,
+       "lv": 2
+      },
+      {
+       "id": "u1bf98fc0",
+       "name": "U21 목적어로 쓰이는 to-v와 v-ing I",
+       "n": 8,
+       "lv": 1.8
+      },
+      {
+       "id": "ue346ddb4",
+       "name": "U23 주어를 보충 설명하는 to-v와 v-ing",
+       "n": 6,
+       "lv": 2
+      },
+      {
+       "id": "ue24906e5",
+       "name": "U24 의문사+to-v",
+       "n": 8,
+       "lv": 1.9
+      }
+     ]
+    },
+    {
+     "key": "chapter06",
+     "name": "Chapter 6 명사를 수식하는 to-v, v-ing, p.p.",
+     "units": [
+      {
+       "id": "u9966fd7e",
+       "name": "U26 명사를 수식하는 v-ing, p.p.",
+       "n": 7,
+       "lv": 2.1
+      },
+      {
+       "id": "u1a377be9",
+       "name": "U27 감정을 나타내는 v-ing, p.p.",
+       "n": 8,
+       "lv": 1.4
+      },
+      {
+       "id": "u207ac86c",
+       "name": "U28 목적어를 보충 설명하는 to-v, v, v-ing, p.p.",
+       "n": 7,
+       "lv": 1.6
+      }
+     ]
+    },
+    {
+     "key": "chapter07",
+     "name": "Chapter 7 부사 역할을 하는 to-v / 분사구문",
+     "units": [
+      {
+       "id": "uec5b5138",
+       "name": "U29 부사 역할을 하는 to-v의 해석 I",
+       "n": 7,
+       "lv": 1.9
+      },
+      {
+       "id": "u34d0d38c",
+       "name": "U30 부사 역할을 하는 to-v의 해석 II",
+       "n": 8,
+       "lv": 2
+      },
+      {
+       "id": "udf996af5",
+       "name": "U32 주의할 분사구문의 형태",
+       "n": 9,
+       "lv": 1.8
+      }
+     ]
+    },
+    {
+     "key": "chapter08",
+     "name": "Chapter 8 주어/목적어/보어로 쓰이는 명사절",
+     "units": [
+      {
+       "id": "u9110b822",
+       "name": "U34 whether/if절",
+       "n": 9,
+       "lv": 1.8
+      },
+      {
+       "id": "u511fc5db",
+       "name": "U35 의문사절 I",
+       "n": 8,
+       "lv": 2
+      },
+      {
+       "id": "u8f7a3f48",
+       "name": "U36 의문사절 II",
+       "n": 11,
+       "lv": 1.9
+      }
+     ]
+    },
+    {
+     "key": "chapter09",
+     "name": "Chapter 9 관계사절 I",
+     "units": [
+      {
+       "id": "u38dd32c2",
+       "name": "U38 목적격 관계대명사 who(m), which, that",
+       "n": 5,
+       "lv": 2.4
+      },
+      {
+       "id": "u72f7e818",
+       "name": "U39 관계대명사 whose",
+       "n": 8,
+       "lv": 2.1
+      },
+      {
+       "id": "u4305919d",
+       "name": "U40 전치사 + 관계대명사",
+       "n": 6,
+       "lv": 2.3
+      },
+      {
+       "id": "ucae1b62c",
+       "name": "U41 관계부사 when, where, why, how",
+       "n": 4,
+       "lv": 2
+      }
+     ]
+    },
+    {
+     "key": "chapter10",
+     "name": "Chapter 10 관계사절 II·부사절",
+     "units": [
+      {
+       "id": "u49e603f1",
+       "name": "U43 콤마(,) 뒤의 관계부사절",
+       "n": 8,
+       "lv": 2.3
+      },
+      {
+       "id": "u0d2750e2",
+       "name": "U44 관계대명사 what",
+       "n": 8,
+       "lv": 1.8
+      },
+      {
+       "id": "u293567d6",
+       "name": "U47 대조의 부사절",
+       "n": 6,
+       "lv": 2.2
+      }
+     ]
+    },
+    {
+     "key": "chapter11",
+     "name": "Chapter 11 부정/비교/가정법",
+     "units": [
+      {
+       "id": "u1a2741ac",
+       "name": "U48 부정구문",
+       "n": 10,
+       "lv": 1.7
+      },
+      {
+       "id": "u8580fda6",
+       "name": "U49 비교구문 I",
+       "n": 9,
+       "lv": 1.8
+      },
+      {
+       "id": "uf609eb93",
+       "name": "U50 비교구문 II",
+       "n": 9,
+       "lv": 1.9
+      },
+      {
+       "id": "u216ee68b",
+       "name": "U51 가정법",
+       "n": 7,
+       "lv": 2
+      }
+     ]
+    },
+    {
+     "key": "chapter12",
+     "name": "Chapter 12 it/특수 구문",
+     "units": [
+      {
+       "id": "u717be7ff",
+       "name": "U52 it I",
+       "n": 6,
+       "lv": 1.8
+      },
+      {
+       "id": "ufa8949e9",
+       "name": "U53 it II",
+       "n": 11,
+       "lv": 1.8
+      },
+      {
+       "id": "u76e5bc4e",
+       "name": "U54 도치구문",
+       "n": 8,
+       "lv": 1.9
+      },
+      {
+       "id": "ueb75b2cd",
+       "name": "U55 생략/공통구문",
+       "n": 4,
+       "lv": 2.8
+      },
+      {
+       "id": "u8795f427",
+       "name": "U56 삽입/동격구문",
+       "n": 6,
+       "lv": 2
       }
      ]
     }
