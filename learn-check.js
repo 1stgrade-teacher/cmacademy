@@ -787,11 +787,16 @@
   }
   function renderResult(j, qs, items) {
     var pct = j.total ? Math.round(j.right / j.total * 100) : null;
+    // 판정 이유를 그대로 알려 줌: 점수는 좋은데 시청률 때문에 빨강·노랑이면 '틀린 부분' 대신 '강의를 끝까지 보기'를 안내
+    var cov = coverage(), wpct = cov == null ? null : Math.round(cov * 100);
+    var scoreOk = pct == null || pct >= 80, watchLow = wpct != null && wpct < 80;
     var msg = j.verdict && j.verdict.indexOf("통과") >= 0 ? "훌륭해요! 오늘 강의 완벽하게 끝!" :
-      j.verdict && j.verdict.indexOf("재수강") >= 0 ? "틀린 부분을 다시 보고, 강의를 한 번 더 들어 보면 좋겠어요." : "잘했어요! 틀린 문제만 다시 확인해 봐요.";
+      scoreOk && watchLow ? "문제는 잘 풀었어요! 그런데 강의를 " + wpct + "%만 봤어요. 강의를 끝까지(80% 이상) 보고 인증하면 초록불이 돼요." :
+      j.verdict && j.verdict.indexOf("재수강") >= 0 ? (watchLow ? "틀린 부분을 다시 보고, 강의를 끝까지 한 번 더 들어 보면 좋겠어요." : "틀린 부분을 다시 보고, 강의를 한 번 더 들어 보면 좋겠어요.") : "잘했어요! 틀린 문제만 다시 확인해 봐요.";
     var lt = j.light || (j.verdict && j.verdict.indexOf("통과") >= 0 ? "초록" : j.verdict && j.verdict.indexOf("재수강") >= 0 ? "빨강" : "노랑");
     var areas = j.areas || localAreas(qs, items);
     var h = '<div class="card big"><div class="tl3">' + bulbs(lt) + '</div><div class="v">' + (pct == null ? "✓" : pct + "점") + '</div><div class="t">' + esc(lt + "불 · " + String(j.verdict || "").replace(/^[^가-힣]+/, "")) + "</div>" +
+      (wpct != null ? '<div class="hint" style="margin-top:2px">확인 문제 <b>' + (pct == null ? "-" : pct + "점") + "</b> · 시청률 <b" + (watchLow ? ' style="color:#C0392B"' : "") + ">" + wpct + "%</b></div>" : "") +
       (areas.length ? '<div class="tlar">' + areas.map(function (a) { return '<span class="tla"><i class="tld tl-' + ({ 초록: "g", 노랑: "y", 빨강: "r" })[a.light] + '"></i>' + esc(a.area) + " " + a.right + "/" + a.total + "</span>"; }).join("") + "</div>" : "") +
       '<div class="hint">' + esc(msg) + "<br>기록이 선생님과 부모님께 전달되었어요. 📬</div></div>";
     if (j.aiFeedback) h += '<div class="card ai"><h4>🤖 요약 AI 피드백 (참고용) · ' + esc(j.aiGrade) + "</h4><div style=\"font-size:14.5px;line-height:1.6\">" + esc(j.aiFeedback) + "</div></div>";
