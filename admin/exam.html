@@ -20,7 +20,13 @@ td input,td select{padding:8px 6px;font-size:15px}td input[type=checkbox]{width:
 .n{width:78px}.cm{min-width:160px}.msg{margin-top:10px;font-size:14px;line-height:1.5}.ok{color:#1F6E40}.er{color:#C0392B}
 .bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #DCE7E7;padding:10px 12px;display:flex;gap:10px;align-items:center;justify-content:center}
 .bar .info{font-size:13.5px;color:#5F6E7C}.hint{font-size:12.5px;color:#7A8896;margin-top:6px;line-height:1.5}
-.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.row label{margin:0;display:flex;align-items:center;gap:6px;font-size:13.5px;color:#1B2733}.row input[type=checkbox]{width:18px;height:18px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.past{margin-top:12px;border-top:1px solid #E3EEEE;padding-top:10px}.past h3{font-size:14.5px;margin:0 0 6px;color:#0A5F61}
+.pl{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:10px;font-size:14.5px}.pl:hover{background:#F4FAFA}.pl.cur{background:#FFF7E6}
+.pl .d{min-width:44px;color:#5F6E7C;font-weight:700}.pl .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pl .m{color:#7A8896;font-size:12.5px;white-space:nowrap}
+.pl button{padding:6px 10px;font-size:13px}.pl .del{background:#FDECEA;color:#A2342A}.pl .dupb{background:#FDECEA;color:#A2342A;border-radius:99px;padding:1px 7px;font-size:12px;font-weight:700;white-space:nowrap}
+details.more summary{cursor:pointer;color:#0A5F61;font-weight:700;font-size:13.5px;margin-top:10px}
+.xcol{display:none}table.showx .xcol{display:table-cell}.row label{margin:0;display:flex;align-items:center;gap:6px;font-size:13.5px;color:#1B2733}.row input[type=checkbox]{width:18px;height:18px}
 </style></head><body><div class="wrap">
 <script src="/admin/nav.js" data-here="exam"></script>
 <h1>📝 시험 결과 입력</h1>
@@ -35,43 +41,47 @@ td input,td select{padding:8px 6px;font-size:15px}td input[type=checkbox]{width:
 <div id="main" style="display:none">
   <div class="card">
     <div class="ctabs" id="ctabs" title="반을 누르면 그 반 명단이 바로 열려요"></div>
-    <div class="grid">
-      <div><label>반</label><select id="cls"></select></div>
+    <select id="cls" style="display:none"></select>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">
       <div><label>종류</label><select id="kind"><option>단어시험</option><option>듣기시험</option><option>주간평가</option><option>월간평가</option><option>분기평가</option></select></div>
       <div><label>시험일</label><input id="date" type="date"></div>
-      <div><label>기록 방식</label><select id="unit"><option value="right">맞은 개수</option><option value="wrong">틀린 개수</option><option value="score">점수</option></select></div>
+      <div style="grid-column:span 2"><label>시험 범위 <span style="color:#8A9AA6">(이게 시험 이름이 돼요)</span></label><input id="range" placeholder="예: 유닛 16~18"></div>
       <div><label id="maxLbl">전체 문항 수</label><input id="max" type="number" inputmode="decimal" value="40"></div>
-      <div><label>응시 방식</label><select id="mode"><option>종이</option><option>온라인</option></select></div>
+      <div><label>기록 방식</label><select id="unit"><option value="right">맞은 개수</option><option value="wrong">틀린 개수</option><option value="score">점수</option></select></div>
     </div>
-    <div class="grid" style="margin-top:10px;grid-template-columns:1fr 2fr">
-      <div><label>시험 범위</label><input id="range" placeholder="예: Unit 4~5 / 고등베이직 7~8"></div>
-      <div><label>시험명 (비워 두면 자동)</label><input id="title" placeholder="자동: 10/29 단어시험 · 범위"></div>
-    </div>
-    <div class="row" id="qkRow" style="margin-top:10px"><span class="hint" style="margin:0">문항 수 빠르게 고르기</span><button type="button" class="sub qk" data-n="20">20</button><button type="button" class="sub qk" data-n="25">25</button><button type="button" class="sub qk" data-n="30">30</button><button type="button" class="sub qk" data-n="40">40</button><button type="button" class="sub qk" data-n="50">50</button></div>
-    <div class="row" style="margin-top:10px">
-      <label id="autoWrongL"><input type="checkbox" id="autoWrong" checked> 오답 수를 '만점 − 점수'로 자동 계산 (1문항 1점일 때)</label>
-      <label><input type="checkbox" id="autoGrade" checked> 종합 평가를 점수로 자동 추천</label>
-    </div>
-    <div class="row" style="margin-top:10px"><button class="sub" id="loadBtn">명단 불러오기</button><span class="hint" id="rcount"></span></div>
-    <div class="row" id="pastRow" style="margin-top:10px;display:none"><span class="hint" style="margin:0">📂 저장한 기록 고치기</span><select id="pastSel" style="max-width:460px"></select><button class="sub" id="pastBtn">불러오기</button></div>
+    <div class="row" id="qkRow" style="margin-top:8px"><span class="hint" style="margin:0">문항 수</span><button type="button" class="sub qk" data-n="20">20</button><button type="button" class="sub qk" data-n="25">25</button><button type="button" class="sub qk" data-n="30">30</button><button type="button" class="sub qk" data-n="40">40</button><button type="button" class="sub qk" data-n="50">50</button><span class="hint" id="rcount" style="margin:0 0 0 auto"></span></div>
+    <details class="more" id="moreSet"><summary>⚙️ 설정 더 보기 (응시 방식 · 시험 이름 따로 정하기 · 자동 계산)</summary>
+      <div class="grid" style="margin-top:8px;grid-template-columns:1fr 2fr">
+        <div><label>응시 방식</label><select id="mode"><option>종이</option><option>온라인</option></select></div>
+        <div><label>시험 이름 <span style="color:#8A9AA6">(비우면 범위가 이름이 돼요)</span></label><input id="title" placeholder="예: 유닛 16~18 재시험"></div>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <label id="autoWrongL"><input type="checkbox" id="autoWrong" checked> 오답 수를 '만점 − 점수'로 자동 계산 (1문항 1점일 때)</label>
+        <label><input type="checkbox" id="autoGrade" checked> 종합 평가를 점수로 자동 추천</label>
+        <button class="sub" id="loadBtn" style="padding:6px 12px;font-size:13px">명단 다시 불러오기</button>
+      </div>
+    </details>
+    <div class="past" id="pastRow" style="display:none"><h3>📂 이 반에 저장한 기록 <span class="hint" style="font-weight:400">— 눌러서 고치기 · 🗑 잘못 만든 기록 지우기</span></h3><div id="pastList"></div></div>
   </div>
   <div class="editbar" id="editBar" style="display:none"></div>
 
   <div class="card" id="listCard" style="display:none">
-    <div class="tw"><table><thead><tr><th>이름</th><th>결시</th><th>다른 시험지 <span style="font-weight:400">(다를 때만: 문항 수·범위)</span></th><th id="hIn">맞은 개수</th><th id="hRes">결과</th><th>재시험</th><th id="hRt">재시험 맞은 개수</th><th>종합 평가</th><th>코멘트 <span style="font-weight:400">(학부모 앱에 보여요)</span></th><th>특이사항 <span style="font-weight:400">(선생님만 봐요)</span></th></tr></thead><tbody id="tb"></tbody></table></div>
+    <div class="row" style="justify-content:flex-end;margin:-4px 0 6px"><label style="font-size:13px;color:#5F6E7C"><input type="checkbox" id="showX"> 칸 더 보기 (다른 시험지 · 재시험 · 특이사항)</label></div>
+    <div class="tw"><table id="tbl"><thead><tr><th>이름</th><th>결시</th><th class="xcol">다른 시험지 <span style="font-weight:400">(다를 때만: 문항 수·범위)</span></th><th id="hIn">맞은 개수</th><th id="hRes">결과</th><th class="xcol">재시험</th><th class="xcol" id="hRt">재시험 맞은 개수</th><th>평가</th><th>코멘트 <span style="font-weight:400">(학부모 앱에 보여요)</span></th><th class="xcol">특이사항 <span style="font-weight:400">(선생님만 봐요)</span></th></tr></thead><tbody id="tb"></tbody></table></div>
     <div class="hint" id="tbHint"></div>
   </div>
 
-  <div class="card">
+  <details class="card more" style="padding:10px 14px"><summary style="margin:0">🧰 기타 도구 (명단에 없는 학생 추가 · 학생 번호 초기화)</summary>
+  <div style="margin-top:10px">
     <label>명단에 없는 학생 추가 (한 줄에 한 명)</label>
     <textarea id="newNames" rows="3" placeholder="김일등&#10;이지우"></textarea>
     <div class="row" style="margin-top:8px"><button class="sub" id="addBtn">선택한 반에 추가</button></div>
   </div>
-  <div class="card">
+  <div style="margin-top:14px">
     <label>학생 본인번호 초기화 (학생이 번호를 잊었을 때)</label>
     <div class="row"><select id="pinStu" style="max-width:240px"></select><button class="sub" id="pinBtn">번호 초기화</button></div>
-    <div class="hint">위에서 '명단 불러오기'를 한 반의 학생이 목록에 나와요. 초기화하면 그 학생이 다음 접속 때 번호를 새로 정해요.</div>
-  </div>
+    <div class="hint">위에서 고른 반의 학생이 목록에 나와요. 초기화하면 그 학생이 다음 접속 때 번호를 새로 정해요.</div>
+  </div></details>
   <div class="msg" id="msg"></div>
 </div>
 
@@ -81,7 +91,7 @@ td input,td select{padding:8px 6px;font-size:15px}td input[type=checkbox]{width:
 var $=function(i){return document.getElementById(i)},KEY="cm-teacher-code",students=[];
 var EDIT=null;   // 불러온(또는 방금 저장한) 기록을 고치는 중: {title,date,kind,pids:{학생id:페이지id}}
 var dirty=false; // 저장하지 않은 입력이 있는지
-var curCls="", PAST=[];
+var curCls="", PAST=[], MERGE_MSG="";
 function nid(x){return String(x||"").replace(/-/g,"").toLowerCase()}
 function ls(k,v){try{if(v===undefined)return localStorage.getItem(k)||"";if(v==="")localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){return""}}
 function api(body){body.code=ls(KEY);return fetch("/api/exam",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}).then(function(r){return r.json().catch(function(){return{}}).then(function(j){j._s=r.status;return j})})}
@@ -126,7 +136,7 @@ function setUnit(){
   $("maxLbl").textContent=cnt?"전체 문항 수":"만점";
   $("qkRow").style.display=cnt?"":"none";$("autoWrongL").style.display=cnt?"none":"";
   if($("hIn")){$("hIn").textContent=UL[u];$("hRes").textContent=cnt?"결과":"오답 수";$("hRt").textContent="재시험 "+UL[u]}
-  $("tbHint").textContent=(cnt?UL[u]+"를 입력하고":"점수를 입력하고")+" Enter를 누르면 다음 학생으로 넘어가요. 결시에 체크하거나 칸을 비워 두면 그 학생은 저장하지 않아요."+(cnt?" 점수는 '맞은 개수/전체 문항 수'로 기록돼요.":"")+" 문항 수·범위가 다른 학생은 '다른 시험지' 칸에 적으면 그 학생만 따로 기록돼요(비우면 위의 값).";
+  $("tbHint").textContent=(cnt?UL[u]+"를 입력하고":"점수를 입력하고")+" Enter를 누르면 다음 학생으로 넘어가요. 결시에 체크하거나 칸을 비워 두면 그 학생은 저장하지 않아요."+(cnt?" 점수는 '맞은 개수/전체 문항 수'로 기록돼요.":"")+" 문항 수·범위가 다른 학생은 위의 「칸 더 보기」를 켜고 '다른 시험지' 칸에 적으면 돼요.";
   document.querySelectorAll(".qk").forEach(function(b){b.className="sub qk"+(String(maxv())===b.dataset.n?" on":"")});
   if(students.length)render();
 }
@@ -146,13 +156,13 @@ function render(){
   $("tb").querySelectorAll("tr").forEach(function(tr){var m=rowMax(tr);keep[tr.dataset.i]={mx:tr.querySelector(".mx").value,rg:tr.querySelector(".rg").value,sc:fl(tr.querySelector(".sc").value,m),ab:tr.querySelector(".ab").checked,rt:tr.querySelector(".rt").checked,rs:fl(tr.querySelector(".rs").value,m),gr:tr.querySelector(".gr").value,grm:tr.querySelector(".gr").dataset.m,cm:tr.querySelector(".cmt").value,nt:tr.querySelector(".nt").value}});
   $("tb").innerHTML=students.map(function(s,i){
     return'<tr data-i="'+i+'"><td class="nm"><a class="stu" title="이 학생의 기록을 모두 보고, 빠진 기록을 채워요">'+esc(s.name)+'</a></td><td><input type="checkbox" class="ab" title="결시"></td>'+
-    '<td class="ow2"><div class="ow"><input class="n mx" type="number" inputmode="numeric" min="1" placeholder="'+(maxv()||"")+'" title="이 학생만 '+(cnt?"문항 수":"만점")+'이 다를 때"><input class="rg" maxlength="100" placeholder="범위 (다를 때)" title="이 학생만 시험 범위·단어장이 다를 때"></div></td>'+
+    '<td class="ow2 xcol"><div class="ow"><input class="n mx" type="number" inputmode="numeric" min="1" placeholder="'+(maxv()||"")+'" title="이 학생만 '+(cnt?"문항 수":"만점")+'이 다를 때"><input class="rg" maxlength="100" placeholder="범위 (다를 때)" title="이 학생만 시험 범위·단어장이 다를 때"></div></td>'+
     '<td><input class="n sc" type="number" inputmode="'+(cnt?"numeric":"decimal")+'" min="0" step="'+(cnt?"1":"any")+'"></td>'+
     (cnt?'<td class="res"></td>':'<td><input class="n wr" type="number" inputmode="numeric" min="0"></td>')+
-    '<td><input type="checkbox" class="rt"></td><td><input class="n rs" type="number" inputmode="decimal" min="0"></td>'+
+    '<td class="xcol"><input type="checkbox" class="rt"></td><td class="xcol"><input class="n rs" type="number" inputmode="decimal" min="0"></td>'+
     '<td><select class="gr"><option value=""></option><option>우수</option><option>양호</option><option>보통</option><option>노력 필요</option></select></td>'+
     '<td><input class="cm cmt" maxlength="200" placeholder="예: 철자 실수가 줄었어요"></td>'+
-    '<td><input class="nt" maxlength="300" placeholder="예: 지각 10분, 병결 후 재응시"></td></tr>'}).join("");
+    '<td class="xcol"><input class="nt" maxlength="300" placeholder="예: 지각 10분, 병결 후 재응시"></td></tr>'}).join("");
   $("listCard").style.display=students.length?"":"none";$("bar").style.display=students.length?"":"none";
   var rows=$("tb").querySelectorAll("tr");
   rows.forEach(function(tr,i){
@@ -222,30 +232,53 @@ $("loadBtn").onclick=function(){if(dirty&&!confirm("저장하지 않은 입력�
 
 // ---------- 📂 저장한 기록 다시 불러와 고치기 ----------
 function md(d){var p=String(d).split("-");return p.length===3?parseInt(p[1])+"/"+parseInt(p[2]):d}
+// 예전 자동 이름(「11/24 단어시험 · 유닛 16~18」)에서 날짜·종류를 빼고 보여 줘요
+function shortT(e){var t=String(e.title||"").replace(/^\d{1,2}\/\d{1,2}\s*/,"");if(t.indexOf(e.kind)===0)t=t.slice(e.kind.length).replace(/^\s*·\s*/,"");return t.trim()||e.kind}
+var PAST_ALL=false;
 function loadPast(){
   var cls=$("cls").value;
   return api({action:"list",cls:cls}).then(function(j){
     if(cls!==$("cls").value)return;
-    PAST=(j.ok&&j.exams)||[];
-    if(!PAST.length){$("pastRow").style.display="none";return}
-    $("pastSel").innerHTML='<option value="">— 이 반에서 저장한 시험 '+PAST.length+'개 —</option>'+PAST.map(function(e,i){return'<option value="'+i+'">'+esc(md(e.date)+" · "+e.kind+" · "+e.title)+" ("+e.n+"명"+(e.max?" · "+(e.mixed?"문항 수 여러 개":e.max+"문항"):"")+")</option>"}).join("");
-    if(EDIT)PAST.forEach(function(e,i){if(e.title===EDIT.title&&e.date===EDIT.date&&e.kind===EDIT.kind)$("pastSel").value=String(i)});
-    $("pastRow").style.display="";
+    PAST=((j.ok&&j.exams)||[]).slice().sort(function(a,b){return a.date<b.date?1:a.date>b.date?-1:0});drawPast();
   });
 }
-$("pastBtn").onclick=function(){
-  var e=PAST[parseInt($("pastSel").value)];if(!e){$("msg").innerHTML='<span class="er">불러올 시험을 골라 주세요.</span>';return}
-  if(dirty&&!confirm("저장하지 않은 입력이 있어요. 지우고 이 기록을 불러올까요?"))return;
-  var b=$("pastBtn");b.disabled=true;b.textContent="불러오는 중…";
-  api({action:"load",cls:$("cls").value,title:e.title,date:e.date,kind:e.kind}).then(function(j){
-    b.disabled=false;b.textContent="불러오기";
+function drawPast(){
+  if(!PAST.length){$("pastRow").style.display="none";return}
+  var grp={};PAST.forEach(function(e){var k=e.date+"|"+e.kind+"|"+(e.range||shortT(e));grp[k]=(grp[k]||0)+1});
+  var show=PAST_ALL?PAST:PAST.slice(0,8);
+  $("pastList").innerHTML=show.map(function(e){var i=PAST.indexOf(e),cur=EDIT&&e.title===EDIT.title&&e.date===EDIT.date&&e.kind===EDIT.kind,dup=grp[e.date+"|"+e.kind+"|"+(e.range||shortT(e))]>1;
+    return'<div class="pl'+(cur?" cur":"")+'"><span class="d">'+esc(md(e.date))+'</span><span class="t"><b>'+esc(shortT(e))+"</b>"+(e.kind!=="단어시험"&&shortT(e).indexOf(e.kind)<0?' <span class="m">'+esc(e.kind)+"</span>":"")+(dup?' <span class="dupb" title="같은 날 같은 범위 기록이 여러 개예요. 잘못 만든 것을 지워 주세요">⚠️ 겹침</span>':"")+'</span><span class="m">'+e.n+"명"+(e.max?" · "+(e.mixed?"문항 수 여러 개":e.max+"문항"):"")+" · "+esc(e.mode||"종이")+'</span>'+
+      (cur?'<span class="m" style="color:#7A4B00;font-weight:700">고치는 중</span>':'<button type="button" class="sub" data-pl="'+i+'">고치기</button>')+'<button type="button" class="del" data-pd="'+i+'" title="이 기록 통째로 지우기">🗑</button></div>'}).join("")+
+    (PAST.length>8?'<button type="button" class="sub" id="pastMore" style="margin-top:6px;padding:6px 12px;font-size:13px">'+(PAST_ALL?"접기":"더 보기 ("+(PAST.length-8)+"개)")+"</button>":"");
+  $("pastRow").style.display="";
+  $("pastList").querySelectorAll("[data-pl]").forEach(function(b){b.onclick=function(){openPast(PAST[+b.dataset.pl],b)}});
+  $("pastList").querySelectorAll("[data-pd]").forEach(function(b){b.onclick=function(){delPast(PAST[+b.dataset.pd],b)}});
+  if($("pastMore"))$("pastMore").onclick=function(){PAST_ALL=!PAST_ALL;drawPast()};
+}
+function openPast(e,b){
+  if(!e)return;if(dirty&&!confirm("저장하지 않은 입력이 있어요. 지우고 이 기록을 불러올까요?"))return;
+  if(b){b.disabled=true;b.textContent="불러오는 중…"}
+  return api({action:"load",cls:$("cls").value,title:e.title,date:e.date,kind:e.kind}).then(function(j){
+    if(b){b.disabled=false;b.textContent="고치기"}
     if(!j.ok){$("msg").innerHTML='<span class="er">'+esc(j.msg||"기록을 불러오지 못했어요.")+"</span>";return}
-    fillFrom(e,j.rows||[]);
+    fillFrom(e,j.rows||[]);drawPast();window.scrollTo({top:$("listCard").offsetTop-10,behavior:"smooth"});
   });
-};
+}
+function delPast(e,b){
+  if(!e)return;
+  if(!confirm(md(e.date)+" · "+shortT(e)+" ("+e.kind+") 기록 "+e.n+"명을 통째로 지울까요?\n\n노션 휴지통으로 가서 30일 안에는 노션에서 되살릴 수 있어요."))return;
+  b.disabled=true;b.textContent="…";
+  api({action:"deleteExam",cls:$("cls").value,title:e.title,date:e.date,kind:e.kind}).then(function(j){
+    if(!j.ok){b.disabled=false;b.textContent="🗑";$("msg").innerHTML='<span class="er">'+esc(j.msg||"지우지 못했어요.")+"</span>";return}
+    var cur=EDIT&&e.title===EDIT.title&&e.date===EDIT.date&&e.kind===EDIT.kind;
+    if(cur){setEdit(null);clearTable();render();dirty=false}
+    $("msg").innerHTML='<span class="ok">🗑 '+esc(md(e.date)+" · "+shortT(e))+" 기록 "+j.removed+"명을 지웠어요.</span>";
+    loadPast();
+  });
+}
 // 불러온 기록을 화면에 채우기
 function fillFrom(e,rows){
-  $("kind").value=e.kind||$("kind").value;$("date").value=e.date;$("title").value=e.title;$("range").value=e.range||"";
+  $("kind").value=e.kind||$("kind").value;$("date").value=e.date;$("range").value=e.range||"";$("title").value=e.title===(e.range||"")?"":e.title;if($("title").value)$("moreSet").open=true;
   if(rows[0]&&rows[0].mode)$("mode").value=rows[0].mode==="온라인"?"온라인":"종이";
   if(unit()==="score"&&e.max&&e.max<=60){$("unit").value="right"}       // 개수로 기록했던 시험은 개수 방식으로
   if(e.max)$("max").value=e.max;
@@ -264,9 +297,10 @@ function fillFrom(e,rows){
     var wr=tr.querySelector(".wr");if(wr){wr.value=r.wrong==null?"":r.wrong;wr.dataset.m=1}
     tr.querySelector(".cmt").value=r.comment||"";tr.querySelector(".nt").value=r.note||"";
     if(tr.querySelector(".sc").value!=="")tr.querySelector(".sc").oninput();else resCell(tr);
+    if(r.retest||r.note||tr.querySelector(".mx").value||tr.querySelector(".rg").value)setShowX(true); // 숨긴 칸에 값이 있으면 보여 줘요
   });
   setEdit({title:e.title,date:e.date,kind:e.kind,pids:pids});dirty=false;count();
-  $("msg").innerHTML='<span class="ok">📂 '+esc(md(e.date)+" "+e.title)+" 기록 "+rows.length+"명을 불러왔어요. 고친 뒤 저장하면 그 기록이 바뀌어요.</span>";
+  $("msg").innerHTML=MERGE_MSG||'<span class="ok">📂 '+esc(md(e.date)+" · "+shortT(e))+" 기록 "+rows.length+"명을 불러왔어요. 고친 뒤 저장하면 그 기록이 바뀌어요.</span>";MERGE_MSG="";
 }
 // ---------- 👤 학생 한 명의 기록 모두 보기 · 빠진 기록 채우기 ----------
 function reloadEdit(){ // 학생 창에서 고친 시험이 지금 고치는 중인 시험이면 표를 새로 불러와요
@@ -335,8 +369,8 @@ function openStu(i){
 function setEdit(ed){
   EDIT=ed;var bar=$("editBar");
   if(!ed){bar.style.display="none";return}
-  bar.style.display="";bar.innerHTML='✏️ <span><b>'+esc(md(ed.date)+" · "+ed.title)+'</b> 기록을 고치는 중이에요. 저장하면 새로 만들지 않고 <b>이 기록이 바뀌어요</b>. 칸을 비우거나 결시로 바꾼 학생의 기록은 지워져요.</span><button type="button" class="sub" id="newExam">＋ 새 시험 입력으로</button>';
-  $("newExam").onclick=function(){if(dirty&&!confirm("저장하지 않은 고친 내용이 있어요. 버리고 새 시험을 입력할까요?"))return;setEdit(null);$("title").value="";clearTable();render();dirty=false;$("pastSel").value="";$("msg").textContent=""};
+  bar.style.display="";bar.innerHTML='✏️ <span><b>'+esc(md(ed.date)+" · "+shortT(ed))+'</b> 기록을 고치는 중이에요. 저장하면 새로 만들지 않고 <b>이 기록이 바뀌어요</b>. 칸을 비우거나 결시로 바꾼 학생의 기록은 지워져요.</span><button type="button" class="sub" id="newExam">＋ 새 시험 입력으로</button>';
+  $("newExam").onclick=function(){if(dirty&&!confirm("저장하지 않은 고친 내용이 있어요. 버리고 새 시험을 입력할까요?"))return;setEdit(null);$("title").value="";$("range").value="";clearTable();render();dirty=false;drawPast();$("msg").textContent="";$("range").focus()};
 }
 document.addEventListener("input",function(ev){if(ev.target.closest&&ev.target.closest("#tb"))dirty=true});
 document.addEventListener("change",function(ev){if(ev.target.closest&&ev.target.closest("#tb"))dirty=true});
@@ -356,14 +390,13 @@ $("pinBtn").onclick=function(){
   if(!confirm(s.name+" 학생의 본인번호를 초기화할까요?"))return;
   api({action:"resetPin",studentId:s.id}).then(function(j){$("msg").innerHTML=j.ok?'<span class="ok">'+esc(s.name)+" 학생 번호를 초기화했어요.</span>":'<span class="er">'+esc(j.msg||"초기화하지 못했어요.")+"</span>"});
 };
-function titleVal(){
+function titleVal(){ // 시험 이름: 따로 적지 않으면 범위 그대로 (날짜·종류는 따로 저장되니 이름에 넣지 않아요)
   var t=$("title").value.trim();if(t)return t;
-  var d=$("date").value.split("-"),rg=$("range").value.trim();
-  return(d.length===3?parseInt(d[1])+"/"+parseInt(d[2])+" ":"")+$("kind").value+(rg?" · "+rg:"");
+  return $("range").value.trim()||$("kind").value;
 }
 function save(force){
   var rows=collect(),remove=[],rmNames=[];
-  if(EDIT){ // 불러온 기록 중 이번에 비었거나 결시인 학생 → 지우기
+  if(EDIT&&!EDIT.merge){ // 불러온 기록 중 이번에 비었거나 결시인 학생 → 지우기
     var has={};rows.forEach(function(r){has[nid(r.studentId)]=1});
     students.forEach(function(s){var pid=EDIT.pids[nid(s.id)];if(pid&&!has[nid(s.id)]){remove.push(pid);rmNames.push(s.name)}});
   }
@@ -376,17 +409,36 @@ function save(force){
   $("saveBtn").disabled=true;$("saveBtn").textContent="저장 중…";$("msg").textContent="";
   api({action:"save",force:!!force,cls:$("cls").value,kind:$("kind").value,date:$("date").value,title:titleVal(),range:$("range").value,maxScore:maxv()||1,mode:$("mode").value,edit:EDIT?{title:EDIT.title,date:EDIT.date}:undefined,remove:remove,rows:rows.map(function(r){var o=Object.assign({},r);delete o.bad;o.maxScore=r.max;delete o.max;return o})}).then(function(j){
     $("saveBtn").disabled=false;$("saveBtn").textContent="저장하기";
-    if(j.dup){if(confirm(j.msg))save(true);return}
+    if(j.dup){
+      var ex=j.same&&PAST.filter(function(x){return x.title===j.same.title&&x.date===j.same.date&&(!j.same.kind||x.kind===j.same.kind)})[0];
+      if(ex&&confirm(j.msg+" ("+ex.n+"명)\n\n[확인] 지금 입력한 점수를 그 기록에 합쳐서 저장 (새로 만들지 않아요)\n[취소] 다른 선택"))return mergeInto(ex);
+      if(confirm("그래도 새 기록으로 따로 저장할까요?\n(같은 시험이면 겹쳐서 쌓이니 [취소]를 누르세요)"))save(true);return}
     if(!j.ok){$("msg").innerHTML='<span class="er">'+esc(j.msg||"저장하지 못했어요. 잠시 뒤 다시 해 주세요.")+"</span>";return}
     var m=EDIT?'<span class="ok">✅ 고친 내용을 저장했어요 — 바꿈 '+(j.updated||0)+"명"+(j.created?" · 새로 "+j.created+"명":"")+(j.removed?" · 지움 "+j.removed+"명":"")+"</span>"
       :'<span class="ok">✅ '+j.saved+"명 저장 완료! 학생별 페이지에 쌓였어요. 고칠 게 있으면 그대로 고친 뒤 다시 저장하세요.</span>";
     // 저장한 뒤에는 '이 기록을 고치는 중'으로: 다시 저장해도 중복으로 쌓이지 않아요
     var pids={};Object.keys(j.ids||{}).forEach(function(k){pids[nid(k)]=j.ids[k]});
     if(EDIT)Object.keys(EDIT.pids).forEach(function(k){if(!pids[k]&&remove.indexOf(EDIT.pids[k])<0)pids[k]=EDIT.pids[k]}); // 저장에 실패한 학생의 원래 기록도 계속 고칠 수 있게
-    setEdit({title:titleVal(),date:$("date").value,kind:$("kind").value,pids:pids});dirty=false;loadPast();
+    var wasMerge=EDIT&&EDIT.merge;
+    setEdit({title:titleVal(),date:$("date").value,kind:$("kind").value,pids:pids});dirty=false;
+    if(wasMerge){MERGE_MSG='<span class="ok">✅ 기존 기록 「'+esc(shortT(EDIT))+"」에 합쳐서 저장했어요 (새 기록을 만들지 않았어요). 다른 학생 점수도 표에 불러왔어요.</span>";loadPast().then(reloadEdit)}else loadPast();
     if(j.failed&&j.failed.length)m+='<br><span class="er">저장 못 한 학생: '+esc(j.failed.join(", "))+" — 다시 저장하면 이 학생들은 중복될 수 있으니, 노션에서 직접 확인해 주세요.</span>";
     $("msg").innerHTML=m;window.scrollTo(0,document.body.scrollHeight);
   }).catch(function(){$("saveBtn").disabled=false;$("saveBtn").textContent="저장하기";$("msg").innerHTML='<span class="er">인터넷 연결을 확인해 주세요.</span>'});
 }
 $("saveBtn").onclick=function(){save(false)};
+// 같은 시험이 이미 있을 때: 지금 입력한 점수를 그 기록에 합쳐서 저장 (그 기록의 다른 학생은 그대로)
+function mergeInto(ex){
+  $("msg").innerHTML='<span class="hint">기존 기록에 합치는 중…</span>';
+  api({action:"load",cls:$("cls").value,title:ex.title,date:ex.date,kind:ex.kind}).then(function(j){
+    if(!j.ok){$("msg").innerHTML='<span class="er">'+esc(j.msg||"기존 기록을 불러오지 못했어요.")+"</span>";return}
+    var pids={};(j.rows||[]).forEach(function(r){if(r.studentId)pids[nid(r.studentId)]=r.pageId});
+    $("kind").value=ex.kind;$("date").value=ex.date;$("title").value=ex.title===$("range").value.trim()?"":ex.title;
+    setEdit({title:ex.title,date:ex.date,kind:ex.kind,pids:pids,merge:true});save(false);
+  });
+}
+function setShowX(on){$("showX").checked=!!on;$("tbl").classList.toggle("showx",!!on);ls("cm-exam-showx",on?"1":"")}
+$("showX").onchange=function(){setShowX(this.checked)};setShowX(ls("cm-exam-showx")==="1");
+// 범위를 적으면 이름 칸 안내도 따라 바뀌어요
+$("range").oninput=function(){$("title").placeholder=$("range").value.trim()?"비우면: "+$("range").value.trim():"예: 유닛 16~18 재시험"};
 </script></body></html>

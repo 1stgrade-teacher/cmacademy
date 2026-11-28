@@ -257,6 +257,15 @@ module.exports = async function handler(req, res) {
     if (!rows) return send(502, { error: "notion", msg: "기록을 불러오지 못했어요.", debug: lastErr });
     return send(200, { ok: true, rows });
   }
+  if (act === "deleteExam") { // 🗑 잘못 만든 시험 기록(같은 반·날짜·시험명·종류) 통째로 지우기 → 노션 휴지통(30일 안 되살리기 가능)
+    const cls = clip(b.cls, 40), title = clip(b.title, 150), date = /^\d{4}-\d{2}-\d{2}$/.test(b.date || "") ? b.date : null;
+    if (!cls || !title || !date) return send(400, { error: "input" });
+    const rows = await examLoad(cls, title, date, KINDS.includes(b.kind) ? b.kind : "");
+    if (!rows) return send(502, { error: "notion", msg: "기록을 불러오지 못했어요.", debug: lastErr });
+    let removed = 0;
+    for (let i = 0; i < rows.length; i += 4) { const r = await Promise.all(rows.slice(i, i + 4).map((x) => notion("pages/" + x.pageId, "PATCH", { archived: true }))); removed += r.filter(Boolean).length; }
+    return send(200, { ok: removed > 0 || !rows.length, removed, total: rows.length });
+  }
   if (act === "student") {
     const sid = clip(b.studentId, 60), cls = clip(b.cls, 40);
     if (!sid) return send(400, { error: "input" });
@@ -291,7 +300,14 @@ module.exports = async function handler(req, res) {
     if (!b.force && !sameKey) { // 같은 시험을 두 번 저장하지 않도록 확인
       const dup = await notion("databases/" + EXAM_DB() + "/query", "POST", { page_size: 5, filter: { and: [
         { property: "시험명", title: { equals: title } }, { property: "반", select: { equals: cls } }, { property: "시험일", date: { equals: date } } ] } });
-      if (dup && dup.results && dup.results.length) return send(200, { ok: false, dup: true, msg: "같은 이름·날짜의 시험 기록이 이미 있어요. 그래도 또 저장할까요?" });
+      if (dup && dup.results && dup.results.length) return send(200, { ok: false, dup: true, same: { title, date, kind: R.sel(dup.results[0], "종류") }, msg: "같은 이름·날짜의 시험 기록이 이미 있어요. 그래도 또 저장할까요?" });
+      const rg = clip(b.range, 100);
+      if (rg) { // 이름이 달라도 같은 날·같은 종류·같은 범위면 같은 시험일 가능성이 커요
+        const d2 = await notion("databases/" + EXAM_DB() + "/query", "POST", { page_size: 5, filter: { and: [
+          { property: "반", select: { equals: cls } }, { property: "시험일", date: { equals: date } }, { property: "종류", select: { equals: kind } }, { property: "시험 범위", rich_text: { equals: rg } } ] } });
+        const o = d2 && d2.results && d2.results.find((p) => R.title(p, "시험명") !== title);
+        if (o) return send(200, { ok: false, dup: true, same: { title: R.title(o, "시험명"), date, kind }, msg: "같은 날 같은 범위(" + rg + ") 기록 「" + R.title(o, "시험명") + "」이(가) 이미 있어요." });
+      }
     }
     const mode = b.mode === "온라인" ? "온라인" : "종이";
     const hasNote = edit || rows.some((r) => clip(r.note, 300)) ? await ensureNoteProp() : false;
