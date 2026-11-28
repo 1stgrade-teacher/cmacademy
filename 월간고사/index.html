@@ -132,7 +132,7 @@
       else order.sort(function (a, b) { return b.localeCompare(a, "ko", { numeric: true }); });
       var selfHtml = j.papers.filter(function (p) { return p.self; }).map(function (p) {
         var off = !!p.closed;
-        return '<a class="paper' + (off ? " off" : "") + '" style="border:2px solid #0E8A8C;background:#F2FBFA" href="exam.html?id=' + encodeURIComponent(p.id) + "&c=" + encodeURIComponent(cls) + '"><span class="kind v">단어</span><span class="body"><div class="t">📝 ' + esc(p.title) + '</div><div class="m">내 단어장·Day를 골라 스스로 · 볼 때마다 새 문제' + (p.pass ? " · 통과 기준 " + (p.pass.by === "cnt" ? p.pass.v + "개" : p.pass.v + "점") : "") + (p.when ? " · ⏰ " + esc(p.when) : "") + (p.loc && p.loc.wifi ? " · 🏫 학원 와이파이" : "") + '</div></span><span class="st">' + (off ? "지금은 닫힘" : "시작 →") + "</span></a>";
+        return '<a class="paper' + (off ? " off" : "") + '" style="border:2px solid #0E8A8C;background:#F2FBFA" href="exam.html?id=' + encodeURIComponent(p.id) + "&c=" + encodeURIComponent(cls) + '"><span class="kind v">단어</span><span class="body"><div class="t">📝 ' + esc(String(p.title || "").replace(/^📝\s*/, "")) + '</div><div class="m">내 단어장·Day를 골라 스스로 · 볼 때마다 새 문제' + (p.pass ? " · 통과 기준 " + (p.pass.by === "cnt" ? p.pass.v + "개" : p.pass.v + "점") : "") + (p.when ? " · ⏰ " + esc(p.when) : "") + (p.loc && p.loc.wifi ? " · 🏫 학원 와이파이" : "") + '</div></span><span class="st">' + (off ? "지금은 닫힘" : "시작 →") + "</span></a>";
       }).join("");
       box.innerHTML = (selfHtml ? '<section class="period"><h2>📝 단어 시험 (스스로 보기)</h2>' + selfHtml + "</section>" : "") + order.map(function (k) {
         return '<section class="period"><h2>' + (place ? "" : "📅 ") + esc(k) + ' <span class="cnt">' + groups[k].length + "개</span></h2>" + groups[k].map(function (p) {

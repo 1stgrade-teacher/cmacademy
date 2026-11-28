@@ -581,7 +581,7 @@ async function canTakeWho(pp, who) {
   const st = await notion("pages/" + id32(who.sid), "GET", null, 1);
   return !!st && canTake(pp, who.cls, P.sel(st, "학년"));
 }
-const pub = (pp) => ({ when: whenText(whenOf(pp)) || undefined, loc: locOf(pp) ? { wifi: locOf(pp).wifi, code: !!locOf(pp).code } : null, self: selfOf(pp), kbd: !!(pp.cfg && pp.cfg.kbd), omr: !!omrOf(pp), skip: Array.isArray(pp.cfg && pp.cfg.skip) ? pp.cfg.skip : [], sections: (hasSections(pp) ? pp.cfg.sections : []), speaker: listenMode(pp.cfg) === "speaker", listen: listenMode(pp.cfg), target: targetOf(pp), targetText: targetText(targetOf(pp)), pass: passCfg(pp.cfg && pp.cfg.pass), grades: (pp.cfg && Array.isArray(pp.cfg.grades) ? pp.cfg.grades : []), id: pp.id, title: pp.title, cls: pp.cls, kind: pp.kind, period: pp.period, status: pp.status, mode: pp.mode, level: LEVELS[pp.level - 1], count: pp.count, minutes: pp.minutes, start: pp.start, end: pp.end, range: pp.mode === "fixed" ? pp.range : "", teacher: pp.teacher || "" });
+const pub = (pp) => ({ auto: isAuto(pp) || undefined, when: whenText(whenOf(pp)) || undefined, loc: locOf(pp) ? { wifi: locOf(pp).wifi, code: !!locOf(pp).code } : null, self: selfOf(pp), kbd: !!(pp.cfg && pp.cfg.kbd), omr: !!omrOf(pp), skip: Array.isArray(pp.cfg && pp.cfg.skip) ? pp.cfg.skip : [], sections: (hasSections(pp) ? pp.cfg.sections : []), speaker: listenMode(pp.cfg) === "speaker", listen: listenMode(pp.cfg), target: targetOf(pp), targetText: targetText(targetOf(pp)), pass: passCfg(pp.cfg && pp.cfg.pass), grades: (pp.cfg && Array.isArray(pp.cfg.grades) ? pp.cfg.grades : []), id: pp.id, title: pp.title, cls: pp.cls, kind: pp.kind, period: pp.period, status: pp.status, mode: pp.mode, level: LEVELS[pp.level - 1], count: pp.count, minutes: pp.minutes, start: pp.start, end: pp.end, range: pp.mode === "fixed" ? pp.range : "", teacher: pp.teacher || "" });
 async function getPaper(id) {
   const p = await notion("pages/" + id32(id), "GET");
   if (!p || p.archived || normId(p.parent && p.parent.database_id) !== normId(PAPER_DB())) return null;
@@ -606,6 +606,30 @@ function openNow(pp) {
 }
 // 📝 자율 단어시험: 설정.self = { perDay: 하루 횟수(0 = 무제한) } · 학생이 단어장·과를 골라 언제든 여러 번, 볼 때마다 새 문제
 const selfOf = (pp) => (pp && pp.cfg && pp.cfg.self && pp.mode === "choice" ? { perDay: Math.max(0, Math.min(50, +pp.cfg.self.perDay || 0)) } : null);
+// 🤖 스스로 단어시험(자동): 선생님이 아무것도 만들지 않아도 늘 열려 있는 공통 시험지 하나
+//   모든 반·신입생 · 저장된 📒 단어장 전체(선생님이 교재를 골라 두면 그것만) · 볼 때마다 새 문제 · 결과는 부모님 앱 알림(무료)
+//   끄려면 시험지 목록에서 상태를 「마감」으로 (지우면 다시 만들어져요)
+const AUTO_TITLE = "📝 스스로 단어시험";
+const isAuto = (pp) => !!(pp && pp.cfg && pp.cfg.auto && pp.mode === "choice");
+let autoSeen = 0;
+async function ensureAutoPaper(rowsAll) { // 자동 시험지가 없으면 만들어요 → 새로 만든 노션 페이지(이미 있으면 null)
+  if (Date.now() - autoSeen < 10 * 60e3) return null;
+  const rows = rowsAll || await queryAll(PAPER_DB(), { sorts: [{ timestamp: "created_time", direction: "descending" }] }, 5);
+  if (!rows) return null;
+  if (rows.some((p) => isAuto(readPaper(p)))) { autoSeen = Date.now(); return null; }
+  const cfg = { auto: true, self: { perDay: 0 }, target: { type: "all", newbies: true }, units: [], books: [], seed: hash("auto|" + Date.now(), 12), exclude: [], vtypes: ["meaning", "spell", "mwrite"], pass: { by: "pct", v: 90 }, kbd: true };
+  const pg = await notion("pages", "POST", { parent: { database_id: PAPER_DB() }, properties: {
+    "시험명": { title: rt(AUTO_TITLE) }, "반": sel(COMMON_CLS), "종류": sel("단어시험"), "시기": sel("상시"), "상태": sel("응시중"), "출제 방식": sel(MODES.choice), "난이도": sel(LEVELS[1]),
+    "문항 수": { number: 50 }, "제한시간(분)": { number: 0 }, "결과 공개": { checkbox: true }, "시험 범위": { rich_text: rt("학생 선택: 모든 📒 단어장 (자동)") }, "설정": { rich_text: rtLong(JSON.stringify(cfg)) } } });
+  if (pg) autoSeen = Date.now();
+  return pg || null;
+}
+// 학생이 고를 수 있는 과인가요? (자동 시험지는 고른 교재가 없으면 숨기지 않은 📒 단어장 전체)
+function allowFn(pp) {
+  const allowU = new Set(pp.cfg.units || []), allowB = new Set(pp.cfg.books || []);
+  if (isAuto(pp) && !allowU.size && !allowB.size) return (uid) => { const x = unitIndex.get(uid), d = custom.data.get(uid); return !!(x && x.vocab && d && !d.hide); };
+  return (uid) => { const x = unitIndex.get(uid); return !!x && (allowU.has(uid) || allowB.has(x.bid)); };
+}
 // 이 학생의 이 시험 기록 (최신순)
 // 📲 시험이 끝나면 학부모님께 결과 바로 보내기 · 설정.notify = "each"(볼 때마다) | "first"(하루 첫 응시만)
 // 알림톡 템플릿 ID: Vercel 환경 변수 KAKAO_TPL_TEST — 없으면 문자로, 솔라피가 없으면 보내지 않고 '발송 설정 전'만 기록
@@ -1152,6 +1176,7 @@ module.exports = async function handler(req, res) {
 
     if (act === "t_init") {
       const [classes, rows] = await Promise.all([classList(), queryAll(PAPER_DB(), { sorts: [{ timestamp: "created_time", direction: "descending" }] }, 3)]);
+      if (rows) { const ap = await ensureAutoPaper(rows).catch(() => null); if (ap) rows.unshift(ap); } // 🤖 스스로 단어시험(자동)이 없으면 만들어 둬요
       if (!rows) return send(502, { error: "notion", msg: "🗓 월간·분기 시험지 DB를 읽지 못했어요. 노션에서 이 DB에 'cmacademy 학습인증' 연결을 추가했는지 확인해 주세요.", debug: lastErr });
       return send(200, { ok: true, me: { name: me.name, master: me.master, contact: me.contact, reportUrl: me.reportUrl }, classes: (classes || []).concat((classes || []).includes(PLACE_CLS()) ? [] : [PLACE_CLS()]), papers: rows.map((p) => Object.assign(pub(readPaper(p)), { cfg: readPaper(p).cfg, show: P.chk(p, "결과 공개"), takers: P.rollup(p, "응시 인원"), avg: P.rollup(p, "평균 점수"), url: p.url })), catalog: allBooks(), ai: aiOn(), ais: AI.list(), aiDefault: AI.defaultId(), vtypes: V.VTYPES });
     }
@@ -1199,11 +1224,12 @@ module.exports = async function handler(req, res) {
       if (omr && !omr.items.length) return send(400, { error: "input", msg: "OMR 정답표를 써 주세요. (예: 문법 2: 3 1 4 2 5)" });
       if (omr && omr.errs.length) return send(400, { error: "input", msg: "정답표를 확인해 주세요 — " + omr.errs.slice(0, 3).join(" / ") });
       if (!omr && mode === "fixed" && !units.length) return send(400, { error: "input", msg: "출제할 과를 골라 주세요." });
-      if (mode === "choice" && !books.length && !units.length) return send(400, { error: "input", msg: "학생이 고를 수 있는 교재를 골라 주세요." });
       let old = null;
       if (f.id) { old = await getPaper(f.id); if (!old) return send(404, { error: "nf", msg: "시험지를 찾지 못했어요." }); }
+      const keepAuto = !!(old && isAuto(old) && mode === "choice"); // 🤖 스스로 단어시험(자동)은 교재를 안 골라도 돼요(= 모든 단어장)
+      if (mode === "choice" && !books.length && !units.length && !keepAuto) return send(400, { error: "input", msg: "학생이 고를 수 있는 교재를 골라 주세요." });
       if (old && !me.master && old.teacher && old.teacher !== me.name) return send(403, { error: "owner", msg: old.teacher + "이(가) 만든 시험지는 고칠 수 없어요. 목록에서 📄 복제해서 써 주세요." });
-      const cfg = { units, books, seed: (old && old.cfg.seed) || clip(f.seed, 40).replace(/[^\w-]/g, "") || hash(Date.now() + title, 12), exclude: (Array.isArray(f.exclude) ? f.exclude : (old && old.cfg.exclude) || []).slice(0, 500), vtypes: (Array.isArray(f.vtypes) ? f.vtypes : (old && old.cfg.vtypes) || []).filter((t) => V.VT_IDS.includes(t)), place: clip(f.place != null ? f.place : (old && old.cfg.place) || "", 1500), sections: f.sections !== undefined ? cleanSections(f.sections) : (old && old.cfg.sections) || [], speaker: f.listen !== undefined ? f.listen === "speaker" : f.speaker !== undefined ? !!f.speaker : !!(old && old.cfg.speaker), listen: f.listen !== undefined ? listenMode({ listen: f.listen }) : (old && old.cfg.listen) || undefined, audioDir: f.audioDir !== undefined ? cleanAudioDir(f.audioDir) : (old && old.cfg.audioDir) || "", grades: (Array.isArray(f.grades) ? f.grades : (old && old.cfg.grades) || []).filter((g) => GRADES.includes(g)),
+      const cfg = { auto: keepAuto || undefined, units, books, seed: (old && old.cfg.seed) || clip(f.seed, 40).replace(/[^\w-]/g, "") || hash(Date.now() + title, 12), exclude: (Array.isArray(f.exclude) ? f.exclude : (old && old.cfg.exclude) || []).slice(0, 500), vtypes: (Array.isArray(f.vtypes) ? f.vtypes : (old && old.cfg.vtypes) || []).filter((t) => V.VT_IDS.includes(t)), place: clip(f.place != null ? f.place : (old && old.cfg.place) || "", 1500), sections: f.sections !== undefined ? cleanSections(f.sections) : (old && old.cfg.sections) || [], speaker: f.listen !== undefined ? f.listen === "speaker" : f.speaker !== undefined ? !!f.speaker : !!(old && old.cfg.speaker), listen: f.listen !== undefined ? listenMode({ listen: f.listen }) : (old && old.cfg.listen) || undefined, audioDir: f.audioDir !== undefined ? cleanAudioDir(f.audioDir) : (old && old.cfg.audioDir) || "", grades: (Array.isArray(f.grades) ? f.grades : (old && old.cfg.grades) || []).filter((g) => GRADES.includes(g)),
         pass: f.pass !== undefined ? passCfg(f.pass) || undefined : (old && passCfg(old.cfg.pass)) || undefined,
         omr: omr ? { text: clip(f.omr.text, 6000), items: omr.items } : undefined,
         kbd: f.kbd !== undefined ? !!f.kbd : old ? old.cfg.kbd : undefined,
@@ -1216,14 +1242,14 @@ module.exports = async function handler(req, res) {
         target: f.target !== undefined ? targetOf({ cfg: { target: f.target } }) || undefined : (old && targetOf(old)) || undefined,
         ai: f.ai && typeof f.ai === "object" ? { fill: f.ai.fill !== false, variant: num(f.ai.variant, 0, 100, 0), extra: num(f.ai.extra, 0, 60, 0) } : (old && old.cfg.ai) || undefined };
       if (f.reseed) cfg.seed = hash(Date.now() + Math.random(), 12);
-      const range = omr ? "종이 시험지 (OMR 답 입력) · " + omrSections(cfg.omr).map((x) => x.area + " " + x.n).join(" · ") : mode === "fixed" ? rangeText(units) : "학생 선택: " + (books.length ? allBooks().filter((x) => books.includes(x.id)).map((x) => x.name).join(", ") : rangeText(units));
+      const range = keepAuto && !books.length && !units.length ? "학생 선택: 모든 📒 단어장 (자동)" : omr ? "종이 시험지 (OMR 답 입력) · " + omrSections(cfg.omr).map((x) => x.area + " " + x.n).join(" · ") : mode === "fixed" ? rangeText(units) : "학생 선택: " + (books.length ? allBooks().filter((x) => books.includes(x.id)).map((x) => x.name).join(", ") : rangeText(units));
       const props = {
         "시험명": { title: rt(title) }, "반": sel(cfg.target ? COMMON_CLS : cls), "종류": sel(kind), "시기": sel(clip(f.period, 40)), "상태": sel(STATUSES.includes(f.status) ? f.status : "준비중"),
         "출제 방식": sel(MODES[mode]), "난이도": sel(LEVELS[num(f.level, 1, 3, 2) - 1]), "문항 수": { number: cfg.omr ? cfg.omr.items.length : cfg.sections.length ? Math.min(100, cfg.sections.reduce((t, x) => t + x.n, 0)) : num(f.count, 5, 100, 20) }, "제한시간(분)": { number: num(f.minutes, 0, 180, 40) },
         "결과 공개": { checkbox: !!f.show }, "시험 범위": { rich_text: rt(range) }, "설정": { rich_text: rtLong(JSON.stringify(cfg)) },
         "시험 기간": /^\d{4}-\d{2}-\d{2}$/.test(f.start || "") ? { date: { start: f.start, end: /^\d{4}-\d{2}-\d{2}$/.test(f.end || "") && f.end > f.start ? f.end : null } } : { date: null },
       };
-      if (!old || !old.teacher) props["출제 선생님"] = sel(me.name);
+      if ((!old || !old.teacher) && !keepAuto) props["출제 선생님"] = sel(me.name);
       const pg = old ? await notion("pages/" + old.id, "PATCH", { properties: props }) : await notion("pages", "POST", { parent: { database_id: PAPER_DB() }, properties: props });
       if (!pg) return send(502, { error: "notion", msg: "시험지를 저장하지 못했어요.", debug: lastErr });
       if (!old && f.libId) await LIB().used(f.libId).catch(() => {});
@@ -1850,8 +1876,9 @@ module.exports = async function handler(req, res) {
     // 반 이름으로 노션에 묻지 않아요: 시험지 DB에 아직 그 반 선택지가 없으면(그 반 전용 시험을 한 번도 안 만든 반) 노션이 오류를 내서 공통 시험까지 안 보였어요
     const rows = await queryAll(PAPER_DB(), { filter: { or: [{ property: "상태", select: { equals: "응시중" } }, { property: "상태", select: { equals: "마감" } }] }, sorts: [{ timestamp: "created_time", direction: "descending" }] }, 4);
     if (!rows) return send(502, { error: "notion", msg: "시험 목록을 불러오지 못했어요." });
-    const grade = T_GRADES.includes(b.grade) ? b.grade : "";
-    return send(200, { ok: true, papers: rows.map(readPaper).filter((pp) => canTake(pp, cls, grade)).map((pp) => Object.assign(pub(pp), { closed: openNow(pp) })) });
+    if (!rows.some((p) => isAuto(readPaper(p)))) { const ap = await ensureAutoPaper(null).catch(() => null); if (ap) rows.unshift(ap); } // 🤖 선생님이 만들지 않아도 늘 있는 스스로 단어시험
+    const grade = T_GRADES.includes(b.grade) ? b.grade : ""; let oneAuto = false;
+    return send(200, { ok: true, papers: rows.map(readPaper).filter((pp) => canTake(pp, cls, grade) && (!isAuto(pp) || (!oneAuto && (oneAuto = true)))).map((pp) => Object.assign(pub(pp), { closed: openNow(pp) })) });
   }
 
   if (act === "s_join") { // 🆕 신입생: 이름·학교·학년·번호로 스스로 등록 → '신입 반배정' 반 학생이 돼요
@@ -1931,11 +1958,12 @@ module.exports = async function handler(req, res) {
     const lc = await locCheck(pp, req, "", true); if (!closed && lc) closed = lc.msg; // 🏫 학원 와이파이가 아니면 시작 화면에서 바로 알려 줘요
     let choose = null;
     if (pp.mode === "choice") { // 학생이 고를 수 있는 교재·과
-      const allowU = new Set(pp.cfg.units || []), allowB = new Set(pp.cfg.books || []);
-      choose = allBooks().filter((bk) => allowB.has(bk.id) || bk.chapters.some((c) => c.units.some((u) => allowU.has(u.id)))).map((bk) => ({
-        id: bk.id, name: bk.name, area: bk.area,
-        chapters: bk.chapters.map((c) => ({ name: c.name, units: c.units.filter((u) => allowB.has(bk.id) || allowU.has(u.id)).map((u) => ({ id: u.id, name: u.name })) })).filter((c) => c.units.length),
-      }));
+      const ok = allowFn(pp);
+      choose = allBooks().map((bk) => ({
+        id: bk.id, name: bk.name, area: bk.area, grade: bk.grade || "",
+        chapters: bk.chapters.map((c) => ({ name: c.name, units: c.units.filter((u) => ok(u.id)).map((u) => ({ id: u.id, name: u.name })) })).filter((c) => c.units.length),
+      })).filter((bk) => bk.chapters.length);
+      if (isAuto(pp)) { const g = who.grade || gradeOfCls(who.cls); if (g) choose.sort((x, y) => (y.grade === g) - (x.grade === g)); } // 내 학년 단어장을 위로
     }
     return send(200, { ok: true, paper: pub(pp), closed, choose, name: who.name, selfInfo });
   }
@@ -1954,9 +1982,14 @@ module.exports = async function handler(req, res) {
     }
     let uids = pp.cfg.units || [];
     if (pp.mode === "choice") {
-      const allowU = new Set(pp.cfg.units || []), allowB = new Set(pp.cfg.books || []);
-      uids = [...new Set((Array.isArray(b.units) ? b.units : []).filter((u) => { const x = unitIndex.get(u); return x && (allowU.has(u) || allowB.has(x.bid)); }))].slice(0, 80);
+      const ok = allowFn(pp);
+      uids = [...new Set((Array.isArray(b.units) ? b.units : []).filter((u) => ok(u)))].slice(0, 80);
       if (!uids.length) return send(400, { error: "input", msg: "공부한 교재와 과를 골라 주세요." });
+    }
+    let ppRun = pp;
+    if (isAuto(pp)) { // 🤖 자동: 고른 Day의 단어 수만큼 (단어마다 한 번씩, 최대 문항 수까지)
+      const nw = new Set(); uids.forEach((u) => { const d = unitData(u); if (d) d.qs.forEach((q) => { if (q.vt && q.w) nw.add(u + "|" + q.w); }); });
+      if (nw.size) ppRun = Object.assign({}, pp, { count: Math.max(1, Math.min(pp.count || 50, nw.size)) });
     }
     if (omrOf(pp)) { // 📝 종이 시험지 + OMR 답만 입력
       const sheet = omrSheet(omrOf(pp)), t0 = Date.now(), dl = pp.minutes ? t0 + pp.minutes * 60000 : 0;
@@ -1964,9 +1997,9 @@ module.exports = async function handler(req, res) {
       return send(200, { ok: true, paper: Object.assign(pub(pp), { sections: omrSections(omrOf(pp)) }), questions: sheet.view, key, t0, deadline: dl, range: "종이 시험지" });
     }
     // 자율: 볼 때마다 새 문제 (뽑는 씨앗을 매번 바꿔요)
-    const { picked, keep, lack } = await makeSheet(SELF ? Object.assign({}, pp, { cfg: Object.assign({}, pp.cfg, { seed: crypto.randomBytes(6).toString("hex") }) }) : pp, uids, who.sid);
+    const { picked, keep, lack } = await makeSheet(SELF ? Object.assign({}, ppRun, { cfg: Object.assign({}, pp.cfg, { seed: crypto.randomBytes(6).toString("hex") }) }) : ppRun, uids, who.sid);
     if (lack && lack.length) return send(409, { error: "few", msg: "시험 문제가 아직 다 준비되지 않았어요. 선생님께 알려 주세요. (" + lack.join(", ") + ")" });
-    if (picked.length < Math.min(keep ? 1 : 5, pp.count)) return send(409, { error: "few", msg: "고른 범위에 문제가 부족해요. 과를 더 골라 주세요." });
+    if (picked.length < Math.min(keep ? 1 : 5, ppRun.count)) return send(409, { error: "few", msg: "고른 범위에 문제가 부족해요. 과를 더 골라 주세요." });
     const sheet = buildSheet(picked, rngOf((pp.cfg.seed || pp.id) + "|" + who.sid + "|" + Date.now()), keep);
     if (hasSections(pp)) {
       assignPoints(sheet, pp.cfg.sections);
@@ -1976,7 +2009,7 @@ module.exports = async function handler(req, res) {
     }
     const t0 = Date.now(), dl = pp.minutes ? t0 + pp.minutes * 60000 : 0;
     const key = seal({ sid: who.sid, pid: pp.id, t0, dl, units: uids, items: sheet.key, self: SELF ? 1 : 0 });
-    return send(200, { ok: true, paper: pub(pp), questions: sheet.view, key, t0, deadline: dl, range: pp.mode === "choice" ? rangeText(uids) : pp.range });
+    return send(200, { ok: true, paper: Object.assign(pub(pp), { count: sheet.view.length }), questions: sheet.view, key, t0, deadline: dl, range: pp.mode === "choice" ? rangeText(uids) : pp.range });
   }
 
   if (act === "s_submit") {

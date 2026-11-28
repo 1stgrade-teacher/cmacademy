@@ -187,7 +187,7 @@
       var p = j.paper;
       var html = '<div class="box"><p class="sub">' + esc(p.period) + " · " + esc(p.kind) + "</p><h2>" + esc(p.title) + "</h2>" +
         '<p class="sub">' + esc(ME.name) + ' 학생, 준비됐나요? <button class="reset" id="notme" style="margin:0">내가 아니에요</button></p>' +
-        '<div class="facts"><div class="fact"><b>문항 수</b><span>' + p.count + "문항</span></div>" +
+        '<div class="facts"><div class="fact"><b>문항 수</b><span>' + (p.auto ? "고른 단어 수만큼" : p.count + "문항") + "</span></div>" +
         '<div class="fact"><b>제한 시간</b><span>' + (p.minutes ? p.minutes + "분" : "없음") + "</span></div>" +
         '<div class="fact"><b>난이도</b><span>' + esc(p.level) + "</span></div>" +
         (p.end ? '<div class="fact"><b>응시 기간</b><span>~' + esc(p.end.slice(5).replace("-", "/")) + "</span></div>" : "") + "</div>" +
@@ -197,6 +197,7 @@
         "</div>";
       if (j.closed) { app.innerHTML = html + '<div class="box"><h2>' + (p.loc && p.loc.wifi && /와이파이/.test(j.closed) ? "🏫 학원에서만 볼 수 있어요" : "지금은 볼 수 없어요") + '</h2><p class="sub">' + esc(j.closed) + "</p>" + (p.loc && p.loc.wifi ? '<div class="row"><button class="btn" onclick="location.reload()">🔄 와이파이 연결했어요 · 다시 확인</button></div>' : "") + "</div>"; bindNotMe(); return; }
       if (j.selfInfo && j.selfInfo.left === 0) { app.innerHTML = html + '<div class="box" style="text-align:center"><h2>오늘은 다 봤어요 👏</h2><p class="sub">하루 ' + j.selfInfo.perDay + "번까지 볼 수 있어요. 내일 다시 도전해요!</p>" + backRow() + "</div>"; bindNotMe(); bindBack(); return; }
+      if (j.choose && !j.choose.length) { app.innerHTML = html + '<div class="box" style="text-align:center"><h2>아직 단어장이 없어요</h2><p class="sub">선생님이 📒 단어장을 올리면 여기서 골라 시험을 볼 수 있어요.</p>' + backRow() + "</div>"; bindNotMe(); bindBack(); return; }
       if (j.choose) html += chooseHtml(j.choose, !!j.selfInfo);
       if (p.loc && p.loc.code) html += '<div class="box" style="margin-top:12px;text-align:center"><p class="sub" style="margin:0 0 8px">🔑 선생님이 알려 주는 <b>시작 코드</b>를 넣어요</p><input id="scode" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="● ● ● ●" style="width:160px;font-size:26px;text-align:center;letter-spacing:6px;font-weight:800;padding:8px;border:2px solid #B9D9D7;border-radius:12px"></div>';
       html += '<div class="err" id="er"></div><div class="row"><button class="btn" id="start"' + (j.choose ? " disabled" : "") + ">시험 시작하기</button></div>";
@@ -225,11 +226,15 @@
     return '<div class="box" style="margin-top:12px;background:#F4FAF9"><p class="sub" style="margin:0"><b>오늘 ' + si.today + "번 봤어요</b>" + (si.perDay ? " · 하루 " + si.perDay + "번까지 (남은 횟수 <b>" + si.left + "</b>)" : " · 횟수 제한 없음") + "</p>" +
       (si.recent && si.recent.length ? '<p class="sub" style="margin:6px 0 0;font-size:13px">최근 기록: ' + si.recent.slice(0, 3).map(function (r) { return esc((r.date || "").slice(5).replace("-", "/")) + " " + r.score + "/" + r.total + (r.range ? " (" + esc(String(r.range).slice(0, 24)) + ")" : ""); }).join(" · ") + "</p>" : "") + "</div>";
   }
+  var CH_SELF = false;
   function chooseHtml(books, self) {
+    CH_SELF = !!self; var unitW = self ? "개" : "과";
     return '<div class="box"><h2>📚 ' + (self ? "오늘 시험 볼 단어장과 Day를 골라요" : "내가 공부한 교재와 과를 골라요") + '</h2><p class="sub">고른 ' + (self ? "Day" : "과") + "에서만 문제가 나와요. 공부한 만큼 정직하게 골라요.</p>" +
       books.map(function (b, bi) {
-        return '<details class="bk"' + (books.length === 1 ? " open" : "") + '><summary>' + esc(b.name) + ' <span class="n" data-cnt="' + bi + '">0과 선택</span></summary>' +
+        return '<details class="bk"' + (bi === 0 ? " open" : "") + '><summary>' + esc(b.name) + (b.grade ? ' <span class="n" style="background:#EEF4FF;color:#1F5FA8">' + esc(b.grade) + "</span>" : "") + ' <span class="n" data-cnt="' + bi + '">0' + unitW + ' 선택</span></summary>' +
           b.chapters.map(function (c, ci) {
+            if (c.units.length === 1 && /^단어$/.test(c.units[0].name)) // 📒 단어장: Day 하나 = 한 칸 (「단어」 칸을 따로 안 보여요)
+              return '<div class="ch"><label class="chn"><input type="checkbox" data-u="' + esc(c.units[0].id) + '" data-b="' + bi + '" data-c="' + bi + "-" + ci + '">' + esc(c.name) + "</label></div>";
             return '<div class="ch"><label class="chn"><input type="checkbox" data-all="' + bi + "-" + ci + '">' + esc(c.name) + "</label>" +
               c.units.map(function (u) { return '<label class="un"><input type="checkbox" data-u="' + esc(u.id) + '" data-b="' + bi + '" data-c="' + bi + "-" + ci + '">' + esc(u.name) + "</label>"; }).join("") + "</div>";
           }).join("") + "</details>";
@@ -238,8 +243,9 @@
   function bindChoose(start) {
     function refresh() {
       var n = app.querySelectorAll("input[data-u]:checked").length;
-      start.disabled = n === 0; start.textContent = n ? "고른 " + n + "과로 시험 시작하기" : "과를 하나 이상 골라요";
-      Array.prototype.forEach.call(app.querySelectorAll("[data-cnt]"), function (s) { s.textContent = app.querySelectorAll('input[data-b="' + s.getAttribute("data-cnt") + '"]:checked').length + "과 선택"; });
+      var w = CH_SELF ? "개" : "과";
+      start.disabled = n === 0; start.textContent = n ? "고른 " + n + w + (CH_SELF ? " Day로" : "로") + " 시험 시작하기" : (CH_SELF ? "Day를 하나 이상 골라요" : "과를 하나 이상 골라요");
+      Array.prototype.forEach.call(app.querySelectorAll("[data-cnt]"), function (s) { s.textContent = app.querySelectorAll('input[data-b="' + s.getAttribute("data-cnt") + '"]:checked').length + w + " 선택"; });
       Array.prototype.forEach.call(app.querySelectorAll("input[data-all]"), function (a) {
         var all = app.querySelectorAll('input[data-c="' + a.getAttribute("data-all") + '"]'), on = app.querySelectorAll('input[data-c="' + a.getAttribute("data-all") + '"]:checked');
         a.checked = all.length && on.length === all.length; a.indeterminate = on.length > 0 && on.length < all.length;
